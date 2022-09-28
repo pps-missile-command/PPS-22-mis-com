@@ -16,11 +16,11 @@ enum Vector2D:
     case Zero => 0
 
   def magnitude: Double = this match
-    case -->(x, y) => Math.sqrt(x * x + y * y)
+    case -->(x, y) => math.sqrt(x * x + y * y)
     case Zero => 0
 
   def direction: Angle = this match
-    case -->(x, y) => Angle.Radian(Math.atan2(y, x))
+    case -->(x, y) => Angle.Radian(math.atan2(y, x))
     case Zero => Angle.Degree(0)
 
   @targetName("plus")
@@ -52,8 +52,5 @@ object Vector2D:
 
   def apply(magnitude: Double, direction: Angle): Vector2D = magnitude match
     case 0 => Zero
-    case _ => -->(Math.cos(direction.radiant), Math.sin(direction.radiant)) * magnitude
-
-
-
+    case _ => -->(math.cos(direction.radiant), math.sin(direction.radiant)) * magnitude
 
