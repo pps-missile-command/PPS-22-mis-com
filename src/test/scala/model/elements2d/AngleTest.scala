@@ -7,7 +7,7 @@ import model.elements2d._
 class AngleTest extends AnyFunSpec:
     describe("An Angle") {
       describe("in degree") {
-        it("should be create from a value in degree") {
+        it("should be created from a value in degree") {
           val angle = Angle.Degree(45)
           assert(angle.degree == 45)
         }
@@ -22,7 +22,7 @@ class AngleTest extends AnyFunSpec:
         }
       }
       describe("in radian") {
-        it("should be create from a value in radian") {
+        it("should be created from a value in radian") {
           val angle = Angle.Radian(math.Pi / 2)
           assert(angle.radiant == math.Pi / 2)
         }
