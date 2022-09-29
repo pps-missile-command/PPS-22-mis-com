@@ -3,6 +3,9 @@ name: Scala CI
 on:
   push:
 
+permissions:
+  contents: write
+
 jobs:
   build:
 
@@ -29,9 +32,9 @@ jobs:
        path: target/test-reports/*.xml
        reporter: java-junit
        fail-on-error: true
-    - name: Upload coverage to Codecov
-      uses: actions/upload-artifact@v3
+    - name: Upload coverage to GitHubPage
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
-         name: scoverage-report
-         path: target/scala-3.2.0/scoverage-report
+        folder: target/scala-3.2.0/scoverage-report # The folder the action should deploy.
+        branch: coverage-deploy # The branch the action should deploy to.
 
