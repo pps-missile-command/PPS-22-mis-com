@@ -23,13 +23,13 @@ class Vector2DTest extends AnyFunSpec :
 
   describe("A Vector 2D") {
     describe("when is a vector") {
-      it("should be created from a x y coordinate and have their values") {
+      it("should be created from a x and y coordinate and have their values") {
         val vector2D = Vector2D(xTest, yTest)
         assert(vector2D.x === xTest)
         assert(vector2D.y === yTest)
       }
 
-      it("should be created from magnitude and a direction and have their values") {
+      it("should be created from a magnitude and a direction and have their values") {
         val vector2D = Vector2D(magnitudeTest, Angle.Degree(angleDegreeTest))
         assert(vector2D.x === xTest)
         assert(vector2D.y === yTest)
@@ -104,13 +104,13 @@ class Vector2DTest extends AnyFunSpec :
         assert(vector2D == Vector2D.Zero)
       }
 
-      it("should be created from a magnitude is 0") {
-        val vector2D = Vector2D(0, Angle.Degree(10))
+      it("should be created from a magnitude that is 0") {
+        val vector2D = Vector2D(0, Angle.Degree(angleDegreeTest))
         assert(vector2D == Vector2D.Zero)
       }
 
       it("shouldn't be created from a angle 0° and a magnitude != 0") {
-        val vector2D = Vector2D(1, Angle.Degree(0))
+        val vector2D = Vector2D(magnitudeTest, Angle.Degree(0))
         assert(vector2D != Vector2D.Zero)
       }
 
