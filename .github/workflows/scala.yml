@@ -16,5 +16,15 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: 'sbt'
+    - run: sbt clean
+    - run: sbt coverage
     - name: Run tests
-      run: sbt test
+      run: sbt clean
+    - name: Generate coverage report
+      run: sbt coverageReport
+    - name: Upload coverage to Codecov
+      uses: actions/upload-artifact@v3
+      with:
+         name: scoverage-report
+         path: target/scala-3.2.0/
+
