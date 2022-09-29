@@ -17,14 +17,21 @@ jobs:
         distribution: 'temurin'
         cache: 'sbt'
     - run: sbt clean
-    - run: sbt coverage
     - name: Run tests
-      run: sbt test
+      run: sbt coverage test
     - name: Generate coverage report
       run: sbt coverageReport
+    - name: Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+       name: Scala Tests
+       path: target/test-reports/*.xml
+       reporter: java-junit
+       fail-on-error: true
     - name: Upload coverage to Codecov
       uses: actions/upload-artifact@v3
       with:
          name: scoverage-report
-         path: target/scala-3.2.0/
+         path: target/scala-3.2.0/scoverage-report
 
