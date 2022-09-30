@@ -80,6 +80,46 @@ class Vector2DTest extends AnyFunSpec :
         val normalizedVector2D = vector2D.normalize
         assert(normalizedVector2D === Vector2D(rad2, rad2))
       }
+
+      it("opposite should have the same magnitude but opposite direction") {
+        val vector2D = Vector2D(xTest, yTest)
+        val expectedOpposite = Vector2D(-xTest, -yTest)
+        val oppositeVector2D = -vector2D
+        val oppositeAngle = Angle.Degree(vector2D.direction.degree + 180)
+        assert(oppositeVector2D === expectedOpposite)
+        assert(oppositeVector2D.magnitude === vector2D.magnitude)
+        assert(oppositeVector2D.direction.degree === oppositeAngle.degree)
+      }
+
+      it("opposite should have the same magnitude but opposite direction angle 180°") {
+        val vector2D = Vector2D(-xTest, 0)
+        val expectedOpposite = Vector2D(xTest, 0)
+        val oppositeVector2D = -vector2D
+        assert(oppositeVector2D === expectedOpposite)
+        assert(oppositeVector2D.magnitude === vector2D.magnitude)
+        assert(oppositeVector2D.direction.degree === 0.0)
+      }
+
+      it("opposite should have the same magnitude but opposite direction angle 0°") {
+        val vector2D = Vector2D(xTest, 0)
+        val expectedOpposite = Vector2D(-xTest, 0)
+        val oppositeVector2D = -vector2D
+        assert(oppositeVector2D === expectedOpposite)
+        assert(oppositeVector2D.magnitude === vector2D.magnitude)
+        assert(oppositeVector2D.direction.degree === 180.0)
+      }
+
+      it("must return Zero vector if subtracting itself") {
+        val vector2D = Vector2D(xTest, yTest)
+        val vector2DSub = vector2D - vector2D
+        assert(vector2DSub === Vector2D.Zero)
+      }
+
+      it("must return Zero vector if added its opposite") {
+        val vector2D = Vector2D(xTest, yTest)
+        val vector2DSum = vector2D + (-vector2D)
+        assert(vector2DSum === Vector2D.Zero)
+      }
     }
 
     describe("when is a zero vector") {
@@ -99,7 +139,7 @@ class Vector2DTest extends AnyFunSpec :
         assert(vector2D.y === 0.0)
       }
 
-      it("should be created from a x y coordinate with both values equal to 0") {
+      it("should be created from a x and y coordinate with both values equal to 0") {
         val vector2D = Vector2D(0, 0)
         assert(vector2D == Vector2D.Zero)
       }
@@ -141,10 +181,15 @@ class Vector2DTest extends AnyFunSpec :
         assert(vector2DProduct === Vector2D.Zero)
       }
 
-      it("should be able to calculate his normalized vector") {
+      it("should be able to calculate his normalized vector (Zero)") {
         val vector2D = Vector2D.Zero
         val normalizedVector2D = vector2D.normalize
         assert(normalizedVector2D === Vector2D.Zero)
+      }
+
+      it("opposite should be Zero") {
+        val vector2D = Vector2D.Zero
+        assert(-vector2D === Vector2D.Zero)
       }
     }
   }
