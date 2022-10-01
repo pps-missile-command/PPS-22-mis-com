@@ -35,35 +35,60 @@
 </span>11 <span style=''>
 </span>12 <span style=''>  </span><span style='background: #AEF1AE'>private def periodicCircular</span><span style=''>(value: Double, completeAngle: Double): Double = value % completeAngle
 </span>13 <span style=''>
-</span>14 <span style=''>enum Angle:
-</span>15 <span style=''>
-</span>16 <span style=''>  import Angle._
-</span>17 <span style=''>
-</span>18 <span style=''>  case Degree(value: Double)
-</span>19 <span style=''>  case Radian(value: Double)
-</span>20 <span style=''>
-</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def radiant</span><span style=''>: Double =
-</span>22 <span style=''>    </span><span style='background: #AEF1AE'>def degreeToRadian</span><span style=''>(value: Double): Double = value * straightAngleRadiant / straightAngleDegree
-</span>23 <span style=''>
-</span>24 <span style=''>    </span><span style='background: #AEF1AE'>conversion(straightAngleRadiant)(degreeToRadian)(identity)</span><span style=''>
-</span>25 <span style=''>
-</span>26 <span style=''>  </span><span style='background: #AEF1AE'>def degree</span><span style=''>: Double =
-</span>27 <span style=''>    </span><span style='background: #AEF1AE'>def radiantToDegree</span><span style=''>(value: Double): Double = value * straightAngleDegree / straightAngleRadiant
+</span>14 <span style=''>/**
+</span>15 <span style=''> * Represents an angle that could be measured in either degree or radiant.
+</span>16 <span style=''> *
+</span>17 <span style=''> */
+</span>18 <span style=''>enum Angle:
+</span>19 <span style=''>
+</span>20 <span style=''>  import Angle._
+</span>21 <span style=''>
+</span>22 <span style=''>  /**
+</span>23 <span style=''>   * Creates an angle from a given value in degree.
+</span>24 <span style=''>   *
+</span>25 <span style=''>   * @param value the value of the angle in degree
+</span>26 <span style=''>   */
+</span>27 <span style=''>  case Degree(value: Double)
 </span>28 <span style=''>
-</span>29 <span style=''>    </span><span style='background: #AEF1AE'>conversion(straightAngleDegree)(identity)(radiantToDegree)</span><span style=''>
-</span>30 <span style=''>
-</span>31 <span style=''>  </span><span style='background: #AEF1AE'>private def conversion</span><span style=''>(straightAngleOfConversion: Double)(fromDegree: Double =&gt; Double)(fromRadian: Double =&gt; Double): Double =
-</span>32 <span style=''>    </span><span style='background: #AEF1AE'>def conversionPeriodicWithNegative</span><span style=''>(value: Double)(straightAngleOfConverted: Double)(conversionFunction: Double =&gt; Double): Double =
-</span>33 <span style=''>      val completeAngleOfConverted = 2 * straightAngleOfConverted
-</span>34 <span style=''>      val valuePeriodicCircular = </span><span style='background: #AEF1AE'>periodicCircular(value, completeAngleOfConverted)</span><span style=''>
-</span>35 <span style=''>      value match
-</span>36 <span style=''>        </span><span style='background: #AEF1AE'>case _ if valuePeriodicCircular == -straightAngleOfConverted</span><span style=''> =&gt; straightAngleOfConversion
-</span>37 <span style=''>        </span><span style='background: #AEF1AE'>case _ if valuePeriodicCircular &gt; straightAngleOfConverted || valuePeriodicCircular &lt; -straightAngleOfConverted</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>periodicWithNegative(conversionFunction(value), straightAngleOfConversion)</span><span style=''>
-</span>38 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>conversionFunction(valuePeriodicCircular)</span><span style=''>
-</span>39 <span style=''>
-</span>40 <span style=''>    this match
-</span>41 <span style=''>      </span><span style='background: #AEF1AE'>case Degree(value)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>conversionPeriodicWithNegative(value)(straightAngleDegree)(fromDegree)</span><span style=''>
-</span>42 <span style=''>      </span><span style='background: #AEF1AE'>case Radian(value)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>conversionPeriodicWithNegative(value)(straightAngleRadiant)(fromRadian)</span><span style=''>
+</span>29 <span style=''>  /**
+</span>30 <span style=''>   * Creates an angle from a given value in radiant.
+</span>31 <span style=''>   *
+</span>32 <span style=''>   * @param value the value of the angle in radiant
+</span>33 <span style=''>   */
+</span>34 <span style=''>  case Radian(value: Double)
+</span>35 <span style=''>
+</span>36 <span style=''>  /**
+</span>37 <span style=''>   * Returns the value of the angle in radiant.
+</span>38 <span style=''>   *
+</span>39 <span style=''>   * @return the value of the angle in radiant
+</span>40 <span style=''>   */
+</span>41 <span style=''>  </span><span style='background: #AEF1AE'>def radiant</span><span style=''>: Double =
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>def degreeToRadian</span><span style=''>(value: Double): Double = value * straightAngleRadiant / straightAngleDegree
+</span>43 <span style=''>
+</span>44 <span style=''>    </span><span style='background: #AEF1AE'>conversion(straightAngleRadiant)(degreeToRadian)(identity)</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>  /**
+</span>47 <span style=''>   * Returns the value of the angle in degree.
+</span>48 <span style=''>   *
+</span>49 <span style=''>   * @return the value of the angle in degree
+</span>50 <span style=''>   */
+</span>51 <span style=''>  </span><span style='background: #AEF1AE'>def degree</span><span style=''>: Double =
+</span>52 <span style=''>    </span><span style='background: #AEF1AE'>def radiantToDegree</span><span style=''>(value: Double): Double = value * straightAngleDegree / straightAngleRadiant
+</span>53 <span style=''>
+</span>54 <span style=''>    </span><span style='background: #AEF1AE'>conversion(straightAngleDegree)(identity)(radiantToDegree)</span><span style=''>
+</span>55 <span style=''>
+</span>56 <span style=''>  </span><span style='background: #AEF1AE'>private def conversion</span><span style=''>(straightAngleOfConversion: Double)(fromDegree: Double =&gt; Double)(fromRadian: Double =&gt; Double): Double =
+</span>57 <span style=''>    </span><span style='background: #AEF1AE'>def conversionPeriodicWithNegative</span><span style=''>(value: Double)(straightAngleOfConverted: Double)(conversionFunction: Double =&gt; Double): Double =
+</span>58 <span style=''>      val completeAngleOfConverted = 2 * straightAngleOfConverted
+</span>59 <span style=''>      val valuePeriodicCircular = </span><span style='background: #AEF1AE'>periodicCircular(value, completeAngleOfConverted)</span><span style=''>
+</span>60 <span style=''>      value match
+</span>61 <span style=''>        </span><span style='background: #AEF1AE'>case _ if valuePeriodicCircular == -straightAngleOfConverted</span><span style=''> =&gt; straightAngleOfConversion
+</span>62 <span style=''>        </span><span style='background: #AEF1AE'>case _ if valuePeriodicCircular &gt; straightAngleOfConverted || valuePeriodicCircular &lt; -straightAngleOfConverted</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>periodicWithNegative(conversionFunction(value), straightAngleOfConversion)</span><span style=''>
+</span>63 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>conversionFunction(valuePeriodicCircular)</span><span style=''>
+</span>64 <span style=''>
+</span>65 <span style=''>    this match
+</span>66 <span style=''>      </span><span style='background: #AEF1AE'>case Degree(value)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>conversionPeriodicWithNegative(value)(straightAngleDegree)(fromDegree)</span><span style=''>
+</span>67 <span style=''>      </span><span style='background: #AEF1AE'>case Radian(value)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>conversionPeriodicWithNegative(value)(straightAngleRadiant)(fromRadian)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -198,15 +223,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          40
         </td>
         <td>
           9
         </td>
         <td>
-          509
+          950
           -
-          520
+          961
         </td>
         <td>
           DefDef
@@ -222,15 +247,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          41
         </td>
         <td>
           5
         </td>
         <td>
-          535
+          976
           -
-          553
+          994
         </td>
         <td>
           DefDef
@@ -246,15 +271,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          43
         </td>
         <td>
           8
         </td>
         <td>
-          635
+          1076
           -
-          693
+          1134
         </td>
         <td>
           Apply
@@ -270,15 +295,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          43
         </td>
         <td>
           7
         </td>
         <td>
-          684
+          1125
           -
-          692
+          1133
         </td>
         <td>
           Apply
@@ -294,15 +319,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          43
         </td>
         <td>
           6
         </td>
         <td>
-          668
+          1109
           -
-          682
+          1123
         </td>
         <td>
           Apply
@@ -318,15 +343,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          50
         </td>
         <td>
           14
         </td>
         <td>
-          697
+          1248
           -
-          707
+          1258
         </td>
         <td>
           DefDef
@@ -342,15 +367,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          51
         </td>
         <td>
           10
         </td>
         <td>
-          722
+          1273
           -
-          741
+          1292
         </td>
         <td>
           DefDef
@@ -366,15 +391,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          53
         </td>
         <td>
           11
         </td>
         <td>
-          834
+          1385
           -
-          853
+          1404
         </td>
         <td>
           Apply
@@ -390,15 +415,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          53
         </td>
         <td>
           13
         </td>
         <td>
-          823
+          1374
           -
-          881
+          1432
         </td>
         <td>
           Apply
@@ -414,15 +439,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          53
         </td>
         <td>
           12
         </td>
         <td>
-          865
+          1416
           -
-          880
+          1431
         </td>
         <td>
           Apply
@@ -438,15 +463,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          55
         </td>
         <td>
           28
         </td>
         <td>
-          885
+          1436
           -
-          907
+          1458
         </td>
         <td>
           DefDef
@@ -462,15 +487,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          56
         </td>
         <td>
           22
         </td>
         <td>
-          1017
+          1568
           -
-          1051
+          1602
         </td>
         <td>
           DefDef
@@ -486,15 +511,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          58
         </td>
         <td>
           15
         </td>
         <td>
-          1249
+          1800
           -
-          1298
+          1849
         </td>
         <td>
           Apply
@@ -510,15 +535,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          60
         </td>
         <td>
           16
         </td>
         <td>
-          1325
+          1876
           -
-          1385
+          1936
         </td>
         <td>
           Block
@@ -534,15 +559,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          61
         </td>
         <td>
           17
         </td>
         <td>
-          1559
+          2110
           -
-          1584
+          2135
         </td>
         <td>
           Apply
@@ -558,15 +583,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          61
         </td>
         <td>
           19
         </td>
         <td>
-          1423
+          1974
           -
-          1534
+          2085
         </td>
         <td>
           Block
@@ -582,15 +607,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          61
         </td>
         <td>
           18
         </td>
         <td>
-          1538
+          2089
           -
-          1612
+          2163
         </td>
         <td>
           Apply
@@ -606,15 +631,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          62
         </td>
         <td>
           20
         </td>
         <td>
-          1631
+          2182
           -
-          1672
+          2223
         </td>
         <td>
           Apply
@@ -630,15 +655,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          62
         </td>
         <td>
           21
         </td>
         <td>
-          1621
+          2172
           -
-          1627
+          2178
         </td>
         <td>
           Block
@@ -654,15 +679,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          65
         </td>
         <td>
           23
         </td>
         <td>
-          1755
+          2306
           -
-          1774
+          2325
         </td>
         <td>
           Apply
@@ -678,15 +703,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          65
         </td>
         <td>
           25
         </td>
         <td>
-          1695
+          2246
           -
-          1713
+          2264
         </td>
         <td>
           Block
@@ -702,15 +727,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          65
         </td>
         <td>
           24
         </td>
         <td>
-          1717
+          2268
           -
-          1787
+          2338
         </td>
         <td>
           Apply
@@ -726,15 +751,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          66
         </td>
         <td>
           26
         </td>
         <td>
-          1816
+          2367
           -
-          1887
+          2438
         </td>
         <td>
           Apply
@@ -750,15 +775,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          66
         </td>
         <td>
           27
         </td>
         <td>
-          1794
+          2345
           -
-          1812
+          2363
         </td>
         <td>
           Block
