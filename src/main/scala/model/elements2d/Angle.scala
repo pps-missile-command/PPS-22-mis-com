@@ -11,18 +11,43 @@ object Angle:
 
   private def periodicCircular(value: Double, completeAngle: Double): Double = value % completeAngle
 
+/**
+ * Represents an angle that could be measured in either degree or radiant.
+ *
+ */
 enum Angle:
 
   import Angle._
 
+  /**
+   * Creates an angle from a given value in degree.
+   *
+   * @param value the value of the angle in degree
+   */
   case Degree(value: Double)
+
+  /**
+   * Creates an angle from a given value in radiant.
+   *
+   * @param value the value of the angle in radiant
+   */
   case Radian(value: Double)
 
+  /**
+   * Returns the value of the angle in radiant.
+   *
+   * @return the value of the angle in radiant
+   */
   def radiant: Double =
     def degreeToRadian(value: Double): Double = value * straightAngleRadiant / straightAngleDegree
 
     conversion(straightAngleRadiant)(degreeToRadian)(identity)
 
+  /**
+   * Returns the value of the angle in degree.
+   *
+   * @return the value of the angle in degree
+   */
   def degree: Double =
     def radiantToDegree(value: Double): Double = value * straightAngleDegree / straightAngleRadiant
 
