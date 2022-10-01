@@ -2,18 +2,15 @@ package model.elements2d
 
 import model.elements2d.Point2DTest.{xTest, yTest}
 import org.scalactic.{Equality, TolerantNumerics}
+import org.scalactic.TripleEquals.convertToEqualizer
 import org.scalatest.funspec.AnyFunSpec
+import Point2D.GivenEquality.given
+
 
 object Point2DTest:
 
-  import org.scalactic.TripleEquals.convertToEqualizer
-
   private val xTest = 3.0
   private val yTest = 4.0
-  private implicit val doubleEquality: Equality[Double] = TolerantNumerics.tolerantDoubleEquality(0.01)
-  private implicit val pointEquality: Equality[Point2D] = (point: Point2D, other: Any) => other match
-    case otherPoint: Point2D => point.x === otherPoint.x && point.y === otherPoint.y
-    case _ => false
 
 class Point2DTest extends AnyFunSpec :
 
@@ -70,5 +67,11 @@ class Point2DTest extends AnyFunSpec :
       val expectedDistance = 5.0
       val distance = point1 <-> point2
       assert(distance === expectedDistance)
+    }
+
+    it("shouldn't be equal to a vector2D") {
+      val point = Point2D(xTest, yTest)
+      val vector = Vector2D(xTest, yTest)
+      assert(point !== vector)
     }
   }
