@@ -10,6 +10,7 @@ object Vector2DTest:
   private val yTest = 4.0
   private val magnitudeTest = 5.0
   private val angleDegreeTest = 53.13
+  private val angleStraightDegree = 180.0
 
 
 class Vector2DTest extends AnyFunSpec :
@@ -25,10 +26,28 @@ class Vector2DTest extends AnyFunSpec :
         assert(vector2D.y === yTest)
       }
 
-      it("should be created from a magnitude and a direction and have their values") {
+      it("should be created from a magnitude and a direction and have their values 1° quadrant") {
         val vector2D = Vector2D(magnitudeTest, Angle.Degree(angleDegreeTest))
         assert(vector2D.x === xTest)
         assert(vector2D.y === yTest)
+      }
+
+      it("should be created from a magnitude and a direction and have their values 2° quadrant") {
+        val vector2D = Vector2D(magnitudeTest, Angle.Degree(angleStraightDegree - angleDegreeTest))
+        assert(vector2D.x === -xTest)
+        assert(vector2D.y === yTest)
+      }
+
+      it("should be created from a magnitude and a direction and have their values 3° quadrant") {
+        val vector2D = Vector2D(magnitudeTest, Angle.Degree(-angleStraightDegree + angleDegreeTest))
+        assert(vector2D.x === -xTest)
+        assert(vector2D.y === -yTest)
+      }
+
+      it("should be created from a magnitude and a direction and have their values 4° quadrant") {
+        val vector2D = Vector2D(magnitudeTest, Angle.Degree(-angleDegreeTest))
+        assert(vector2D.x === xTest)
+        assert(vector2D.y === -yTest)
       }
 
       it("shouldn't be created from a null direction") {
@@ -40,9 +59,25 @@ class Vector2DTest extends AnyFunSpec :
         val vector2D = Vector2D(xTest, yTest)
         assert(vector2D.magnitude === magnitudeTest)
       }
-      it("should have a direction") {
+
+      it("should have a direction 1° quadrant") {
         val vector2D = Vector2D(xTest, yTest)
         assert(vector2D.direction.get.degree === angleDegreeTest)
+      }
+
+      it("should have a direction 2° quadrant") {
+        val vector2D = Vector2D(-xTest, yTest)
+        assert(vector2D.direction.get.degree === angleStraightDegree - angleDegreeTest)
+      }
+
+      it("should have a direction 3° quadrant") {
+        val vector2D = Vector2D(-xTest, -yTest)
+        assert(vector2D.direction.get.degree === -angleStraightDegree + angleDegreeTest)
+      }
+
+      it("should have a direction 4° quadrant") {
+        val vector2D = Vector2D(xTest, -yTest)
+        assert(vector2D.direction.get.degree === -angleDegreeTest)
       }
 
       it("should be able to add another vector") {
