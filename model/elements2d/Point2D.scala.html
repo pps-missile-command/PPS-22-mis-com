@@ -49,93 +49,96 @@
 </span>25 <span style=''>   * Returns a new point translated by the given vector.
 </span>26 <span style=''>   *
 </span>27 <span style=''>   * @param vector the vector that coordinate the point has to bes translated
-</span>28 <span style=''>   *
-</span>29 <span style=''>   * @return returns a new point translated by the given vector
-</span>30 <span style=''>   */
-</span>31 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;translate&quot;)
-</span>32 <span style=''></span><span style='background: #AEF1AE'>  def --&gt;</span><span style=''>(vector: Vector2D): Point2D = </span><span style='background: #AEF1AE'>Point2D(x + vector.x, y + vector.y)</span><span style=''>
-</span>33 <span style=''>
-</span>34 <span style=''>  /**
-</span>35 <span style=''>   * Returns the distance between this point and the given point.
-</span>36 <span style=''>   *
-</span>37 <span style=''>   * @param other the point to which the distance is calculated
-</span>38 <span style=''>   *
-</span>39 <span style=''>   * @return the distance between this point and the given point
-</span>40 <span style=''>   */
-</span>41 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;distance&quot;)
-</span>42 <span style=''></span><span style='background: #AEF1AE'>  def &lt;-&gt;</span><span style=''>(other: Point2D): Double = </span><span style='background: #AEF1AE'>(this &lt;--&gt; other).magnitude</span><span style=''>
-</span>43 <span style=''>
-</span>44 <span style=''>  /**
-</span>45 <span style=''>   * Returns the vector between this point and the given point.
-</span>46 <span style=''>   *
-</span>47 <span style=''>   * @param other the point to which the vector is calculated
-</span>48 <span style=''>   * @return the vector between this point and the given point
-</span>49 <span style=''>   */
-</span>50 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;distance&quot;)
-</span>51 <span style=''></span><span style='background: #AEF1AE'>  def &lt;--&gt;</span><span style=''>(other: Point2D): Vector2D = </span><span style='background: #AEF1AE'>Vector2D(other.x - x, other.y - y)</span><span style=''>
-</span>52 <span style=''>
-</span>53 <span style=''>  /**
-</span>54 <span style=''>   * Returns a new point that is the result of the scale of this point of a given vector.
-</span>55 <span style=''>   *
-</span>56 <span style=''>   * @param vector the vector that coordinate the point has to be scaled
-</span>57 <span style=''>   *
-</span>58 <span style=''>   * @return a new point that is the result of the scale of this point of a given vector
-</span>59 <span style=''>   */
-</span>60 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;scale&quot;)
-</span>61 <span style=''></span><span style='background: #AEF1AE'>  def *</span><span style=''>(vector: Vector2D): Point2D = </span><span style='background: #AEF1AE'>Point2D(x * vector.x, y * vector.y)</span><span style=''>
-</span>62 <span style=''>
-</span>63 <span style=''>  /**
-</span>64 <span style=''>   * Returns a new point that is the result of the scale of this point of a scalar.
-</span>65 <span style=''>   *
-</span>66 <span style=''>   * @param scale the scalar that coordinate the point has to be scaled
-</span>67 <span style=''>   *
-</span>68 <span style=''>   * @return a new point that is the result of the scale of this point of a given scalar
-</span>69 <span style=''>   */
-</span>70 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;scale&quot;)
-</span>71 <span style=''></span><span style='background: #AEF1AE'>  def *</span><span style=''>(scale: Double): Point2D = </span><span style='background: #AEF1AE'>Point2D(x * scale, y * scale)</span><span style=''>
-</span>72 <span style=''>
-</span>73 <span style=''>/**
-</span>74 <span style=''> * The companion object of the Point2D trait.
-</span>75 <span style=''> */
-</span>76 <span style=''>object Point2D:
-</span>77 <span style=''>
-</span>78 <span style=''>  import org.scalactic.{Equality, TolerantNumerics}
-</span>79 <span style=''>  import org.scalactic.TripleEquals.convertToEqualizer
-</span>80 <span style=''>
-</span>81 <span style=''>  /**
-</span>82 <span style=''>   * Object that provides the equality for the Point2D trait.
-</span>83 <span style=''>   */
-</span>84 <span style=''>  object GivenEquality:
-</span>85 <span style=''>
-</span>86 <span style=''>    /**
-</span>87 <span style=''>     * The given for the equality of two Double.
-</span>88 <span style=''>     * The tolerance is 0.01.
-</span>89 <span style=''>     *
-</span>90 <span style=''>     * @return the given for the equality of two Double with tolerance 0.01
-</span>91 <span style=''>     */
-</span>92 <span style=''>    given Equality[Double] = </span><span style='background: #AEF1AE'>TolerantNumerics.tolerantDoubleEquality(0.01)</span><span style=''>
-</span>93 <span style=''>
-</span>94 <span style=''>    /**
-</span>95 <span style=''>     * The given for the equality of two Point2D.
-</span>96 <span style=''>     * The tolerance is used for the x and y coordinates.
-</span>97 <span style=''>     *
-</span>98 <span style=''>     * @return the given for the equality of two Point2D
-</span>99 <span style=''>     */
-</span>100 <span style=''>    given Equality[Point2D] = (point: Point2D, other: Any) =&gt; other match
-</span>101 <span style=''>      </span><span style='background: #AEF1AE'>case otherPoint: Point2D</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>point.x === otherPoint.x</span><span style=''> &amp;&amp; </span><span style='background: #AEF1AE'>point.y === otherPoint.y</span><span style=''>
-</span>102 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
-</span>103 <span style=''>
-</span>104 <span style=''>  /**
-</span>105 <span style=''>   * Creates a new point with the given coordinates.
-</span>106 <span style=''>   *
-</span>107 <span style=''>   * @param xCoordinate the x coordinate of the point
-</span>108 <span style=''>   * @param yCoordinate the y coordinate of the point
+</span>28 <span style=''>   * @return returns a new point translated by the given vector
+</span>29 <span style=''>   */
+</span>30 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;translate&quot;)
+</span>31 <span style=''></span><span style='background: #AEF1AE'>  def --&gt;</span><span style=''>(vector: Vector2D): Point2D = </span><span style='background: #AEF1AE'>Point2D(x + vector.x, y + vector.y)</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>  /**
+</span>34 <span style=''>   * Returns the distance between this point and the given point.
+</span>35 <span style=''>   *
+</span>36 <span style=''>   * @param other the point to which the distance is calculated
+</span>37 <span style=''>   * @return the distance between this point and the given point
+</span>38 <span style=''>   */
+</span>39 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;distance&quot;)
+</span>40 <span style=''></span><span style='background: #AEF1AE'>  def &lt;-&gt;</span><span style=''>(other: Point2D): Double = </span><span style='background: #AEF1AE'>(this &lt;--&gt; other).magnitude</span><span style=''>
+</span>41 <span style=''>
+</span>42 <span style=''>  /**
+</span>43 <span style=''>   * Returns the vector between this point and the given point.
+</span>44 <span style=''>   *
+</span>45 <span style=''>   * @param other the point to which the vector is calculated
+</span>46 <span style=''>   * @return the vector between this point and the given point
+</span>47 <span style=''>   */
+</span>48 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;distance&quot;)
+</span>49 <span style=''></span><span style='background: #AEF1AE'>  def &lt;--&gt;</span><span style=''>(other: Point2D): Vector2D = </span><span style='background: #AEF1AE'>Vector2D(other.x - x, other.y - y)</span><span style=''>
+</span>50 <span style=''>
+</span>51 <span style=''>  /**
+</span>52 <span style=''>   * Returns a new point that is the result of the scale of this point of a given vector.
+</span>53 <span style=''>   *
+</span>54 <span style=''>   * @param vector the vector that coordinate the point has to be scaled
+</span>55 <span style=''>   * @return a new point that is the result of the scale of this point of a given vector
+</span>56 <span style=''>   */
+</span>57 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;scale&quot;)
+</span>58 <span style=''></span><span style='background: #AEF1AE'>  def *</span><span style=''>(vector: Vector2D): Point2D = </span><span style='background: #AEF1AE'>Point2D(x * vector.x, y * vector.y)</span><span style=''>
+</span>59 <span style=''>
+</span>60 <span style=''>  /**
+</span>61 <span style=''>   * Returns a new point that is the result of the scale of this point of a scalar.
+</span>62 <span style=''>   *
+</span>63 <span style=''>   * @param scale the scalar that coordinate the point has to be scaled
+</span>64 <span style=''>   * @return a new point that is the result of the scale of this point of a given scalar
+</span>65 <span style=''>   */
+</span>66 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;scale&quot;)
+</span>67 <span style=''></span><span style='background: #AEF1AE'>  def *</span><span style=''>(scale: Double): Point2D = </span><span style='background: #AEF1AE'>Point2D(x * scale, y * scale)</span><span style=''>
+</span>68 <span style=''>
+</span>69 <span style=''>/**
+</span>70 <span style=''> * The companion object of the Point2D trait.
+</span>71 <span style=''> */
+</span>72 <span style=''>object Point2D:
+</span>73 <span style=''>
+</span>74 <span style=''>  import org.scalactic.{Equality, TolerantNumerics}
+</span>75 <span style=''>  import org.scalactic.TripleEquals.convertToEqualizer
+</span>76 <span style=''>
+</span>77 <span style=''>  /**
+</span>78 <span style=''>   * Object that provides the equality for the Point2D trait.
+</span>79 <span style=''>   */
+</span>80 <span style=''>  object GivenEquality:
+</span>81 <span style=''>
+</span>82 <span style=''>    /**
+</span>83 <span style=''>     * The given for the equality of two Double.
+</span>84 <span style=''>     * The tolerance is 0.01.
+</span>85 <span style=''>     *
+</span>86 <span style=''>     * @return the given for the equality of two Double with tolerance 0.01
+</span>87 <span style=''>     */
+</span>88 <span style=''>    given Equality[Double] = </span><span style='background: #AEF1AE'>TolerantNumerics.tolerantDoubleEquality(0.01)</span><span style=''>
+</span>89 <span style=''>
+</span>90 <span style=''>    /**
+</span>91 <span style=''>     * The given for the equality of two Point2D.
+</span>92 <span style=''>     * The tolerance is used for the x and y coordinates.
+</span>93 <span style=''>     *
+</span>94 <span style=''>     * @param equality the given equality for the Double
+</span>95 <span style=''>     * @return the given for the equality of two Point2D
+</span>96 <span style=''>     */
+</span>97 <span style=''>    </span><span style='background: #AEF1AE'>given Point2DEquality</span><span style=''>(using equality: Equality[Double]): Equality[Point2D] with
+</span>98 <span style=''>      </span><span style='background: #AEF1AE'>def areEqual</span><span style=''>(point: Point2D, other: Any): Boolean =
+</span>99 <span style=''>        other match
+</span>100 <span style=''>          </span><span style='background: #AEF1AE'>case otherPoint: Point2D</span><span style=''> =&gt;
+</span>101 <span style=''>            </span><span style='background: #AEF1AE'>println(point.x === otherPoint.x)</span><span style=''>
+</span>102 <span style=''>            </span><span style='background: #AEF1AE'>println(point.y === otherPoint.y)</span><span style=''>
+</span>103 <span style=''>            </span><span style='background: #AEF1AE'>point.x === otherPoint.x</span><span style=''> &amp;&amp; </span><span style='background: #AEF1AE'>point.y === otherPoint.y</span><span style=''>
+</span>104 <span style=''>          </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
+</span>105 <span style=''>
+</span>106 <span style=''>
+</span>107 <span style=''>  /**
+</span>108 <span style=''>   * Creates a new point with the given coordinates.
 </span>109 <span style=''>   *
-</span>110 <span style=''>   * @return a new point with the given coordinates
-</span>111 <span style=''>   */
-</span>112 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(xCoordinate: Double, yCoordinate: Double): Point2D = new Point2D:
-</span>113 <span style=''>    </span><span style='background: #AEF1AE'>override def x</span><span style=''>: Double = xCoordinate
-</span>114 <span style=''>    </span><span style='background: #AEF1AE'>override def y</span><span style=''>: Double = yCoordinate
+</span>110 <span style=''>   * @param xCoordinate the x coordinate of the point
+</span>111 <span style=''>   * @param yCoordinate the y coordinate of the point
+</span>112 <span style=''>   * @return a new point with the given coordinates
+</span>113 <span style=''>   */
+</span>114 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(xCoordinate: Double, yCoordinate: Double): Point2D = new Point2D :
+</span>115 <span style=''>    </span><span style='background: #AEF1AE'>override def x</span><span style=''>: Double = xCoordinate
+</span>116 <span style=''>
+</span>117 <span style=''>    </span><span style='background: #AEF1AE'>override def y</span><span style=''>: Double = yCoordinate
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -150,15 +153,87 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          31
+          30
         </td>
         <td>
-          32
+          77
         </td>
         <td>
-          683
+          652
           -
-          691
+          687
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Point2D(x + vector.x, y + vector.y)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          74
+        </td>
+        <td>
+          664
+          -
+          672
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          vector.x
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          73
+        </td>
+        <td>
+          660
+          -
+          661
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          76
+        </td>
+        <td>
+          678
+          -
+          686
         </td>
         <td>
           Select
@@ -174,63 +249,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          30
         </td>
         <td>
-          29
+          78
         </td>
         <td>
-          665
+          588
           -
-          666
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          31
-        </td>
-        <td>
-          679
-          -
-          680
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          34
-        </td>
-        <td>
-          593
-          -
-          627
+          622
         </td>
         <td>
           DefDef
@@ -247,63 +274,63 @@
         </td>
       </tr><tr>
         <td>
-          31
-        </td>
-        <td>
           30
         </td>
         <td>
-          669
+          75
+        </td>
+        <td>
+          674
           -
-          677
+          675
         </td>
         <td>
           Select
         </td>
         <td>
-          x
+          y
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          vector.x
+          y
         </td>
       </tr><tr>
         <td>
-          31
+          39
         </td>
         <td>
-          33
+          80
         </td>
         <td>
-          657
+          963
           -
-          692
+          990
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          apply
+          magnitude
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Point2D(x + vector.x, y + vector.y)
+          (this &lt;--&gt; other).magnitude
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
-          35
+          79
         </td>
         <td>
-          974
+          964
           -
-          989
+          979
         </td>
         <td>
           Apply
@@ -319,15 +346,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
-          37
+          81
         </td>
         <td>
-          913
+          903
           -
-          946
+          936
         </td>
         <td>
           DefDef
@@ -344,63 +371,63 @@
         </td>
       </tr><tr>
         <td>
-          41
+          48
         </td>
         <td>
-          36
-        </td>
-        <td>
-          973
-          -
-          1000
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          magnitude
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (this &lt;--&gt; other).magnitude
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          41
-        </td>
-        <td>
-          1305
-          -
-          1306
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          38
+          83
         </td>
         <td>
           1282
           -
-          1289
+          1283
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          86
+        </td>
+        <td>
+          1263
+          -
+          1297
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Vector2D(other.x - x, other.y - y)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          82
+        </td>
+        <td>
+          1272
+          -
+          1279
         </td>
         <td>
           Select
@@ -416,15 +443,15 @@
         </td>
       </tr><tr>
         <td>
-          50
+          48
         </td>
         <td>
-          40
+          85
         </td>
         <td>
           1295
           -
-          1302
+          1296
         </td>
         <td>
           Select
@@ -436,19 +463,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          other.y
+          y
         </td>
       </tr><tr>
         <td>
-          50
+          48
         </td>
         <td>
-          43
+          87
         </td>
         <td>
-          1210
+          1200
           -
-          1244
+          1234
         </td>
         <td>
           DefDef
@@ -465,184 +492,39 @@
         </td>
       </tr><tr>
         <td>
-          50
-        </td>
-        <td>
-          39
-        </td>
-        <td>
-          1292
-          -
-          1293
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          42
-        </td>
-        <td>
-          1273
-          -
-          1307
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Vector2D(other.x - x, other.y - y)
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          44
-        </td>
-        <td>
-          1651
-          -
-          1652
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          47
-        </td>
-        <td>
-          1669
-          -
-          1677
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vector.y
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          46
-        </td>
-        <td>
-          1665
-          -
-          1666
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          49
-        </td>
-        <td>
-          1585
-          -
-          1613
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          *
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          @targetName(&quot;scale&quot;)
-  def *
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          45
-        </td>
-        <td>
-          1655
-          -
-          1663
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vector.x
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
           48
         </td>
         <td>
-          1643
+          84
+        </td>
+        <td>
+          1285
           -
-          1678
+          1292
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          other.y
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          92
+        </td>
+        <td>
+          1628
+          -
+          1663
         </td>
         <td>
           Apply
@@ -658,15 +540,63 @@
         </td>
       </tr><tr>
         <td>
-          70
+          57
         </td>
         <td>
-          50
+          89
         </td>
         <td>
-          2012
+          1640
           -
-          2013
+          1648
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          vector.x
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          91
+        </td>
+        <td>
+          1654
+          -
+          1662
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          vector.y
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          88
+        </td>
+        <td>
+          1636
+          -
+          1637
         </td>
         <td>
           Select
@@ -682,15 +612,39 @@
         </td>
       </tr><tr>
         <td>
-          70
+          57
         </td>
         <td>
-          53
+          90
         </td>
         <td>
-          1949
+          1650
           -
-          1977
+          1651
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          y
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          93
+        </td>
+        <td>
+          1570
+          -
+          1598
         </td>
         <td>
           DefDef
@@ -707,15 +661,88 @@
         </td>
       </tr><tr>
         <td>
-          70
+          66
         </td>
         <td>
-          52
+          95
         </td>
         <td>
-          2004
+          2003
           -
-          2033
+          2004
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          y
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          94
+        </td>
+        <td>
+          1992
+          -
+          1993
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          97
+        </td>
+        <td>
+          1929
+          -
+          1957
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          @targetName(&quot;scale&quot;)
+  def *
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          96
+        </td>
+        <td>
+          1984
+          -
+          2013
         </td>
         <td>
           Apply
@@ -731,39 +758,15 @@
         </td>
       </tr><tr>
         <td>
-          70
+          87
         </td>
         <td>
-          51
+          98
         </td>
         <td>
-          2023
+          2500
           -
-          2024
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          54
-        </td>
-        <td>
-          2520
-          -
-          2565
+          2545
         </td>
         <td>
           Apply
@@ -779,183 +782,63 @@
         </td>
       </tr><tr>
         <td>
-          100
+          96
         </td>
         <td>
-          59
+          120
         </td>
         <td>
-          2891
+          2796
           -
-          2898
+          2817
         </td>
         <td>
-          Select
+          DefDef
         </td>
         <td>
-          y
+          Point2DEquality
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          point.y
+          given Point2DEquality
         </td>
       </tr><tr>
         <td>
-          100
+          97
         </td>
         <td>
-          62
+          119
         </td>
         <td>
-          2891
+          2882
           -
-          2915
+          2894
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          ===
+          areEqual
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          point.y === otherPoint.y
+          def areEqual
         </td>
       </tr><tr>
         <td>
-          100
+          99
         </td>
         <td>
-          56
+          117
         </td>
         <td>
-          2863
+          2964
           -
-          2870
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.x
-        </td>
-      </tr><tr>
-        <td>
-          100
-        </td>
-        <td>
-          55
-        </td>
-        <td>
-          2863
-          -
-          2870
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.x
-        </td>
-      </tr><tr>
-        <td>
-          100
-        </td>
-        <td>
-          58
-        </td>
-        <td>
-          2863
-          -
-          2887
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          ===
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.x === otherPoint.x
-        </td>
-      </tr><tr>
-        <td>
-          100
-        </td>
-        <td>
-          61
-        </td>
-        <td>
-          2903
-          -
-          2915
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          otherPoint.y
-        </td>
-      </tr><tr>
-        <td>
-          100
-        </td>
-        <td>
-          60
-        </td>
-        <td>
-          2891
-          -
-          2898
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.y
-        </td>
-      </tr><tr>
-        <td>
-          100
-        </td>
-        <td>
-          63
-        </td>
-        <td>
-          2835
-          -
-          2859
+          2988
         </td>
         <td>
           Block
@@ -974,12 +857,12 @@
           100
         </td>
         <td>
-          57
+          101
         </td>
         <td>
-          2875
+          3024
           -
-          2887
+          3036
         </td>
         <td>
           Select
@@ -995,15 +878,423 @@
         </td>
       </tr><tr>
         <td>
+          100
+        </td>
+        <td>
+          100
+        </td>
+        <td>
+          3012
+          -
+          3019
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          convertToEqualizer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.x
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          103
+        </td>
+        <td>
+          3004
+          -
+          3037
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          println
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          println(point.x === otherPoint.x)
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          99
+        </td>
+        <td>
+          3012
+          -
+          3019
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.x
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          102
+        </td>
+        <td>
+          3012
+          -
+          3036
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ===
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.x === otherPoint.x
+        </td>
+      </tr><tr>
+        <td>
           101
         </td>
         <td>
-          64
+          104
         </td>
         <td>
-          2922
+          3058
           -
-          2928
+          3065
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.y
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          107
+        </td>
+        <td>
+          3058
+          -
+          3082
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ===
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.y === otherPoint.y
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          106
+        </td>
+        <td>
+          3070
+          -
+          3082
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          otherPoint.y
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          105
+        </td>
+        <td>
+          3058
+          -
+          3065
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          convertToEqualizer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.y
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          108
+        </td>
+        <td>
+          3050
+          -
+          3083
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          println
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          println(point.y === otherPoint.y)
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          110
+        </td>
+        <td>
+          3096
+          -
+          3103
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          convertToEqualizer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.x
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          113
+        </td>
+        <td>
+          3124
+          -
+          3131
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.y
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          116
+        </td>
+        <td>
+          3124
+          -
+          3148
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ===
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.y === otherPoint.y
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          115
+        </td>
+        <td>
+          3136
+          -
+          3148
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          otherPoint.y
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          109
+        </td>
+        <td>
+          3096
+          -
+          3103
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.x
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          112
+        </td>
+        <td>
+          3096
+          -
+          3120
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ===
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.x === otherPoint.x
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          114
+        </td>
+        <td>
+          3124
+          -
+          3131
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          convertToEqualizer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point.y
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          111
+        </td>
+        <td>
+          3108
+          -
+          3120
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          otherPoint.x
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          118
+        </td>
+        <td>
+          3159
+          -
+          3165
         </td>
         <td>
           Block
@@ -1019,15 +1310,15 @@
         </td>
       </tr><tr>
         <td>
-          111
+          113
         </td>
         <td>
-          67
+          123
         </td>
         <td>
-          3176
+          3409
           -
-          3185
+          3418
         </td>
         <td>
           DefDef
@@ -1043,15 +1334,15 @@
         </td>
       </tr><tr>
         <td>
-          112
+          114
         </td>
         <td>
-          65
+          121
         </td>
         <td>
-          3256
+          3490
           -
-          3270
+          3504
         </td>
         <td>
           DefDef
@@ -1067,15 +1358,15 @@
         </td>
       </tr><tr>
         <td>
-          113
+          116
         </td>
         <td>
-          66
+          122
         </td>
         <td>
-          3297
+          3532
           -
-          3311
+          3546
         </td>
         <td>
           DefDef
