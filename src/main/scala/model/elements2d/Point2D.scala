@@ -108,7 +108,9 @@ object Point2D:
    * @param yCoordinate the y coordinate of the point
    * @return a new point with the given coordinates
    */
-  def apply(xCoordinate: Double, yCoordinate: Double): Point2D = new Point2D :
+  def apply(xCoordinate: Double, yCoordinate: Double): Point2D = Point2DImpl(xCoordinate, yCoordinate)
+
+  private case class Point2DImpl(xCoordinate: Double, yCoordinate: Double) extends Point2D :
     override def x: Double = xCoordinate
 
     override def y: Double = yCoordinate
