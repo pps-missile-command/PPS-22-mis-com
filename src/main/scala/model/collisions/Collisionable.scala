@@ -2,7 +2,6 @@ package model.collisions
 
 import model.elements2d.Point2D
 import model.collisions.*
-import model.collisions.hitbox.HitBoxIntersection
 
 /**
  * Enum representing the different affiliation of an object in game.
