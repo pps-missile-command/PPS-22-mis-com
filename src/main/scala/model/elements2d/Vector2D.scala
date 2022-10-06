@@ -62,7 +62,6 @@ enum Vector2D:
    * Calculates the sum of this vector and another vector.
    *
    * @param other the other vector
-   *              
    * @return a new vector that is  the sum of the two vectors if sum of the two vectors is the vector Zero returns the vector Zero
    */
   @targetName("plus")
@@ -74,7 +73,6 @@ enum Vector2D:
    * Calculates the difference of this vector and another vector.
    *
    * @param other the other vector
-   *              
    * @return a new vector that is the difference of the two vectors if difference of the two vectors is the vector Zero returns the vector Zero
    */
   @targetName("minus")
@@ -86,7 +84,6 @@ enum Vector2D:
    * Calculates the product of this vector and a scalar.
    *
    * @param scalar the scalar value to multiply the vector with
-   *               
    * @return a new vector that is the product of the vector and the scalar
    */
   @targetName("multiplyByScalar")
@@ -147,9 +144,11 @@ object Vector2D:
      *
      * @return the given for the equality of two Vector2D
      */
-    given Equality[Vector2D] = (vector: Vector2D, other: Any) => other match
-      case otherVector: Vector2D => vector.x === otherVector.x && vector.y === otherVector.y
-      case _ => false
+    given Vector2DEquality(using equality: Equality[Double]): Equality[Vector2D] with
+      def areEqual(vector: Vector2D, other: Any): Boolean =
+        other match
+          case otherVector: Vector2D => vector.x === otherVector.x && vector.y === otherVector.y
+          case _ => false
 
 
   /**
@@ -157,7 +156,6 @@ object Vector2D:
    *
    * @param x the x component of the vector
    * @param y the y component of the vector
-   *          
    * @return a new vector with the given x and y, if the x and y are 0 return the vector Zero
    */
   def apply(x: Double, y: Double): Vector2D = (x, y) match
@@ -169,7 +167,6 @@ object Vector2D:
    *
    * @param magnitude the magnitude of the vector
    * @param direction the angle of vector's direction
-   *                  
    * @return a new vector with the given magnitude and direction, if the magnitude is 0 or the direction is null return the vector Zero
    */
   def apply(magnitude: Double, direction: Angle): Vector2D = magnitude match

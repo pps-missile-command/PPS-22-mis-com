@@ -25,7 +25,6 @@ trait Point2D:
    * Returns a new point translated by the given vector.
    *
    * @param vector the vector that coordinate the point has to bes translated
-   *
    * @return returns a new point translated by the given vector
    */
   @targetName("translate")
@@ -35,7 +34,6 @@ trait Point2D:
    * Returns the distance between this point and the given point.
    *
    * @param other the point to which the distance is calculated
-   *
    * @return the distance between this point and the given point
    */
   @targetName("distance")
@@ -54,7 +52,6 @@ trait Point2D:
    * Returns a new point that is the result of the scale of this point of a given vector.
    *
    * @param vector the vector that coordinate the point has to be scaled
-   *
    * @return a new point that is the result of the scale of this point of a given vector
    */
   @targetName("scale")
@@ -64,7 +61,6 @@ trait Point2D:
    * Returns a new point that is the result of the scale of this point of a scalar.
    *
    * @param scale the scalar that coordinate the point has to be scaled
-   *
    * @return a new point that is the result of the scale of this point of a given scalar
    */
   @targetName("scale")
@@ -97,18 +93,24 @@ object Point2D:
      *
      * @return the given for the equality of two Point2D
      */
-    given Equality[Point2D] = (point: Point2D, other: Any) => other match
-      case otherPoint: Point2D => point.x === otherPoint.x && point.y === otherPoint.y
-      case _ => false
+    given Point2DEquality(using equality: Equality[Double]): Equality[Point2D] with
+      def areEqual(point: Point2D, other: Any): Boolean =
+        other match
+          case otherPoint: Point2D =>
+            println(point.x === otherPoint.x)
+            println(point.y === otherPoint.y)
+            point.x === otherPoint.x && point.y === otherPoint.y
+          case _ => false
+
 
   /**
    * Creates a new point with the given coordinates.
    *
    * @param xCoordinate the x coordinate of the point
    * @param yCoordinate the y coordinate of the point
-   *
    * @return a new point with the given coordinates
    */
-  def apply(xCoordinate: Double, yCoordinate: Double): Point2D = new Point2D:
+  def apply(xCoordinate: Double, yCoordinate: Double): Point2D = new Point2D :
     override def x: Double = xCoordinate
+
     override def y: Double = yCoordinate
