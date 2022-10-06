@@ -142,6 +142,7 @@ object Vector2D:
      * The given for the equality of two Vector2D.
      * The tolerance is used for the x and y components.
      *
+     * @param equality the given equality for the Double
      * @return the given for the equality of two Vector2D
      */
     given Vector2DEquality(using equality: Equality[Double]): Equality[Vector2D] with

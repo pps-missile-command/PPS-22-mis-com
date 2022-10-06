@@ -91,6 +91,7 @@ object Point2D:
      * The given for the equality of two Point2D.
      * The tolerance is used for the x and y coordinates.
      *
+     * @param equality the given equality for the Double
      * @return the given for the equality of two Point2D
      */
     given Point2DEquality(using equality: Equality[Double]): Equality[Point2D] with
