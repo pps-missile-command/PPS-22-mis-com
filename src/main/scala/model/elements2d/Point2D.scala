@@ -97,10 +97,7 @@ object Point2D:
     given Point2DEquality(using equality: Equality[Double]): Equality[Point2D] with
       def areEqual(point: Point2D, other: Any): Boolean =
         other match
-          case otherPoint: Point2D =>
-            println(point.x === otherPoint.x)
-            println(point.y === otherPoint.y)
-            point.x === otherPoint.x && point.y === otherPoint.y
+          case otherPoint: Point2D => point.x === otherPoint.x && point.y === otherPoint.y
           case _ => false
 
 
