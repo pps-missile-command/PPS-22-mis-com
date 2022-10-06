@@ -10,14 +10,14 @@ trait Damageable extends Collisionable :
    *
    * @return the current health of the object.
    */
-  def currentLife: Double
+  def currentLife: LifePoint
 
   /**
    * The initial health of the object.
    *
    * @return the initial health of the object.
    */
-  def initialLife: Double
+  def initialLife: LifePoint
 
   /**
    * The object takes damage.
@@ -25,11 +25,11 @@ trait Damageable extends Collisionable :
    * @param damage the damage that the object received.
    * @return the object with the new health.
    */
-  def takeDamage(damage: Double): Damageable
+  def takeDamage(damage: LifePoint): Damageable
 
   /**
    * returns true if the object is destroyed.
    *
    * @return true if the object is destroyed.
    */
-  def isDestroyed: Boolean = currentLife <= 0.0
+  def isDestroyed: Boolean = currentLife <= lifePointDeath
