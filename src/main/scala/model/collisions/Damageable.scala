@@ -25,7 +25,7 @@ trait Damageable extends Collisionable :
    * @param damage the damage that the object received.
    * @return the object with the new health.
    */
-  def takeDamage(damage: Double): Damageable
+  def takeDamage(damage: Int): Damageable
 
   /**
    * returns true if the object is destroyed.
