@@ -2,10 +2,12 @@ package model.ground
 
 import model.collisions.hitbox.HitBoxRectangular
 import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint}
-import model.elements2d.Point2D
+import model.elements2d._
 
 case class City(private var _position: Point2D, private var _life: LifePoint = 3) extends Damageable:
-    val collider: HitBox = HitBoxRectangular(_position, 30, 30, 0)
+    private val baseSize = 30
+    private val heightSize = 30
+    private val collider: HitBox = HitBoxRectangular(Point2D(_position.x + baseSize/2, _position.y + heightSize/2), baseSize, heightSize, Angle.Degree(0))
 
     /**
      * @return the position of the object
