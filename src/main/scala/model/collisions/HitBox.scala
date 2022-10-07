@@ -1,6 +1,8 @@
 package model.collisions
 
 import model.elements2d.Point2D
+import org.scalactic.Equality
+
 import math.BigDecimal.double2bigDecimal
 
 /**
@@ -9,7 +11,7 @@ import math.BigDecimal.double2bigDecimal
  *
  * @param step the distance of the point in the shape for the iterator
  */
-trait HitBox(using step: Double) extends Iterable[Point2D] :
+trait HitBox(using step: Step) extends Iterable[Point2D] :
   /**
    * Returns the grater x value of the hit box.
    *
@@ -58,7 +60,8 @@ trait HitBox(using step: Double) extends Iterable[Point2D] :
   /**
    * Returns true if the point is contained in the hit box.
    *
-   * @param point the point to check
+   * @param point    the point to check
+   * @param equality the given equality
    * @return true if the point is contained in the hit box.
    */
-  def contains(point: Point2D): Boolean
+  def contains(point: Point2D)(using equality: Equality[Double]): Boolean

@@ -14,3 +14,5 @@ package object collisions:
    * The life constant for destroy an object
    */
   val lifePointDeath = 0
+
+  type Step = Double
