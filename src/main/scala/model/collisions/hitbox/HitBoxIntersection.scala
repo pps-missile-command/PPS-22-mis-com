@@ -15,10 +15,9 @@ object HitBoxIntersection:
    * Returns the intersection of the given hit boxes, if there isn't an intersection return the hit box empty.
    *
    * @param hitBoxes the hit boxes to intersect
-   * @param step     the step used to calculate the point in the hit box
    * @return the intersection of the given hit boxes
    */
-  def apply(hitBoxes: HitBox*)(using step: Step): HitBox =
+  def apply(hitBoxes: HitBox*): HitBox =
     val intersection = hitBoxes match
       case Seq() => HitBoxEmpty
       case Seq(hitBox) => hitBox
@@ -28,10 +27,9 @@ object HitBoxIntersection:
       case _ if intersection.xMax.isEmpty || intersection.yMax.isEmpty || intersection.xMin.isEmpty || intersection.yMin.isEmpty => HitBoxEmpty
       case _ if intersection.xMax.get < intersection.xMin.get => HitBoxEmpty
       case _ if intersection.yMax.get < intersection.yMin.get => HitBoxEmpty
-      case _ if intersection.isEmpty => HitBoxEmpty
       case _ => intersection
 
-  private case class HitBoxIntersection(hitBoxes: Seq[HitBox])(using step: Step) extends HitBox :
+  private case class HitBoxIntersection(hitBoxes: Seq[HitBox]) extends HitBox :
 
     def optionalConfront(l: Option[Double], r: Option[Double])(function: (Double, Double) => Double): Option[Double] =
       (l, r) match

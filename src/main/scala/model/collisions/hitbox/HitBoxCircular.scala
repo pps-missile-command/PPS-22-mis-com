@@ -16,13 +16,12 @@ object HitBoxCircular:
    *
    * @param center the center of the circle
    * @param radius the radius of the circle
-   * @param step   the step of the point to check in the circle
    * @return a new hit box that has the shape of a circle
    */
-  def apply(center: Point2D, radius: Double)(using step: Step): HitBox = HitBoxCircular(center, radius)
+  def apply(center: Point2D, radius: Double): HitBox = HitBoxCircular(center, radius)
 
 
-  private case class HitBoxCircular(center: Point2D, radius: Double)(using step: Step) extends HitBox :
+  private case class HitBoxCircular(center: Point2D, radius: Double) extends HitBox :
 
     override val xMax: Option[Double] = Option(center.x + radius)
 

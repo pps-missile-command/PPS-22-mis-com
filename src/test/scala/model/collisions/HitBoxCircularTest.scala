@@ -13,7 +13,7 @@ object HitBoxCircularTest:
 
   private given equality: Equality[Double] = TolerantNumerics.tolerantDoubleEquality(tolerance)
 
-  private given step: Step = 1.0
+  private given distance: Distance = 1.0
 
   private val xCenter = 1.0
   private val yCenter = 2.0
@@ -31,9 +31,9 @@ class HitBoxCircularTest extends AnyFunSpec :
     describe("with a circular shape") {
 
       it("should be usable multiple times") {
-        for _ <- hitBox
+        for _ <- hitBox.area
           yield ()
-        assert(hitBox.iterator.hasNext)
+        assert(hitBox.area.hasNext)
       }
 
       it("should have an interval from center - radius to center + radius") {
@@ -45,8 +45,8 @@ class HitBoxCircularTest extends AnyFunSpec :
 
       it("should have the points in the circle with radius inside") {
         for
-          x <- xCenter - radius to xCenter + radius by step
-          y <- yCenter - radius to yCenter + radius by step
+          x <- xCenter - radius to xCenter + radius by distance
+          y <- yCenter - radius to yCenter + radius by distance
           if ((x.doubleValue - center.x) ** 2.0) + ((y.doubleValue - center.y) ** 2.0) <= radius ** 2.0
         yield
           assert(hitBox.contains(Point2D(x.doubleValue, y.doubleValue)))
@@ -54,8 +54,8 @@ class HitBoxCircularTest extends AnyFunSpec :
 
       it("shouldn't have the points outside the circle radius") {
         for
-          x <- xCenter - radius - 1 to xCenter + radius + 1 by step
-          y <- yCenter - radius - 1 to yCenter + radius + 1 by step
+          x <- xCenter - radius - 1 to xCenter + radius + 1 by distance
+          y <- yCenter - radius - 1 to yCenter + radius + 1 by distance
           if ((x.doubleValue - center.x) ** 2.0) + ((y.doubleValue - center.y) ** 2.0) > radius ** 2.0
         yield
           assert(!hitBox.contains(Point2D(x.doubleValue, y.doubleValue)))

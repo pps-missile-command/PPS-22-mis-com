@@ -15,4 +15,4 @@ package object collisions:
    */
   val lifePointDeath = 0
 
-  type Step = Double
+  type Distance = Double

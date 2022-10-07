@@ -10,7 +10,7 @@ import model.elements2d.Angle
 import utilities.MathUtilities._
 
 object HitBoxRectangularTest:
-  private given step: Step = 1.0
+  private given distance: Distance = 1.0
 
   private val tolerance: Double = 0.1
 
@@ -34,9 +34,9 @@ class HitBoxRectangularTest extends AnyFunSpec :
       val hitBox = HitBoxRectangular(center, base, height, Angle.Degree(angle))
 
       it("should be usable multiple times") {
-        for _ <- hitBox
+        for _ <- hitBox.area
           yield ()
-        assert(hitBox.iterator.hasNext)
+        assert(hitBox.area.hasNext)
       }
 
       describe(" without rotation") {
@@ -50,16 +50,16 @@ class HitBoxRectangularTest extends AnyFunSpec :
 
         it("should have the points in the rectangle with the given base and height with the given center inside") {
           for
-            x <- xCenter - base / 2 to xCenter + base / 2 by step
-            y <- yCenter - height / 2 to yCenter + height / 2 by step
+            x <- xCenter - base / 2 to xCenter + base / 2 by distance
+            y <- yCenter - height / 2 to yCenter + height / 2 by distance
           yield
             assert(hitBox.contains(Point2D(x.doubleValue, y.doubleValue)))
         }
 
         it("shouldn't have the points outside the rectangle with the given base and height with the given center") {
           for
-            x <- xCenter - base / 2 - 1 to xCenter + base / 2 + 1 by step
-            y <- yCenter - height / 2 - 1 to yCenter + height / 2 + 1 by step
+            x <- xCenter - base / 2 - 1 to xCenter + base / 2 + 1 by distance
+            y <- yCenter - height / 2 - 1 to yCenter + height / 2 + 1 by distance
             if x < xCenter - base / 2 || x > xCenter + base / 2 || y < yCenter - height / 2 || y > yCenter + height / 2
           yield
             assert(!hitBox.contains(Point2D(x.doubleValue, y.doubleValue)))
@@ -79,16 +79,16 @@ class HitBoxRectangularTest extends AnyFunSpec :
 
         it("should have the points in the rectangle with the given base and height with the given center inside") {
           for
-            x <- xCenter - height / 2 to xCenter + height / 2 by step
-            y <- yCenter - base / 2 to yCenter + base / 2 by step
+            x <- xCenter - height / 2 to xCenter + height / 2 by distance
+            y <- yCenter - base / 2 to yCenter + base / 2 by distance
           yield
             assert(hitBoxRotated.contains(Point2D(x.doubleValue, y.doubleValue)))
         }
 
         it("shouldn't have the points outside the rectangle with the given base and height with the given center") {
           for
-            x <- xCenter - height / 2 - 1 to xCenter + height / 2 + 1 by step
-            y <- yCenter - base / 2 - 1 to yCenter + base / 2 + 1 by step
+            x <- xCenter - height / 2 - 1 to xCenter + height / 2 + 1 by distance
+            y <- yCenter - base / 2 - 1 to yCenter + base / 2 + 1 by distance
             if x < xCenter - height / 2 || x > xCenter + height / 2 || y < yCenter - base / 2 || y > yCenter + base / 2
           yield
             assert(!hitBoxRotated.contains(Point2D(x.doubleValue, y.doubleValue)))
@@ -110,8 +110,8 @@ class HitBoxRectangularTest extends AnyFunSpec :
 
         it("should have the points in the rectangle with the given area the given center inside") {
           for
-            x <- hitBox.xMin.get to hitBox.xMax.get by step
-            y <- hitBox.yMin.get to hitBox.yMax.get by step
+            x <- hitBox.xMin.get to hitBox.xMax.get by distance
+            y <- hitBox.yMin.get to hitBox.yMax.get by distance
             if (math.abs(x.doubleValue - center.x) + math.abs(y.doubleValue - center.y)) <== (side * math.sqrt(2.0) / 2)
           yield
             assert(hitBox.contains(Point2D(x.doubleValue, y.doubleValue)))
@@ -119,8 +119,8 @@ class HitBoxRectangularTest extends AnyFunSpec :
 
         it("shouldn't have the points outside the rectangle with the given area the given center") {
           for
-            x <- hitBox.xMin.get - 1 to hitBox.xMax.get + 1 by step
-            y <- hitBox.yMin.get - 1 to hitBox.yMax.get + 1 by step
+            x <- hitBox.xMin.get - 1 to hitBox.xMax.get + 1 by distance
+            y <- hitBox.yMin.get - 1 to hitBox.yMax.get + 1 by distance
             if (math.abs(x.doubleValue - center.x) + math.abs(y.doubleValue - center.y)) >== (side * math.sqrt(2.0) / 2)
           yield
             assert(!hitBox.contains(Point2D(x.doubleValue, y.doubleValue)))
