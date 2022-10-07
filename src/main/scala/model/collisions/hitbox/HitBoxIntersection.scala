@@ -17,13 +17,14 @@ object HitBoxIntersection:
    * @param hitBoxes the hit boxes to intersect
    * @return the intersection of the given hit boxes
    */
-  def apply(hitBoxes: HitBox*): HitBox =
+  def apply(hitBoxes: HitBox*)(using Distance): HitBox =
     val intersection = hitBoxes match
       case Seq() => HitBoxEmpty
       case Seq(hitBox) => hitBox
       case _ => HitBoxIntersection(hitBoxes)
     intersection match
       case HitBoxEmpty => HitBoxEmpty
+      case _ if intersection.area.isEmpty => HitBoxEmpty
       case _ if intersection.xMax.isEmpty || intersection.yMax.isEmpty || intersection.xMin.isEmpty || intersection.yMin.isEmpty => HitBoxEmpty
       case _ if intersection.xMax.get < intersection.xMin.get => HitBoxEmpty
       case _ if intersection.yMax.get < intersection.yMin.get => HitBoxEmpty

@@ -79,6 +79,20 @@ class HitBoxIntersectionTest extends AnyFunSpec :
           )
           assert(hitBox == HitBoxEmpty)
         }
+
+        it("should be an empty hit box if there is no intersection between the hit boxes same interval") {
+          val intervalInterceptPoint = Point2D(1, 1)
+          val circle = HitBoxCircular(Point2D(-1, -1), 2)
+          val rectangle = HitBoxRectangular(Point2D(2, 2), 2, 2, Angle.Degree(0))
+          val hitBox = HitBoxIntersection(
+            rectangle,
+            circle
+          )
+          assert(rectangle.contains(intervalInterceptPoint))
+          assert(!circle.contains(intervalInterceptPoint))
+          assert(hitBox == HitBoxEmpty)
+        }
+
       }
 
       describe("that result to be a point") {
