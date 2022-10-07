@@ -41,7 +41,7 @@
 </span>17 <span style=''>   * @param hitBoxes the hit boxes to intersect
 </span>18 <span style=''>   * @return the intersection of the given hit boxes
 </span>19 <span style=''>   */
-</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(hitBoxes: HitBox*): HitBox =
+</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(hitBoxes: HitBox*)(using Distance): HitBox =
 </span>21 <span style=''>    val intersection = hitBoxes match
 </span>22 <span style=''>      </span><span style='background: #AEF1AE'>case Seq()</span><span style=''> =&gt; HitBoxEmpty
 </span>23 <span style=''>      </span><span style='background: #AEF1AE'>case Seq(hitBox)</span><span style=''> =&gt; hitBox
@@ -50,25 +50,26 @@
 </span>26 <span style=''>      </span><span style='background: #AEF1AE'>case HitBoxEmpty</span><span style=''> =&gt; HitBoxEmpty
 </span>27 <span style=''>      </span><span style='background: #AEF1AE'>case _ if intersection.xMax.isEmpty || intersection.yMax.isEmpty || intersection.xMin.isEmpty || intersection.yMin.isEmpty</span><span style=''> =&gt; HitBoxEmpty
 </span>28 <span style=''>      </span><span style='background: #AEF1AE'>case _ if intersection.xMax.get &lt; intersection.xMin.get</span><span style=''> =&gt; HitBoxEmpty
-</span>29 <span style=''>      </span><span style='background: #F0ADAD'>case _ if intersection.yMax.get &lt; intersection.yMin.get</span><span style=''> =&gt; HitBoxEmpty
-</span>30 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; intersection
-</span>31 <span style=''>
-</span>32 <span style=''>  private case class HitBoxIntersection(hitBoxes: Seq[HitBox]) extends HitBox :
-</span>33 <span style=''>
-</span>34 <span style=''>    </span><span style='background: #AEF1AE'>def optionalConfront</span><span style=''>(l: Option[Double], r: Option[Double])(function: (Double, Double) =&gt; Double): Option[Double] =
-</span>35 <span style=''>      (l, r) match
-</span>36 <span style=''>        </span><span style='background: #AEF1AE'>case (Some(valueL), Some(valueR))</span><span style=''> =&gt; Some(</span><span style='background: #AEF1AE'>function(valueL, valueR)</span><span style=''>)
-</span>37 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; None
-</span>38 <span style=''>
-</span>39 <span style=''>    override val xMax: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) =&gt; optionalConfront(xMax, hitBox.xMax)(_.min(_)))</span><span style=''>
-</span>40 <span style=''>
-</span>41 <span style=''>    override val yMax: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.yMax)((yMax, hitBox) =&gt; optionalConfront(yMax, hitBox.yMax)(_.min(_)))</span><span style=''>
-</span>42 <span style=''>
-</span>43 <span style=''>    override val xMin: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.xMin)((xMin, hitBox) =&gt; optionalConfront(xMin, hitBox.xMin)(_.max(_)))</span><span style=''>
-</span>44 <span style=''>
-</span>45 <span style=''>    override val yMin: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) =&gt; optionalConfront(yMin, hitBox.yMin)(_.max(_)))</span><span style=''>
-</span>46 <span style=''>
-</span>47 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean = </span><span style='background: #AEF1AE'>hitBoxes.forall(_.contains(point))</span><span style=''>
+</span>29 <span style=''>      </span><span style='background: #AEF1AE'>case _ if intersection.yMax.get &lt; intersection.yMin.get</span><span style=''> =&gt; HitBoxEmpty
+</span>30 <span style=''>      </span><span style='background: #AEF1AE'>case _ if intersection.area.isEmpty</span><span style=''> =&gt; HitBoxEmpty
+</span>31 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; intersection
+</span>32 <span style=''>
+</span>33 <span style=''>  private case class HitBoxIntersection(hitBoxes: Seq[HitBox]) extends HitBox :
+</span>34 <span style=''>
+</span>35 <span style=''>    </span><span style='background: #AEF1AE'>def optionalConfront</span><span style=''>(l: Option[Double], r: Option[Double])(function: (Double, Double) =&gt; Double): Option[Double] =
+</span>36 <span style=''>      (l, r) match
+</span>37 <span style=''>        </span><span style='background: #AEF1AE'>case (Some(valueL), Some(valueR))</span><span style=''> =&gt; Some(</span><span style='background: #AEF1AE'>function(valueL, valueR)</span><span style=''>)
+</span>38 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; None
+</span>39 <span style=''>
+</span>40 <span style=''>    override val xMax: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) =&gt; optionalConfront(xMax, hitBox.xMax)(_.min(_)))</span><span style=''>
+</span>41 <span style=''>
+</span>42 <span style=''>    override val yMax: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.yMax)((yMax, hitBox) =&gt; optionalConfront(yMax, hitBox.yMax)(_.min(_)))</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>    override val xMin: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.xMin)((xMin, hitBox) =&gt; optionalConfront(xMin, hitBox.xMin)(_.max(_)))</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>    override val yMin: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) =&gt; optionalConfront(yMin, hitBox.yMin)(_.max(_)))</span><span style=''>
+</span>47 <span style=''>
+</span>48 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean = </span><span style='background: #AEF1AE'>hitBoxes.forall(_.contains(point))</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -86,7 +87,7 @@
           19
         </td>
         <td>
-          99
+          100
         </td>
         <td>
           520
@@ -110,12 +111,12 @@
           21
         </td>
         <td>
-          75
+          73
         </td>
         <td>
-          603
+          619
           -
-          613
+          629
         </td>
         <td>
           Block
@@ -134,12 +135,12 @@
           22
         </td>
         <td>
-          76
+          74
         </td>
         <td>
-          635
-          -
           651
+          -
+          667
         </td>
         <td>
           Block
@@ -158,12 +159,12 @@
           23
         </td>
         <td>
-          77
+          75
         </td>
         <td>
-          668
+          684
           -
-          674
+          690
         </td>
         <td>
           Block
@@ -182,12 +183,12 @@
           25
         </td>
         <td>
-          78
+          76
         </td>
         <td>
-          736
-          -
           752
+          -
+          768
         </td>
         <td>
           Block
@@ -209,105 +210,9 @@
           83
         </td>
         <td>
-          813
+          858
           -
-          838
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMax.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          86
-        </td>
-        <td>
-          871
-          -
-          888
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMin
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          80
-        </td>
-        <td>
-          784
-          -
-          801
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMax
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          82
-        </td>
-        <td>
-          813
-          -
-          830
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMax
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          85
-        </td>
-        <td>
-          842
-          -
-          867
+          883
         </td>
         <td>
           Select
@@ -326,12 +231,12 @@
           26
         </td>
         <td>
-          79
+          77
         </td>
         <td>
-          774
+          790
           -
-          896
+          912
         </td>
         <td>
           Block
@@ -350,12 +255,60 @@
           26
         </td>
         <td>
-          87
+          80
         </td>
         <td>
-          871
+          829
           -
-          896
+          846
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          yMax
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          intersection.yMax
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          82
+        </td>
+        <td>
+          858
+          -
+          875
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          xMin
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          intersection.xMin
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          85
+        </td>
+        <td>
+          887
+          -
+          912
         </td>
         <td>
           Select
@@ -374,12 +327,12 @@
           26
         </td>
         <td>
-          81
+          79
         </td>
         <td>
-          784
+          800
           -
-          809
+          825
         </td>
         <td>
           Select
@@ -398,60 +351,12 @@
           26
         </td>
         <td>
-          84
+          78
         </td>
         <td>
-          842
+          800
           -
-          859
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMin
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          92
-        </td>
-        <td>
-          952
-          -
-          973
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMin.get
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          89
-        </td>
-        <td>
-          928
-          -
-          945
+          817
         </td>
         <td>
           Select
@@ -467,15 +372,87 @@
         </td>
       </tr><tr>
         <td>
+          26
+        </td>
+        <td>
+          81
+        </td>
+        <td>
+          829
+          -
+          854
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isEmpty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          intersection.yMax.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          84
+        </td>
+        <td>
+          887
+          -
+          904
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          yMin
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          intersection.yMin
+        </td>
+      </tr><tr>
+        <td>
           27
         </td>
         <td>
-          91
+          86
         </td>
         <td>
-          952
+          934
           -
-          969
+          989
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _ if intersection.xMax.get &lt; intersection.xMin.get
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          89
+        </td>
+        <td>
+          968
+          -
+          985
         </td>
         <td>
           Select
@@ -497,33 +474,9 @@
           88
         </td>
         <td>
-          918
+          944
           -
-          973
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _ if intersection.xMax.get &lt; intersection.xMin.get
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          90
-        </td>
-        <td>
-          928
-          -
-          949
+          965
         </td>
         <td>
           Select
@@ -539,15 +492,39 @@
         </td>
       </tr><tr>
         <td>
-          28
+          27
         </td>
         <td>
-          95
+          87
         </td>
         <td>
-          1005
+          944
           -
-          1026
+          961
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          xMax
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          intersection.xMax
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          90
+        </td>
+        <td>
+          968
+          -
+          989
         </td>
         <td>
           Select
@@ -559,19 +536,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          intersection.yMax.get
+          intersection.xMin.get
         </td>
       </tr><tr>
         <td>
           28
         </td>
         <td>
-          94
+          92
         </td>
         <td>
-          1005
+          1021
           -
-          1022
+          1038
         </td>
         <td>
           Select
@@ -590,12 +567,12 @@
           28
         </td>
         <td>
-          97
+          95
         </td>
         <td>
-          1029
+          1045
           -
-          1050
+          1066
         </td>
         <td>
           Select
@@ -614,12 +591,36 @@
           28
         </td>
         <td>
-          96
+          91
         </td>
         <td>
-          1029
+          1011
           -
-          1046
+          1066
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _ if intersection.yMax.get &lt; intersection.yMin.get
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          94
+        </td>
+        <td>
+          1045
+          -
+          1062
         </td>
         <td>
           Select
@@ -641,9 +642,81 @@
           93
         </td>
         <td>
-          995
+          1021
           -
-          1050
+          1042
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          intersection.yMax.get
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          98
+        </td>
+        <td>
+          1098
+          -
+          1123
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isEmpty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          intersection.area.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          97
+        </td>
+        <td>
+          1098
+          -
+          1115
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          area
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          intersection.area
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          96
+        </td>
+        <td>
+          1088
+          -
+          1123
         </td>
         <td>
           Block
@@ -654,20 +727,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          case _ if intersection.yMax.get &lt; intersection.yMin.get
+        <td style="background: #AEF1AE">
+          case _ if intersection.area.isEmpty
         </td>
       </tr><tr>
         <td>
-          29
+          30
         </td>
         <td>
-          98
+          99
         </td>
         <td>
-          1072
+          1145
           -
-          1078
+          1151
         </td>
         <td>
           Block
@@ -683,15 +756,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          34
         </td>
         <td>
-          103
+          104
         </td>
         <td>
-          1181
+          1254
           -
-          1201
+          1274
         </td>
         <td>
           DefDef
@@ -707,39 +780,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          36
         </td>
         <td>
           101
         </td>
         <td>
-          1323
+          1438
           -
-          1356
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case (Some(valueL), Some(valueR))
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          100
-        </td>
-        <td>
-          1365
-          -
-          1389
+          1462
         </td>
         <td>
           Apply
@@ -761,9 +810,33 @@
           102
         </td>
         <td>
-          1399
+          1396
           -
-          1405
+          1429
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case (Some(valueL), Some(valueR))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          103
+        </td>
+        <td>
+          1472
+          -
+          1478
         </td>
         <td>
           Block
@@ -779,111 +852,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          39
         </td>
         <td>
           110
         </td>
         <td>
-          1455
+          1584
           -
-          1557
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          foldLeft
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) =&gt; optionalConfront(xMax, hitBox.xMax)(_.min(_)))
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          104
-        </td>
-        <td>
-          1473
-          -
-          1486
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          head
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.head
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          107
-        </td>
-        <td>
-          1547
-          -
-          1548
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          doubleWrapper
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          106
-        </td>
-        <td>
-          1534
-          -
-          1545
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBox.xMax
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          109
-        </td>
-        <td>
-          1511
-          -
-          1556
+          1629
         </td>
         <td>
           Apply
@@ -899,15 +876,39 @@
         </td>
       </tr><tr>
         <td>
-          38
+          39
         </td>
         <td>
-          105
+          107
         </td>
         <td>
-          1473
+          1607
           -
-          1491
+          1618
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          xMax
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBox.xMax
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          106
+        </td>
+        <td>
+          1546
+          -
+          1564
         </td>
         <td>
           Select
@@ -923,15 +924,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          39
         </td>
         <td>
-          108
+          109
         </td>
         <td>
-          1547
+          1620
           -
-          1555
+          1628
         </td>
         <td>
           Apply
@@ -947,87 +948,87 @@
         </td>
       </tr><tr>
         <td>
-          40
+          39
         </td>
         <td>
-          113
+          105
         </td>
         <td>
-          1678
+          1546
           -
-          1689
+          1559
         </td>
         <td>
           Select
         </td>
         <td>
-          yMax
+          head
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          hitBox.yMax
+          hitBoxes.head
         </td>
       </tr><tr>
         <td>
-          40
+          39
         </td>
         <td>
-          116
+          108
         </td>
         <td>
-          1655
+          1620
           -
-          1700
+          1621
         </td>
         <td>
           Apply
         </td>
         <td>
-          optionalConfront
+          doubleWrapper
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          optionalConfront(yMax, hitBox.yMax)(_.min(_))
+          _
         </td>
       </tr><tr>
         <td>
-          40
+          39
         </td>
         <td>
-          115
+          111
         </td>
         <td>
-          1691
+          1528
           -
-          1699
+          1630
         </td>
         <td>
           Apply
         </td>
         <td>
-          min
+          foldLeft
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          _.min(_)
+          hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) =&gt; optionalConfront(xMax, hitBox.xMax)(_.min(_)))
         </td>
       </tr><tr>
         <td>
-          40
+          41
         </td>
         <td>
-          112
+          113
         </td>
         <td>
-          1617
+          1690
           -
-          1635
+          1708
         </td>
         <td>
           Select
@@ -1043,15 +1044,39 @@
         </td>
       </tr><tr>
         <td>
-          40
+          41
         </td>
         <td>
-          114
+          116
         </td>
         <td>
-          1691
+          1764
           -
-          1692
+          1772
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          min
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.min(_)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          115
+        </td>
+        <td>
+          1764
+          -
+          1765
         </td>
         <td>
           Apply
@@ -1067,15 +1092,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          41
         </td>
         <td>
-          117
+          118
         </td>
         <td>
-          1599
+          1672
           -
-          1701
+          1774
         </td>
         <td>
           Apply
@@ -1091,15 +1116,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          41
         </td>
         <td>
-          111
+          112
         </td>
         <td>
-          1617
+          1690
           -
-          1630
+          1703
         </td>
         <td>
           Select
@@ -1115,63 +1140,111 @@
         </td>
       </tr><tr>
         <td>
-          42
+          41
         </td>
         <td>
-          119
+          114
         </td>
         <td>
-          1761
+          1751
           -
-          1779
+          1762
         </td>
         <td>
           Select
         </td>
         <td>
-          xMin
+          yMax
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          hitBoxes.head.xMin
+          hitBox.yMax
         </td>
       </tr><tr>
         <td>
-          42
+          41
         </td>
         <td>
-          122
+          117
         </td>
         <td>
-          1835
+          1728
           -
-          1843
+          1773
         </td>
         <td>
           Apply
         </td>
         <td>
-          max
+          optionalConfront
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          _.max(_)
+          optionalConfront(yMax, hitBox.yMax)(_.min(_))
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
-          124
+          119
         </td>
         <td>
-          1743
+          1834
           -
-          1845
+          1847
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          head
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          122
+        </td>
+        <td>
+          1908
+          -
+          1909
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          doubleWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          125
+        </td>
+        <td>
+          1816
+          -
+          1918
         </td>
         <td>
           Apply
@@ -1187,87 +1260,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
-          118
+          124
         </td>
         <td>
-          1761
+          1872
           -
-          1774
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          head
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.head
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          121
-        </td>
-        <td>
-          1835
-          -
-          1836
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          doubleWrapper
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          120
-        </td>
-        <td>
-          1822
-          -
-          1833
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBox.xMin
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          123
-        </td>
-        <td>
-          1799
-          -
-          1844
+          1917
         </td>
         <td>
           Apply
@@ -1283,135 +1284,63 @@
         </td>
       </tr><tr>
         <td>
-          44
+          43
         </td>
         <td>
-          128
+          121
         </td>
         <td>
-          1979
+          1895
           -
-          1980
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          doubleWrapper
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          131
-        </td>
-        <td>
-          1887
-          -
-          1989
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          foldLeft
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) =&gt; optionalConfront(yMin, hitBox.yMin)(_.max(_)))
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          125
-        </td>
-        <td>
-          1905
-          -
-          1918
+          1906
         </td>
         <td>
           Select
         </td>
         <td>
-          head
+          xMin
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          hitBoxes.head
+          hitBox.xMin
         </td>
       </tr><tr>
         <td>
-          44
+          43
         </td>
         <td>
-          127
+          120
         </td>
         <td>
-          1966
+          1834
           -
-          1977
+          1852
         </td>
         <td>
           Select
         </td>
         <td>
-          yMin
+          xMin
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          hitBox.yMin
+          hitBoxes.head.xMin
         </td>
       </tr><tr>
         <td>
-          44
+          43
         </td>
         <td>
-          130
+          123
         </td>
         <td>
-          1943
+          1908
           -
-          1988
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          optionalConfront
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          optionalConfront(yMin, hitBox.yMin)(_.max(_))
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          129
-        </td>
-        <td>
-          1979
-          -
-          1987
+          1916
         </td>
         <td>
           Apply
@@ -1427,15 +1356,63 @@
         </td>
       </tr><tr>
         <td>
-          44
+          45
         </td>
         <td>
-          126
+          128
         </td>
         <td>
-          1905
+          2039
           -
-          1923
+          2050
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          yMin
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBox.yMin
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          131
+        </td>
+        <td>
+          2016
+          -
+          2061
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          optionalConfront
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          optionalConfront(yMin, hitBox.yMin)(_.max(_))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          127
+        </td>
+        <td>
+          1978
+          -
+          1996
         </td>
         <td>
           Select
@@ -1451,39 +1428,111 @@
         </td>
       </tr><tr>
         <td>
-          46
+          45
         </td>
         <td>
-          134
+          130
         </td>
         <td>
-          1995
+          2052
           -
-          2016
+          2060
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          contains
+          max
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          override def contains
+          _.max(_)
         </td>
       </tr><tr>
         <td>
-          46
+          45
         </td>
         <td>
-          133
+          129
         </td>
         <td>
-          2078
+          2052
           -
-          2112
+          2053
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          doubleWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          132
+        </td>
+        <td>
+          1960
+          -
+          2062
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          foldLeft
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) =&gt; optionalConfront(yMin, hitBox.yMin)(_.max(_)))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          126
+        </td>
+        <td>
+          1978
+          -
+          1991
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          head
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          134
+        </td>
+        <td>
+          2151
+          -
+          2185
         </td>
         <td>
           Apply
@@ -1499,15 +1548,15 @@
         </td>
       </tr><tr>
         <td>
-          46
+          47
         </td>
         <td>
-          132
+          133
         </td>
         <td>
-          2094
+          2167
           -
-          2111
+          2184
         </td>
         <td>
           Apply
@@ -1520,6 +1569,30 @@
         </td>
         <td style="background: #AEF1AE">
           _.contains(point)
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          135
+        </td>
+        <td>
+          2068
+          -
+          2089
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def contains
         </td>
       </tr>
     </table>
