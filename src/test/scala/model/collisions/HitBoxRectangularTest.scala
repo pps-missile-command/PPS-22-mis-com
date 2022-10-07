@@ -1,13 +1,14 @@
 package model.collisions
 
-import model.collisions.hitbox.HitBoxRectangular
+import model.collisions.hitbox.{HitBoxEmpty, HitBoxRectangular}
 import model.elements2d.{Point2D, Vector2D}
 import org.scalatest.funspec.AnyFunSpec
+
 import math.BigDecimal.double2bigDecimal
 import model.elements2d.Point2D.GivenEquality.given
 import org.scalactic.{Equality, TolerantNumerics}
 import model.elements2d.Angle
-import utilities.MathUtilities._
+import utilities.MathUtilities.*
 
 object HitBoxRectangularTest:
   private given distance: Distance = 1.0
@@ -37,6 +38,21 @@ class HitBoxRectangularTest extends AnyFunSpec :
         for _ <- hitBox.area
           yield ()
         assert(hitBox.area.hasNext)
+      }
+
+      it("should be empty if the base is negative") {
+        val hitBox = HitBoxRectangular(center, -base, height, Angle.Degree(angle))
+        assert(hitBox == HitBoxEmpty)
+      }
+
+      it("should be empty if the height is negative") {
+        val hitBox = HitBoxRectangular(center, base, -height, Angle.Degree(angle))
+        assert(hitBox == HitBoxEmpty)
+      }
+
+      it("should be empty it the angle is null") {
+        val hitBox = HitBoxRectangular(center, base, height, null)
+        assert(hitBox == HitBoxEmpty)
       }
 
       describe(" without rotation") {

@@ -20,7 +20,11 @@ object HitBoxRectangular:
    * @param rotation the rotation of the rectangle.
    * @return a new hit box that is a rectangle.
    */
-  def apply(center: Point2D, base: Double, height: Double, rotation: Angle): HitBox = HitBoxRectangular(center, base, height, rotation)
+  def apply(center: Point2D, base: Double, height: Double, rotation: Angle): HitBox =
+    if (base <= 0 || height <= 0 || rotation == null)
+      HitBoxEmpty
+    else
+      HitBoxRectangular(center, base, height, rotation)
 
   private case class HitBoxRectangular(center: Point2D, base: Double, height: Double, rotation: Angle) extends HitBox :
     private val baseVector = Vector2D(base / 2, rotation)
