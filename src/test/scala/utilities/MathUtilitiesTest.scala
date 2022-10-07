@@ -73,6 +73,11 @@ class MathUtilitiesTest extends AnyFunSpec :
         assert(value <== comparedValue +- tolerance)
         assert(value === comparedValue +- tolerance)
       }
+
+      it("should return false if the second element is not a double") {
+        val comparedValue = "test"
+        assert(!(value <== comparedValue))
+      }
     }
   }
 
@@ -107,6 +112,11 @@ class MathUtilitiesTest extends AnyFunSpec :
         val comparedValue = value - tolerance
         assert(comparedValue >== value)
         assert(value === comparedValue)
+      }
+
+      it("should return false if the second element is not a double") {
+        val comparedValue = "test"
+        assert(!(value >== comparedValue))
       }
     }
 
