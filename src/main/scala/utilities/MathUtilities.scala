@@ -44,10 +44,11 @@ object MathUtilities:
      * Returns true if the left side is less than or equal the right side in the given tolerance.
      *
      * @param rightSide the right side
+     * @param equality the given equality
      * @return true if the left side is less than or equal the right side in the given tolerance
      */
     @targetName("lessEqual")
-    def <==(rightSide: Any)(implicit equality: Equality[Double]): Boolean = rightSide match
+    def <==(rightSide: Any)(using equality: Equality[Double]): Boolean = rightSide match
       case double: Double => leftSide === double || leftSide.leftSide < double
       case _ => false
 
@@ -55,10 +56,11 @@ object MathUtilities:
      * Returns true if the left side is greater than or equal the right side in the given tolerance.
      *
      * @param rightSide the right side
+     * @param equality the given equality
      * @return true if the left side is greater than or equal the right side in the given tolerance
      */
     @targetName("greaterEqual")
-    def >==(rightSide: Any)(implicit equality: Equality[Double]): Boolean = rightSide match
+    def >==(rightSide: Any)(using equality: Equality[Double]): Boolean = rightSide match
       case double: Double => leftSide === double || leftSide.leftSide > double
       case _ => false
 
