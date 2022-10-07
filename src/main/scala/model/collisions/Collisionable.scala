@@ -1,7 +1,7 @@
 package model.collisions
 
 import model.elements2d.Point2D
-import model.collisions.*
+import model.collisions._
 import model.collisions.hitbox.HitBoxIntersection
 
 /**
@@ -12,6 +12,7 @@ enum Affiliation:
 
 /**
  * Trait representing an object that can collide with other objects.
+ *
  */
 trait Collisionable:
 
@@ -25,12 +26,12 @@ trait Collisionable:
   /**
    * Return true if the object is colliding with the given object.
    *
-   * @param other the other object.
-   * @param step  the distance of the point to test the collision.
+   * @param other    the other object.
+   * @param distance the distance between two points in the hit box area.
    * @return true if the object is colliding with the given object.
    */
-  def isCollidingWith(other: Collisionable)(using step: Double): Boolean =
-    HitBoxIntersection(hitBox, other.hitBox).exists(point => other.hitBox.contains(point))
+  def isCollidingWith(other: Collisionable)(using distance: Distance): Boolean =
+    HitBoxIntersection(hitBox, other.hitBox).area.exists(point => other.hitBox.contains(point))
 
   /**
    * Return the affiliation of the object.

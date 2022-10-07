@@ -20,7 +20,7 @@ object HitBoxPoint:
    */
   def apply(point: Point2D): HitBox = HitBoxPoint(point)
 
-  private case class HitBoxPoint(point: Point2D)(using step: Step = 0) extends HitBox :
+  private case class HitBoxPoint(point: Point2D) extends HitBox :
 
     override val xMax: Option[Double] = Option(point.x)
 
@@ -30,6 +30,6 @@ object HitBoxPoint:
 
     override val yMin: Option[Double] = Option(point.y)
 
-    override def iterator: Iterator[Point2D] = Iterator(point)
+    override def area(using step: Distance = 0): Iterator[Point2D] = Iterator(point)
 
     override def contains(point: Point2D)(using equality: Equality[Double]): Boolean = point === this.point

@@ -13,7 +13,7 @@ class HitBoxEmptyTest extends AnyFunSpec :
     describe("that is empty") {
 
       it("should have an empty iterator of points") {
-        assert(!hitBoxEmpty.iterator.hasNext)
+        assert(!hitBoxEmpty.area.hasNext)
       }
 
       it("should not contain any point") {
@@ -21,7 +21,7 @@ class HitBoxEmptyTest extends AnyFunSpec :
       }
 
       it("should have a size of 0") {
-        assert(hitBoxEmpty.isEmpty)
+        assert(hitBoxEmpty.area.isEmpty)
       }
 
       it("shouldn't have a space of points ( no x and y interval)") {
