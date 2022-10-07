@@ -72,10 +72,18 @@ class HitBoxIntersectionTest extends AnyFunSpec :
           assert(hitBox == HitBoxEmpty)
         }
 
-        it("should be an empty hit box if there is no intersection between the hit boxes") {
+        it("should be an empty hit box if there is no intersection between the hit boxes (x)") {
           val hitBox = HitBoxIntersection(
             HitBoxPoint(Point2D(0, 0)),
-            HitBoxPoint(Point2D(1, 1))
+            HitBoxPoint(Point2D(1, 0))
+          )
+          assert(hitBox == HitBoxEmpty)
+        }
+
+        it("should be an empty hit box if there is no intersection between the hit boxes (y)") {
+          val hitBox = HitBoxIntersection(
+            HitBoxPoint(Point2D(0, 0)),
+            HitBoxPoint(Point2D(0, 1))
           )
           assert(hitBox == HitBoxEmpty)
         }
