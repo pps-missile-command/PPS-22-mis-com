@@ -10,4 +10,4 @@ trait Damager extends Collisionable :
    *
    * @return the damage inflicted by this object.
    */
-  def damageInflicted: Double
+  def damageInflicted: LifePoint
