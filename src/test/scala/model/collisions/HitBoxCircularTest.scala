@@ -8,8 +8,7 @@ import math.BigDecimal.double2bigDecimal
 import model.elements2d.Point2D.GivenEquality.given
 import utilities.MathUtilities._
 
-class HitBoxCircularTest extends AnyFunSpec :
-
+object HitBoxCircularTest:
   private val tolerance: Double = 0.1
 
   private given equality: Equality[Double] = TolerantNumerics.tolerantDoubleEquality(tolerance)
@@ -21,6 +20,11 @@ class HitBoxCircularTest extends AnyFunSpec :
   private val radius = 1.0
   private val center = Point2D(xCenter, yCenter)
   private val hitBox = HitBoxCircular(center, radius)
+
+class HitBoxCircularTest extends AnyFunSpec :
+
+  import HitBoxCircularTest._
+  import HitBoxCircularTest.given
 
   describe("An hit box") {
 

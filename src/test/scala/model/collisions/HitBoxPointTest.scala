@@ -9,12 +9,17 @@ import utilities.MathUtilities._
 import model.elements2d.Point2D.GivenEquality.given
 import utilities.MathUtilities.DoubleEquality.given
 
-class HitBoxPointTest extends AnyFunSpec :
+object HitBoxPointTest:
   private given step: Step = 1.0
 
   private val pointX = 1.0
   private val pointY = 2.0
   private val hitBox = HitBoxPoint(Point2D(pointX, pointY))
+
+class HitBoxPointTest extends AnyFunSpec :
+
+  import HitBoxPointTest._
+  import HitBoxPointTest.given
 
   describe("An hit box") {
     describe("that is a point") {
