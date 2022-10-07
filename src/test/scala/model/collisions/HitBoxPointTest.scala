@@ -10,7 +10,7 @@ import model.elements2d.Point2D.GivenEquality.given
 import utilities.MathUtilities.DoubleEquality.given
 
 object HitBoxPointTest:
-  private given step: Step = 1.0
+  private given distance: Distance = 1.0
 
   private val pointX = 1.0
   private val pointY = 2.0
@@ -25,16 +25,16 @@ class HitBoxPointTest extends AnyFunSpec :
     describe("that is a point") {
 
       it("should only have an iterator with one point") {
-        val hitBoxIterator = hitBox.iterator
+        val hitBoxIterator = hitBox.area
         assert(hitBoxIterator.hasNext)
         assert(hitBoxIterator.next() === Point2D(pointX, pointY))
         assert(!hitBoxIterator.hasNext)
       }
 
       it("should be usable multiple times") {
-        for _ <- hitBox
+        for _ <- hitBox.area
           yield ()
-        assert(hitBox.iterator.hasNext)
+        assert(hitBox.area.hasNext)
       }
 
       it("should contain the point") {
@@ -50,8 +50,8 @@ class HitBoxPointTest extends AnyFunSpec :
 
       it("shouldn't have other points inside") {
         for
-          x <- -1.0 to 3.0 by step
-          y <- 0.0 to 4.0 by step
+          x <- -1.0 to 3.0 by distance
+          y <- 0.0 to 4.0 by distance
           if (x !== pointX) && (y !== pointY)
         yield
           assert(!hitBox.contains(Point2D(x.doubleValue, y.doubleValue)))

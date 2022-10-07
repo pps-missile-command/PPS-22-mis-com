@@ -18,12 +18,11 @@ object HitBoxRectangular:
    * @param base     the base of the rectangle.
    * @param height   the height of the rectangle.
    * @param rotation the rotation of the rectangle.
-   * @param step     the step given to calculate the point in the rectangular hit box.
    * @return a new hit box that is a rectangle.
    */
-  def apply(center: Point2D, base: Double, height: Double, rotation: Angle)(using step: Step): HitBox = HitBoxRectangular(center, base, height, rotation)
+  def apply(center: Point2D, base: Double, height: Double, rotation: Angle): HitBox = HitBoxRectangular(center, base, height, rotation)
 
-  private case class HitBoxRectangular(center: Point2D, base: Double, height: Double, rotation: Angle)(using step: Step) extends HitBox :
+  private case class HitBoxRectangular(center: Point2D, base: Double, height: Double, rotation: Angle) extends HitBox :
     private val baseVector = Vector2D(base / 2, rotation)
     private val heightVector = Vector2D(height / 2, Angle.Degree(rotation.degree + 90))
     private val vertices: List[Point2D] = List(

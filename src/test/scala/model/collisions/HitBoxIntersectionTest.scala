@@ -9,7 +9,7 @@ import math.BigDecimal.double2bigDecimal
 object HitBoxIntersectionTest:
   private val tolerance: Double = 0.1
 
-  private given step: Step = 1.0
+  private given distance: Distance = 1.0
 
   private given equality: Equality[Double] = TolerantNumerics.tolerantDoubleEquality(tolerance)
 
@@ -23,17 +23,19 @@ class HitBoxIntersectionTest extends AnyFunSpec :
     describe("that is the intersection of other hit boxes") {
 
       it("should be able to be create from multiple hit box") {
-        HitBoxIntersection(
+        val hitBox = HitBoxIntersection(
           HitBoxPoint(Point2D(0, 0)),
           HitBoxPoint(Point2D(1, 1)),
           HitBoxEmpty
         )
+        assert(hitBox != null)
       }
 
       describe("that result to be empty ") {
 
         it("should be able to be create from 0 hit box") {
-          HitBoxIntersection()
+          val hitBox = HitBoxIntersection()
+          assert(hitBox != null)
         }
 
         it("should be an empty hit box if one of the hit box is empty and the other is a point") {
@@ -96,7 +98,7 @@ class HitBoxIntersectionTest extends AnyFunSpec :
             HitBoxCircular(point, 1)
           )
           assert(hitBox.contains(point))
-          assert(hitBox.size == 1)
+          assert(hitBox.area.size == 1)
         }
 
         it("should be able to be create from multiple hit boxes, no one is a point") {
@@ -107,7 +109,7 @@ class HitBoxIntersectionTest extends AnyFunSpec :
             HitBoxCircular(pointCircle, 1)
           )
           assert(hitBox.contains(Point2D(1, 0)))
-          assert(hitBox.size == 1)
+          assert(hitBox.area.size == 1)
         }
       }
 
@@ -119,7 +121,7 @@ class HitBoxIntersectionTest extends AnyFunSpec :
             HitBoxCircular(point, 4),
             rectangularHitBox
           )
-          assert(rectangularHitBox.forall(hitBox.contains))
+          assert(rectangularHitBox.area.forall(hitBox.contains))
 
         }
 
@@ -130,7 +132,7 @@ class HitBoxIntersectionTest extends AnyFunSpec :
             circularHitBox,
             HitBoxRectangular(point, 2, 2, Angle.Degree(0))
           )
-          assert(hitBox.forall(circularHitBox.contains))
+          assert(hitBox.area.forall(circularHitBox.contains))
         }
 
         it("should be able to be create from multiple hit boxes, the result is a  circle (check interval)") {
@@ -177,8 +179,8 @@ class HitBoxIntersectionTest extends AnyFunSpec :
             circleHitBox,
             rectangularHitBox
           )
-          assert(!circleHitBox.forall(hitBox.contains))
-          assert(!rectangularHitBox.forall(hitBox.contains))
+          assert(!circleHitBox.area.forall(hitBox.contains))
+          assert(!rectangularHitBox.area.forall(hitBox.contains))
         }
 
         it("should contains the common points of the hit boxes") {

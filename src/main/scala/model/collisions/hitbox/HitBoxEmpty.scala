@@ -1,14 +1,13 @@
 package model.collisions.hitbox
 
-import model.collisions.HitBox
+import model.collisions.{HitBox, Distance}
 import model.elements2d.Point2D
-import model.collisions.HitBox
 import org.scalactic.Equality
 
 /**
  * Object that represents a hit box that is empty.
  */
-case object HitBoxEmpty extends HitBox(using step = 0) :
+case object HitBoxEmpty extends HitBox :
 
   /**
    * The hit box is empty so it doesn't have an interval.
@@ -43,7 +42,7 @@ case object HitBoxEmpty extends HitBox(using step = 0) :
    *
    * @return always Iterator empty
    */
-  override def iterator: Iterator[Point2D] = Iterator.empty
+  override def area(using step: Distance = 0): Iterator[Point2D] = Iterator.empty
 
   /**
    * The hit box is empty so it doesn't contains any point.
