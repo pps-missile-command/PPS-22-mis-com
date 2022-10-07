@@ -24,10 +24,10 @@ object HitBoxIntersection:
       case _ => HitBoxIntersection(hitBoxes)
     intersection match
       case HitBoxEmpty => HitBoxEmpty
-      case _ if intersection.area.isEmpty => HitBoxEmpty
       case _ if intersection.xMax.isEmpty || intersection.yMax.isEmpty || intersection.xMin.isEmpty || intersection.yMin.isEmpty => HitBoxEmpty
       case _ if intersection.xMax.get < intersection.xMin.get => HitBoxEmpty
       case _ if intersection.yMax.get < intersection.yMin.get => HitBoxEmpty
+      case _ if intersection.area.isEmpty => HitBoxEmpty
       case _ => intersection
 
   private case class HitBoxIntersection(hitBoxes: Seq[HitBox]) extends HitBox :
