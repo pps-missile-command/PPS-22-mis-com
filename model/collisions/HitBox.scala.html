@@ -33,48 +33,48 @@
 </span>9 <span style=''> * Trait that represents an hit box of an object.
 </span>10 <span style=''> * An hit box is a shape that represents the area of an object.
 </span>11 <span style=''> *
-</span>12 <span style=''> * @param step the distance of the point in the shape for the iterator
-</span>13 <span style=''> */
-</span>14 <span style=''>trait HitBox(using step: Step) extends Iterable[Point2D] :
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * Returns the grater x value of the hit box.
-</span>17 <span style=''>   *
-</span>18 <span style=''>   * @return the grater x value of the hit box if present else an Option empty.
-</span>19 <span style=''>   */
-</span>20 <span style=''>  def xMax: Option[Double]
-</span>21 <span style=''>
-</span>22 <span style=''>  /**
-</span>23 <span style=''>   * Returns the greater y value of the hit box.
-</span>24 <span style=''>   *
-</span>25 <span style=''>   * @return the grater y value of the hit box if present else an Option empty .
-</span>26 <span style=''>   */
-</span>27 <span style=''>  def yMax: Option[Double]
-</span>28 <span style=''>
-</span>29 <span style=''>  /**
-</span>30 <span style=''>   * Returns the lower x value of the hit box.
-</span>31 <span style=''>   *
-</span>32 <span style=''>   * @return the lower x value of the hit box if present else an Option empty.
-</span>33 <span style=''>   */
-</span>34 <span style=''>  def xMin: Option[Double]
-</span>35 <span style=''>
-</span>36 <span style=''>  /**
-</span>37 <span style=''>   * Returns the lower y value of the hit box.
-</span>38 <span style=''>   *
-</span>39 <span style=''>   * @return the lower y value of the hit box if present else an Option empty.
-</span>40 <span style=''>   */
-</span>41 <span style=''>  def yMin: Option[Double]
-</span>42 <span style=''>
-</span>43 <span style=''>  /**
-</span>44 <span style=''>   * Returns an iterator of points in the hit box with distance step.
-</span>45 <span style=''>   *
-</span>46 <span style=''>   * @return an iterator of points in the hit box with distance step.
+</span>12 <span style=''> */
+</span>13 <span style=''>trait HitBox:
+</span>14 <span style=''>  /**
+</span>15 <span style=''>   * Returns the grater x value of the hit box.
+</span>16 <span style=''>   *
+</span>17 <span style=''>   * @return the grater x value of the hit box if present else an Option empty.
+</span>18 <span style=''>   */
+</span>19 <span style=''>  def xMax: Option[Double]
+</span>20 <span style=''>
+</span>21 <span style=''>  /**
+</span>22 <span style=''>   * Returns the greater y value of the hit box.
+</span>23 <span style=''>   *
+</span>24 <span style=''>   * @return the grater y value of the hit box if present else an Option empty .
+</span>25 <span style=''>   */
+</span>26 <span style=''>  def yMax: Option[Double]
+</span>27 <span style=''>
+</span>28 <span style=''>  /**
+</span>29 <span style=''>   * Returns the lower x value of the hit box.
+</span>30 <span style=''>   *
+</span>31 <span style=''>   * @return the lower x value of the hit box if present else an Option empty.
+</span>32 <span style=''>   */
+</span>33 <span style=''>  def xMin: Option[Double]
+</span>34 <span style=''>
+</span>35 <span style=''>  /**
+</span>36 <span style=''>   * Returns the lower y value of the hit box.
+</span>37 <span style=''>   *
+</span>38 <span style=''>   * @return the lower y value of the hit box if present else an Option empty.
+</span>39 <span style=''>   */
+</span>40 <span style=''>  def yMin: Option[Double]
+</span>41 <span style=''>
+</span>42 <span style=''>  /**
+</span>43 <span style=''>   * Returns an iterator of points in the hit box area with distance.
+</span>44 <span style=''>   *
+</span>45 <span style=''>   * @param distance the distance between two points in the area.
+</span>46 <span style=''>   * @return an iterator of points in the hit box area with distance.
 </span>47 <span style=''>   */
-</span>48 <span style=''>  </span><span style='background: #AEF1AE'>override def iterator</span><span style=''>: Iterator[Point2D] =
+</span>48 <span style=''>  </span><span style='background: #AEF1AE'>def area</span><span style=''>(using distance: Distance): Iterator[Point2D] =
 </span>49 <span style=''>    if (</span><span style='background: #AEF1AE'>xMax.isEmpty</span><span style=''> || </span><span style='background: #AEF1AE'>yMax.isEmpty</span><span style=''> || </span><span style='background: #AEF1AE'>xMin.isEmpty</span><span style=''> || </span><span style='background: #AEF1AE'>yMin.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>Iterator.empty</span><span style=''>
 </span>50 <span style=''>    else
 </span>51 <span style=''>      </span><span style='background: #AEF1AE'>(for
-</span>52 <span style=''></span><span style='background: #AEF1AE'>        x &lt;- xMin.get to xMax.get by step
-</span>53 <span style=''></span><span style='background: #AEF1AE'>        y &lt;- yMin.get to yMax.get by step
+</span>52 <span style=''></span><span style='background: #AEF1AE'>        x &lt;- xMin.get to xMax.get by distance
+</span>53 <span style=''></span><span style='background: #AEF1AE'>        y &lt;- yMin.get to yMax.get by distance
 </span>54 <span style=''></span><span style='background: #AEF1AE'>        point = Point2D(x.doubleValue, y.doubleValue)
 </span>55 <span style=''></span><span style='background: #AEF1AE'>        if contains(point)
 </span>56 <span style=''></span><span style='background: #AEF1AE'>      yield
@@ -106,24 +106,24 @@
           47
         </td>
         <td>
-          50
+          51
         </td>
         <td>
-          1235
+          1185
           -
-          1256
+          1193
         </td>
         <td>
           DefDef
         </td>
         <td>
-          iterator
+          area
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          override def iterator
+          def area
         </td>
       </tr><tr>
         <td>
@@ -133,105 +133,9 @@
           17
         </td>
         <td>
-          1348
+          1297
           -
-          1356
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          Iterator
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Iterator
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          11
-        </td>
-        <td>
-          1302
-          -
-          1306
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMax
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          14
-        </td>
-        <td>
-          1318
-          -
-          1330
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          13
-        </td>
-        <td>
-          1318
-          -
-          1322
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          16
-        </td>
-        <td>
-          1334
-          -
-          1346
+          1309
         </td>
         <td>
           Select
@@ -250,12 +154,12 @@
           48
         </td>
         <td>
-          10
+          11
         </td>
         <td>
-          1286
+          1249
           -
-          1298
+          1261
         </td>
         <td>
           Select
@@ -274,12 +178,12 @@
           48
         </td>
         <td>
-          19
+          20
         </td>
         <td>
-          1348
+          1311
           -
-          1362
+          1325
         </td>
         <td>
           Block
@@ -298,60 +202,36 @@
           48
         </td>
         <td>
-          18
+          14
         </td>
         <td>
-          1348
+          1281
           -
-          1362
+          1285
         </td>
         <td>
           Select
         </td>
         <td>
-          empty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Iterator.empty
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          9
-        </td>
-        <td>
-          1286
-          -
-          1290
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMax
+          xMin
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          xMax
+          xMin
         </td>
       </tr><tr>
         <td>
           48
         </td>
         <td>
-          12
+          13
         </td>
         <td>
-          1302
+          1265
           -
-          1314
+          1277
         </td>
         <td>
           Select
@@ -370,12 +250,12 @@
           48
         </td>
         <td>
-          15
+          16
         </td>
         <td>
-          1334
+          1297
           -
-          1338
+          1301
         </td>
         <td>
           Select
@@ -391,45 +271,135 @@
         </td>
       </tr><tr>
         <td>
-          50
+          48
         </td>
         <td>
-          47
+          10
         </td>
         <td>
-          1379
+          1249
           -
-          1573
+          1253
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          flatMap
+          xMax
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          for
-        x &lt;- xMin.get to xMax.get by step
-        y &lt;- yMin.get to yMax.get by step
-        point = Point2D(x.doubleValue, y.doubleValue)
-        if contains(point)
-      yield
-        point
+          xMax
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          1311
+          -
+          1325
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          empty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Iterator.empty
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          18
+        </td>
+        <td>
+          1311
+          -
+          1319
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          Iterator
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Iterator
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          12
+        </td>
+        <td>
+          1265
+          -
+          1269
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          yMax
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          yMax
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          1281
+          -
+          1293
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isEmpty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          xMin.isEmpty
         </td>
       </tr><tr>
         <td>
           50
         </td>
         <td>
-          49
+          50
         </td>
         <td>
-          1378
+          1341
           -
-          1592
+          1563
         </td>
         <td>
           Block
@@ -442,13 +412,43 @@
         </td>
         <td style="background: #AEF1AE">
           (for
-        x &lt;- xMin.get to xMax.get by step
-        y &lt;- yMin.get to yMax.get by step
+        x &lt;- xMin.get to xMax.get by distance
+        y &lt;- yMin.get to yMax.get by distance
         point = Point2D(x.doubleValue, y.doubleValue)
         if contains(point)
       yield
         point
         ).iterator
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          48
+        </td>
+        <td>
+          1342
+          -
+          1544
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for
+        x &lt;- xMin.get to xMax.get by distance
+        y &lt;- yMin.get to yMax.get by distance
+        point = Point2D(x.doubleValue, y.doubleValue)
+        if contains(point)
+      yield
+        point
         </td>
       </tr><tr>
         <td>
@@ -458,21 +458,21 @@
           23
         </td>
         <td>
-          1408
+          1359
           -
-          1412
+          1367
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          xMax
+          double2bigDecimal
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          xMax
+          xMin.get
         </td>
       </tr><tr>
         <td>
@@ -482,9 +482,129 @@
           26
         </td>
         <td>
-          1396
+          1371
           -
-          1416
+          1379
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          double2bigDecimal
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          xMax.get
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          29
+        </td>
+        <td>
+          1359
+          -
+          1391
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          by
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          xMin.get to xMax.get by distance
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          22
+        </td>
+        <td>
+          1359
+          -
+          1367
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          xMin.get
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          25
+        </td>
+        <td>
+          1371
+          -
+          1379
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          xMax.get
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          28
+        </td>
+        <td>
+          1383
+          -
+          1391
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          double2bigDecimal
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          distance
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          27
+        </td>
+        <td>
+          1359
+          -
+          1379
         </td>
         <td>
           Apply
@@ -503,12 +623,12 @@
           51
         </td>
         <td>
-          20
+          21
         </td>
         <td>
-          1396
+          1359
           -
-          1400
+          1363
         </td>
         <td>
           Select
@@ -527,12 +647,36 @@
           51
         </td>
         <td>
-          22
+          24
         </td>
         <td>
-          1396
+          1371
           -
-          1404
+          1375
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          xMax
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          xMax
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          32
+        </td>
+        <td>
+          1405
+          -
+          1413
         </td>
         <td>
           Apply
@@ -544,19 +688,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          xMin.get
+          yMin.get
         </td>
       </tr><tr>
         <td>
-          51
+          52
         </td>
         <td>
-          25
+          35
         </td>
         <td>
-          1408
+          1417
           -
-          1416
+          1425
         </td>
         <td>
           Apply
@@ -568,19 +712,44 @@
           
         </td>
         <td style="background: #AEF1AE">
-          xMax.get
+          yMax.get
         </td>
       </tr><tr>
         <td>
-          51
+          52
         </td>
         <td>
-          28
+          44
         </td>
         <td>
-          1396
+          1400
           -
-          1424
+          1451
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          y &lt;- yMin.get to yMax.get by distance
+        point
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          38
+        </td>
+        <td>
+          1405
+          -
+          1437
         </td>
         <td>
           Apply
@@ -592,115 +761,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          xMin.get to xMax.get by step
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          27
-        </td>
-        <td>
-          1420
-          -
-          1424
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          double2bigDecimal
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          step
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          21
-        </td>
-        <td>
-          1396
-          -
-          1404
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin.get
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          24
-        </td>
-        <td>
-          1408
-          -
-          1416
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMax.get
+          yMin.get to yMax.get by distance
         </td>
       </tr><tr>
         <td>
           52
         </td>
         <td>
-          32
+          47
         </td>
         <td>
-          1450
+          1400
           -
-          1454
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMax
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          41
-        </td>
-        <td>
-          1433
-          -
-          1520
+          1544
         </td>
         <td>
           Apply
@@ -712,20 +785,146 @@
           
         </td>
         <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by step
+          y &lt;- yMin.get to yMax.get by distance
         point = Point2D(x.doubleValue, y.doubleValue)
+        if contains(point)
+      yield
+        point
         </td>
       </tr><tr>
         <td>
           52
         </td>
         <td>
-          35
+          46
         </td>
         <td>
-          1438
+          1400
           -
-          1458
+          1451
+        </td>
+        <td>
+          Typed
+        </td>
+        <td>
+          point
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          y &lt;- yMin.get to yMax.get by distance
+        point
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          31
+        </td>
+        <td>
+          1405
+          -
+          1413
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          yMin.get
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          34
+        </td>
+        <td>
+          1417
+          -
+          1425
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          yMax.get
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          37
+        </td>
+        <td>
+          1429
+          -
+          1437
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          double2bigDecimal
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          distance
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          45
+        </td>
+        <td>
+          1400
+          -
+          1518
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          y &lt;- yMin.get to yMax.get by distance
+        point = Point2D(x.doubleValue, y.doubleValue)
+        if contains(point)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          36
+        </td>
+        <td>
+          1405
+          -
+          1425
         </td>
         <td>
           Apply
@@ -744,38 +943,12 @@
           52
         </td>
         <td>
-          44
+          30
         </td>
         <td>
-          1433
+          1405
           -
-          1547
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withFilter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by step
-        point = Point2D(x.doubleValue, y.doubleValue)
-        if contains(point)
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          29
-        </td>
-        <td>
-          1438
-          -
-          1442
+          1409
         </td>
         <td>
           Select
@@ -794,12 +967,12 @@
           52
         </td>
         <td>
-          46
+          42
         </td>
         <td>
-          1433
+          1400
           -
-          1573
+          1491
         </td>
         <td>
           Apply
@@ -811,181 +984,8 @@
           
         </td>
         <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by step
+          y &lt;- yMin.get to yMax.get by distance
         point = Point2D(x.doubleValue, y.doubleValue)
-        if contains(point)
-      yield
-        point
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          31
-        </td>
-        <td>
-          1438
-          -
-          1446
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          double2bigDecimal
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMin.get
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          43
-        </td>
-        <td>
-          1433
-          -
-          1480
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by step
-        point
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          34
-        </td>
-        <td>
-          1450
-          -
-          1458
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          double2bigDecimal
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMax.get
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          37
-        </td>
-        <td>
-          1438
-          -
-          1466
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          by
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMin.get to yMax.get by step
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          45
-        </td>
-        <td>
-          1433
-          -
-          1480
-        </td>
-        <td>
-          Typed
-        </td>
-        <td>
-          point
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by step
-        point
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          36
-        </td>
-        <td>
-          1462
-          -
-          1466
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          double2bigDecimal
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          step
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          30
-        </td>
-        <td>
-          1438
-          -
-          1446
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMin.get
         </td>
       </tr><tr>
         <td>
@@ -995,57 +995,33 @@
           33
         </td>
         <td>
-          1450
+          1417
           -
-          1458
+          1421
         </td>
         <td>
           Select
         </td>
         <td>
-          get
+          yMax
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          yMax.get
+          yMax
         </td>
       </tr><tr>
         <td>
           53
         </td>
         <td>
-          38
+          41
         </td>
         <td>
+          1454
+          -
           1491
-          -
-          1504
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          doubleValue
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x.doubleValue
-        </td>
-      </tr><tr>
-        <td>
-          53
-        </td>
-        <td>
-          40
-        </td>
-        <td>
-          1483
-          -
-          1520
         </td>
         <td>
           Apply
@@ -1064,12 +1040,12 @@
           53
         </td>
         <td>
-          39
+          40
         </td>
         <td>
-          1506
+          1477
           -
-          1519
+          1490
         </td>
         <td>
           Select
@@ -1085,15 +1061,39 @@
         </td>
       </tr><tr>
         <td>
+          53
+        </td>
+        <td>
+          39
+        </td>
+        <td>
+          1462
+          -
+          1475
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          doubleValue
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x.doubleValue
+        </td>
+      </tr><tr>
+        <td>
           54
         </td>
         <td>
-          42
+          43
         </td>
         <td>
-          1532
+          1503
           -
-          1547
+          1518
         </td>
         <td>
           Apply
@@ -1112,12 +1112,12 @@
           57
         </td>
         <td>
-          48
+          49
         </td>
         <td>
-          1378
+          1341
           -
-          1592
+          1563
         </td>
         <td>
           Select
@@ -1130,8 +1130,8 @@
         </td>
         <td style="background: #AEF1AE">
           (for
-        x &lt;- xMin.get to xMax.get by step
-        y &lt;- yMin.get to yMax.get by step
+        x &lt;- xMin.get to xMax.get by distance
+        y &lt;- yMin.get to yMax.get by distance
         point = Point2D(x.doubleValue, y.doubleValue)
         if contains(point)
       yield

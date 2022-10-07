@@ -24,57 +24,56 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions.hitbox
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.HitBox
+</span>3 <span style=''>import model.collisions.{HitBox, Distance}
 </span>4 <span style=''>import model.elements2d.Point2D
-</span>5 <span style=''>import model.collisions.HitBox
-</span>6 <span style=''>import org.scalactic.Equality
-</span>7 <span style=''>
-</span>8 <span style=''>/**
-</span>9 <span style=''> * Object that represents a hit box that is empty.
-</span>10 <span style=''> */
-</span>11 <span style=''>case object HitBoxEmpty extends </span><span style='background: #AEF1AE'>HitBox(using step = 0)</span><span style=''> :
-</span>12 <span style=''>
-</span>13 <span style=''>  /**
-</span>14 <span style=''>   * The hit box is empty so it doesn't have an interval.
-</span>15 <span style=''>   *
-</span>16 <span style=''>   * @return always option empty
-</span>17 <span style=''>   */
-</span>18 <span style=''>  override val xMax: Option[Double] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
-</span>19 <span style=''>
-</span>20 <span style=''>  /**
-</span>21 <span style=''>   * The hit box is empty so it doesn't have an interval.
-</span>22 <span style=''>   *
-</span>23 <span style=''>   * @return always option empty
-</span>24 <span style=''>   */
-</span>25 <span style=''>  override val yMax: Option[Double] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
-</span>26 <span style=''>
-</span>27 <span style=''>  /**
-</span>28 <span style=''>   * The hit box is empty so it doesn't have an interval.
-</span>29 <span style=''>   *
-</span>30 <span style=''>   * @return always option empty
-</span>31 <span style=''>   */
-</span>32 <span style=''>  override val xMin: Option[Double] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
-</span>33 <span style=''>
-</span>34 <span style=''>  /**
-</span>35 <span style=''>   * The hit box is empty so it doesn't have an interval.
-</span>36 <span style=''>   *
-</span>37 <span style=''>   * @return always option empty
-</span>38 <span style=''>   */
-</span>39 <span style=''>  override val yMin: Option[Double] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
-</span>40 <span style=''>
-</span>41 <span style=''>  /**
-</span>42 <span style=''>   * The hit box is empty so it doesn't have any point.
-</span>43 <span style=''>   *
-</span>44 <span style=''>   * @return always Iterator empty
-</span>45 <span style=''>   */
-</span>46 <span style=''>  </span><span style='background: #AEF1AE'>override def iterator</span><span style=''>: Iterator[Point2D] = </span><span style='background: #AEF1AE'>Iterator.empty</span><span style=''>
-</span>47 <span style=''>
-</span>48 <span style=''>  /**
-</span>49 <span style=''>   * The hit box is empty so it doesn't contains any point.
-</span>50 <span style=''>   *
-</span>51 <span style=''>   * @return always false
-</span>52 <span style=''>   */
-</span>53 <span style=''>  </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double] = null): Boolean = false
+</span>5 <span style=''>import org.scalactic.Equality
+</span>6 <span style=''>
+</span>7 <span style=''>/**
+</span>8 <span style=''> * Object that represents a hit box that is empty.
+</span>9 <span style=''> */
+</span>10 <span style=''>case object HitBoxEmpty extends HitBox :
+</span>11 <span style=''>
+</span>12 <span style=''>  /**
+</span>13 <span style=''>   * The hit box is empty so it doesn't have an interval.
+</span>14 <span style=''>   *
+</span>15 <span style=''>   * @return always option empty
+</span>16 <span style=''>   */
+</span>17 <span style=''>  override val xMax: Option[Double] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  /**
+</span>20 <span style=''>   * The hit box is empty so it doesn't have an interval.
+</span>21 <span style=''>   *
+</span>22 <span style=''>   * @return always option empty
+</span>23 <span style=''>   */
+</span>24 <span style=''>  override val yMax: Option[Double] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
+</span>25 <span style=''>
+</span>26 <span style=''>  /**
+</span>27 <span style=''>   * The hit box is empty so it doesn't have an interval.
+</span>28 <span style=''>   *
+</span>29 <span style=''>   * @return always option empty
+</span>30 <span style=''>   */
+</span>31 <span style=''>  override val xMin: Option[Double] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>  /**
+</span>34 <span style=''>   * The hit box is empty so it doesn't have an interval.
+</span>35 <span style=''>   *
+</span>36 <span style=''>   * @return always option empty
+</span>37 <span style=''>   */
+</span>38 <span style=''>  override val yMin: Option[Double] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
+</span>39 <span style=''>
+</span>40 <span style=''>  /**
+</span>41 <span style=''>   * The hit box is empty so it doesn't have any point.
+</span>42 <span style=''>   *
+</span>43 <span style=''>   * @return always Iterator empty
+</span>44 <span style=''>   */
+</span>45 <span style=''>  </span><span style='background: #AEF1AE'>override def area</span><span style=''>(using step: Distance = 0): Iterator[Point2D] = </span><span style='background: #AEF1AE'>Iterator.empty</span><span style=''>
+</span>46 <span style=''>
+</span>47 <span style=''>  /**
+</span>48 <span style=''>   * The hit box is empty so it doesn't contains any point.
+</span>49 <span style=''>   *
+</span>50 <span style=''>   * @return always false
+</span>51 <span style=''>   */
+</span>52 <span style=''>  </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double] = null): Boolean = false
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -89,39 +88,39 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          10
+          16
         </td>
         <td>
           65
         </td>
         <td>
-          249
+          386
           -
-          271
+          398
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          &lt;init&gt;
+          empty
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          HitBox(using step = 0)
+          Option.empty
         </td>
       </tr><tr>
         <td>
-          17
+          23
         </td>
         <td>
           66
         </td>
         <td>
-          421
+          546
           -
-          433
+          558
         </td>
         <td>
           Select
@@ -137,15 +136,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          30
         </td>
         <td>
           67
         </td>
         <td>
-          581
+          706
           -
-          593
+          718
         </td>
         <td>
           Select
@@ -161,15 +160,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          37
         </td>
         <td>
           68
         </td>
         <td>
-          741
+          866
           -
-          753
+          878
         </td>
         <td>
           Select
@@ -185,39 +184,39 @@
         </td>
       </tr><tr>
         <td>
-          38
-        </td>
-        <td>
-          69
-        </td>
-        <td>
-          901
-          -
-          913
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          empty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Option.empty
-        </td>
-      </tr><tr>
-        <td>
-          45
+          44
         </td>
         <td>
           71
         </td>
         <td>
-          1068
+          990
           -
-          1082
+          1007
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          area
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def area
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          70
+        </td>
+        <td>
+          1055
+          -
+          1069
         </td>
         <td>
           Select
@@ -233,15 +232,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          44
         </td>
         <td>
-          70
+          69
         </td>
         <td>
-          1068
+          1055
           -
-          1076
+          1063
         </td>
         <td>
           Ident
@@ -257,39 +256,39 @@
         </td>
       </tr><tr>
         <td>
-          45
+          44
         </td>
         <td>
           72
         </td>
         <td>
-          1025
+          1031
           -
-          1046
+          1031
         </td>
         <td>
           DefDef
         </td>
         <td>
-          iterator
+          area$default$1
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          override def iterator
+          
         </td>
       </tr><tr>
         <td>
-          52
+          51
         </td>
         <td>
           74
         </td>
         <td>
-          1211
+          1198
           -
-          1211
+          1198
         </td>
         <td>
           DefDef
@@ -305,15 +304,15 @@
         </td>
       </tr><tr>
         <td>
-          52
+          51
         </td>
         <td>
           73
         </td>
         <td>
-          1189
+          1176
           -
-          1210
+          1197
         </td>
         <td>
           DefDef

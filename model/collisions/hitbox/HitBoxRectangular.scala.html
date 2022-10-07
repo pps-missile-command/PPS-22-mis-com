@@ -42,37 +42,36 @@
 </span>18 <span style=''>   * @param base     the base of the rectangle.
 </span>19 <span style=''>   * @param height   the height of the rectangle.
 </span>20 <span style=''>   * @param rotation the rotation of the rectangle.
-</span>21 <span style=''>   * @param step     the step given to calculate the point in the rectangular hit box.
-</span>22 <span style=''>   * @return a new hit box that is a rectangle.
-</span>23 <span style=''>   */
-</span>24 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(center: Point2D, base: Double, height: Double, rotation: Angle)(using step: Step): HitBox = HitBoxRectangular(center, base, height, rotation)
-</span>25 <span style=''>
-</span>26 <span style=''>  private case class HitBoxRectangular(center: Point2D, base: Double, height: Double, rotation: Angle)(using step: Step) extends </span><span style='background: #AEF1AE'>HitBox</span><span style=''> :
-</span>27 <span style=''>    private val baseVector = </span><span style='background: #AEF1AE'>Vector2D(base / 2, rotation)</span><span style=''>
-</span>28 <span style=''>    private val heightVector = </span><span style='background: #AEF1AE'>Vector2D(height / 2, Angle.Degree(rotation.degree + 90))</span><span style=''>
-</span>29 <span style=''>    private val vertices: List[Point2D] = </span><span style='background: #AEF1AE'>List(
-</span>30 <span style=''></span><span style='background: #AEF1AE'>      center --&gt; (baseVector + heightVector),
-</span>31 <span style=''></span><span style='background: #AEF1AE'>      center --&gt; (-baseVector + heightVector),
-</span>32 <span style=''></span><span style='background: #AEF1AE'>      center --&gt; (-baseVector + -heightVector),
-</span>33 <span style=''></span><span style='background: #AEF1AE'>      center --&gt; (baseVector + -heightVector)
-</span>34 <span style=''></span><span style='background: #AEF1AE'>    )</span><span style=''>
-</span>35 <span style=''>
-</span>36 <span style=''>    override val xMax: Option[Double] = </span><span style='background: #AEF1AE'>Option(vertices.map(_.x).max)</span><span style=''>
-</span>37 <span style=''>
-</span>38 <span style=''>    override val yMax: Option[Double] = </span><span style='background: #AEF1AE'>Option(vertices.map(_.y).max)</span><span style=''>
-</span>39 <span style=''>
-</span>40 <span style=''>    override val xMin: Option[Double] = </span><span style='background: #AEF1AE'>Option(vertices.map(_.x).min)</span><span style=''>
-</span>41 <span style=''>
-</span>42 <span style=''>    override val yMin: Option[Double] = </span><span style='background: #AEF1AE'>Option(vertices.map(_.y).min)</span><span style=''>
-</span>43 <span style=''>
-</span>44 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean =
-</span>45 <span style=''>      </span><span style='background: #AEF1AE'>def lineEquation</span><span style=''>(p: Point2D, p1: Point2D, p2: Point2D): Double =
-</span>46 <span style=''>        (</span><span style='background: #AEF1AE'>p2.y</span><span style=''> - </span><span style='background: #AEF1AE'>p1.y</span><span style=''>) * (</span><span style='background: #AEF1AE'>p.x</span><span style=''> - </span><span style='background: #AEF1AE'>p1.x</span><span style=''>) - (</span><span style='background: #AEF1AE'>p2.x</span><span style=''> - </span><span style='background: #AEF1AE'>p1.x</span><span style=''>) * (</span><span style='background: #AEF1AE'>p.y</span><span style=''> - </span><span style='background: #AEF1AE'>p1.y</span><span style=''>)
-</span>47 <span style=''>
-</span>48 <span style=''>      (</span><span style='background: #AEF1AE'>lineEquation(point, vertices(1), vertices(0)) &gt;== 0.0</span><span style=''>) &amp;&amp;
-</span>49 <span style=''>        (</span><span style='background: #AEF1AE'>lineEquation(point, vertices(2), vertices(1)) &gt;== 0.0</span><span style=''>) &amp;&amp;
-</span>50 <span style=''>        (</span><span style='background: #AEF1AE'>lineEquation(point, vertices(3), vertices(2)) &gt;== 0.0</span><span style=''>) &amp;&amp;
-</span>51 <span style=''>        (</span><span style='background: #AEF1AE'>lineEquation(point, vertices(0), vertices(3)) &gt;== 0.0</span><span style=''>)
+</span>21 <span style=''>   * @return a new hit box that is a rectangle.
+</span>22 <span style=''>   */
+</span>23 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(center: Point2D, base: Double, height: Double, rotation: Angle): HitBox = HitBoxRectangular(center, base, height, rotation)
+</span>24 <span style=''>
+</span>25 <span style=''>  private case class HitBoxRectangular(center: Point2D, base: Double, height: Double, rotation: Angle) extends HitBox :
+</span>26 <span style=''>    private val baseVector = </span><span style='background: #AEF1AE'>Vector2D(base / 2, rotation)</span><span style=''>
+</span>27 <span style=''>    private val heightVector = </span><span style='background: #AEF1AE'>Vector2D(height / 2, Angle.Degree(rotation.degree + 90))</span><span style=''>
+</span>28 <span style=''>    private val vertices: List[Point2D] = </span><span style='background: #AEF1AE'>List(
+</span>29 <span style=''></span><span style='background: #AEF1AE'>      center --&gt; (baseVector + heightVector),
+</span>30 <span style=''></span><span style='background: #AEF1AE'>      center --&gt; (-baseVector + heightVector),
+</span>31 <span style=''></span><span style='background: #AEF1AE'>      center --&gt; (-baseVector + -heightVector),
+</span>32 <span style=''></span><span style='background: #AEF1AE'>      center --&gt; (baseVector + -heightVector)
+</span>33 <span style=''></span><span style='background: #AEF1AE'>    )</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>    override val xMax: Option[Double] = </span><span style='background: #AEF1AE'>Option(vertices.map(_.x).max)</span><span style=''>
+</span>36 <span style=''>
+</span>37 <span style=''>    override val yMax: Option[Double] = </span><span style='background: #AEF1AE'>Option(vertices.map(_.y).max)</span><span style=''>
+</span>38 <span style=''>
+</span>39 <span style=''>    override val xMin: Option[Double] = </span><span style='background: #AEF1AE'>Option(vertices.map(_.x).min)</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>    override val yMin: Option[Double] = </span><span style='background: #AEF1AE'>Option(vertices.map(_.y).min)</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean =
+</span>44 <span style=''>      </span><span style='background: #AEF1AE'>def lineEquation</span><span style=''>(p: Point2D, p1: Point2D, p2: Point2D): Double =
+</span>45 <span style=''>        (</span><span style='background: #AEF1AE'>p2.y</span><span style=''> - </span><span style='background: #AEF1AE'>p1.y</span><span style=''>) * (</span><span style='background: #AEF1AE'>p.x</span><span style=''> - </span><span style='background: #AEF1AE'>p1.x</span><span style=''>) - (</span><span style='background: #AEF1AE'>p2.x</span><span style=''> - </span><span style='background: #AEF1AE'>p1.x</span><span style=''>) * (</span><span style='background: #AEF1AE'>p.y</span><span style=''> - </span><span style='background: #AEF1AE'>p1.y</span><span style=''>)
+</span>46 <span style=''>
+</span>47 <span style=''>      (</span><span style='background: #AEF1AE'>lineEquation(point, vertices(1), vertices(0)) &gt;== 0.0</span><span style=''>) &amp;&amp;
+</span>48 <span style=''>        (</span><span style='background: #AEF1AE'>lineEquation(point, vertices(2), vertices(1)) &gt;== 0.0</span><span style=''>) &amp;&amp;
+</span>49 <span style=''>        (</span><span style='background: #AEF1AE'>lineEquation(point, vertices(3), vertices(2)) &gt;== 0.0</span><span style=''>) &amp;&amp;
+</span>50 <span style=''>        (</span><span style='background: #AEF1AE'>lineEquation(point, vertices(0), vertices(3)) &gt;== 0.0</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -87,15 +86,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          23
+          22
         </td>
         <td>
-          155
+          150
         </td>
         <td>
-          705
+          618
           -
-          714
+          627
         </td>
         <td>
           DefDef
@@ -114,36 +113,12 @@
           25
         </td>
         <td>
-          156
+          151
         </td>
         <td>
-          987
+          902
           -
-          993
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          HitBox
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          157
-        </td>
-        <td>
-          1025
-          -
-          1053
+          930
         </td>
         <td>
           Apply
@@ -159,15 +134,39 @@
         </td>
       </tr><tr>
         <td>
-          27
+          26
         </td>
         <td>
-          158
+          153
         </td>
         <td>
-          1119
+          962
           -
-          1134
+          1018
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Vector2D(height / 2, Angle.Degree(rotation.degree + 90))
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          152
+        </td>
+        <td>
+          996
+          -
+          1011
         </td>
         <td>
           Select
@@ -186,36 +185,12 @@
           27
         </td>
         <td>
-          159
+          166
         </td>
         <td>
-          1085
+          1061
           -
-          1141
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Vector2D(height / 2, Angle.Degree(rotation.degree + 90))
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          172
-        </td>
-        <td>
-          1184
-          -
-          1382
+          1259
         </td>
         <td>
           Apply
@@ -236,15 +211,39 @@
         </td>
       </tr><tr>
         <td>
-          29
+          28
         </td>
         <td>
-          160
+          155
         </td>
         <td>
-          1208
+          1073
           -
-          1233
+          1110
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          center --&gt; (baseVector + heightVector
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          154
+        </td>
+        <td>
+          1085
+          -
+          1110
         </td>
         <td>
           Apply
@@ -263,36 +262,12 @@
           29
         </td>
         <td>
-          161
+          158
         </td>
         <td>
-          1196
+          1119
           -
-          1233
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          center --&gt; (baseVector + heightVector
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          164
-        </td>
-        <td>
-          1242
-          -
-          1280
+          1157
         </td>
         <td>
           Apply
@@ -308,15 +283,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          29
         </td>
         <td>
-          163
+          157
         </td>
         <td>
-          1254
+          1131
           -
-          1280
+          1157
         </td>
         <td>
           Apply
@@ -332,15 +307,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          29
         </td>
         <td>
-          162
+          156
         </td>
         <td>
-          1254
+          1131
           -
-          1265
+          1142
         </td>
         <td>
           Select
@@ -356,15 +331,87 @@
         </td>
       </tr><tr>
         <td>
-          31
+          30
         </td>
         <td>
-          167
+          160
         </td>
         <td>
-          1301
+          1192
           -
-          1328
+          1205
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          unary_-
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          -heightVector
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          159
+        </td>
+        <td>
+          1178
+          -
+          1189
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          unary_-
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          -baseVector
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          162
+        </td>
+        <td>
+          1166
+          -
+          1205
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          center --&gt; (-baseVector + -heightVector
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          161
+        </td>
+        <td>
+          1178
+          -
+          1205
         </td>
         <td>
           Apply
@@ -383,12 +430,36 @@
           31
         </td>
         <td>
-          166
+          164
         </td>
         <td>
-          1315
+          1226
           -
-          1328
+          1252
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          baseVector + -heightVector
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          163
+        </td>
+        <td>
+          1239
+          -
+          1252
         </td>
         <td>
           Select
@@ -410,81 +481,9 @@
           165
         </td>
         <td>
-          1301
+          1214
           -
-          1312
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          unary_-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          -baseVector
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          168
-        </td>
-        <td>
-          1289
-          -
-          1328
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          center --&gt; (-baseVector + -heightVector
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          169
-        </td>
-        <td>
-          1362
-          -
-          1375
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          unary_-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          -heightVector
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          171
-        </td>
-        <td>
-          1337
-          -
-          1375
+          1252
         </td>
         <td>
           Apply
@@ -500,39 +499,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
-          170
+          167
         </td>
         <td>
-          1349
+          1321
           -
-          1375
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          baseVector + -heightVector
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          173
-        </td>
-        <td>
-          1444
-          -
-          1447
+          1324
         </td>
         <td>
           Select
@@ -548,39 +523,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          34
         </td>
         <td>
-          176
+          169
         </td>
         <td>
-          1424
+          1308
           -
-          1453
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Option(vertices.map(_.x).max)
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          175
-        </td>
-        <td>
-          1431
-          -
-          1452
+          1329
         </td>
         <td>
           Apply
@@ -596,15 +547,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          34
         </td>
         <td>
-          174
+          168
         </td>
         <td>
-          1431
+          1308
           -
-          1448
+          1325
         </td>
         <td>
           Apply
@@ -620,39 +571,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          34
         </td>
         <td>
-          178
+          170
         </td>
         <td>
-          1502
+          1301
           -
-          1519
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vertices.map(_.y)
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          180
-        </td>
-        <td>
-          1495
-          -
-          1524
+          1330
         </td>
         <td>
           Apply
@@ -664,43 +591,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Option(vertices.map(_.y).max)
+          Option(vertices.map(_.x).max)
         </td>
       </tr><tr>
         <td>
-          37
+          36
         </td>
         <td>
-          177
+          173
         </td>
         <td>
-          1515
+          1379
           -
-          1518
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.y
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          179
-        </td>
-        <td>
-          1502
-          -
-          1523
+          1400
         </td>
         <td>
           Apply
@@ -716,159 +619,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          36
         </td>
         <td>
-          182
+          172
         </td>
         <td>
-          1573
+          1379
           -
-          1590
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vertices.map(_.x)
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          184
-        </td>
-        <td>
-          1566
-          -
-          1595
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Option(vertices.map(_.x).min)
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          181
-        </td>
-        <td>
-          1586
-          -
-          1589
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.x
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          183
-        </td>
-        <td>
-          1573
-          -
-          1594
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          min
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vertices.map(_.x).min
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          185
-        </td>
-        <td>
-          1657
-          -
-          1660
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.y
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          187
-        </td>
-        <td>
-          1644
-          -
-          1665
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          min
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vertices.map(_.y).min
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          186
-        </td>
-        <td>
-          1644
-          -
-          1661
+          1396
         </td>
         <td>
           Apply
@@ -884,15 +643,159 @@
         </td>
       </tr><tr>
         <td>
-          41
+          36
         </td>
         <td>
-          188
+          174
         </td>
         <td>
-          1637
+          1372
           -
-          1666
+          1401
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Option(vertices.map(_.y).max)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          171
+        </td>
+        <td>
+          1392
+          -
+          1395
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.y
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          176
+        </td>
+        <td>
+          1450
+          -
+          1467
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          vertices.map(_.x)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          175
+        </td>
+        <td>
+          1463
+          -
+          1466
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.x
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          178
+        </td>
+        <td>
+          1443
+          -
+          1472
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Option(vertices.map(_.x).min)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          177
+        </td>
+        <td>
+          1450
+          -
+          1471
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          min
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          vertices.map(_.x).min
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          182
+        </td>
+        <td>
+          1514
+          -
+          1543
         </td>
         <td>
           Apply
@@ -908,15 +811,87 @@
         </td>
       </tr><tr>
         <td>
-          43
+          40
         </td>
         <td>
-          218
+          181
         </td>
         <td>
-          1672
+          1521
           -
-          1693
+          1542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          min
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          vertices.map(_.y).min
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          180
+        </td>
+        <td>
+          1521
+          -
+          1538
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          vertices.map(_.y)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          179
+        </td>
+        <td>
+          1534
+          -
+          1537
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.y
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          212
+        </td>
+        <td>
+          1549
+          -
+          1570
         </td>
         <td>
           DefDef
@@ -932,15 +907,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          43
         </td>
         <td>
-          197
+          191
         </td>
         <td>
-          1761
+          1638
           -
-          1777
+          1654
         </td>
         <td>
           DefDef
@@ -956,15 +931,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          44
         </td>
         <td>
-          191
+          185
         </td>
         <td>
-          1851
+          1728
           -
-          1854
+          1731
         </td>
         <td>
           Select
@@ -980,39 +955,39 @@
         </td>
       </tr><tr>
         <td>
-          45
+          44
         </td>
         <td>
-          194
+          184
         </td>
         <td>
-          1873
+          1719
           -
-          1877
+          1723
         </td>
         <td>
           Select
         </td>
         <td>
-          x
+          y
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          p1.x
+          p1.y
         </td>
       </tr><tr>
         <td>
-          45
+          44
         </td>
         <td>
-          193
+          187
         </td>
         <td>
-          1866
+          1743
           -
-          1870
+          1747
         </td>
         <td>
           Select
@@ -1028,39 +1003,15 @@
         </td>
       </tr><tr>
         <td>
-          45
-        </td>
-        <td>
-          196
-        </td>
-        <td>
-          1888
-          -
-          1892
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          p1.y
-        </td>
-      </tr><tr>
-        <td>
-          45
+          44
         </td>
         <td>
           190
         </td>
         <td>
-          1842
+          1765
           -
-          1846
+          1769
         </td>
         <td>
           Select
@@ -1076,63 +1027,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          44
         </td>
         <td>
           189
         </td>
         <td>
-          1835
+          1759
           -
-          1839
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          p2.y
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          192
-        </td>
-        <td>
-          1857
-          -
-          1861
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          p1.x
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          195
-        </td>
-        <td>
-          1882
-          -
-          1885
+          1762
         </td>
         <td>
           Select
@@ -1148,15 +1051,87 @@
         </td>
       </tr><tr>
         <td>
-          47
+          44
         </td>
         <td>
-          200
+          183
         </td>
         <td>
-          1902
+          1712
           -
-          1947
+          1716
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p2.y
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          186
+        </td>
+        <td>
+          1734
+          -
+          1738
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p1.x
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          188
+        </td>
+        <td>
+          1750
+          -
+          1754
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p1.x
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          194
+        </td>
+        <td>
+          1779
+          -
+          1824
         </td>
         <td>
           Apply
@@ -1172,39 +1147,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          46
         </td>
         <td>
-          202
+          193
         </td>
         <td>
-          1902
+          1812
           -
-          1955
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &gt;==
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          lineEquation(point, vertices(1), vertices(0)) &gt;== 0.0
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
-          199
-        </td>
-        <td>
-          1935
-          -
-          1946
+          1823
         </td>
         <td>
           Apply
@@ -1220,15 +1171,135 @@
         </td>
       </tr><tr>
         <td>
+          46
+        </td>
+        <td>
+          196
+        </td>
+        <td>
+          1779
+          -
+          1832
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &gt;==
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          lineEquation(point, vertices(1), vertices(0)) &gt;== 0.0
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          192
+        </td>
+        <td>
+          1799
+          -
+          1810
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          vertices(1)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          195
+        </td>
+        <td>
+          1779
+          -
+          1824
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          convertToEqualizer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          lineEquation(point, vertices(1), vertices(0))
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          200
+        </td>
+        <td>
+          1846
+          -
+          1891
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          convertToEqualizer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          lineEquation(point, vertices(2), vertices(1))
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          199
+        </td>
+        <td>
+          1846
+          -
+          1891
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          lineEquation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          lineEquation(point, vertices(2), vertices(1))
+        </td>
+      </tr><tr>
+        <td>
           47
         </td>
         <td>
           198
         </td>
         <td>
-          1922
+          1879
           -
-          1933
+          1890
         </td>
         <td>
           Apply
@@ -1250,57 +1321,9 @@
           201
         </td>
         <td>
-          1902
+          1846
           -
-          1947
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          lineEquation(point, vertices(1), vertices(0))
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          205
-        </td>
-        <td>
-          1969
-          -
-          2014
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          lineEquation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          lineEquation(point, vertices(2), vertices(1))
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          207
-        </td>
-        <td>
-          1969
-          -
-          2022
+          1899
         </td>
         <td>
           Apply
@@ -1316,15 +1339,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          47
         </td>
         <td>
-          204
+          197
         </td>
         <td>
-          2002
+          1866
           -
-          2013
+          1877
         </td>
         <td>
           Apply
@@ -1336,7 +1359,79 @@
           
         </td>
         <td style="background: #AEF1AE">
-          vertices(1)
+          vertices(2)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          202
+        </td>
+        <td>
+          1933
+          -
+          1944
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          vertices(3)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          205
+        </td>
+        <td>
+          1913
+          -
+          1958
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          convertToEqualizer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          lineEquation(point, vertices(3), vertices(2))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          204
+        </td>
+        <td>
+          1913
+          -
+          1958
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          lineEquation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          lineEquation(point, vertices(3), vertices(2))
         </td>
       </tr><tr>
         <td>
@@ -1346,9 +1441,9 @@
           203
         </td>
         <td>
-          1989
+          1946
           -
-          2000
+          1957
         </td>
         <td>
           Apply
@@ -1370,129 +1465,9 @@
           206
         </td>
         <td>
-          1969
+          1913
           -
-          2014
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          lineEquation(point, vertices(2), vertices(1))
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          209
-        </td>
-        <td>
-          2069
-          -
-          2080
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vertices(2)
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          211
-        </td>
-        <td>
-          2036
-          -
-          2081
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          lineEquation(point, vertices(3), vertices(2))
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          208
-        </td>
-        <td>
-          2056
-          -
-          2067
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vertices(3)
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          210
-        </td>
-        <td>
-          2036
-          -
-          2081
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          lineEquation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          lineEquation(point, vertices(3), vertices(2))
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          212
-        </td>
-        <td>
-          2036
-          -
-          2089
+          1966
         </td>
         <td>
           Apply
@@ -1508,39 +1483,39 @@
         </td>
       </tr><tr>
         <td>
-          50
+          49
         </td>
         <td>
-          214
+          209
         </td>
         <td>
-          2136
+          1980
           -
-          2147
+          2025
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          lineEquation
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          vertices(3)
+          lineEquation(point, vertices(0), vertices(3))
         </td>
       </tr><tr>
         <td>
-          50
+          49
         </td>
         <td>
-          217
+          211
         </td>
         <td>
-          2103
+          1980
           -
-          2156
+          2033
         </td>
         <td>
           Apply
@@ -1556,39 +1531,39 @@
         </td>
       </tr><tr>
         <td>
-          50
+          49
         </td>
         <td>
-          216
+          208
         </td>
         <td>
-          2103
+          2013
           -
-          2148
+          2024
         </td>
         <td>
           Apply
         </td>
         <td>
-          convertToEqualizer
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          lineEquation(point, vertices(0), vertices(3))
+          vertices(3)
         </td>
       </tr><tr>
         <td>
-          50
+          49
         </td>
         <td>
-          213
+          207
         </td>
         <td>
-          2123
+          2000
           -
-          2134
+          2011
         </td>
         <td>
           Apply
@@ -1604,21 +1579,21 @@
         </td>
       </tr><tr>
         <td>
-          50
+          49
         </td>
         <td>
-          215
+          210
         </td>
         <td>
-          2103
+          1980
           -
-          2148
+          2025
         </td>
         <td>
           Apply
         </td>
         <td>
-          lineEquation
+          convertToEqualizer
         </td>
         <td>
           
