@@ -1,47 +1,50 @@
 package model.missile
 
+import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint, lifePointDeath}
 import model.elements2d.{Angle, Point2D, Vector2D}
 
-trait Missile:
+import scala.util.Random
 
-  def damage: Int
+trait Missile extends Damageable, Moveable:
+
+  def damage: LifePoint
 
   def position: Point2D
 
-  def direction: Vector2D
-  
   def velocity: Double
-
-  def dt: Double
 
   def finalPosition: Point2D
 
+  def direction: Vector2D
+
 object Missile:
 
-  def apply(myDamage: Int, myVelocity: Double, myPosition: Point2D, myDirection: Vector2D, deltatime: Double, myFinalPosition: Point2D) : Missile = new Missile:
-    override def damage: Int = myDamage
+  /**
+   *
+   * @param missile
+   * @param dt
+   * @return
+   */
+  def BasicMove(missile: Missile)(dt: Double): Missile = missile match
+    case m if m.isDestroyed => apply(lifePointDeath, missile.affiliation, missile.damage, missile.velocity, missile.position, missile.finalPosition)
+    case _ => apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --> (missile.direction * missile.velocity * dt), missile.finalPosition)
+
+  def apply(lifePoint: LifePoint, myAffiliation: Affiliation, myDamage: LifePoint, myVelocity: Double, myPosition: Point2D, myFinalPosition: Point2D) : Missile = new Missile with MissileDamageable(lifePoint, myPosition):
+
+    override def takeDamage(damage: LifePoint): Damageable = apply(currentLife - damage, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)
+
+    override def damage: LifePoint = myDamage
 
     override def position: Point2D = myPosition
 
-    override def direction: Vector2D = myDirection
-
     override def velocity: Double = myVelocity
-
-    override def dt: Double = deltatime
 
     override def finalPosition: Point2D = myFinalPosition
 
-    def move: Missile = apply(damage, myVelocity, position --> (direction * velocity * dt), myDirection, deltatime, finalPosition)
+    override def direction: Vector2D = myPosition <--> myFinalPosition
 
-    //il missile deve creare un esplosione?
+    override def affiliation: Affiliation = myAffiliation
 
+    val moveStrategy: MissileMovement = Missile.BasicMove(this)(_)
 
-//case class BasicMissile(damage: Int, angle: Angle, position: Point2D, velocity: Vector2D, dt: Double)
-
-/*
-object NormalMissile:
-  //extension method per aggiungere la move strategy???
-  extension (missile: BasicMissile)
-    def move(): BasicMissile = BasicMissile(missile.damage, missile.angle,
-      missile.position, missile.velocity, missile.dt)
-*/
+    override def move(dt: Double): Missile = moveStrategy(dt)
