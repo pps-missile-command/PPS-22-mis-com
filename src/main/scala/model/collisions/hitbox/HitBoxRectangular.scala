@@ -1,10 +1,10 @@
 package model.collisions.hitbox
 
-import model.collisions.HitBox
-import model.elements2d.{Angle, Point2D, Vector2D}
-import utilities.MathUtilities.*
 import model.collisions.*
+import model.collisions.hitbox.HitBoxSymmetric
+import model.elements2d.{Angle, Point2D, Vector2D}
 import org.scalactic.{Equality, TripleEquals}
+import utilities.MathUtilities.*
 
 /**
  * Factory for an hit box that is a rectangle.
@@ -26,7 +26,7 @@ object HitBoxRectangular:
     else
       HitBoxRectangular(center, base, height, rotation)
 
-  private case class HitBoxRectangular(center: Point2D, base: Double, height: Double, rotation: Angle) extends HitBox :
+  private case class HitBoxRectangular(center: Point2D, base: Double, height: Double, rotation: Angle) extends HitBoxSymmetric :
     private val baseVector = Vector2D(base / 2, rotation)
     private val heightVector = Vector2D(height / 2, Angle.Degree(rotation.degree + 90))
     private val vertices: List[Point2D] = List(
@@ -36,13 +36,21 @@ object HitBoxRectangular:
       center --> (baseVector + -heightVector)
     )
 
-    override val xMax: Option[Double] = Option(vertices.map(_.x).max)
+    /*override val xMax: Option[Double] = Option(vertices.map(_.x).max)
 
     override val yMax: Option[Double] = Option(vertices.map(_.y).max)
 
     override val xMin: Option[Double] = Option(vertices.map(_.x).min)
 
-    override val yMin: Option[Double] = Option(vertices.map(_.y).min)
+    override val yMin: Option[Double] = Option(vertices.map(_.y).min)*/
+    protected val x: Iterable[Double] =
+      vertices.map(_.x)
+    protected def y: Iterable[Double] =
+      vertices.map(_.y)
+
+    protected def max(values: Iterable[Double]): Option[Double] = Option(values.max)
+
+    protected def min(values: Iterable[Double]): Option[Double] = Option(values.min)
 
     override def contains(point: Point2D)(using equality: Equality[Double]): Boolean =
       def lineEquation(p: Point2D, p1: Point2D, p2: Point2D): Double =
