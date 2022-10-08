@@ -3,11 +3,13 @@ package model.ground
 import model.collisions.hitbox.HitBoxRectangular
 import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint}
 import model.elements2d._
+import utilities.Constants
 
-case class City(private var _position: Point2D, private var _life: LifePoint = 3) extends Damageable:
-    private val baseSize = 30
-    private val heightSize = 30
-    private val collider: HitBox = HitBoxRectangular(Point2D(_position.x + baseSize/2, _position.y + heightSize/2), baseSize, heightSize, Angle.Degree(0))
+case class City(private var _position: Point2D, private var _life: LifePoint = Constants.cityInitialLife) extends Damageable:
+    private val collider: HitBox = HitBoxRectangular(Point2D(_position.x + Constants.cityBaseSize/2, _position.y + Constants.cityHeightSize/2),
+                                                    Constants.cityBaseSize,
+                                                    Constants.cityHeightSize,
+                                                    Angle.Degree(0))
 
     /**
      * @return the position of the object
@@ -22,7 +24,7 @@ case class City(private var _position: Point2D, private var _life: LifePoint = 3
     /**
      *  @return the initial health of the object.
      */
-    override def initialLife: LifePoint = 3
+    override def initialLife: LifePoint = Constants.cityInitialLife
 
     /**
      *  @return the current health of the object.

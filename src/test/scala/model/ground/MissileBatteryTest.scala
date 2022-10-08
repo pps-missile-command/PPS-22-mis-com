@@ -38,12 +38,12 @@ class MissileBatteryTest extends AnyFunSpec {
 
         it("should fail if you shoot right after creating a turret") {
             val batteryTurret = ground.MissileBattery(point)
-            assert(batteryTurret.shootRocket.isEmpty)
+            assert(batteryTurret.shootRocket(point).isEmpty)
         }
         it("should pass if you shoot after waiting for the reload time") {
             val batteryTurret = ground.MissileBattery(point)
             Thread.sleep(3000)
-            assert(batteryTurret.shootRocket.nonEmpty)
+            assert(batteryTurret.shootRocket(point).nonEmpty)
             print(batteryTurret.toString)
         }
 
