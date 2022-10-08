@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/elements2d/Point2D.scala.html
+          model/collisions/hitbox/HitBoxUnion.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,122 +22,50 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.elements2d
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions.hitbox
 </span>2 <span style=''>
-</span>3 <span style=''>import scala.annotation.targetName
-</span>4 <span style=''>
-</span>5 <span style=''>/**
-</span>6 <span style=''> * The representation a point in a 2 dimensional space.
-</span>7 <span style=''> */
-</span>8 <span style=''>trait Point2D:
-</span>9 <span style=''>
-</span>10 <span style=''>  /**
-</span>11 <span style=''>   * The x coordinate of the point.
-</span>12 <span style=''>   *
-</span>13 <span style=''>   * @return the x coordinate of the point.
-</span>14 <span style=''>   */
-</span>15 <span style=''>  def x: Double
-</span>16 <span style=''>
-</span>17 <span style=''>  /**
-</span>18 <span style=''>   * The y coordinate of the point.
-</span>19 <span style=''>   *
-</span>20 <span style=''>   * @return the y coordinate of the point.
-</span>21 <span style=''>   */
-</span>22 <span style=''>  def y: Double
-</span>23 <span style=''>
-</span>24 <span style=''>  /**
-</span>25 <span style=''>   * Returns a new point translated by the given vector.
-</span>26 <span style=''>   *
-</span>27 <span style=''>   * @param vector the vector that coordinate the point has to bes translated
-</span>28 <span style=''>   * @return returns a new point translated by the given vector
-</span>29 <span style=''>   */
-</span>30 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;translate&quot;)
-</span>31 <span style=''></span><span style='background: #AEF1AE'>  def --&gt;</span><span style=''>(vector: Vector2D): Point2D = </span><span style='background: #AEF1AE'>Point2D(x + vector.x, y + vector.y)</span><span style=''>
-</span>32 <span style=''>
-</span>33 <span style=''>  /**
-</span>34 <span style=''>   * Returns the distance between this point and the given point.
-</span>35 <span style=''>   *
-</span>36 <span style=''>   * @param other the point to which the distance is calculated
-</span>37 <span style=''>   * @return the distance between this point and the given point
-</span>38 <span style=''>   */
-</span>39 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;distance&quot;)
-</span>40 <span style=''></span><span style='background: #AEF1AE'>  def &lt;-&gt;</span><span style=''>(other: Point2D): Double = </span><span style='background: #AEF1AE'>(this &lt;--&gt; other).magnitude</span><span style=''>
+</span>3 <span style=''>import model.collisions.HitBox
+</span>4 <span style=''>import model.elements2d.Point2D
+</span>5 <span style=''>import model.collisions.hitbox.*
+</span>6 <span style=''>import model.collisions.*
+</span>7 <span style=''>import org.scalactic.Equality
+</span>8 <span style=''>
+</span>9 <span style=''>/**
+</span>10 <span style=''> * Factory for hit box that is the union of other hit boxes.
+</span>11 <span style=''> */
+</span>12 <span style=''>object HitBoxUnion:
+</span>13 <span style=''>
+</span>14 <span style=''>  /**
+</span>15 <span style=''>   * Creates a hit box that is the union of the given hit boxes.
+</span>16 <span style=''>   *
+</span>17 <span style=''>   * @param hitBoxes the hit boxes to be united.
+</span>18 <span style=''>   * @return the hit box that is the union of the given hit boxes.
+</span>19 <span style=''>   */
+</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(hitBoxes: HitBox*): HitBox = hitBoxes match
+</span>21 <span style=''>    </span><span style='background: #AEF1AE'>case Seq()</span><span style=''> =&gt; HitBoxEmpty
+</span>22 <span style=''>    </span><span style='background: #AEF1AE'>case Seq(hitBox)</span><span style=''> =&gt; hitBox
+</span>23 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; HitBoxUnion(hitBoxes)
+</span>24 <span style=''>
+</span>25 <span style=''>  private case class HitBoxUnion(hitBoxes: Seq[HitBox]) extends HitBox :
+</span>26 <span style=''>
+</span>27 <span style=''>    </span><span style='background: #AEF1AE'>def optionalConfront</span><span style=''>(l: Option[Double], r: Option[Double])(function: (Double, Double) =&gt; Double): Option[Double] =
+</span>28 <span style=''>      (l, r) match
+</span>29 <span style=''>        </span><span style='background: #AEF1AE'>case (Some(l), Some(r))</span><span style=''> =&gt; Some(</span><span style='background: #AEF1AE'>function(l, r)</span><span style=''>)
+</span>30 <span style=''>        </span><span style='background: #AEF1AE'>case (Some(l), None)</span><span style=''> =&gt; Some(l)
+</span>31 <span style=''>        </span><span style='background: #AEF1AE'>case (None, Some(r))</span><span style=''> =&gt; Some(r)
+</span>32 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; None
+</span>33 <span style=''>
+</span>34 <span style=''>    override val xMax: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) =&gt; optionalConfront(xMax, hitBox.xMax)(_.max(_)))</span><span style=''>
+</span>35 <span style=''>
+</span>36 <span style=''>    override val yMax: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.yMax)((yMax, hitBox) =&gt; optionalConfront(yMax, hitBox.yMax)(_.max(_)))</span><span style=''>
+</span>37 <span style=''>
+</span>38 <span style=''>    override val xMin: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.xMin)((xMin, hitBox) =&gt; optionalConfront(xMin, hitBox.xMin)(_.min(_)))</span><span style=''>
+</span>39 <span style=''>
+</span>40 <span style=''>    override val yMin: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) =&gt; optionalConfront(yMin, hitBox.yMin)(_.min(_)))</span><span style=''>
 </span>41 <span style=''>
-</span>42 <span style=''>  /**
-</span>43 <span style=''>   * Returns the vector between this point and the given point.
-</span>44 <span style=''>   *
-</span>45 <span style=''>   * @param other the point to which the vector is calculated
-</span>46 <span style=''>   * @return the vector between this point and the given point
-</span>47 <span style=''>   */
-</span>48 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;distance&quot;)
-</span>49 <span style=''></span><span style='background: #AEF1AE'>  def &lt;--&gt;</span><span style=''>(other: Point2D): Vector2D = </span><span style='background: #AEF1AE'>Vector2D(other.x - x, other.y - y)</span><span style=''>
-</span>50 <span style=''>
-</span>51 <span style=''>  /**
-</span>52 <span style=''>   * Returns a new point that is the result of the scale of this point of a given vector.
-</span>53 <span style=''>   *
-</span>54 <span style=''>   * @param vector the vector that coordinate the point has to be scaled
-</span>55 <span style=''>   * @return a new point that is the result of the scale of this point of a given vector
-</span>56 <span style=''>   */
-</span>57 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;scale&quot;)
-</span>58 <span style=''></span><span style='background: #AEF1AE'>  def *</span><span style=''>(vector: Vector2D): Point2D = </span><span style='background: #AEF1AE'>Point2D(x * vector.x, y * vector.y)</span><span style=''>
-</span>59 <span style=''>
-</span>60 <span style=''>  /**
-</span>61 <span style=''>   * Returns a new point that is the result of the scale of this point of a scalar.
-</span>62 <span style=''>   *
-</span>63 <span style=''>   * @param scale the scalar that coordinate the point has to be scaled
-</span>64 <span style=''>   * @return a new point that is the result of the scale of this point of a given scalar
-</span>65 <span style=''>   */
-</span>66 <span style=''>  </span><span style='background: #AEF1AE'>@targetName(&quot;scale&quot;)
-</span>67 <span style=''></span><span style='background: #AEF1AE'>  def *</span><span style=''>(scale: Double): Point2D = </span><span style='background: #AEF1AE'>Point2D(x * scale, y * scale)</span><span style=''>
-</span>68 <span style=''>
-</span>69 <span style=''>/**
-</span>70 <span style=''> * The companion object of the Point2D trait.
-</span>71 <span style=''> */
-</span>72 <span style=''>object Point2D:
-</span>73 <span style=''>
-</span>74 <span style=''>  import org.scalactic.{Equality, TolerantNumerics}
-</span>75 <span style=''>  import org.scalactic.TripleEquals.convertToEqualizer
-</span>76 <span style=''>
-</span>77 <span style=''>  /**
-</span>78 <span style=''>   * Object that provides the equality for the Point2D trait.
-</span>79 <span style=''>   */
-</span>80 <span style=''>  object GivenEquality:
-</span>81 <span style=''>
-</span>82 <span style=''>    /**
-</span>83 <span style=''>     * The given for the equality of two Double.
-</span>84 <span style=''>     * The tolerance is 0.01.
-</span>85 <span style=''>     *
-</span>86 <span style=''>     * @return the given for the equality of two Double with tolerance 0.01
-</span>87 <span style=''>     */
-</span>88 <span style=''>    given Equality[Double] = </span><span style='background: #AEF1AE'>TolerantNumerics.tolerantDoubleEquality(0.01)</span><span style=''>
-</span>89 <span style=''>
-</span>90 <span style=''>    /**
-</span>91 <span style=''>     * The given for the equality of two Point2D.
-</span>92 <span style=''>     * The tolerance is used for the x and y coordinates.
-</span>93 <span style=''>     *
-</span>94 <span style=''>     * @param equality the given equality for the Double
-</span>95 <span style=''>     * @return the given for the equality of two Point2D
-</span>96 <span style=''>     */
-</span>97 <span style=''>    </span><span style='background: #AEF1AE'>given Point2DEquality</span><span style=''>(using equality: Equality[Double]): Equality[Point2D] with
-</span>98 <span style=''>      </span><span style='background: #AEF1AE'>def areEqual</span><span style=''>(point: Point2D, other: Any): Boolean =
-</span>99 <span style=''>        other match
-</span>100 <span style=''>          </span><span style='background: #AEF1AE'>case otherPoint: Point2D</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>point.x === otherPoint.x</span><span style=''> &amp;&amp; </span><span style='background: #AEF1AE'>point.y === otherPoint.y</span><span style=''>
-</span>101 <span style=''>          </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
-</span>102 <span style=''>
-</span>103 <span style=''>
-</span>104 <span style=''>  /**
-</span>105 <span style=''>   * Creates a new point with the given coordinates.
-</span>106 <span style=''>   *
-</span>107 <span style=''>   * @param xCoordinate the x coordinate of the point
-</span>108 <span style=''>   * @param yCoordinate the y coordinate of the point
-</span>109 <span style=''>   * @return a new point with the given coordinates
-</span>110 <span style=''>   */
-</span>111 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(xCoordinate: Double, yCoordinate: Double): Point2D = Point2DImpl(xCoordinate, yCoordinate)
-</span>112 <span style=''>
-</span>113 <span style=''>  private case class Point2DImpl(xCoordinate: Double, yCoordinate: Double) extends Point2D :
-</span>114 <span style=''>    </span><span style='background: #AEF1AE'>override def x</span><span style=''>: Double = xCoordinate
-</span>115 <span style=''>
-</span>116 <span style=''>    </span><span style='background: #AEF1AE'>override def y</span><span style=''>: Double = yCoordinate
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean = </span><span style='background: #AEF1AE'>hitBoxes.exists(_.contains(point))</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>    </span><span style='background: #AEF1AE'>override def area</span><span style=''>(using step: Distance): Iterator[Point2D] = </span><span style='background: #AEF1AE'>hitBoxes.flatMap(_.area).distinct.iterator</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -152,932 +80,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          30
+          19
         </td>
         <td>
-          295
+          219
         </td>
         <td>
-          652
+          476
           -
-          687
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Point2D(x + vector.x, y + vector.y)
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          292
-        </td>
-        <td>
-          664
-          -
-          672
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vector.x
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          294
-        </td>
-        <td>
-          678
-          -
-          686
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vector.y
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          291
-        </td>
-        <td>
-          660
-          -
-          661
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          293
-        </td>
-        <td>
-          674
-          -
-          675
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          296
-        </td>
-        <td>
-          588
-          -
-          622
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          @targetName(&quot;translate&quot;)
-  def --&gt;
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          298
-        </td>
-        <td>
-          963
-          -
-          990
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          magnitude
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (this &lt;--&gt; other).magnitude
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          297
-        </td>
-        <td>
-          964
-          -
-          979
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;--&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          this &lt;--&gt; other
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          299
-        </td>
-        <td>
-          903
-          -
-          936
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          &lt;-&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          @targetName(&quot;distance&quot;)
-  def &lt;-&gt;
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          304
-        </td>
-        <td>
-          1263
-          -
-          1297
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Vector2D(other.x - x, other.y - y)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          301
-        </td>
-        <td>
-          1282
-          -
-          1283
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          300
-        </td>
-        <td>
-          1272
-          -
-          1279
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          other.x
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          303
-        </td>
-        <td>
-          1295
-          -
-          1296
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          302
-        </td>
-        <td>
-          1285
-          -
-          1292
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          other.y
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          305
-        </td>
-        <td>
-          1200
-          -
-          1234
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          &lt;--&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          @targetName(&quot;distance&quot;)
-  def &lt;--&gt;
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          307
-        </td>
-        <td>
-          1640
-          -
-          1648
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vector.x
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          310
-        </td>
-        <td>
-          1628
-          -
-          1663
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Point2D(x * vector.x, y * vector.y)
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          309
-        </td>
-        <td>
-          1654
-          -
-          1662
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          vector.y
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          306
-        </td>
-        <td>
-          1636
-          -
-          1637
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          308
-        </td>
-        <td>
-          1650
-          -
-          1651
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          311
-        </td>
-        <td>
-          1570
-          -
-          1598
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          *
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          @targetName(&quot;scale&quot;)
-  def *
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          313
-        </td>
-        <td>
-          2003
-          -
-          2004
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          312
-        </td>
-        <td>
-          1992
-          -
-          1993
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          315
-        </td>
-        <td>
-          1929
-          -
-          1957
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          *
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          @targetName(&quot;scale&quot;)
-  def *
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          314
-        </td>
-        <td>
-          1984
-          -
-          2013
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Point2D(x * scale, y * scale)
-        </td>
-      </tr><tr>
-        <td>
-          87
-        </td>
-        <td>
-          316
-        </td>
-        <td>
-          2500
-          -
-          2545
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          tolerantDoubleEquality
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          TolerantNumerics.tolerantDoubleEquality(0.01)
-        </td>
-      </tr><tr>
-        <td>
-          96
-        </td>
-        <td>
-          328
-        </td>
-        <td>
-          2796
-          -
-          2817
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          Point2DEquality
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          given Point2DEquality
-        </td>
-      </tr><tr>
-        <td>
-          97
-        </td>
-        <td>
-          327
-        </td>
-        <td>
-          2882
-          -
-          2894
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          areEqual
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def areEqual
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          322
-        </td>
-        <td>
-          3020
-          -
-          3027
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.y
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          325
-        </td>
-        <td>
-          2964
-          -
-          2988
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case otherPoint: Point2D
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          319
-        </td>
-        <td>
-          3004
-          -
-          3016
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          otherPoint.x
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          318
-        </td>
-        <td>
-          2992
-          -
-          2999
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.x
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          321
-        </td>
-        <td>
-          3020
-          -
-          3027
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.y
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          324
-        </td>
-        <td>
-          3020
-          -
-          3044
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          ===
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.y === otherPoint.y
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          323
-        </td>
-        <td>
-          3032
-          -
-          3044
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          otherPoint.y
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          317
-        </td>
-        <td>
-          2992
-          -
-          2999
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.x
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          320
-        </td>
-        <td>
-          2992
-          -
-          3016
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          ===
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.x === otherPoint.x
-        </td>
-      </tr><tr>
-        <td>
-          100
-        </td>
-        <td>
-          326
-        </td>
-        <td>
-          3055
-          -
-          3061
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          110
-        </td>
-        <td>
-          329
-        </td>
-        <td>
-          3305
-          -
-          3314
+          485
         </td>
         <td>
           DefDef
@@ -1093,51 +104,1083 @@
         </td>
       </tr><tr>
         <td>
-          113
+          20
         </td>
         <td>
-          330
+          216
         </td>
         <td>
-          3504
+          534
           -
-          3518
+          544
         </td>
         <td>
-          DefDef
+          Block
         </td>
         <td>
-          x
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          override def x
+          case Seq()
         </td>
       </tr><tr>
         <td>
-          115
+          21
         </td>
         <td>
-          331
+          217
         </td>
         <td>
-          3546
+          564
           -
-          3560
+          580
         </td>
         <td>
-          DefDef
+          Block
         </td>
         <td>
-          y
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          override def y
+          case Seq(hitBox)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          218
+        </td>
+        <td>
+          595
+          -
+          601
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          225
+        </td>
+        <td>
+          706
+          -
+          726
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          optionalConfront
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def optionalConfront
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          220
+        </td>
+        <td>
+          880
+          -
+          894
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          function(l, r)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          221
+        </td>
+        <td>
+          848
+          -
+          871
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case (Some(l), Some(r))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          222
+        </td>
+        <td>
+          904
+          -
+          924
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case (Some(l), None)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          223
+        </td>
+        <td>
+          944
+          -
+          964
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case (None, Some(r))
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          224
+        </td>
+        <td>
+          984
+          -
+          990
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          227
+        </td>
+        <td>
+          1058
+          -
+          1076
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          xMax
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head.xMax
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          226
+        </td>
+        <td>
+          1058
+          -
+          1071
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          head
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          229
+        </td>
+        <td>
+          1132
+          -
+          1133
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          doubleWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          232
+        </td>
+        <td>
+          1040
+          -
+          1142
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          foldLeft
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) =&gt; optionalConfront(xMax, hitBox.xMax)(_.max(_)))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          228
+        </td>
+        <td>
+          1119
+          -
+          1130
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          xMax
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBox.xMax
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          231
+        </td>
+        <td>
+          1096
+          -
+          1141
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          optionalConfront
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          optionalConfront(xMax, hitBox.xMax)(_.max(_))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          230
+        </td>
+        <td>
+          1132
+          -
+          1140
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          max
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.max(_)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          236
+        </td>
+        <td>
+          1276
+          -
+          1277
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          doubleWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          235
+        </td>
+        <td>
+          1263
+          -
+          1274
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          yMax
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBox.yMax
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          238
+        </td>
+        <td>
+          1240
+          -
+          1285
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          optionalConfront
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          optionalConfront(yMax, hitBox.yMax)(_.max(_))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          234
+        </td>
+        <td>
+          1202
+          -
+          1220
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          yMax
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head.yMax
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          237
+        </td>
+        <td>
+          1276
+          -
+          1284
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          max
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.max(_)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          239
+        </td>
+        <td>
+          1184
+          -
+          1286
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          foldLeft
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.foldLeft(hitBoxes.head.yMax)((yMax, hitBox) =&gt; optionalConfront(yMax, hitBox.yMax)(_.max(_)))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          233
+        </td>
+        <td>
+          1202
+          -
+          1215
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          head
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          245
+        </td>
+        <td>
+          1384
+          -
+          1429
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          optionalConfront
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          optionalConfront(xMin, hitBox.xMin)(_.min(_))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          244
+        </td>
+        <td>
+          1420
+          -
+          1428
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          min
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.min(_)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          241
+        </td>
+        <td>
+          1346
+          -
+          1364
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          xMin
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head.xMin
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          240
+        </td>
+        <td>
+          1346
+          -
+          1359
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          head
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          243
+        </td>
+        <td>
+          1420
+          -
+          1421
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          doubleWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          246
+        </td>
+        <td>
+          1328
+          -
+          1430
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          foldLeft
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.foldLeft(hitBoxes.head.xMin)((xMin, hitBox) =&gt; optionalConfront(xMin, hitBox.xMin)(_.min(_)))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          242
+        </td>
+        <td>
+          1407
+          -
+          1418
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          xMin
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBox.xMin
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          253
+        </td>
+        <td>
+          1472
+          -
+          1574
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          foldLeft
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) =&gt; optionalConfront(yMin, hitBox.yMin)(_.min(_)))
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          247
+        </td>
+        <td>
+          1490
+          -
+          1503
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          head
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          250
+        </td>
+        <td>
+          1564
+          -
+          1565
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          doubleWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          249
+        </td>
+        <td>
+          1551
+          -
+          1562
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          yMin
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBox.yMin
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          252
+        </td>
+        <td>
+          1528
+          -
+          1573
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          optionalConfront
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          optionalConfront(yMin, hitBox.yMin)(_.min(_))
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          248
+        </td>
+        <td>
+          1490
+          -
+          1508
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          yMin
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.head.yMin
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          251
+        </td>
+        <td>
+          1564
+          -
+          1572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          min
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.min(_)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          254
+        </td>
+        <td>
+          1679
+          -
+          1696
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.contains(point)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          256
+        </td>
+        <td>
+          1580
+          -
+          1601
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def contains
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          255
+        </td>
+        <td>
+          1663
+          -
+          1697
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          exists
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.exists(_.contains(point))
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          259
+        </td>
+        <td>
+          1764
+          -
+          1797
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          distinct
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.flatMap(_.area).distinct
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          258
+        </td>
+        <td>
+          1764
+          -
+          1788
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.flatMap(_.area)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          261
+        </td>
+        <td>
+          1703
+          -
+          1720
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          area
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def area
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          257
+        </td>
+        <td>
+          1781
+          -
+          1787
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          area
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.area
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          260
+        </td>
+        <td>
+          1764
+          -
+          1806
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          iterator
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.flatMap(_.area).distinct.iterator
         </td>
       </tr>
     </table>
