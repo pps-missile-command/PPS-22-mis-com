@@ -4,11 +4,9 @@ import model.collisions.hitbox.HitBoxRectangular
 import model.collisions.{Affiliation, Collisionable, Damageable, Distance, HitBox, LifePoint}
 import model.elements2d.Point2D
 
-trait MissileDamageable(lifePoint: LifePoint, position: Point2D) extends Damageable:
+trait MissileDamageable(lifePoint: LifePoint, position: Point2D, finalPosition: Point2D) extends Damageable:
 
-  override def isDestroyed: Boolean = super.isDestroyed
-
-  override protected def hitBox: HitBox = basicHitBox(position)
+  override protected def hitBox: HitBox = basicHitBox(position, (finalPosition <--> position).direction)
 
   override def initialLife: LifePoint = initialLife
 
