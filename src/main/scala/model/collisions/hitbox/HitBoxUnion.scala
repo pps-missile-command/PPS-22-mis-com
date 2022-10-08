@@ -22,22 +22,17 @@ object HitBoxUnion:
     case Seq(hitBox) => hitBox
     case _ => HitBoxUnion(hitBoxes)
 
-  private case class HitBoxUnion(hitBoxes: Seq[HitBox]) extends HitBox :
-
-    def optionalConfront(l: Option[Double], r: Option[Double])(function: (Double, Double) => Double): Option[Double] =
+  private case class HitBoxUnion(hitBoxes: Seq[HitBox]) extends HitBoxAggregation :
+    protected def optionalConfront(l: Option[Double], r: Option[Double])(confrontFunction: (Double, Double) => Double): Option[Double] =
       (l, r) match
-        case (Some(l), Some(r)) => Some(function(l, r))
+        case (Some(l), Some(r)) => Some(confrontFunction(l, r))
         case (Some(l), None) => Some(l)
         case (None, Some(r)) => Some(r)
         case _ => None
 
-    override val xMax: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) => optionalConfront(xMax, hitBox.xMax)(_.max(_)))
+    protected val functionForMax: (Double, Double) => Double = math.max
 
-    override val yMax: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.yMax)((yMax, hitBox) => optionalConfront(yMax, hitBox.yMax)(_.max(_)))
-
-    override val xMin: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.xMin)((xMin, hitBox) => optionalConfront(xMin, hitBox.xMin)(_.min(_)))
-
-    override val yMin: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) => optionalConfront(yMin, hitBox.yMin)(_.min(_)))
+    protected val functionForMin: (Double, Double) => Double = math.min
 
     override def contains(point: Point2D)(using equality: Equality[Double]): Boolean = hitBoxes.exists(_.contains(point))
 

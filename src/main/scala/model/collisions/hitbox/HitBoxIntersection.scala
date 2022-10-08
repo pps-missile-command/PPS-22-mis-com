@@ -30,19 +30,22 @@ object HitBoxIntersection:
       case _ if intersection.area.isEmpty => HitBoxEmpty
       case _ => intersection
 
-  private case class HitBoxIntersection(hitBoxes: Seq[HitBox]) extends HitBox :
+  private case class HitBoxIntersection(hitBoxes: Seq[HitBox]) extends HitBoxAggregation :
 
-    def optionalConfront(l: Option[Double], r: Option[Double])(function: (Double, Double) => Double): Option[Double] =
+    protected def optionalConfront(l: Option[Double], r: Option[Double])(confrontFunction: (Double, Double) => Double): Option[Double] =
       (l, r) match
-        case (Some(valueL), Some(valueR)) => Some(function(valueL, valueR))
+        case (Some(valueL), Some(valueR)) => Some(confrontFunction(valueL, valueR))
         case _ => None
 
-    override val xMax: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) => optionalConfront(xMax, hitBox.xMax)(_.min(_)))
+    protected val functionForMax: (Double, Double) => Double = math.min
+    protected val functionForMin: (Double, Double) => Double = math.max
+
+    /*override val xMax: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) => optionalConfront(xMax, hitBox.xMax)(_.min(_)))
 
     override val yMax: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.yMax)((yMax, hitBox) => optionalConfront(yMax, hitBox.yMax)(_.min(_)))
 
     override val xMin: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.xMin)((xMin, hitBox) => optionalConfront(xMin, hitBox.xMin)(_.max(_)))
 
-    override val yMin: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) => optionalConfront(yMin, hitBox.yMin)(_.max(_)))
+    override val yMin: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) => optionalConfront(yMin, hitBox.yMin)(_.max(_)))*/
 
     override def contains(point: Point2D)(using equality: Equality[Double]): Boolean = hitBoxes.forall(_.contains(point))
