@@ -7,7 +7,7 @@ import model.collisions.*
 import org.scalactic.Equality
 
 /**
- * Factory for hit box that are the intersection of other hit box.
+ * Factory for hit box that is the intersection of other hit boxes.
  */
 object HitBoxIntersection:
 
