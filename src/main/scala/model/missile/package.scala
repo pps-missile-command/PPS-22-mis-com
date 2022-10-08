@@ -15,6 +15,8 @@ package object missile:
   case object ZigZagMissile extends MissileType
 
   val initialLife: LifePoint = 50
+  val velocity: Double = 10
+  val damage: Int = 1
   val hitboxBase: Double = 10.0
   val hitboxHeight: Double = 10.0
   val angle: Angle = Angle.Degree(90)
@@ -24,12 +26,12 @@ package object missile:
   type MissileMovement = (Double) => Missile
 
   //generating a random positioned missile of type T
-  def GenerateRandomMissile(missileType: MissileType)(using random: Random) = missileType match
+  def GenerateRandomMissile(missileType: MissileType, affiliation: Affiliation, finalDestination: Point2D)(using random: Random) = missileType match
     case BasicMissile =>
       for
         x <- Option.apply(Random.nextInt(10)) //length del campo (vedere monadi)
         y <- Option.apply(10) //height del campo
-      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
+      yield Missile(initialLife, affiliation, damage, velocity, Point2D(x, y), finalDestination)
 
     case RandomMissile =>
       for
@@ -37,6 +39,6 @@ package object missile:
         x <- Option.apply(Random.nextInt(10)) //length del campo (vedere monadi)
         y <- Option.apply(10)
         damage <- Option.apply(10)
-      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
+      yield Missile(initialLife, affiliation, damage, 1.0, Point2D(x, y), Point2D(10,10))
 
-    case _ => ??? //empty missile
+    case _ => AnyRef
