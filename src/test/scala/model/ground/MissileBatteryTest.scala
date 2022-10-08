@@ -4,8 +4,10 @@ import model.collisions.Affiliation
 import model.elements2d.Point2D
 import model.ground
 import model.ground.MissileBattery
+import model.missile.Missile
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
+import utilities.Constants
 
 import java.time
 
@@ -20,7 +22,8 @@ class MissileBatteryTest extends AnyFunSpec {
             val batteryTurret = MissileBattery(point)
             assert(batteryTurret.getPosition.x === xTest)
             assert(batteryTurret.getPosition.y === yTest)
-            assert(batteryTurret.currentLife === 3)
+            assert(batteryTurret.initialLife === Constants.missileBatteryInitialLife)
+            assert(batteryTurret.currentLife === Constants.missileBatteryInitialLife)
         }
 
         it("should fail if you shoot twice in a row without waiting") {
@@ -43,8 +46,13 @@ class MissileBatteryTest extends AnyFunSpec {
         it("should pass if you shoot after waiting for the reload time") {
             val batteryTurret = ground.MissileBattery(point)
             Thread.sleep(3000)
-            assert(batteryTurret.shootRocket(point).nonEmpty)
-            print(batteryTurret.toString)
+            val values = batteryTurret.shootRocket(Point2D(10.0, 10.0))
+            assert(values.nonEmpty)
+            
+            val tupled: Tuple2[MissileBattery, Missile] = values.get
+            assert(tupled._1.isReloading) //vero. La batteria che ha sparato deve essere in ricarica
+            assert(tupled._2.affiliation === Affiliation.Friendly)
+            assert(tupled._2.finalPosition === Point2D(10.0, 10.0))
         }
 
         it("should get damaged and destroied if it have 0HP") {

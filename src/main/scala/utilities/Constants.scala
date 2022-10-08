@@ -12,4 +12,8 @@ object Constants:
     val cityBaseSize: Double = 30 //base size
     val cityHeightSize: Double = 30 //height size
     val cityInitialLife: LifePoint = 3 //initial life
+    //missile informations
+    val missileFriendlySpeed: Double = 5.0 //basic fiendly missile speed
+    val missileHealth: LifePoint = 1
+    val missileFriendlyDamage: LifePoint = 1
 
