@@ -24,41 +24,39 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions.hitbox
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.*
+</span>3 <span style=''>import model.collisions.HitBox
 </span>4 <span style=''>import model.elements2d.Point2D
-</span>5 <span style=''>import org.scalactic.Equality
-</span>6 <span style=''>import utilities.MathUtilities.*
-</span>7 <span style=''>
-</span>8 <span style=''>/**
-</span>9 <span style=''> * Factory for a new hit box that has the shape of a circle.
-</span>10 <span style=''> */
-</span>11 <span style=''>object HitBoxCircular:
-</span>12 <span style=''>
-</span>13 <span style=''>  /**
-</span>14 <span style=''>   * Returns a new hit box that has the shape of a circle.
-</span>15 <span style=''>   *
-</span>16 <span style=''>   * @param center the center of the circle
-</span>17 <span style=''>   * @param radius the radius of the circle
-</span>18 <span style=''>   * @return a new hit box that has the shape of a circle
-</span>19 <span style=''>   */
-</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(center: Point2D, radius: Double): HitBox =
-</span>21 <span style=''>    if (radius &lt;= 0)
-</span>22 <span style=''>      </span><span style='background: #AEF1AE'>HitBoxEmpty</span><span style=''>
-</span>23 <span style=''>    else
-</span>24 <span style=''>      </span><span style='background: #AEF1AE'>HitBoxCircular(center, radius)</span><span style=''>
+</span>5 <span style=''>import utilities.MathUtilities.*
+</span>6 <span style=''>import model.collisions.*
+</span>7 <span style=''>import org.scalactic.Equality
+</span>8 <span style=''>
+</span>9 <span style=''>/**
+</span>10 <span style=''> * Factory for a new hit box that has the shape of a circle.
+</span>11 <span style=''> */
+</span>12 <span style=''>object HitBoxCircular:
+</span>13 <span style=''>
+</span>14 <span style=''>  /**
+</span>15 <span style=''>   * Returns a new hit box that has the shape of a circle.
+</span>16 <span style=''>   *
+</span>17 <span style=''>   * @param center the center of the circle
+</span>18 <span style=''>   * @param radius the radius of the circle
+</span>19 <span style=''>   * @return a new hit box that has the shape of a circle
+</span>20 <span style=''>   */
+</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(center: Point2D, radius: Double): HitBox = HitBoxCircular(center, radius)
+</span>22 <span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  private case class HitBoxCircular(center: Point2D, radius: Double) extends HitBox :
 </span>25 <span style=''>
-</span>26 <span style=''>  private case class HitBoxCircular(center: Point2D, radius: Double) extends HitBoxSymmetric :
+</span>26 <span style=''>    override val xMax: Option[Double] = </span><span style='background: #AEF1AE'>Option(center.x + radius)</span><span style=''>
 </span>27 <span style=''>
-</span>28 <span style=''>    </span><span style='background: #AEF1AE'>protected def max</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>Option(values.head + radius)</span><span style=''>
+</span>28 <span style=''>    override val yMax: Option[Double] = </span><span style='background: #AEF1AE'>Option(center.y + radius)</span><span style=''>
 </span>29 <span style=''>
-</span>30 <span style=''>    </span><span style='background: #AEF1AE'>protected def min</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>Option(values.head - radius)</span><span style=''>
+</span>30 <span style=''>    override val xMin: Option[Double] = </span><span style='background: #AEF1AE'>Option(center.x - radius)</span><span style=''>
 </span>31 <span style=''>
-</span>32 <span style=''>    </span><span style='background: #AEF1AE'>protected def x</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(center.x)</span><span style=''>
+</span>32 <span style=''>    override val yMin: Option[Double] = </span><span style='background: #AEF1AE'>Option(center.y - radius)</span><span style=''>
 </span>33 <span style=''>
-</span>34 <span style=''>    </span><span style='background: #AEF1AE'>protected def y</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(center.y)</span><span style=''>
-</span>35 <span style=''>
-</span>36 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean =
-</span>37 <span style=''>      </span><span style='background: #AEF1AE'>(point &lt;-&gt; center) &lt;== radius</span><span style=''>
+</span>34 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean =
+</span>35 <span style=''>      </span><span style='background: #AEF1AE'>(point &lt;-&gt; center) &lt;== radius</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -73,15 +71,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          19
+          20
         </td>
         <td>
-          64
+          52
         </td>
         <td>
-          472
+          503
           -
-          481
+          512
         </td>
         <td>
           DefDef
@@ -97,111 +95,39 @@
         </td>
       </tr><tr>
         <td>
-          21
+          25
         </td>
         <td>
-          62
+          53
         </td>
         <td>
-          552
+          723
           -
-          563
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          HitBoxEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          HitBoxEmpty
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          63
-        </td>
-        <td>
-          579
-          -
-          609
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          HitBoxCircular(center, radius)
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          65
-        </td>
-        <td>
-          780
-          -
-          791
+          731
         </td>
         <td>
           Select
         </td>
         <td>
-          head
+          x
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          values.head
+          center.x
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
-          67
+          54
         </td>
         <td>
-          711
+          716
           -
-          728
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          max
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def max
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          66
-        </td>
-        <td>
-          773
-          -
-          801
+          741
         </td>
         <td>
           Apply
@@ -213,67 +139,67 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Option(values.head + radius)
+          Option(center.x + radius)
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
-          68
+          56
         </td>
         <td>
-          876
+          783
           -
-          887
+          808
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Option(center.y + radius)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          55
+        </td>
+        <td>
+          790
+          -
+          798
         </td>
         <td>
           Select
         </td>
         <td>
-          head
+          y
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          values.head
+          center.y
         </td>
       </tr><tr>
         <td>
           29
         </td>
         <td>
-          70
+          58
         </td>
         <td>
-          807
+          850
           -
-          824
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          min
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def min
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          69
-        </td>
-        <td>
-          869
-          -
-          897
+          875
         </td>
         <td>
           Apply
@@ -285,19 +211,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Option(values.head - radius)
+          Option(center.x - radius)
         </td>
       </tr><tr>
         <td>
-          31
+          29
         </td>
         <td>
-          71
+          57
         </td>
         <td>
-          948
+          857
           -
-          956
+          865
         </td>
         <td>
           Select
@@ -316,60 +242,12 @@
           31
         </td>
         <td>
-          73
+          59
         </td>
         <td>
-          903
+          924
           -
-          918
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def x
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          72
-        </td>
-        <td>
-          939
-          -
-          957
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Iterable(center.x)
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          74
-        </td>
-        <td>
-          1008
-          -
-          1016
+          932
         </td>
         <td>
           Select
@@ -385,39 +263,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          31
         </td>
         <td>
-          76
+          60
         </td>
         <td>
-          963
+          917
           -
-          978
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def y
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          75
-        </td>
-        <td>
-          999
-          -
-          1017
+          942
         </td>
         <td>
           Apply
@@ -429,19 +283,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Iterable(center.y)
+          Option(center.y - radius)
         </td>
       </tr><tr>
         <td>
-          35
+          33
         </td>
         <td>
-          80
+          64
         </td>
         <td>
-          1023
+          948
           -
-          1044
+          969
         </td>
         <td>
           DefDef
@@ -457,15 +311,39 @@
         </td>
       </tr><tr>
         <td>
-          36
+          34
         </td>
         <td>
-          77
+          62
         </td>
         <td>
-          1113
+          1038
           -
-          1129
+          1054
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          convertToEqualizer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point &lt;-&gt; center
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          61
+        </td>
+        <td>
+          1038
+          -
+          1054
         </td>
         <td>
           Apply
@@ -481,15 +359,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          34
         </td>
         <td>
-          79
+          63
         </td>
         <td>
-          1112
+          1037
           -
-          1141
+          1066
         </td>
         <td>
           Apply
@@ -502,30 +380,6 @@
         </td>
         <td style="background: #AEF1AE">
           (point &lt;-&gt; center) &lt;== radius
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          78
-        </td>
-        <td>
-          1113
-          -
-          1129
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point &lt;-&gt; center
         </td>
       </tr>
     </table>
