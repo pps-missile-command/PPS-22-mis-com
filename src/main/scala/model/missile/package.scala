@@ -4,11 +4,15 @@ import collisions.{Affiliation, HitBox, LifePoint, hitbox}
 import model.collisions.hitbox.HitBoxRectangular
 import model.elements2d.{Angle, Point2D}
 import model.missile.Missile
-import model.missile.Missile.{BasicMissile, MissileType, RandomMissile}
 
 import scala.util.Random
 
 package object missile:
+
+  sealed trait MissileType
+  case object BasicMissile extends MissileType
+  case object RandomMissile extends MissileType
+  case object ZigZagMissile extends MissileType
 
   val initialLife: LifePoint = 50
   val hitboxBase: Double = 10.0
