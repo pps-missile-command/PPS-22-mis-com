@@ -19,7 +19,7 @@ package object missile:
   val hitboxHeight: Double = 10.0
   val angle: Angle = Angle.Degree(90)
   
-  val basicHitBox: (Point2D) => HitBox = HitBoxRectangular(_, hitboxBase, hitboxHeight, angle)
+  val basicHitBox: (Point2D, Option[Angle]) => HitBox = (point_, angle_) => HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))
 
   type MissileMovement = (Double) => Missile
 
