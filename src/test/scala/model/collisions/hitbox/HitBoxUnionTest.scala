@@ -1,11 +1,13 @@
-package model.collisions
+package model.collisions.hitbox
 
-import model.collisions.hitbox._
+import model.collisions.hitbox.*
+import model.collisions.Distance
 import model.elements2d.Point2D
+import model.elements2d.Point2D.GivenEquality.given
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
-import math.BigDecimal.double2bigDecimal
-import model.elements2d.Point2D.GivenEquality.given
+
+import scala.math.BigDecimal.double2bigDecimal
 
 object HitBoxUnionTest:
   private val tolerance: Double = 0.1
@@ -16,8 +18,7 @@ object HitBoxUnionTest:
 
 class HitBoxUnionTest extends AnyFunSpec :
 
-  import HitBoxUnionTest._
-  import HitBoxUnionTest.given
+  import HitBoxUnionTest.{*, given}
 
   describe("An hit box") {
 

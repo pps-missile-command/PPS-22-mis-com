@@ -1,13 +1,15 @@
-package model.collisions
+package model.collisions.hitbox
 
-import model.collisions.hitbox._
+import model.collisions.hitbox.*
+import model.collisions.Distance
 import model.elements2d.Point2D
-import org.scalatest.funspec.AnyFunSpec
-import math.BigDecimal.double2bigDecimal
-import org.scalactic.{Equality, TolerantNumerics}
-import utilities.MathUtilities._
 import model.elements2d.Point2D.GivenEquality.given
+import org.scalactic.{Equality, TolerantNumerics}
+import org.scalatest.funspec.AnyFunSpec
+import utilities.MathUtilities.*
 import utilities.MathUtilities.DoubleEquality.given
+
+import scala.math.BigDecimal.double2bigDecimal
 
 object HitBoxPointTest:
   private given distance: Distance = 1.0
@@ -18,8 +20,7 @@ object HitBoxPointTest:
 
 class HitBoxPointTest extends AnyFunSpec :
 
-  import HitBoxPointTest._
-  import HitBoxPointTest.given
+  import HitBoxPointTest.{*, given}
 
   describe("An hit box") {
     describe("that is a point") {

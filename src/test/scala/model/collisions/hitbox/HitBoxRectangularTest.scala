@@ -1,14 +1,14 @@
-package model.collisions
+package model.collisions.hitbox
 
 import model.collisions.hitbox.{HitBoxEmpty, HitBoxRectangular}
-import model.elements2d.{Point2D, Vector2D}
-import org.scalatest.funspec.AnyFunSpec
-
-import math.BigDecimal.double2bigDecimal
+import model.collisions.Distance
 import model.elements2d.Point2D.GivenEquality.given
+import model.elements2d.{Angle, Point2D, Vector2D}
 import org.scalactic.{Equality, TolerantNumerics}
-import model.elements2d.Angle
+import org.scalatest.funspec.AnyFunSpec
 import utilities.MathUtilities.*
+
+import scala.math.BigDecimal.double2bigDecimal
 
 object HitBoxRectangularTest:
   private given distance: Distance = 1.0
@@ -26,8 +26,7 @@ object HitBoxRectangularTest:
 
 class HitBoxRectangularTest extends AnyFunSpec :
 
-  import HitBoxRectangularTest._
-  import HitBoxRectangularTest.given
+  import HitBoxRectangularTest.{*, given}
 
   describe("An hit box") {
 

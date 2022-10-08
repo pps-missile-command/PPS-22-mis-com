@@ -1,12 +1,14 @@
-package model.collisions
+package model.collisions.hitbox
 
 import model.collisions.hitbox.HitBoxCircular
+import model.collisions.Distance
 import model.elements2d.Point2D
+import model.elements2d.Point2D.GivenEquality.given
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
-import math.BigDecimal.double2bigDecimal
-import model.elements2d.Point2D.GivenEquality.given
-import utilities.MathUtilities._
+import utilities.MathUtilities.*
+
+import scala.math.BigDecimal.double2bigDecimal
 
 object HitBoxCircularTest:
   private val tolerance: Double = 0.1
@@ -23,8 +25,7 @@ object HitBoxCircularTest:
 
 class HitBoxCircularTest extends AnyFunSpec :
 
-  import HitBoxCircularTest._
-  import HitBoxCircularTest.given
+  import HitBoxCircularTest.{*, given}
 
   describe("An hit box") {
 
