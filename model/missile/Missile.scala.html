@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/collisions/HitBox.scala.html
+          model/missile/Missile.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,73 +22,63 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile
 </span>2 <span style=''>
-</span>3 <span style=''>import model.elements2d.Point2D
-</span>4 <span style=''>import org.scalactic.Equality
+</span>3 <span style=''>import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint, lifePointDeath}
+</span>4 <span style=''>import model.elements2d.{Angle, Point2D, Vector2D}
 </span>5 <span style=''>
-</span>6 <span style=''>import math.BigDecimal.double2bigDecimal
+</span>6 <span style=''>import scala.util.Random
 </span>7 <span style=''>
-</span>8 <span style=''>/**
-</span>9 <span style=''> * Trait that represents an hit box of an object.
-</span>10 <span style=''> * An hit box is a shape that represents the area of an object.
-</span>11 <span style=''> *
-</span>12 <span style=''> */
-</span>13 <span style=''>trait HitBox:
-</span>14 <span style=''>  /**
-</span>15 <span style=''>   * Returns the grater x value of the hit box.
-</span>16 <span style=''>   *
-</span>17 <span style=''>   * @return the grater x value of the hit box if present else an Option empty.
-</span>18 <span style=''>   */
-</span>19 <span style=''>  def xMax: Option[Double]
+</span>8 <span style=''>given </span><span style='background: #AEF1AE'>Conversion[(Point2D, Point2D), Vector2D]</span><span style=''> with
+</span>9 <span style=''>  </span><span style='background: #AEF1AE'>override def apply</span><span style=''>(x: (Point2D, Point2D)): Vector2D = </span><span style='background: #AEF1AE'>(x._2 &lt;--&gt; x._1).normalize</span><span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>trait Missile extends Damageable, Moveable:
+</span>12 <span style=''>
+</span>13 <span style=''>  def damage: LifePoint
+</span>14 <span style=''>
+</span>15 <span style=''>  def position: Point2D
+</span>16 <span style=''>
+</span>17 <span style=''>  def velocity: Double
+</span>18 <span style=''>
+</span>19 <span style=''>  def finalPosition: Point2D
 </span>20 <span style=''>
-</span>21 <span style=''>  /**
-</span>22 <span style=''>   * Returns the greater y value of the hit box.
-</span>23 <span style=''>   *
-</span>24 <span style=''>   * @return the grater y value of the hit box if present else an Option empty .
-</span>25 <span style=''>   */
-</span>26 <span style=''>  def yMax: Option[Double]
-</span>27 <span style=''>
-</span>28 <span style=''>  /**
-</span>29 <span style=''>   * Returns the lower x value of the hit box.
-</span>30 <span style=''>   *
-</span>31 <span style=''>   * @return the lower x value of the hit box if present else an Option empty.
+</span>21 <span style=''>  def direction: Vector2D
+</span>22 <span style=''>
+</span>23 <span style=''>  override def move(dt: Double): Missile
+</span>24 <span style=''>
+</span>25 <span style=''>object Missile:
+</span>26 <span style=''>
+</span>27 <span style=''>  /**
+</span>28 <span style=''>   *
+</span>29 <span style=''>   * @param missile
+</span>30 <span style=''>   * @param dt
+</span>31 <span style=''>   * @return
 </span>32 <span style=''>   */
-</span>33 <span style=''>  def xMin: Option[Double]
-</span>34 <span style=''>
-</span>35 <span style=''>  /**
-</span>36 <span style=''>   * Returns the lower y value of the hit box.
-</span>37 <span style=''>   *
-</span>38 <span style=''>   * @return the lower y value of the hit box if present else an Option empty.
-</span>39 <span style=''>   */
-</span>40 <span style=''>  def yMin: Option[Double]
-</span>41 <span style=''>
-</span>42 <span style=''>  /**
-</span>43 <span style=''>   * Returns an iterator of points in the hit box area with distance.
-</span>44 <span style=''>   *
-</span>45 <span style=''>   * @param distance the distance between two points in the area.
-</span>46 <span style=''>   * @return an iterator of points in the hit box area with distance.
-</span>47 <span style=''>   */
-</span>48 <span style=''>  </span><span style='background: #AEF1AE'>def area</span><span style=''>(using distance: Distance): Iterator[Point2D] =
-</span>49 <span style=''>    if (</span><span style='background: #AEF1AE'>xMax.isEmpty</span><span style=''> || </span><span style='background: #AEF1AE'>yMax.isEmpty</span><span style=''> || </span><span style='background: #AEF1AE'>xMin.isEmpty</span><span style=''> || </span><span style='background: #AEF1AE'>yMin.isEmpty</span><span style=''>) </span><span style='background: #F0ADAD'>Iterator.empty</span><span style=''>
-</span>50 <span style=''>    else
-</span>51 <span style=''>      </span><span style='background: #AEF1AE'>(for
-</span>52 <span style=''></span><span style='background: #AEF1AE'>        x &lt;- xMin.get to xMax.get by distance
-</span>53 <span style=''></span><span style='background: #AEF1AE'>        y &lt;- yMin.get to yMax.get by distance
-</span>54 <span style=''></span><span style='background: #AEF1AE'>        point = Point2D(x.doubleValue, y.doubleValue)
-</span>55 <span style=''></span><span style='background: #AEF1AE'>        if contains(point)
-</span>56 <span style=''></span><span style='background: #AEF1AE'>      yield
-</span>57 <span style=''></span><span style='background: #AEF1AE'>        point
-</span>58 <span style=''></span><span style='background: #AEF1AE'>        ).iterator</span><span style=''>
-</span>59 <span style=''>
-</span>60 <span style=''>  /**
-</span>61 <span style=''>   * Returns true if the point is contained in the hit box.
-</span>62 <span style=''>   *
-</span>63 <span style=''>   * @param point    the point to check
-</span>64 <span style=''>   * @param equality the given equality
-</span>65 <span style=''>   * @return true if the point is contained in the hit box.
-</span>66 <span style=''>   */
-</span>67 <span style=''>  def contains(point: Point2D)(using equality: Equality[Double]): Boolean
+</span>33 <span style=''>  </span><span style='background: #AEF1AE'>def BasicMove</span><span style=''>(missile: Missile)(dt: Double): Missile = missile match
+</span>34 <span style=''>    </span><span style='background: #F0ADAD'>case m if m.isDestroyed</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(lifePointDeath, missile.affiliation, missile.damage, missile.velocity, missile.position, missile.finalPosition)</span><span style=''>
+</span>35 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --&gt; (missile.direction * missile.velocity * dt), missile.finalPosition)</span><span style=''>
+</span>36 <span style=''>
+</span>37 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(lifePoint: LifePoint, myAffiliation: Affiliation, myDamage: LifePoint, myVelocity: Double, myPosition: Point2D, myFinalPosition: Point2D) : Missile = new Missile with </span><span style='background: #AEF1AE'>MissileDamageable(lifePoint, myPosition, myFinalPosition)</span><span style=''>:
+</span>38 <span style=''>
+</span>39 <span style=''>    </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: LifePoint): Damageable = this match
+</span>40 <span style=''>      </span><span style='background: #F0ADAD'>case m if m.isDestroyed</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(lifePointDeath, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)</span><span style=''>
+</span>41 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>apply(currentLife - damage, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)</span><span style=''>
+</span>42 <span style=''>        
+</span>43 <span style=''>    </span><span style='background: #AEF1AE'>override def damage</span><span style=''>: LifePoint = myDamage
+</span>44 <span style=''>
+</span>45 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = myPosition
+</span>46 <span style=''>
+</span>47 <span style=''>    </span><span style='background: #AEF1AE'>override def velocity</span><span style=''>: Double = myVelocity
+</span>48 <span style=''>
+</span>49 <span style=''>    </span><span style='background: #AEF1AE'>override def finalPosition</span><span style=''>: Point2D = myFinalPosition
+</span>50 <span style=''>
+</span>51 <span style=''>    </span><span style='background: #AEF1AE'>override def direction</span><span style=''>: Vector2D = </span><span style='background: #AEF1AE'>(myPosition, myFinalPosition)</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = myAffiliation
+</span>54 <span style=''>
+</span>55 <span style=''>    val moveStrategy: MissileMovement = </span><span style='background: #AEF1AE'>Missile.BasicMove(this)(_)</span><span style=''>
+</span>56 <span style=''>
+</span>57 <span style=''>    </span><span style='background: #AEF1AE'>override def move</span><span style=''>(dt: Double): Missile = </span><span style='background: #AEF1AE'>moveStrategy(dt)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -103,628 +93,543 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          47
+          7
         </td>
         <td>
-          51
+          411
         </td>
         <td>
-          1185
+          207
           -
-          1193
+          247
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Conversion[(Point2D, Point2D), Vector2D]
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          415
+        </td>
+        <td>
+          309
+          -
+          335
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          normalize
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (x._2 &lt;--&gt; x._1).normalize
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          412
+        </td>
+        <td>
+          310
+          -
+          314
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x._2
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          414
+        </td>
+        <td>
+          310
+          -
+          324
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;--&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x._2 &lt;--&gt; x._1
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          413
+        </td>
+        <td>
+          320
+          -
+          324
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x._1
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          416
+        </td>
+        <td>
+          255
+          -
+          273
         </td>
         <td>
           DefDef
         </td>
         <td>
-          area
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def area
+          override def apply
         </td>
       </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          17
-        </td>
-        <td>
-          1297
-          -
-          1309
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMin.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          11
-        </td>
-        <td>
-          1249
-          -
-          1261
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMax.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          20
-        </td>
-        <td>
-          1311
-          -
-          1325
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Iterator.empty
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          14
-        </td>
-        <td>
-          1281
-          -
-          1285
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          13
-        </td>
-        <td>
-          1265
-          -
-          1277
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMax.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          16
-        </td>
-        <td>
-          1297
-          -
-          1301
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMin
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          10
-        </td>
-        <td>
-          1249
-          -
-          1253
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMax
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          19
-        </td>
-        <td>
-          1311
-          -
-          1325
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          empty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Iterator.empty
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          18
-        </td>
-        <td>
-          1311
-          -
-          1319
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          Iterator
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Iterator
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          12
-        </td>
-        <td>
-          1265
-          -
-          1269
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMax
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          15
-        </td>
-        <td>
-          1281
-          -
-          1293
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          50
-        </td>
-        <td>
-          1341
-          -
-          1563
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (for
-        x &lt;- xMin.get to xMax.get by distance
-        y &lt;- yMin.get to yMax.get by distance
-        point = Point2D(x.doubleValue, y.doubleValue)
-        if contains(point)
-      yield
-        point
-        ).iterator
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          48
-        </td>
-        <td>
-          1342
-          -
-          1544
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          flatMap
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          for
-        x &lt;- xMin.get to xMax.get by distance
-        y &lt;- yMin.get to yMax.get by distance
-        point = Point2D(x.doubleValue, y.doubleValue)
-        if contains(point)
-      yield
-        point
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          23
-        </td>
-        <td>
-          1359
-          -
-          1367
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          double2bigDecimal
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin.get
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          26
-        </td>
-        <td>
-          1371
-          -
-          1379
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          double2bigDecimal
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMax.get
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          29
-        </td>
-        <td>
-          1359
-          -
-          1391
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          by
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin.get to xMax.get by distance
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          22
-        </td>
-        <td>
-          1359
-          -
-          1367
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin.get
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          25
-        </td>
-        <td>
-          1371
-          -
-          1379
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMax.get
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          28
-        </td>
-        <td>
-          1383
-          -
-          1391
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          double2bigDecimal
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          distance
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          27
-        </td>
-        <td>
-          1359
-          -
-          1379
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          to
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin.get to xMax.get
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          21
-        </td>
-        <td>
-          1359
-          -
-          1363
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMin
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          24
-        </td>
-        <td>
-          1371
-          -
-          1375
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          xMax
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
         <td>
           32
         </td>
         <td>
-          1405
+          391
+        </td>
+        <td>
+          639
           -
-          1413
+          652
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          double2bigDecimal
+          BasicMove
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          yMin.get
+          def BasicMove
         </td>
       </tr><tr>
         <td>
-          52
+          33
         </td>
         <td>
-          35
+          373
         </td>
         <td>
-          1417
+          816
           -
-          1425
+          832
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.position
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          376
+        </td>
+        <td>
+          712
+          -
+          735
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case m if m.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          370
+        </td>
+        <td>
+          761
+          -
+          780
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.affiliation
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          372
+        </td>
+        <td>
+          798
+          -
+          814
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.velocity
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          375
+        </td>
+        <td>
+          739
+          -
+          856
         </td>
         <td>
           Apply
         </td>
         <td>
-          double2bigDecimal
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          apply(lifePointDeath, missile.affiliation, missile.damage, missile.velocity, missile.position, missile.finalPosition)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          377
+        </td>
+        <td>
+          722
+          -
+          735
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDestroyed
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          yMax.get
+          m.isDestroyed
         </td>
       </tr><tr>
         <td>
-          52
+          33
         </td>
         <td>
-          44
+          371
         </td>
         <td>
-          1400
+          782
           -
-          1451
+          796
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          damage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.damage
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          374
+        </td>
+        <td>
+          834
+          -
+          855
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          finalPosition
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.finalPosition
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          382
+        </td>
+        <td>
+          953
+          -
+          969
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          385
+        </td>
+        <td>
+          975
+          -
+          1011
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.direction * missile.velocity
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          388
+        </td>
+        <td>
+          1019
+          -
+          1040
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          finalPosition
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.finalPosition
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          379
+        </td>
+        <td>
+          898
+          -
+          917
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.affiliation
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          387
+        </td>
+        <td>
+          953
+          -
+          1016
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position --&gt; (missile.direction * missile.velocity * dt
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          378
+        </td>
+        <td>
+          877
+          -
+          896
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          currentLife
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.currentLife
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          381
+        </td>
+        <td>
+          935
+          -
+          951
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.velocity
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          390
+        </td>
+        <td>
+          861
+          -
+          867
         </td>
         <td>
           Block
@@ -736,292 +641,91 @@
           
         </td>
         <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by distance
-        point
+          case _
         </td>
       </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          38
-        </td>
-        <td>
-          1405
-          -
-          1437
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          by
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMin.get to yMax.get by distance
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          47
-        </td>
-        <td>
-          1400
-          -
-          1544
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by distance
-        point = Point2D(x.doubleValue, y.doubleValue)
-        if contains(point)
-      yield
-        point
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          46
-        </td>
-        <td>
-          1400
-          -
-          1451
-        </td>
-        <td>
-          Typed
-        </td>
-        <td>
-          point
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by distance
-        point
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          31
-        </td>
-        <td>
-          1405
-          -
-          1413
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMin.get
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
         <td>
           34
         </td>
         <td>
-          1417
+          384
+        </td>
+        <td>
+          995
           -
-          1425
+          1011
         </td>
         <td>
           Select
         </td>
         <td>
-          get
+          velocity
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          yMax.get
+          missile.velocity
         </td>
       </tr><tr>
         <td>
-          52
+          34
         </td>
         <td>
-          37
+          383
         </td>
         <td>
-          1429
+          975
           -
-          1437
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          double2bigDecimal
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          distance
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          45
-        </td>
-        <td>
-          1400
-          -
-          1518
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withFilter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by distance
-        point = Point2D(x.doubleValue, y.doubleValue)
-        if contains(point)
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          36
-        </td>
-        <td>
-          1405
-          -
-          1425
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          to
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMin.get to yMax.get
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          30
-        </td>
-        <td>
-          1405
-          -
-          1409
+          992
         </td>
         <td>
           Select
         </td>
         <td>
-          yMin
+          direction
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          yMin
+          missile.direction
         </td>
       </tr><tr>
         <td>
-          52
+          34
         </td>
         <td>
-          42
+          386
         </td>
         <td>
-          1400
+          975
           -
-          1491
+          1016
         </td>
         <td>
           Apply
         </td>
         <td>
-          map
+          *
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          y &lt;- yMin.get to yMax.get by distance
-        point = Point2D(x.doubleValue, y.doubleValue)
+          missile.direction * missile.velocity * dt
         </td>
       </tr><tr>
         <td>
-          52
+          34
         </td>
         <td>
-          33
+          389
         </td>
         <td>
-          1417
+          871
           -
-          1421
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          yMax
-        </td>
-      </tr><tr>
-        <td>
-          53
-        </td>
-        <td>
-          41
-        </td>
-        <td>
-          1454
-          -
-          1491
+          1041
         </td>
         <td>
           Apply
@@ -1033,110 +737,487 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Point2D(x.doubleValue, y.doubleValue)
+          apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --&gt; (missile.direction * missile.velocity * dt), missile.finalPosition)
         </td>
       </tr><tr>
         <td>
-          53
+          34
         </td>
         <td>
-          40
+          380
         </td>
         <td>
-          1477
+          919
           -
-          1490
+          933
         </td>
         <td>
           Select
         </td>
         <td>
-          doubleValue
+          damage
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          y.doubleValue
+          missile.damage
         </td>
       </tr><tr>
         <td>
-          53
+          36
         </td>
+        <td>
+          392
+        </td>
+        <td>
+          1222
+          -
+          1279
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          MissileDamageable(lifePoint, myPosition, myFinalPosition)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          410
+        </td>
+        <td>
+          1045
+          -
+          1054
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          399
+        </td>
+        <td>
+          1286
+          -
+          1309
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          takeDamage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def takeDamage
+        </td>
+      </tr><tr>
         <td>
           39
         </td>
         <td>
-          1462
+          394
+        </td>
+        <td>
+          1360
           -
-          1475
+          1383
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case m if m.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          393
+        </td>
+        <td>
+          1387
+          -
+          1474
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          apply(lifePointDeath, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          395
+        </td>
+        <td>
+          1370
+          -
+          1383
         </td>
         <td>
           Select
         </td>
         <td>
-          doubleValue
+          isDestroyed
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          x.doubleValue
+          m.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          397
+        </td>
+        <td>
+          1491
+          -
+          1584
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          apply(currentLife - damage, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          396
+        </td>
+        <td>
+          1497
+          -
+          1508
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          currentLife
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          currentLife
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          398
+        </td>
+        <td>
+          1481
+          -
+          1487
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          400
+        </td>
+        <td>
+          1598
+          -
+          1617
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          damage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def damage
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          401
+        </td>
+        <td>
+          1645
+          -
+          1666
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def position
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          402
+        </td>
+        <td>
+          1694
+          -
+          1715
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def velocity
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          403
+        </td>
+        <td>
+          1742
+          -
+          1768
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          finalPosition
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def finalPosition
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          405
+        </td>
+        <td>
+          1801
+          -
+          1823
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def direction
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          404
+        </td>
+        <td>
+          1836
+          -
+          1865
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (myPosition, myFinalPosition)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          406
+        </td>
+        <td>
+          1871
+          -
+          1895
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def affiliation
         </td>
       </tr><tr>
         <td>
           54
         </td>
         <td>
-          43
+          407
         </td>
         <td>
-          1503
+          1966
           -
-          1518
+          1992
         </td>
         <td>
           Apply
         </td>
         <td>
-          contains
+          BasicMove
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          contains(point)
+          Missile.BasicMove(this)(_)
         </td>
       </tr><tr>
         <td>
-          57
+          56
         </td>
         <td>
-          49
+          409
         </td>
         <td>
-          1341
+          1998
           -
-          1563
+          2015
         </td>
         <td>
-          Select
+          DefDef
         </td>
         <td>
-          iterator
+          move
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          (for
-        x &lt;- xMin.get to xMax.get by distance
-        y &lt;- yMin.get to yMax.get by distance
-        point = Point2D(x.doubleValue, y.doubleValue)
-        if contains(point)
-      yield
-        point
-        ).iterator
+          override def move
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          408
+        </td>
+        <td>
+          2039
+          -
+          2055
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          moveStrategy(dt)
         </td>
       </tr>
     </table>
