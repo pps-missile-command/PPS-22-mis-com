@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/collisions/hitbox/HitBoxPoint.scala.html
+          model/collisions/hitbox/HitBoxAggregation.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -24,39 +24,52 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions.hitbox
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.*
-</span>4 <span style=''>import model.collisions.hitbox.HitBoxSymmetric
-</span>5 <span style=''>import model.elements2d.Point2D
-</span>6 <span style=''>import model.elements2d.Point2D.GivenEquality.given
-</span>7 <span style=''>import org.scalactic.Equality
-</span>8 <span style=''>import org.scalactic.TripleEquals.*
-</span>9 <span style=''>
-</span>10 <span style=''>/**
-</span>11 <span style=''> * Factory for an hit box that is a point.
-</span>12 <span style=''> */
-</span>13 <span style=''>object HitBoxPoint:
-</span>14 <span style=''>
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * Returns a new hit box that contains only a point.
-</span>17 <span style=''>   *
-</span>18 <span style=''>   * @param point the point in the hit box
-</span>19 <span style=''>   * @return a new hit box that contains only a point
+</span>3 <span style=''>import model.collisions.HitBox
+</span>4 <span style=''>import model.elements2d.Point2D
+</span>5 <span style=''>import model.collisions.hitbox._
+</span>6 <span style=''>import model.collisions._
+</span>7 <span style=''>
+</span>8 <span style=''>/**
+</span>9 <span style=''> * Trait that allows to generalize the operations for an hit box created by other hit boxes
+</span>10 <span style=''> */
+</span>11 <span style=''>trait HitBoxAggregation extends HitBox :
+</span>12 <span style=''>
+</span>13 <span style=''>  /**
+</span>14 <span style=''>   * The list of hit boxes that compose this hit box
+</span>15 <span style=''>   */
+</span>16 <span style=''>  protected val hitBoxes: Seq[HitBox]
+</span>17 <span style=''>
+</span>18 <span style=''>  /**
+</span>19 <span style=''>   * function that allow to return the value of the max side of the hit box
 </span>20 <span style=''>   */
-</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(point: Point2D): HitBox = HitBoxPoint(point)
+</span>21 <span style=''>  protected val functionForMin: (Double, Double) =&gt; Double
 </span>22 <span style=''>
-</span>23 <span style=''>  private case class HitBoxPoint(point: Point2D) extends HitBoxSymmetric :
-</span>24 <span style=''>
-</span>25 <span style=''>    </span><span style='background: #AEF1AE'>protected def max</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>Option(values.head)</span><span style=''>
-</span>26 <span style=''>
-</span>27 <span style=''>    </span><span style='background: #AEF1AE'>protected def min</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>max(values)</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>    </span><span style='background: #AEF1AE'>protected def x</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(point.x)</span><span style=''>
+</span>23 <span style=''>  /**
+</span>24 <span style=''>   * function that allow to return the value of the min side of the hit box
+</span>25 <span style=''>   */
+</span>26 <span style=''>  protected val functionForMax: (Double, Double) =&gt; Double
+</span>27 <span style=''>
+</span>28 <span style=''>  </span><span style='background: #AEF1AE'>private def hitBoxesInterval</span><span style=''>(getValue: HitBox =&gt; Option[Double], confrontFunction: (Double, Double) =&gt; Double): Option[Double] =
+</span>29 <span style=''>    </span><span style='background: #AEF1AE'>hitBoxes.foldLeft(getValue(hitBoxes.head))((value, hitBox) =&gt; optionalConfront(value, getValue(hitBox))(confrontFunction))</span><span style=''>
 </span>30 <span style=''>
-</span>31 <span style=''>    </span><span style='background: #AEF1AE'>protected def y</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(point.y)</span><span style=''>
-</span>32 <span style=''>
-</span>33 <span style=''>    </span><span style='background: #AEF1AE'>override def area</span><span style=''>(using step: Distance = 0): Iterator[Point2D] = </span><span style='background: #AEF1AE'>Iterator(point)</span><span style=''>
-</span>34 <span style=''>
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean = </span><span style='background: #AEF1AE'>point === this.point</span><span style=''>
+</span>31 <span style=''>  /**
+</span>32 <span style=''>   * Return the value of the confrontation between the two optional values.
+</span>33 <span style=''>   * The function calculate the value of the confrontation between the two double value using confrontFunction
+</span>34 <span style=''>   *
+</span>35 <span style=''>   * @param l the option on left side of the confront
+</span>36 <span style=''>   * @param r the the option on right side of the confront
+</span>37 <span style=''>   * @param confrontFunction the function that allow to confront the two sides on double type
+</span>38 <span style=''>   * @return the result of the confront
+</span>39 <span style=''>   */
+</span>40 <span style=''>  protected def optionalConfront(l: Option[Double], r: Option[Double])(confrontFunction: (Double, Double) =&gt; Double): Option[Double]
+</span>41 <span style=''>
+</span>42 <span style=''>  override lazy val xMax: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxesInterval(_.xMax, functionForMax)</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>  override lazy val yMax: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxesInterval(_.yMax, functionForMax)</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>  override lazy val xMin: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxesInterval(_.xMin, functionForMin)</span><span style=''>
+</span>47 <span style=''>
+</span>48 <span style=''>  override lazy val yMin: Option[Double] = </span><span style='background: #AEF1AE'>hitBoxesInterval(_.yMin, functionForMin)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -71,63 +84,39 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          27
         </td>
         <td>
-          128
+          53
         </td>
         <td>
-          500
+          700
           -
-          509
+          728
         </td>
         <td>
           DefDef
         </td>
         <td>
-          apply
+          hitBoxesInterval
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def apply
+          private def hitBoxesInterval
         </td>
       </tr><tr>
         <td>
-          24
+          28
         </td>
         <td>
-          131
+          50
         </td>
         <td>
-          636
+          919
           -
-          653
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          max
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def max
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          130
-        </td>
-        <td>
-          698
-          -
-          717
+          935
         </td>
         <td>
           Apply
@@ -139,19 +128,67 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Option(values.head)
+          getValue(hitBox)
         </td>
       </tr><tr>
         <td>
-          24
+          28
         </td>
         <td>
-          129
+          49
         </td>
         <td>
-          705
+          851
           -
-          716
+          874
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          getValue(hitBoxes.head)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          52
+        </td>
+        <td>
+          833
+          -
+          955
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          foldLeft
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxes.foldLeft(getValue(hitBoxes.head))((value, hitBox) =&gt; optionalConfront(value, getValue(hitBox))(confrontFunction))
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          48
+        </td>
+        <td>
+          860
+          -
+          873
         </td>
         <td>
           Select
@@ -163,343 +200,223 @@
           
         </td>
         <td style="background: #AEF1AE">
-          values.head
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          133
-        </td>
-        <td>
-          723
-          -
-          740
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          min
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def min
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          132
-        </td>
-        <td>
-          785
-          -
-          796
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          max
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          max(values)
+          hitBoxes.head
         </td>
       </tr><tr>
         <td>
           28
         </td>
         <td>
-          134
+          51
         </td>
         <td>
-          847
+          895
           -
-          854
+          954
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          optionalConfront
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          optionalConfront(value, getValue(hitBox))(confrontFunction)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          55
+        </td>
+        <td>
+          1585
+          -
+          1625
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          hitBoxesInterval
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitBoxesInterval(_.xMax, functionForMax)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          54
+        </td>
+        <td>
+          1602
+          -
+          1608
         </td>
         <td>
           Select
         </td>
         <td>
-          x
+          xMax
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          point.x
+          _.xMax
         </td>
       </tr><tr>
         <td>
-          28
+          43
         </td>
         <td>
-          136
+          56
         </td>
         <td>
-          802
+          1687
           -
-          817
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def x
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          135
-        </td>
-        <td>
-          838
-          -
-          855
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Iterable(point.x)
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          137
-        </td>
-        <td>
-          906
-          -
-          913
+          1693
         </td>
         <td>
           Select
         </td>
         <td>
-          y
+          yMax
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          point.y
+          _.yMax
         </td>
       </tr><tr>
         <td>
-          30
+          43
         </td>
         <td>
-          139
+          57
         </td>
         <td>
-          861
+          1670
           -
-          876
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def y
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          138
-        </td>
-        <td>
-          897
-          -
-          914
+          1710
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          hitBoxesInterval
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Iterable(point.y)
+          hitBoxesInterval(_.yMax, functionForMax)
         </td>
       </tr><tr>
         <td>
-          32
+          45
         </td>
         <td>
-          140
+          59
         </td>
         <td>
-          985
+          1755
           -
-          1000
+          1795
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          hitBoxesInterval
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Iterator(point)
+          hitBoxesInterval(_.xMin, functionForMin)
         </td>
       </tr><tr>
         <td>
-          32
+          45
         </td>
         <td>
-          142
+          58
         </td>
         <td>
-          961
+          1772
           -
-          961
+          1778
         </td>
         <td>
-          DefDef
+          Select
         </td>
         <td>
-          area$default$1
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          141
-        </td>
-        <td>
-          920
-          -
-          937
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          area
+          xMin
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          override def area
+          _.xMin
         </td>
       </tr><tr>
         <td>
-          34
+          47
         </td>
         <td>
-          145
+          61
         </td>
         <td>
-          1006
+          1840
           -
-          1027
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def contains
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          144
-        </td>
-        <td>
-          1089
-          -
-          1109
+          1880
         </td>
         <td>
           Apply
         </td>
         <td>
-          ===
+          hitBoxesInterval
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          point === this.point
+          hitBoxesInterval(_.yMin, functionForMin)
         </td>
       </tr><tr>
         <td>
-          34
+          47
         </td>
         <td>
-          143
+          60
         </td>
         <td>
-          1089
+          1857
           -
-          1094
+          1863
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          convertToEqualizer
+          yMin
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          point
+          _.yMin
         </td>
       </tr>
     </table>
