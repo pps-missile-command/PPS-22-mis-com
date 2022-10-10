@@ -37,7 +37,7 @@ case class MissileBattery(val position: Point2D, val life: LifePoint = Constants
     /**
      * @return a string containing all the valuable informations
      */
-    override def toString: String = "Missile battery --> Position: x:" + position.x + " y:" + position.y + "; Reloading: " + isReloading + ";"
+    override def toString: String = "Missile battery --> Position: x:" + position.x + " y:" + position.y + "; Reloading: " + isReloading + "; Life: " + life + "\n"
 
     /**
      *  @return the affiliation of the object.

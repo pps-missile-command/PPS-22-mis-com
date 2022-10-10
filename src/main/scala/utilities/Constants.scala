@@ -1,6 +1,7 @@
 package utilities
 
 import model.collisions.LifePoint
+import model.elements2d.Point2D
 
 object Constants:
     //missile battery informations
@@ -16,4 +17,7 @@ object Constants:
     val missileFriendlySpeed: Double = 5.0 //basic fiendly missile speed
     val missileHealth: LifePoint = 1
     val missileFriendlyDamage: LifePoint = 1
+    //Structure spawning parameters
+    val citySpacer: Double = 20 //spacer between cities
+    val turretSpacer: Double = 50 //spacer between a city and a turret
 
