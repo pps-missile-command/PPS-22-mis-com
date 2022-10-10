@@ -20,8 +20,8 @@ class MissileBatteryTest extends AnyFunSpec {
     describe("A missile battery") {
         it("should create a new turret in given position and with specified life") {
             val batteryTurret = MissileBattery(point)
-            assert(batteryTurret.getPosition.x === xTest)
-            assert(batteryTurret.getPosition.y === yTest)
+            assert(batteryTurret.position.x === xTest)
+            assert(batteryTurret.position.y === yTest)
             assert(batteryTurret.initialLife === Constants.missileBatteryInitialLife)
             assert(batteryTurret.currentLife === Constants.missileBatteryInitialLife)
         }
@@ -57,14 +57,14 @@ class MissileBatteryTest extends AnyFunSpec {
 
         it("should get damaged and destroied if it have 0HP") {
             val batteryTurret = ground.MissileBattery(point)
-            val batteryTurret2 = batteryTurret.takeDamage(3).asInstanceOf[MissileBattery]
+            val batteryTurret2 = batteryTurret.takeDamage(3)
             assert(batteryTurret2.currentLife === 0)
             assert(batteryTurret2.isDestroyed)
         }
         it("should keep the same reload time if turret get damaged") {
             val batteryTurret = ground.MissileBattery(point)
             Thread.sleep(3000)
-            val batteryTurret2 = batteryTurret.takeDamage(1).asInstanceOf[MissileBattery]
+            val batteryTurret2 = batteryTurret.takeDamage(1)
             assert(!batteryTurret2.isReloading) //false; la torre ha già caricato prima
         }
     }

@@ -5,21 +5,16 @@ import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoi
 import model.elements2d._
 import utilities.Constants
 
-case class City(private var _position: Point2D, private var _life: LifePoint = Constants.cityInitialLife) extends Damageable:
-    private val collider: HitBox = HitBoxRectangular(Point2D(_position.x + Constants.cityBaseSize/2, _position.y + Constants.cityHeightSize/2),
+case class City(val position: Point2D, val life: LifePoint = Constants.cityInitialLife) extends Damageable:
+    private val collider: HitBox = HitBoxRectangular(Point2D(position.x + Constants.cityBaseSize/2, position.y + Constants.cityHeightSize/2),
                                                     Constants.cityBaseSize,
                                                     Constants.cityHeightSize,
                                                     Angle.Degree(0))
 
     /**
-     * @return the position of the object
-     */
-    def getPosition: Point2D = _position
-
-    /**
      * @return string containing all the informations about the city
      */
-    override def toString: String = "City --> Position: x:" + _position.x + " y:" + _position.y + ";"
+    override def toString: String = "City --> Position: x:" + position.x + " y:" + position.y + ";"
 
     /**
      *  @return the initial health of the object.
@@ -29,13 +24,13 @@ case class City(private var _position: Point2D, private var _life: LifePoint = C
     /**
      *  @return the current health of the object.
      */
-    override def currentLife: LifePoint = _life
+    override def currentLife: LifePoint = life
 
     /**
      * @param damage the damage that the object received.
      *  @return the object with the new health.
      */
-    override def takeDamage(damage: Int): Damageable = City(_position, _life - damage)
+    override def takeDamage(damage: Int): City = City(position, life - damage)
 
     /**
      *  @return the affiliation of the object.
