@@ -28,15 +28,13 @@
 </span>4 <span style=''>import model.collisions.{Affiliation, Collisionable, Damageable, Distance, HitBox, LifePoint}
 </span>5 <span style=''>import model.elements2d.Point2D
 </span>6 <span style=''>
-</span>7 <span style=''>trait MissileDamageable(lifePoint: LifePoint, position: Point2D) extends Damageable:
+</span>7 <span style=''>trait MissileDamageable(lifePoint: LifePoint, position: Point2D, finalPosition: Point2D) extends Damageable:
 </span>8 <span style=''>
-</span>9 <span style=''>  </span><span style='background: #F0ADAD'>override def isDestroyed</span><span style=''>: Boolean = super.isDestroyed
+</span>9 <span style=''>  </span><span style='background: #F0ADAD'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #F0ADAD'>basicHitBox(position, (finalPosition &lt;--&gt; position).direction)</span><span style=''>
 </span>10 <span style=''>
-</span>11 <span style=''>  </span><span style='background: #F0ADAD'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #F0ADAD'>basicHitBox(position)</span><span style=''>
+</span>11 <span style=''>  </span><span style='background: #F0ADAD'>override def initialLife</span><span style=''>: LifePoint = </span><span style='background: #F0ADAD'>initialLife</span><span style=''>
 </span>12 <span style=''>
-</span>13 <span style=''>  </span><span style='background: #F0ADAD'>override def initialLife</span><span style=''>: LifePoint = </span><span style='background: #F0ADAD'>initialLife</span><span style=''>
-</span>14 <span style=''>
-</span>15 <span style=''>  </span><span style='background: #F0ADAD'>override def currentLife</span><span style=''>: LifePoint = lifePoint
+</span>13 <span style=''>  </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = lifePoint
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -54,36 +52,60 @@
           8
         </td>
         <td>
-          445
+          478
         </td>
         <td>
-          287
+          351
           -
-          311
+          413
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          isDestroyed
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def isDestroyed
+          basicHitBox(position, (finalPosition &lt;--&gt; position).direction)
         </td>
       </tr><tr>
         <td>
-          10
+          8
         </td>
         <td>
-          447
+          477
         </td>
         <td>
-          344
-          -
           373
+          -
+          412
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          (finalPosition &lt;--&gt; position).direction
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          479
+        </td>
+        <td>
+          311
+          -
+          340
         </td>
         <td>
           DefDef
@@ -99,39 +121,63 @@
         </td>
       </tr><tr>
         <td>
-          10
+          8
         </td>
         <td>
-          446
+          476
         </td>
         <td>
-          384
+          374
           -
-          405
+          401
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          &lt;--&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          basicHitBox(position)
+          finalPosition &lt;--&gt; position
         </td>
       </tr><tr>
         <td>
-          12
+          10
         </td>
         <td>
-          448
+          481
         </td>
         <td>
-          447
+          417
           -
-          458
+          441
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          initialLife
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def initialLife
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          480
+        </td>
+        <td>
+          455
+          -
+          466
         </td>
         <td>
           Select
@@ -150,36 +196,12 @@
           12
         </td>
         <td>
-          449
+          482
         </td>
         <td>
-          409
+          470
           -
-          433
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          initialLife
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          override def initialLife
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          450
-        </td>
-        <td>
-          462
-          -
-          486
+          494
         </td>
         <td>
           DefDef
@@ -190,7 +212,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           override def currentLife
         </td>
       </tr>

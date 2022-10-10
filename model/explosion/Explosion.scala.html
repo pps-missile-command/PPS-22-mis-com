@@ -24,25 +24,54 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.explosion
 </span>2 <span style=''>
-</span>3 <span style=''>import model.elements2d.Point2D
-</span>4 <span style=''>
-</span>5 <span style=''>/**
-</span>6 <span style=''> * esplosione aerea e terrestre: ci sono differenze???
-</span>7 <span style=''> */
+</span>3 <span style=''>import model.collisions.hitbox.HitBoxCircular
+</span>4 <span style=''>import model.collisions.{Affiliation, Collisionable, Damager, HitBox, LifePoint}
+</span>5 <span style=''>import model.elements2d.Point2D
+</span>6 <span style=''>
+</span>7 <span style=''>trait Explosion extends Damager:
 </span>8 <span style=''>
-</span>9 <span style=''>trait Explosion:
+</span>9 <span style=''>  def position: Point2D
 </span>10 <span style=''>
-</span>11 <span style=''>  def position: Point2D
+</span>11 <span style=''>  def radius: Double
 </span>12 <span style=''>
-</span>13 <span style=''>  def radius: Int
+</span>13 <span style=''>object Explosion:
 </span>14 <span style=''>
-</span>15 <span style=''>
-</span>16 <span style=''>
-</span>17 <span style=''>object Explosion:
-</span>18 <span style=''>
-</span>19 <span style=''>
-</span>20 <span style=''>
-</span>21 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Explosion = </span><span style='background: #F0ADAD'>???</span><span style=''>
+</span>15 <span style=''>  //ritornare un optional in base agli input
+</span>16 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(damageToInflict: LifePoint, hitboxRadius: Double, myPosition: Point2D, parentAffiliation: Affiliation): Explosion = new Explosion {
+</span>17 <span style=''>
+</span>18 <span style=''>    (damageToInflict, hitboxRadius) match
+</span>19 <span style=''>      </span><span style='background: #AEF1AE'>case (n, m) if n == 0 || m == 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>throw new IllegalArgumentException()</span><span style=''>
+</span>20 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; ()
+</span>21 <span style=''>
+</span>22 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = myPosition
+</span>23 <span style=''>
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>override def radius</span><span style=''>: Double = hitboxRadius match
+</span>25 <span style=''>      </span><span style='background: #F0ADAD'>case n if n &gt; 0</span><span style=''> =&gt; hitboxRadius
+</span>26 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(hitboxRadius)</span><span style=''>
+</span>27 <span style=''>
+</span>28 <span style=''>    /**
+</span>29 <span style=''>     * The damage inflicted by this object.
+</span>30 <span style=''>     *
+</span>31 <span style=''>     * @return the damage inflicted by this object.
+</span>32 <span style=''>     */
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>override def damageInflicted</span><span style=''>: LifePoint = damageToInflict match
+</span>34 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &gt; 0</span><span style=''> =&gt; damageToInflict
+</span>35 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(damageToInflict)</span><span style=''>
+</span>36 <span style=''>
+</span>37 <span style=''>    /**
+</span>38 <span style=''>     * Return the hit box of the object.
+</span>39 <span style=''>     *
+</span>40 <span style=''>     * @return the hit box of the object.
+</span>41 <span style=''>     */
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #AEF1AE'>HitBoxCircular(position, hitboxRadius)</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>    /**
+</span>45 <span style=''>     * Return the affiliation of the object.
+</span>46 <span style=''>     *
+</span>47 <span style=''>     * @return the affiliation of the object.
+</span>48 <span style=''>     */
+</span>49 <span style=''>    </span><span style='background: #F0ADAD'>override def affiliation</span><span style=''>: Affiliation = parentAffiliation
+</span>50 <span style=''>  }
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -57,39 +86,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          15
         </td>
         <td>
-          352
+          369
         </td>
         <td>
-          234
+          332
           -
-          237
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          ???
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ???
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          353
-        </td>
-        <td>
-          209
-          -
-          218
+          341
         </td>
         <td>
           DefDef
@@ -100,8 +105,416 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           def apply
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          352
+        </td>
+        <td>
+          564
+          -
+          594
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          new IllegalArgumentException()
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          354
+        </td>
+        <td>
+          523
+          -
+          554
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case (n, m) if n == 0 || m == 0
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          353
+        </td>
+        <td>
+          558
+          -
+          594
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          throw
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          throw new IllegalArgumentException()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          355
+        </td>
+        <td>
+          601
+          -
+          607
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          356
+        </td>
+        <td>
+          619
+          -
+          640
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def position
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          360
+        </td>
+        <td>
+          668
+          -
+          687
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          radius
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def radius
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          357
+        </td>
+        <td>
+          723
+          -
+          738
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case n if n &gt; 0
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          358
+        </td>
+        <td>
+          780
+          -
+          802
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abs
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.abs(hitboxRadius)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          359
+        </td>
+        <td>
+          761
+          -
+          776
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case n if n &lt; 0
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          364
+        </td>
+        <td>
+          927
+          -
+          955
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          damageInflicted
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def damageInflicted
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          361
+        </td>
+        <td>
+          997
+          -
+          1012
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case n if n &gt; 0
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          363
+        </td>
+        <td>
+          1038
+          -
+          1053
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case n if n &lt; 0
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          362
+        </td>
+        <td>
+          1057
+          -
+          1082
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          abs
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.abs(damageToInflict)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          367
+        </td>
+        <td>
+          1194
+          -
+          1223
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          hitBox
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override protected def hitBox
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          366
+        </td>
+        <td>
+          1234
+          -
+          1272
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          HitBoxCircular(position, hitboxRadius)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          365
+        </td>
+        <td>
+          1249
+          -
+          1257
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          position
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          368
+        </td>
+        <td>
+          1392
+          -
+          1416
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def affiliation
         </td>
       </tr>
     </table>

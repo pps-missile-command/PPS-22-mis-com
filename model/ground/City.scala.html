@@ -29,42 +29,47 @@
 </span>5 <span style=''>import model.elements2d._
 </span>6 <span style=''>import utilities.Constants
 </span>7 <span style=''>
-</span>8 <span style=''>case class City(val position: Point2D, val life: LifePoint = Constants.cityInitialLife) extends Damageable:
-</span>9 <span style=''>    private val collider: HitBox = </span><span style='background: #AEF1AE'>HitBoxRectangular(Point2D(position.x + Constants.cityBaseSize/2, position.y + Constants.cityHeightSize/2),
+</span>8 <span style=''>case class City(private var _position: Point2D, private var _life: LifePoint = Constants.cityInitialLife) extends Damageable:
+</span>9 <span style=''>    private val collider: HitBox = </span><span style='background: #AEF1AE'>HitBoxRectangular(Point2D(_position.x + Constants.cityBaseSize/2, _position.y + Constants.cityHeightSize/2),
 </span>10 <span style=''></span><span style='background: #AEF1AE'>                                                    Constants.cityBaseSize,
 </span>11 <span style=''></span><span style='background: #AEF1AE'>                                                    Constants.cityHeightSize,
 </span>12 <span style=''></span><span style='background: #AEF1AE'>                                                    Angle.Degree(0))</span><span style=''>
 </span>13 <span style=''>
 </span>14 <span style=''>    /**
-</span>15 <span style=''>     * @return string containing all the informations about the city
+</span>15 <span style=''>     * @return the position of the object
 </span>16 <span style=''>     */
-</span>17 <span style=''>    </span><span style='background: #F0ADAD'>override def toString</span><span style=''>: String = </span><span style='background: #F0ADAD'>&quot;City --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;;&quot;</span><span style=''>
+</span>17 <span style=''>    </span><span style='background: #AEF1AE'>def getPosition</span><span style=''>: Point2D = _position
 </span>18 <span style=''>
 </span>19 <span style=''>    /**
-</span>20 <span style=''>     *  @return the initial health of the object.
+</span>20 <span style=''>     * @return string containing all the informations about the city
 </span>21 <span style=''>     */
-</span>22 <span style=''>    </span><span style='background: #AEF1AE'>override def initialLife</span><span style=''>: LifePoint = Constants.cityInitialLife
+</span>22 <span style=''>    </span><span style='background: #F0ADAD'>override def toString</span><span style=''>: String = </span><span style='background: #F0ADAD'>&quot;City --&gt; Position: x:&quot; + _position.x + &quot; y:&quot; + _position.y + &quot;;&quot;</span><span style=''>
 </span>23 <span style=''>
 </span>24 <span style=''>    /**
-</span>25 <span style=''>     *  @return the current health of the object.
+</span>25 <span style=''>     *  @return the initial health of the object.
 </span>26 <span style=''>     */
-</span>27 <span style=''>    </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = life
+</span>27 <span style=''>    </span><span style='background: #AEF1AE'>override def initialLife</span><span style=''>: LifePoint = Constants.cityInitialLife
 </span>28 <span style=''>
 </span>29 <span style=''>    /**
-</span>30 <span style=''>     * @param damage the damage that the object received.
-</span>31 <span style=''>     *  @return the object with the new health.
-</span>32 <span style=''>     */
-</span>33 <span style=''>    </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: Int): City = City(position, life - damage)
-</span>34 <span style=''>
-</span>35 <span style=''>    /**
-</span>36 <span style=''>     *  @return the affiliation of the object.
+</span>30 <span style=''>     *  @return the current health of the object.
+</span>31 <span style=''>     */
+</span>32 <span style=''>    </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = _life
+</span>33 <span style=''>
+</span>34 <span style=''>    /**
+</span>35 <span style=''>     * @param damage the damage that the object received.
+</span>36 <span style=''>     *  @return the object with the new health.
 </span>37 <span style=''>     */
-</span>38 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = Affiliation.Friendly
+</span>38 <span style=''>    </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: Int): Damageable = City(_position, _life - damage)
 </span>39 <span style=''>
 </span>40 <span style=''>    /**
-</span>41 <span style=''>     *  @return the hit box of the object.
+</span>41 <span style=''>     *  @return the affiliation of the object.
 </span>42 <span style=''>     */
-</span>43 <span style=''>    </span><span style='background: #F0ADAD'>override def hitBox</span><span style=''>: HitBox = collider
+</span>43 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = Affiliation.Friendly
+</span>44 <span style=''>
+</span>45 <span style=''>    /**
+</span>46 <span style=''>     *  @return the hit box of the object.
+</span>47 <span style=''>     */
+</span>48 <span style=''>    </span><span style='background: #F0ADAD'>override def hitBox</span><span style=''>: HitBox = collider
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -82,12 +87,12 @@
           7
         </td>
         <td>
-          370
+          387
         </td>
         <td>
-          270
+          288
           -
-          270
+          288
         </td>
         <td>
           DefDef
@@ -106,36 +111,39 @@
           8
         </td>
         <td>
-          355
+          373
         </td>
         <td>
-          417
+          370
           -
-          427
+          701
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          y
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          position.y
+          HitBoxRectangular(Point2D(_position.x + Constants.cityBaseSize/2, _position.y + Constants.cityHeightSize/2),
+                                                    Constants.cityBaseSize,
+                                                    Constants.cityHeightSize,
+                                                    Angle.Degree(0))
         </td>
       </tr><tr>
         <td>
           8
         </td>
         <td>
-          354
+          370
         </td>
         <td>
-          378
+          396
           -
-          388
+          407
         </td>
         <td>
           Select
@@ -147,19 +155,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          position.x
+          _position.x
         </td>
       </tr><tr>
         <td>
           8
         </td>
         <td>
-          357
+          372
         </td>
         <td>
-          352
+          388
           -
-          681
+          477
         </td>
         <td>
           Apply
@@ -171,46 +179,139 @@
           
         </td>
         <td style="background: #AEF1AE">
-          HitBoxRectangular(Point2D(position.x + Constants.cityBaseSize/2, position.y + Constants.cityHeightSize/2),
-                                                    Constants.cityBaseSize,
-                                                    Constants.cityHeightSize,
-                                                    Angle.Degree(0))
+          Point2D(_position.x + Constants.cityBaseSize/2, _position.y + Constants.cityHeightSize/2)
         </td>
       </tr><tr>
         <td>
           8
         </td>
         <td>
-          356
+          371
         </td>
         <td>
-          370
+          436
           -
-          457
+          447
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          apply
+          y
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Point2D(position.x + Constants.cityBaseSize/2, position.y + Constants.cityHeightSize/2)
+          _position.y
         </td>
       </tr><tr>
         <td>
           16
         </td>
         <td>
-          364
+          374
         </td>
         <td>
-          772
+          765
           -
-          793
+          780
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          getPosition
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def getPosition
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          376
+        </td>
+        <td>
+          924
+          -
+          961
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;City --&gt; Position: x:&quot; + _position.x
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          379
+        </td>
+        <td>
+          924
+          -
+          983
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;City --&gt; Position: x:&quot; + _position.x + &quot; y:&quot; + _position.y
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          378
+        </td>
+        <td>
+          972
+          -
+          983
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          _position.y
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          381
+        </td>
+        <td>
+          892
+          -
+          913
         </td>
         <td>
           DefDef
@@ -226,15 +327,15 @@
         </td>
       </tr><tr>
         <td>
-          16
+          21
         </td>
         <td>
-          358
+          375
         </td>
         <td>
-          830
+          950
           -
-          840
+          961
         </td>
         <td>
           Select
@@ -246,139 +347,67 @@
           
         </td>
         <td style="background: #F0ADAD">
-          position.x
-        </td>
-      </tr><tr>
-        <td>
-          16
-        </td>
-        <td>
-          361
-        </td>
-        <td>
-          851
-          -
-          861
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          position.y
-        </td>
-      </tr><tr>
-        <td>
-          16
-        </td>
-        <td>
-          360
-        </td>
-        <td>
-          804
-          -
-          848
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;City --&gt; Position: x:&quot; + position.x + &quot; y:&quot;
-        </td>
-      </tr><tr>
-        <td>
-          16
-        </td>
-        <td>
-          363
-        </td>
-        <td>
-          804
-          -
-          867
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;City --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;;&quot;
-        </td>
-      </tr><tr>
-        <td>
-          16
-        </td>
-        <td>
-          359
-        </td>
-        <td>
-          804
-          -
-          840
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;City --&gt; Position: x:&quot; + position.x
-        </td>
-      </tr><tr>
-        <td>
-          16
-        </td>
-        <td>
-          362
-        </td>
-        <td>
-          804
-          -
-          861
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;City --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y
+          _position.x
         </td>
       </tr><tr>
         <td>
           21
         </td>
         <td>
-          365
+          377
         </td>
         <td>
-          939
+          924
           -
-          963
+          969
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;City --&gt; Position: x:&quot; + _position.x + &quot; y:&quot;
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          380
+        </td>
+        <td>
+          924
+          -
+          989
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;City --&gt; Position: x:&quot; + _position.x + &quot; y:&quot; + _position.y + &quot;;&quot;
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          382
+        </td>
+        <td>
+          1061
+          -
+          1085
         </td>
         <td>
           DefDef
@@ -394,15 +423,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          31
         </td>
         <td>
-          366
+          383
         </td>
         <td>
-          1074
+          1196
           -
-          1098
+          1220
         </td>
         <td>
           DefDef
@@ -418,15 +447,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          37
         </td>
         <td>
-          367
+          384
         </td>
         <td>
-          1244
+          1367
           -
-          1267
+          1390
         </td>
         <td>
           DefDef
@@ -442,15 +471,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          42
         </td>
         <td>
-          368
+          385
         </td>
         <td>
-          1387
+          1518
           -
-          1411
+          1542
         </td>
         <td>
           DefDef
@@ -466,15 +495,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          47
         </td>
         <td>
-          369
+          386
         </td>
         <td>
-          1512
+          1643
           -
-          1531
+          1662
         </td>
         <td>
           DefDef

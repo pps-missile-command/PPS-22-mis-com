@@ -29,49 +29,56 @@
 </span>5 <span style=''>
 </span>6 <span style=''>import scala.util.Random
 </span>7 <span style=''>
-</span>8 <span style=''>trait Missile extends Damageable, Moveable:
-</span>9 <span style=''>
-</span>10 <span style=''>  def damage: LifePoint
-</span>11 <span style=''>
-</span>12 <span style=''>  def position: Point2D
-</span>13 <span style=''>
-</span>14 <span style=''>  def velocity: Double
-</span>15 <span style=''>
-</span>16 <span style=''>  def finalPosition: Point2D
-</span>17 <span style=''>
-</span>18 <span style=''>  def direction: Vector2D
-</span>19 <span style=''>
-</span>20 <span style=''>object Missile:
-</span>21 <span style=''>
-</span>22 <span style=''>  /**
-</span>23 <span style=''>   *
-</span>24 <span style=''>   * @param missile
-</span>25 <span style=''>   * @param dt
-</span>26 <span style=''>   * @return
-</span>27 <span style=''>   */
-</span>28 <span style=''>  </span><span style='background: #F0ADAD'>def BasicMove</span><span style=''>(missile: Missile)(dt: Double): Missile = missile match
-</span>29 <span style=''>    </span><span style='background: #F0ADAD'>case m if m.isDestroyed</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(lifePointDeath, missile.affiliation, missile.damage, missile.velocity, missile.position, missile.finalPosition)</span><span style=''>
-</span>30 <span style=''>    </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --&gt; (missile.direction * missile.velocity * dt), missile.finalPosition)</span><span style=''>
-</span>31 <span style=''>
-</span>32 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(lifePoint: LifePoint, myAffiliation: Affiliation, myDamage: LifePoint, myVelocity: Double, myPosition: Point2D, myFinalPosition: Point2D) : Missile = new Missile with </span><span style='background: #AEF1AE'>MissileDamageable(lifePoint, myPosition)</span><span style=''>:
-</span>33 <span style=''>
-</span>34 <span style=''>    </span><span style='background: #F0ADAD'>override def takeDamage</span><span style=''>(damage: LifePoint): Damageable = </span><span style='background: #F0ADAD'>apply(currentLife - damage, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)</span><span style=''>
-</span>35 <span style=''>
-</span>36 <span style=''>    </span><span style='background: #F0ADAD'>override def damage</span><span style=''>: LifePoint = myDamage
-</span>37 <span style=''>
-</span>38 <span style=''>    </span><span style='background: #F0ADAD'>override def position</span><span style=''>: Point2D = myPosition
-</span>39 <span style=''>
-</span>40 <span style=''>    </span><span style='background: #F0ADAD'>override def velocity</span><span style=''>: Double = myVelocity
-</span>41 <span style=''>
-</span>42 <span style=''>    </span><span style='background: #AEF1AE'>override def finalPosition</span><span style=''>: Point2D = myFinalPosition
-</span>43 <span style=''>
-</span>44 <span style=''>    </span><span style='background: #F0ADAD'>override def direction</span><span style=''>: Vector2D = </span><span style='background: #F0ADAD'>myPosition &lt;--&gt; myFinalPosition</span><span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = myAffiliation
-</span>47 <span style=''>
-</span>48 <span style=''>    val moveStrategy: MissileMovement = </span><span style='background: #F0ADAD'>Missile.BasicMove(this)(_)</span><span style=''>
-</span>49 <span style=''>
-</span>50 <span style=''>    </span><span style='background: #F0ADAD'>override def move</span><span style=''>(dt: Double): Missile = </span><span style='background: #F0ADAD'>moveStrategy(dt)</span><span style=''>
+</span>8 <span style=''>given </span><span style='background: #AEF1AE'>Conversion[(Point2D, Point2D), Vector2D]</span><span style=''> with
+</span>9 <span style=''>  </span><span style='background: #AEF1AE'>override def apply</span><span style=''>(x: (Point2D, Point2D)): Vector2D = </span><span style='background: #AEF1AE'>(x._2 &lt;--&gt; x._1).normalize</span><span style=''>
+</span>10 <span style=''>
+</span>11 <span style=''>trait Missile extends Damageable, Moveable:
+</span>12 <span style=''>
+</span>13 <span style=''>  def damage: LifePoint
+</span>14 <span style=''>
+</span>15 <span style=''>  def position: Point2D
+</span>16 <span style=''>
+</span>17 <span style=''>  def velocity: Double
+</span>18 <span style=''>
+</span>19 <span style=''>  def finalPosition: Point2D
+</span>20 <span style=''>
+</span>21 <span style=''>  def direction: Vector2D
+</span>22 <span style=''>
+</span>23 <span style=''>  override def move(dt: Double): Missile
+</span>24 <span style=''>
+</span>25 <span style=''>object Missile:
+</span>26 <span style=''>
+</span>27 <span style=''>  /**
+</span>28 <span style=''>   *
+</span>29 <span style=''>   * @param missile
+</span>30 <span style=''>   * @param dt
+</span>31 <span style=''>   * @return
+</span>32 <span style=''>   */
+</span>33 <span style=''>  </span><span style='background: #AEF1AE'>def BasicMove</span><span style=''>(missile: Missile)(dt: Double): Missile = missile match
+</span>34 <span style=''>    </span><span style='background: #F0ADAD'>case m if m.isDestroyed</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(lifePointDeath, missile.affiliation, missile.damage, missile.velocity, missile.position, missile.finalPosition)</span><span style=''>
+</span>35 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --&gt; (missile.direction * missile.velocity * dt), missile.finalPosition)</span><span style=''>
+</span>36 <span style=''>
+</span>37 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(lifePoint: LifePoint, myAffiliation: Affiliation, myDamage: LifePoint, myVelocity: Double, myPosition: Point2D, myFinalPosition: Point2D) : Missile = new Missile with </span><span style='background: #AEF1AE'>MissileDamageable(lifePoint, myPosition, myFinalPosition)</span><span style=''>:
+</span>38 <span style=''>
+</span>39 <span style=''>    </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: LifePoint): Damageable = this match
+</span>40 <span style=''>      </span><span style='background: #F0ADAD'>case m if m.isDestroyed</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(lifePointDeath, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)</span><span style=''>
+</span>41 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>apply(currentLife - damage, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)</span><span style=''>
+</span>42 <span style=''>        
+</span>43 <span style=''>    </span><span style='background: #AEF1AE'>override def damage</span><span style=''>: LifePoint = myDamage
+</span>44 <span style=''>
+</span>45 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = myPosition
+</span>46 <span style=''>
+</span>47 <span style=''>    </span><span style='background: #AEF1AE'>override def velocity</span><span style=''>: Double = myVelocity
+</span>48 <span style=''>
+</span>49 <span style=''>    </span><span style='background: #AEF1AE'>override def finalPosition</span><span style=''>: Point2D = myFinalPosition
+</span>50 <span style=''>
+</span>51 <span style=''>    </span><span style='background: #AEF1AE'>override def direction</span><span style=''>: Vector2D = </span><span style='background: #AEF1AE'>(myPosition, myFinalPosition)</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = myAffiliation
+</span>54 <span style=''>
+</span>55 <span style=''>    val moveStrategy: MissileMovement = </span><span style='background: #AEF1AE'>Missile.BasicMove(this)(_)</span><span style=''>
+</span>56 <span style=''>
+</span>57 <span style=''>    </span><span style='background: #AEF1AE'>override def move</span><span style=''>(dt: Double): Missile = </span><span style='background: #AEF1AE'>moveStrategy(dt)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -86,15 +93,159 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          27
+          7
         </td>
         <td>
-          429
+          470
         </td>
         <td>
-          461
+          207
           -
+          247
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Conversion[(Point2D, Point2D), Vector2D]
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          472
+        </td>
+        <td>
+          320
+          -
+          324
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x._1
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
           474
+        </td>
+        <td>
+          309
+          -
+          335
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          normalize
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (x._2 &lt;--&gt; x._1).normalize
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          471
+        </td>
+        <td>
+          310
+          -
+          314
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x._2
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          473
+        </td>
+        <td>
+          310
+          -
+          324
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;--&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x._2 &lt;--&gt; x._1
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          475
+        </td>
+        <td>
+          255
+          -
+          273
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def apply
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          450
+        </td>
+        <td>
+          639
+          -
+          652
         </td>
         <td>
           DefDef
@@ -105,68 +256,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           def BasicMove
         </td>
       </tr><tr>
         <td>
-          28
+          33
         </td>
         <td>
-          415
+          433
         </td>
         <td>
-          544
+          834
           -
-          557
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isDestroyed
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          m.isDestroyed
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          409
-        </td>
-        <td>
-          604
-          -
-          618
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          damage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.damage
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          412
-        </td>
-        <td>
-          656
-          -
-          677
+          855
         </td>
         <td>
           Select
@@ -182,15 +285,111 @@
         </td>
       </tr><tr>
         <td>
-          28
+          33
         </td>
         <td>
-          414
+          436
         </td>
         <td>
-          534
+          722
           -
-          557
+          735
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          m.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          430
+        </td>
+        <td>
+          782
+          -
+          796
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          damage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.damage
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          429
+        </td>
+        <td>
+          761
+          -
+          780
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.affiliation
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          432
+        </td>
+        <td>
+          816
+          -
+          832
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.position
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          435
+        </td>
+        <td>
+          712
+          -
+          735
         </td>
         <td>
           Block
@@ -206,63 +405,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          33
         </td>
         <td>
-          408
+          431
         </td>
         <td>
-          583
+          798
           -
-          602
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          affiliation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.affiliation
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          411
-        </td>
-        <td>
-          638
-          -
-          654
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          position
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.position
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          410
-        </td>
-        <td>
-          620
-          -
-          636
+          814
         </td>
         <td>
           Select
@@ -278,15 +429,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          33
         </td>
         <td>
-          413
+          434
         </td>
         <td>
-          561
+          739
           -
-          678
+          856
         </td>
         <td>
           Apply
@@ -302,87 +453,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
-          424
+          442
         </td>
         <td>
-          797
+          975
           -
-          838
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          *
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.direction * missile.velocity * dt
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          427
-        </td>
-        <td>
-          693
-          -
-          863
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --&gt; (missile.direction * missile.velocity * dt), missile.finalPosition)
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          418
-        </td>
-        <td>
-          741
-          -
-          755
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          damage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.damage
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          421
-        </td>
-        <td>
-          797
-          -
-          814
+          992
         </td>
         <td>
           Select
@@ -393,44 +472,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           missile.direction
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
-          420
+          445
         </td>
         <td>
-          775
+          975
           -
-          791
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          position
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.position
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          423
-        </td>
-        <td>
-          797
-          -
-          833
+          1016
         </td>
         <td>
           Apply
@@ -441,44 +496,68 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          missile.direction * missile.velocity
+        <td style="background: #AEF1AE">
+          missile.direction * missile.velocity * dt
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
-          426
+          448
         </td>
         <td>
-          841
+          871
           -
-          862
+          1041
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --&gt; (missile.direction * missile.velocity * dt), missile.finalPosition)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          439
+        </td>
+        <td>
+          919
+          -
+          933
         </td>
         <td>
           Select
         </td>
         <td>
-          finalPosition
+          damage
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          missile.finalPosition
+        <td style="background: #AEF1AE">
+          missile.damage
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
-          417
+          438
         </td>
         <td>
-          720
+          898
           -
-          739
+          917
         </td>
         <td>
           Select
@@ -489,116 +568,116 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           missile.affiliation
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
-          419
+          447
         </td>
         <td>
-          757
+          1019
           -
-          773
+          1040
         </td>
         <td>
           Select
         </td>
         <td>
-          velocity
+          finalPosition
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          missile.velocity
+        <td style="background: #AEF1AE">
+          missile.finalPosition
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
-          428
+          441
         </td>
         <td>
-          683
+          953
           -
-          689
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          422
-        </td>
-        <td>
-          817
-          -
-          833
+          969
         </td>
         <td>
           Select
         </td>
         <td>
-          velocity
+          position
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          missile.velocity
+        <td style="background: #AEF1AE">
+          missile.position
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
-          425
+          444
         </td>
         <td>
-          775
+          975
           -
-          838
+          1011
         </td>
         <td>
           Apply
         </td>
         <td>
-          --&gt;
+          *
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          missile.position --&gt; (missile.direction * missile.velocity * dt
+        <td style="background: #AEF1AE">
+          missile.direction * missile.velocity
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
-          416
+          443
         </td>
         <td>
-          699
+          995
           -
-          718
+          1011
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.velocity
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          437
+        </td>
+        <td>
+          877
+          -
+          896
         </td>
         <td>
           Select
@@ -609,44 +688,92 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           missile.currentLife
         </td>
       </tr><tr>
         <td>
-          31
+          34
         </td>
         <td>
-          430
+          446
         </td>
         <td>
-          1044
+          953
           -
-          1084
+          1016
         </td>
         <td>
           Apply
         </td>
         <td>
-          &lt;init&gt;
+          --&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          MissileDamageable(lifePoint, myPosition)
+          missile.position --&gt; (missile.direction * missile.velocity * dt
         </td>
       </tr><tr>
         <td>
-          31
+          34
         </td>
         <td>
-          444
+          440
         </td>
         <td>
-          867
+          935
           -
-          876
+          951
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.velocity
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          449
+        </td>
+        <td>
+          861
+          -
+          867
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          469
+        </td>
+        <td>
+          1045
+          -
+          1054
         </td>
         <td>
           DefDef
@@ -662,15 +789,39 @@
         </td>
       </tr><tr>
         <td>
-          33
+          36
         </td>
         <td>
-          433
+          451
         </td>
         <td>
-          1091
+          1222
           -
-          1114
+          1279
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          MissileDamageable(lifePoint, myPosition, myFinalPosition)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          458
+        </td>
+        <td>
+          1286
+          -
+          1309
         </td>
         <td>
           DefDef
@@ -681,20 +832,68 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           override def takeDamage
         </td>
       </tr><tr>
         <td>
-          33
+          39
         </td>
         <td>
-          432
+          454
         </td>
         <td>
-          1148
+          1370
           -
-          1241
+          1383
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          m.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          453
+        </td>
+        <td>
+          1360
+          -
+          1383
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case m if m.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          452
+        </td>
+        <td>
+          1387
+          -
+          1474
         </td>
         <td>
           Apply
@@ -706,19 +905,67 @@
           
         </td>
         <td style="background: #F0ADAD">
+          apply(lifePointDeath, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          457
+        </td>
+        <td>
+          1481
+          -
+          1487
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          456
+        </td>
+        <td>
+          1491
+          -
+          1584
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
           apply(currentLife - damage, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)
         </td>
       </tr><tr>
         <td>
-          33
+          40
         </td>
         <td>
-          431
+          455
         </td>
         <td>
-          1154
+          1497
           -
-          1165
+          1508
         </td>
         <td>
           Select
@@ -729,20 +976,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           currentLife
         </td>
       </tr><tr>
         <td>
-          35
+          42
         </td>
         <td>
-          434
+          459
         </td>
         <td>
-          1247
+          1598
           -
-          1266
+          1617
         </td>
         <td>
           DefDef
@@ -753,20 +1000,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           override def damage
         </td>
       </tr><tr>
         <td>
-          37
+          44
         </td>
         <td>
-          435
+          460
         </td>
         <td>
-          1294
+          1645
           -
-          1315
+          1666
         </td>
         <td>
           DefDef
@@ -777,20 +1024,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           override def position
         </td>
       </tr><tr>
         <td>
-          39
+          46
         </td>
         <td>
-          436
+          461
         </td>
         <td>
-          1343
+          1694
           -
-          1364
+          1715
         </td>
         <td>
           DefDef
@@ -801,20 +1048,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           override def velocity
         </td>
       </tr><tr>
         <td>
-          41
+          48
         </td>
         <td>
-          437
+          462
         </td>
         <td>
-          1391
+          1742
           -
-          1417
+          1768
         </td>
         <td>
           DefDef
@@ -830,15 +1077,39 @@
         </td>
       </tr><tr>
         <td>
-          43
+          50
         </td>
         <td>
-          439
+          463
         </td>
         <td>
-          1450
+          1836
           -
-          1472
+          1865
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (myPosition, myFinalPosition)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          464
+        </td>
+        <td>
+          1801
+          -
+          1823
         </td>
         <td>
           DefDef
@@ -849,44 +1120,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           override def direction
         </td>
       </tr><tr>
         <td>
-          43
+          52
         </td>
         <td>
-          438
+          465
         </td>
         <td>
-          1485
+          1871
           -
-          1516
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;--&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          myPosition &lt;--&gt; myFinalPosition
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          440
-        </td>
-        <td>
-          1522
-          -
-          1546
+          1895
         </td>
         <td>
           DefDef
@@ -902,15 +1149,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          54
         </td>
         <td>
-          441
+          466
         </td>
         <td>
-          1617
+          1966
           -
-          1643
+          1992
         </td>
         <td>
           Apply
@@ -921,44 +1168,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           Missile.BasicMove(this)(_)
         </td>
       </tr><tr>
         <td>
-          49
+          56
         </td>
         <td>
-          442
+          468
         </td>
         <td>
-          1690
+          1998
           -
-          1706
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          moveStrategy(dt)
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          443
-        </td>
-        <td>
-          1649
-          -
-          1666
+          2015
         </td>
         <td>
           DefDef
@@ -969,8 +1192,32 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           override def move
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          467
+        </td>
+        <td>
+          2039
+          -
+          2055
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          moveStrategy(dt)
         </td>
       </tr>
     </table>
