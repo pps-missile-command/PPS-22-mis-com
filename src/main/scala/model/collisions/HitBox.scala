@@ -2,7 +2,6 @@ package model.collisions
 
 import model.elements2d.Point2D
 import org.scalactic.Equality
-
 import math.BigDecimal.double2bigDecimal
 
 /**

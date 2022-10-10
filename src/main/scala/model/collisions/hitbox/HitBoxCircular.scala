@@ -1,10 +1,9 @@
 package model.collisions.hitbox
 
-import model.collisions.HitBox
-import model.elements2d.Point2D
-import utilities.MathUtilities.*
 import model.collisions.*
+import model.elements2d.Point2D
 import org.scalactic.Equality
+import utilities.MathUtilities.*
 
 /**
  * Factory for a new hit box that has the shape of a circle.
@@ -18,18 +17,21 @@ object HitBoxCircular:
    * @param radius the radius of the circle
    * @return a new hit box that has the shape of a circle
    */
-  def apply(center: Point2D, radius: Double): HitBox = HitBoxCircular(center, radius)
+  def apply(center: Point2D, radius: Double): HitBox =
+    if (radius <= 0)
+      HitBoxEmpty
+    else
+      HitBoxCircular(center, radius)
 
+  private case class HitBoxCircular(center: Point2D, radius: Double) extends HitBoxSymmetric :
 
-  private case class HitBoxCircular(center: Point2D, radius: Double) extends HitBox :
+    protected def max(values: Iterable[Double]): Option[Double] = Option(values.head + radius)
 
-    override val xMax: Option[Double] = Option(center.x + radius)
+    protected def min(values: Iterable[Double]): Option[Double] = Option(values.head - radius)
 
-    override val yMax: Option[Double] = Option(center.y + radius)
+    protected def x: Iterable[Double] = Iterable(center.x)
 
-    override val xMin: Option[Double] = Option(center.x - radius)
-
-    override val yMin: Option[Double] = Option(center.y - radius)
+    protected def y: Iterable[Double] = Iterable(center.y)
 
     override def contains(point: Point2D)(using equality: Equality[Double]): Boolean =
       (point <-> center) <== radius

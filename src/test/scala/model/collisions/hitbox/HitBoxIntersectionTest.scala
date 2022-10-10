@@ -1,10 +1,12 @@
-package model.collisions
+package model.collisions.hitbox
 
-import model.collisions.hitbox._
+import model.collisions.hitbox.*
+import model.collisions.Distance
 import model.elements2d.{Angle, Point2D}
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
-import math.BigDecimal.double2bigDecimal
+
+import scala.math.BigDecimal.double2bigDecimal
 
 object HitBoxIntersectionTest:
   private val tolerance: Double = 0.1
@@ -15,8 +17,7 @@ object HitBoxIntersectionTest:
 
 class HitBoxIntersectionTest extends AnyFunSpec :
 
-  import HitBoxIntersectionTest._
-  import HitBoxIntersectionTest.given
+  import HitBoxIntersectionTest.{*, given}
 
   describe("An hit box") {
 
@@ -72,13 +73,35 @@ class HitBoxIntersectionTest extends AnyFunSpec :
           assert(hitBox == HitBoxEmpty)
         }
 
-        it("should be an empty hit box if there is no intersection between the hit boxes") {
+        it("should be an empty hit box if there is no intersection between the hit boxes (x)") {
           val hitBox = HitBoxIntersection(
             HitBoxPoint(Point2D(0, 0)),
-            HitBoxPoint(Point2D(1, 1))
+            HitBoxPoint(Point2D(1, 0))
           )
           assert(hitBox == HitBoxEmpty)
         }
+
+        it("should be an empty hit box if there is no intersection between the hit boxes (y)") {
+          val hitBox = HitBoxIntersection(
+            HitBoxPoint(Point2D(0, 0)),
+            HitBoxPoint(Point2D(0, 1))
+          )
+          assert(hitBox == HitBoxEmpty)
+        }
+
+        it("should be an empty hit box if there is no intersection between the hit boxes same interval") {
+          val intervalInterceptPoint = Point2D(1, 1)
+          val circle = HitBoxCircular(Point2D(-1, -1), 2)
+          val rectangle = HitBoxRectangular(Point2D(2, 2), 2, 2, Angle.Degree(0))
+          val hitBox = HitBoxIntersection(
+            rectangle,
+            circle
+          )
+          assert(rectangle.contains(intervalInterceptPoint))
+          assert(!circle.contains(intervalInterceptPoint))
+          assert(hitBox == HitBoxEmpty)
+        }
+
       }
 
       describe("that result to be a point") {

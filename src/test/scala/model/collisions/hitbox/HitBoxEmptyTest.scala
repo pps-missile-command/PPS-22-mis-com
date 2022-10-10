@@ -1,4 +1,4 @@
-package model.collisions
+package model.collisions.hitbox
 
 import model.collisions.hitbox.HitBoxEmpty
 import model.elements2d.Point2D

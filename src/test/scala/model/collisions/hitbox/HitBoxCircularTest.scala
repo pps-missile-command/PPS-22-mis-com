@@ -1,12 +1,14 @@
-package model.collisions
+package model.collisions.hitbox
 
 import model.collisions.hitbox.HitBoxCircular
+import model.collisions.Distance
 import model.elements2d.Point2D
+import model.elements2d.Point2D.GivenEquality.given
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
-import math.BigDecimal.double2bigDecimal
-import model.elements2d.Point2D.GivenEquality.given
-import utilities.MathUtilities._
+import utilities.MathUtilities.*
+
+import scala.math.BigDecimal.double2bigDecimal
 
 object HitBoxCircularTest:
   private val tolerance: Double = 0.1
@@ -23,8 +25,7 @@ object HitBoxCircularTest:
 
 class HitBoxCircularTest extends AnyFunSpec :
 
-  import HitBoxCircularTest._
-  import HitBoxCircularTest.given
+  import HitBoxCircularTest.{*, given}
 
   describe("An hit box") {
 
@@ -41,6 +42,16 @@ class HitBoxCircularTest extends AnyFunSpec :
         assert(hitBox.xMin.get === (center.x - radius))
         assert(hitBox.yMax.get === (center.y + radius))
         assert(hitBox.yMin.get === (center.y - radius))
+      }
+
+      it("should be empty if the radius is 0") {
+        val hitBox = HitBoxCircular(center, 0)
+        assert(hitBox.area.isEmpty)
+      }
+
+      it("should be empty if the radius is negative") {
+        val hitBox = HitBoxCircular(center, -1)
+        assert(hitBox.area.isEmpty)
       }
 
       it("should have the points in the circle with radius inside") {
