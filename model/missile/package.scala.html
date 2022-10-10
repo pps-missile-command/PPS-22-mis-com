@@ -39,33 +39,31 @@
 </span>15 <span style=''>  case object ZigZagMissile extends MissileType
 </span>16 <span style=''>
 </span>17 <span style=''>  val initialLife: LifePoint = 50
-</span>18 <span style=''>  val velocity: Double = 10
-</span>19 <span style=''>  val damage: Int = 1
-</span>20 <span style=''>  val hitboxBase: Double = 10.0
-</span>21 <span style=''>  val hitboxHeight: Double = 10.0
-</span>22 <span style=''>  val angle: Angle = Angle.Degree(90)
-</span>23 <span style=''>  
-</span>24 <span style=''>  val basicHitBox: (Point2D, Option[Angle]) =&gt; HitBox = (point_, angle_) =&gt; </span><span style='background: #F0ADAD'>HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))</span><span style=''>
+</span>18 <span style=''>  val hitboxBase: Double = 10.0
+</span>19 <span style=''>  val hitboxHeight: Double = 10.0
+</span>20 <span style=''>  val angle: Angle = Angle.Degree(90)
+</span>21 <span style=''>  
+</span>22 <span style=''>  val basicHitBox: (Point2D) =&gt; HitBox = </span><span style='background: #F0ADAD'>HitBoxRectangular(_, hitboxBase, hitboxHeight, angle)</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  type MissileMovement = (Double) =&gt; Missile
 </span>25 <span style=''>
-</span>26 <span style=''>  type MissileMovement = (Double) =&gt; Missile
-</span>27 <span style=''>
-</span>28 <span style=''>  //generating a random positioned missile of type T
-</span>29 <span style=''>  </span><span style='background: #F0ADAD'>def GenerateRandomMissile</span><span style=''>(missileType: MissileType, affiliation: Affiliation, finalDestination: Point2D)(using random: Random) = missileType match
-</span>30 <span style=''>    </span><span style='background: #F0ADAD'>case BasicMissile</span><span style=''> =&gt;
-</span>31 <span style=''>      </span><span style='background: #F0ADAD'>for
-</span>32 <span style=''></span><span style='background: #F0ADAD'>        x &lt;- Option.apply(Random.nextInt(10)) //length del campo (vedere monadi)
-</span>33 <span style=''></span><span style='background: #F0ADAD'>        y &lt;- Option.apply(10) //height del campo
-</span>34 <span style=''></span><span style='background: #F0ADAD'>      yield Missile(initialLife, affiliation, damage, velocity, Point2D(x, y), finalDestination)</span><span style=''>
-</span>35 <span style=''>
-</span>36 <span style=''>    </span><span style='background: #F0ADAD'>case RandomMissile</span><span style=''> =&gt;
-</span>37 <span style=''>      </span><span style='background: #F0ADAD'>for
-</span>38 <span style=''></span><span style='background: #F0ADAD'>        vel &lt;- Option.apply(Random.nextInt(10))
-</span>39 <span style=''></span><span style='background: #F0ADAD'>        x &lt;- Option.apply(Random.nextInt(10)) //length del campo (vedere monadi)
-</span>40 <span style=''></span><span style='background: #F0ADAD'>        y &lt;- Option.apply(10)
-</span>41 <span style=''></span><span style='background: #F0ADAD'>        damage &lt;- Option.apply(10)
-</span>42 <span style=''></span><span style='background: #F0ADAD'>      yield Missile(initialLife, affiliation, damage, 1.0, Point2D(x, y), Point2D(10,10))</span><span style=''>
-</span>43 <span style=''>
-</span>44 <span style=''>    </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>AnyRef</span><span style=''>
+</span>26 <span style=''>  //generating a random positioned missile of type T
+</span>27 <span style=''>  </span><span style='background: #F0ADAD'>def GenerateRandomMissile</span><span style=''>(missileType: MissileType)(using random: Random) = missileType match
+</span>28 <span style=''>    </span><span style='background: #F0ADAD'>case BasicMissile</span><span style=''> =&gt;
+</span>29 <span style=''>      </span><span style='background: #F0ADAD'>for
+</span>30 <span style=''></span><span style='background: #F0ADAD'>        x &lt;- Option.apply(Random.nextInt(10)) //length del campo (vedere monadi)
+</span>31 <span style=''></span><span style='background: #F0ADAD'>        y &lt;- Option.apply(10) //height del campo
+</span>32 <span style=''></span><span style='background: #F0ADAD'>      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))</span><span style=''>
+</span>33 <span style=''>
+</span>34 <span style=''>    </span><span style='background: #F0ADAD'>case RandomMissile</span><span style=''> =&gt;
+</span>35 <span style=''>      </span><span style='background: #F0ADAD'>for
+</span>36 <span style=''></span><span style='background: #F0ADAD'>        vel &lt;- Option.apply(Random.nextInt(10))
+</span>37 <span style=''></span><span style='background: #F0ADAD'>        x &lt;- Option.apply(Random.nextInt(10)) //length del campo (vedere monadi)
+</span>38 <span style=''></span><span style='background: #F0ADAD'>        y &lt;- Option.apply(10)
+</span>39 <span style=''></span><span style='background: #F0ADAD'>        damage &lt;- Option.apply(10)
+</span>40 <span style=''></span><span style='background: #F0ADAD'>      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))</span><span style=''>
+</span>41 <span style=''>
+</span>42 <span style=''>    </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>???</span><span style=''> //empty missile
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -80,39 +78,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          23
+          21
         </td>
         <td>
-          424
+          451
         </td>
         <td>
-          735
+          598
           -
-          758
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getOrElse
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          angle_.getOrElse(angle)
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          425
-        </td>
-        <td>
-          683
-          -
-          759
+          651
         </td>
         <td>
           Apply
@@ -124,19 +98,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))
+          HitBoxRectangular(_, hitboxBase, hitboxHeight, angle)
         </td>
       </tr><tr>
         <td>
-          28
+          26
         </td>
         <td>
-          454
+          481
         </td>
         <td>
-          862
+          754
           -
-          887
+          779
         </td>
         <td>
           DefDef
@@ -152,15 +126,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
-          435
+          462
         </td>
         <td>
-          1013
+          852
           -
-          1030
+          869
         </td>
         <td>
           Block
@@ -176,15 +150,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          28
         </td>
         <td>
-          434
+          461
         </td>
         <td>
-          1040
+          879
           -
-          1270
+          1097
         </td>
         <td>
           Apply
@@ -199,19 +173,19 @@
           for
         x &lt;- Option.apply(Random.nextInt(10)) //length del campo (vedere monadi)
         y &lt;- Option.apply(10) //height del campo
-      yield Missile(initialLife, affiliation, damage, velocity, Point2D(x, y), finalDestination)
+      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
         </td>
       </tr><tr>
         <td>
-          31
+          29
         </td>
         <td>
-          427
+          453
         </td>
         <td>
-          1057
+          896
           -
-          1089
+          928
         </td>
         <td>
           Apply
@@ -227,15 +201,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          29
         </td>
         <td>
-          426
+          452
         </td>
         <td>
-          1070
+          909
           -
-          1088
+          927
         </td>
         <td>
           Apply
@@ -251,15 +225,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          30
         </td>
         <td>
-          433
+          460
         </td>
         <td>
-          1133
+          972
           -
-          1270
+          1097
         </td>
         <td>
           Apply
@@ -272,19 +246,19 @@
         </td>
         <td style="background: #F0ADAD">
           y &lt;- Option.apply(10) //height del campo
-      yield Missile(initialLife, affiliation, damage, velocity, Point2D(x, y), finalDestination)
+      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
         </td>
       </tr><tr>
         <td>
-          32
+          30
         </td>
         <td>
-          428
+          454
         </td>
         <td>
-          1138
+          977
           -
-          1154
+          993
         </td>
         <td>
           Apply
@@ -300,87 +274,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          31
         </td>
         <td>
-          430
+          457
         </td>
         <td>
-          1249
+          1067
           -
-          1250
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          429
-        </td>
-        <td>
-          1246
-          -
-          1247
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          432
-        </td>
-        <td>
-          1186
-          -
-          1270
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Missile(initialLife, affiliation, damage, velocity, Point2D(x, y), finalDestination)
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          431
-        </td>
-        <td>
-          1238
-          -
-          1251
+          1080
         </td>
         <td>
           Apply
@@ -396,15 +298,111 @@
         </td>
       </tr><tr>
         <td>
-          35
+          31
         </td>
         <td>
-          451
+          456
         </td>
         <td>
-          1276
+          1078
           -
-          1294
+          1079
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          y
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          459
+        </td>
+        <td>
+          1025
+          -
+          1097
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          455
+        </td>
+        <td>
+          1075
+          -
+          1076
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          x
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          458
+        </td>
+        <td>
+          1082
+          -
+          1096
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D(10,10)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          478
+        </td>
+        <td>
+          1103
+          -
+          1121
         </td>
         <td>
           Block
@@ -420,15 +418,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          34
         </td>
         <td>
-          450
+          477
         </td>
         <td>
-          1304
+          1131
           -
-          1591
+          1413
         </td>
         <td>
           Apply
@@ -445,19 +443,19 @@
         x &lt;- Option.apply(Random.nextInt(10)) //length del campo (vedere monadi)
         y &lt;- Option.apply(10)
         damage &lt;- Option.apply(10)
-      yield Missile(initialLife, affiliation, damage, 1.0, Point2D(x, y), Point2D(10,10))
+      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
-          436
+          463
         </td>
         <td>
-          1336
+          1163
           -
-          1354
+          1181
         </td>
         <td>
           Apply
@@ -473,15 +471,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
-          437
+          464
         </td>
         <td>
-          1323
+          1150
           -
-          1355
+          1182
         </td>
         <td>
           Apply
@@ -497,39 +495,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          36
         </td>
         <td>
-          439
+          465
         </td>
         <td>
-          1369
+          1209
           -
-          1401
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Option.apply(Random.nextInt(10))
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          438
-        </td>
-        <td>
-          1382
-          -
-          1400
+          1227
         </td>
         <td>
           Apply
@@ -545,15 +519,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          36
         </td>
         <td>
-          449
+          476
         </td>
         <td>
-          1364
+          1191
           -
-          1591
+          1413
         </td>
         <td>
           Apply
@@ -568,19 +542,67 @@
           x &lt;- Option.apply(Random.nextInt(10)) //length del campo (vedere monadi)
         y &lt;- Option.apply(10)
         damage &lt;- Option.apply(10)
-      yield Missile(initialLife, affiliation, damage, 1.0, Point2D(x, y), Point2D(10,10))
+      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
         </td>
       </tr><tr>
         <td>
-          39
+          36
         </td>
         <td>
-          448
+          466
         </td>
         <td>
-          1445
+          1196
           -
-          1591
+          1228
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Option.apply(Random.nextInt(10))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          467
+        </td>
+        <td>
+          1277
+          -
+          1293
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Option.apply(10)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          475
+        </td>
+        <td>
+          1272
+          -
+          1413
         </td>
         <td>
           Apply
@@ -594,43 +616,19 @@
         <td style="background: #F0ADAD">
           y &lt;- Option.apply(10)
         damage &lt;- Option.apply(10)
-      yield Missile(initialLife, affiliation, damage, 1.0, Point2D(x, y), Point2D(10,10))
+      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
         </td>
       </tr><tr>
         <td>
-          39
+          38
         </td>
         <td>
-          440
+          474
         </td>
         <td>
-          1450
+          1302
           -
-          1466
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Option.apply(10)
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          447
-        </td>
-        <td>
-          1475
-          -
-          1591
+          1413
         </td>
         <td>
           Apply
@@ -643,19 +641,19 @@
         </td>
         <td style="background: #F0ADAD">
           damage &lt;- Option.apply(10)
-      yield Missile(initialLife, affiliation, damage, 1.0, Point2D(x, y), Point2D(10,10))
+      yield Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
         </td>
       </tr><tr>
         <td>
-          40
+          38
         </td>
         <td>
-          441
+          468
         </td>
         <td>
-          1485
+          1312
           -
-          1501
+          1328
         </td>
         <td>
           Apply
@@ -671,15 +669,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
-          442
+          469
         </td>
         <td>
-          1569
+          1391
           -
-          1570
+          1392
         </td>
         <td>
           Apply
@@ -695,15 +693,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
-          445
+          472
         </td>
         <td>
-          1576
+          1398
           -
-          1590
+          1412
         </td>
         <td>
           Apply
@@ -719,15 +717,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
-          444
+          471
         </td>
         <td>
-          1561
+          1383
           -
-          1574
+          1396
         </td>
         <td>
           Apply
@@ -743,15 +741,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
-          443
+          470
         </td>
         <td>
-          1572
+          1394
           -
-          1573
+          1395
         </td>
         <td>
           Apply
@@ -767,15 +765,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
-          446
+          473
         </td>
         <td>
-          1514
+          1341
           -
-          1591
+          1413
         </td>
         <td>
           Apply
@@ -787,19 +785,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Missile(initialLife, affiliation, damage, 1.0, Point2D(x, y), Point2D(10,10))
+          Missile(10, Affiliation.Friendly, 1, 1.0, Point2D(x, y), Point2D(10,10))
         </td>
       </tr><tr>
         <td>
-          43
+          41
         </td>
         <td>
-          453
+          480
         </td>
         <td>
-          1597
+          1419
           -
-          1603
+          1425
         </td>
         <td>
           Block
@@ -815,27 +813,27 @@
         </td>
       </tr><tr>
         <td>
-          43
+          41
         </td>
         <td>
-          452
+          479
         </td>
         <td>
-          1607
+          1429
           -
-          1613
+          1432
         </td>
         <td>
           Ident
         </td>
         <td>
-          AnyRef
+          ???
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          AnyRef
+          ???
         </td>
       </tr>
     </table>
