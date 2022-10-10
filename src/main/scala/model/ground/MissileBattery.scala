@@ -9,16 +9,11 @@ import utilities.Constants
 import java.time
 import java.time.LocalDateTime
 
-case class MissileBattery(private val position: Point2D, private val life: LifePoint = Constants.missileBatteryInitialLife, private val lastShoot: LocalDateTime = time.LocalDateTime.now()) extends Damageable:
+case class MissileBattery(val position: Point2D, val life: LifePoint = Constants.missileBatteryInitialLife, val lastShoot: LocalDateTime = time.LocalDateTime.now()) extends Damageable:
     private val collider: HitBox = HitBoxRectangular(Point2D(position.x + Constants.missileBatteryBaseSize/2, position.y + Constants.missileBatteryHeightSize/2),
                                                     Constants.missileBatteryBaseSize,
                                                     Constants.missileBatteryHeightSize,
                                                     Angle.Degree(0)) //collider of the object
-
-    /**
-     * @return the position of the object
-     */
-    def getPosition: Point2D = position
 
     /**
      * @return true: If the turret is reloading and still not able to shoot
@@ -30,7 +25,7 @@ case class MissileBattery(private val position: Point2D, private val life: LifeP
      */
     def shootRocket(endingPoint: Point2D): Option[Tuple2[MissileBattery, Missile]] =
         if !this.isReloading then
-            Some((MissileBattery(getPosition),
+            Some((MissileBattery(position),
                 Missile(Constants.missileHealth,
                     Affiliation.Friendly,
                     Constants.missileFriendlyDamage,
@@ -42,7 +37,7 @@ case class MissileBattery(private val position: Point2D, private val life: LifeP
     /**
      * @return a string containing all the valuable informations
      */
-    override def toString: String = "Missile battery --> Position: x:" + getPosition.x + " y:" + getPosition.y + "; Reloading: " + isReloading + ";"
+    override def toString: String = "Missile battery --> Position: x:" + position.x + " y:" + position.y + "; Reloading: " + isReloading + ";"
 
     /**
      *  @return the affiliation of the object.
@@ -68,4 +63,4 @@ case class MissileBattery(private val position: Point2D, private val life: LifeP
      * @param damage the damage that the object received.
      * @return the object with the new health.
      */
-    override def takeDamage(damage: LifePoint): Damageable = MissileBattery(position, life - damage, lastShoot)
+    override def takeDamage(damage: LifePoint): MissileBattery = MissileBattery(position, life - damage, lastShoot)

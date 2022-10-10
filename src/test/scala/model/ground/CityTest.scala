@@ -13,8 +13,8 @@ class CityTest extends AnyFunSpec {
 
     describe("A city") {
         it("should create a new city in given position and with correct life") {
-            assert(city.getPosition.x === xTest)
-            assert(city.getPosition.y === yTest)
+            assert(city.position.x === xTest)
+            assert(city.position.y === yTest)
             assert(city.initialLife === Constants.cityInitialLife)
             assert(city.currentLife === Constants.cityInitialLife)
         }
@@ -31,7 +31,7 @@ class CityTest extends AnyFunSpec {
         it("should keep the same position after taking damage") {
             assert(city.currentLife === 3)
             val city2 = city.takeDamage(1).asInstanceOf[City]
-            assert(city2.getPosition === city.getPosition)
+            assert(city2.position === city.position)
         }
     }
 }
