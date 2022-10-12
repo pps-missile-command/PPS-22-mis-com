@@ -28,11 +28,11 @@ class MissileBatteryTest extends AnyFunSpec {
 
         it("should fail if you shoot twice in a row without waiting") {
             val batteryTurret = ground.MissileBattery(point)
-            assert(batteryTurret.isReloading) //true. When turret got created, the reload will start
+            assert(!batteryTurret.isReadyForShoot) //false. When turret got created, the reload will start
             Thread.sleep(2000)
-            assert(batteryTurret.isReloading) //true. Turret is still reloading
+            assert(!batteryTurret.isReadyForShoot) //false. Turret is still reloading
             Thread.sleep(1000)
-            assert(!batteryTurret.isReloading) //false. Turret finished reloading
+            assert(batteryTurret.isReadyForShoot) //false. Turret finished reloading
         }
         it("should be a friendly unit") {
             val batteryTurret = ground.MissileBattery(point)
@@ -50,7 +50,7 @@ class MissileBatteryTest extends AnyFunSpec {
             assert(values.nonEmpty)
             
             val tupled: Tuple2[MissileBattery, Missile] = values.get
-            assert(tupled._1.isReloading) //vero. La batteria che ha sparato deve essere in ricarica
+            assert(!tupled._1.isReadyForShoot) //true. The turret shot, so is reloading
             assert(tupled._2.affiliation === Affiliation.Friendly)
             assert(tupled._2.finalPosition === Point2D(10.0, 10.0))
         }
@@ -65,7 +65,7 @@ class MissileBatteryTest extends AnyFunSpec {
             val batteryTurret = ground.MissileBattery(point)
             Thread.sleep(3000)
             val batteryTurret2 = batteryTurret.takeDamage(1)
-            assert(!batteryTurret2.isReloading) //false; la torre ha già caricato prima
+            assert(batteryTurret2.isReadyForShoot) //true. The turret already reloaded before
         }
     }
 }

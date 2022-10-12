@@ -30,7 +30,7 @@ case class City(val position: Point2D, val life: LifePoint = Constants.cityIniti
      * @param damage the damage that the object received.
      *  @return the object with the new health.
      */
-    override def takeDamage(damage: Int): City = City(position, life - damage)
+    override def takeDamage(damage: LifePoint): City = City(position, life - damage)
 
     /**
      *  @return the affiliation of the object.
