@@ -1,0 +1,286 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          model/package.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>import model.collisions.{Affiliation, Collisionable, Damageable}
+</span>2 <span style=''>
+</span>3 <span style=''>package object model:
+</span>4 <span style=''>
+</span>5 <span style=''>  /**
+</span>6 <span style=''>   * Type alias for the point that are given in the game when an object is destroyed.
+</span>7 <span style=''>   */
+</span>8 <span style=''>  type ScorePoint = Int
+</span>9 <span style=''>
+</span>10 <span style=''>  /**
+</span>11 <span style=''>   * Trait that represents an object that give points when destroyed.
+</span>12 <span style=''>   */
+</span>13 <span style=''>  trait Scorable(val points: ScorePoint) extends Damageable
+</span>14 <span style=''>
+</span>15 <span style=''>  /**
+</span>16 <span style=''>   * Function that calculate the new score of the player.
+</span>17 <span style=''>   *
+</span>18 <span style=''>   * @param collisionables list of collisionable objects.
+</span>19 <span style=''>   * @param actualScore    the actual score of the player.
+</span>20 <span style=''>   * @return the new score of the player.
+</span>21 <span style=''>   */
+</span>22 <span style=''>  </span><span style='background: #AEF1AE'>def calculateNewScore</span><span style=''>(collisionables: List[Collisionable], actualScore: ScorePoint): ScorePoint =
+</span>23 <span style=''>    </span><span style='background: #AEF1AE'>def getScorePoint</span><span style=''>(collisionable: Collisionable): ScorePoint =
+</span>24 <span style=''>      collisionable match
+</span>25 <span style=''>        </span><span style='background: #AEF1AE'>case scorable: Scorable if scorable.isDestroyed &amp;&amp; scorable.affiliation != Affiliation.Friendly</span><span style=''> =&gt; scorable.points
+</span>26 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; 0
+</span>27 <span style=''>
+</span>28 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.map(getScorePoint).sum</span><span style=''> + actualScore
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          586
+        </td>
+        <td>
+          591
+          -
+          612
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          calculateNewScore
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def calculateNewScore
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          582
+        </td>
+        <td>
+          693
+          -
+          710
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          getScorePoint
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def getScorePoint
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          579
+        </td>
+        <td>
+          816
+          -
+          836
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          scorable.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          578
+        </td>
+        <td>
+          789
+          -
+          884
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case scorable: Scorable if scorable.isDestroyed &amp;&amp; scorable.affiliation != Affiliation.Friendly
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          580
+        </td>
+        <td>
+          840
+          -
+          860
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          scorable.affiliation
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          581
+        </td>
+        <td>
+          912
+          -
+          918
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          585
+        </td>
+        <td>
+          929
+          -
+          966
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          sum
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables.map(getScorePoint).sum
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          584
+        </td>
+        <td>
+          929
+          -
+          962
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables.map(getScorePoint)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          583
+        </td>
+        <td>
+          948
+          -
+          961
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getScorePoint
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          getScorePoint
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
