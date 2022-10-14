@@ -18,13 +18,13 @@ case class MissileBattery(val position: Point2D, val life: LifePoint = Constants
     /**
      * @return true: If the turret is reloading and still not able to shoot
      */
-    def isReloading: Boolean = time.LocalDateTime.now().isBefore(lastShoot.plusSeconds(Constants.reloadingTime))
+    def isReadyForShoot: Boolean = time.LocalDateTime.now().isAfter(lastShoot.plusSeconds(Constants.reloadingTime))
 
     /**
      * @return a tuple of MissileBattery and Missile if turret is ready for shoot, None if turret is reloading
      */
     def shootRocket(endingPoint: Point2D): Option[Tuple2[MissileBattery, Missile]] =
-        if !this.isReloading then
+        if this.isReadyForShoot then
             Some((MissileBattery(position),
                 Missile(Constants.missileHealth,
                     Affiliation.Friendly,
@@ -37,7 +37,7 @@ case class MissileBattery(val position: Point2D, val life: LifePoint = Constants
     /**
      * @return a string containing all the valuable informations
      */
-    override def toString: String = "Missile battery --> Position: x:" + position.x + " y:" + position.y + "; Reloading: " + isReloading + ";"
+    override def toString: String = "Missile battery --> Position: x:" + position.x + " y:" + position.y + "; Ready for shoot: " + isReadyForShoot + "; Life: " + life + "\n"
 
     /**
      *  @return the affiliation of the object.
