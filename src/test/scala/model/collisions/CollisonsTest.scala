@@ -11,26 +11,25 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
   info("If the Damageable object is already dead, nothing should happen")
   info("If the Damageable object has not enough life, it should be destroyed")
 
+  given distance: Distance = 0.1
+
   Feature("Don't inflict damage") {
     Scenario("The objects don't collide") {
       Given("Two objects that don't collide")
       val initialLife = 3
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damager = DamagerTest(Point2D(10, 10), Affiliation.Enemy)
-      assert(!damageable.isCollidingWith(damager)(using distance = 0.1))
+      assert(!damageable.isCollidingWith(damager))
 
-      When("Check collision")
-      val update = checkCollision(List(damageable, damager))
+      When("Calculate collision and apply damage")
+      val update = applyDamage(calculateCollisions(List(damageable, damager)))
 
-      Then("The damageable object should not be damaged")
+      Then("The map should have 2 elements both empty")
       assert(update.size == 2)
       for
-        elem <- update
+        element <- update
       yield
-        elem match
-          case damageable: Damageable => assert(damageable.currentLife == initialLife)
-          case damager: Damager => assert(damager.damageInflicted == 1)
-
+        assert(element._2.isEmpty)
     }
 
     Scenario("The object collide but they are of the same type") {
@@ -38,18 +37,17 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val initialLife = 3
       val damageable1 = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damageable2 = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Enemy)
-      assert(damageable1.isCollidingWith(damageable2)(using distance = 0.1))
+      assert(damageable1.isCollidingWith(damageable2))
 
-      When("Check collision")
-      val update = checkCollision(List(damageable1, damageable2))
+      When("Calculate collision and apply damage")
+      val update = calculateCollisions(List(damageable1, damageable2))
 
-      Then("The damageable object shouldn't be damaged")
+      Then("The map should have 2 elements both empty")
       assert(update.size == 2)
       for
-        elem <- update
+        element <- update
       yield
-        elem match
-          case damageable: Damageable => assert(damageable.currentLife == initialLife)
+        assert(element._2.isEmpty)
     }
 
     Scenario("The object collide but they are of the same side") {
@@ -57,19 +55,17 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val initialLife = 3
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Friendly)
-      assert(damageable.isCollidingWith(damager)(using distance = 0.1))
+      assert(damageable.isCollidingWith(damager))
 
-      When("Check collision")
-      val update = checkCollision(List(damageable, damager))
+      When("Calculate collision")
+      val update = applyDamage(calculateCollisions(List(damageable, damager)))
 
-      Then("The damageable object shouldn't be damaged")
+      Then("The map should have 2 elements both empty")
       assert(update.size == 2)
       for
-        elem <- update
+        element <- update
       yield
-        elem match
-          case damageable: Damageable => assert(damageable.currentLife == initialLife)
-          case _ => assert(true)
+        assert(element._2.isEmpty)
     }
   }
 
@@ -79,20 +75,23 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val initialLife = 3
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Enemy)
-      assert(damageable.isCollidingWith(damager)(using distance = 0.1))
+      assert(damageable.isCollidingWith(damager))
 
-      When("Check collision")
-      val update = checkCollision(List(damageable, damager))
+      When("Check collision and apply damages")
+      val update = applyDamage(calculateCollisions(List(damageable, damager)))
 
-      Then("The damageable object should be damaged")
+      Then("The map should have 2 elements one not empty")
       assert(update.size == 2)
       for
-        elem <- update
+        element <- update
       yield
-        elem match
-          case damageable: Damageable => assert(damageable.currentLife == initialLife - 1)
-          case damager: Damager => assert(damager.damageInflicted == 1)
-
+        element._1 match
+          case damageable: Damageable =>
+            assert(element._2.size == 1)
+            assert(element._2.contains(damager))
+            assert(!damageable.isDestroyed)
+            assert(damageable.currentLife == initialLife - damager.damageInflicted)
+          case _ => assert(element._2.isEmpty)
     }
 
     Scenario("The objects collide and the damageable should be destroyed") {
@@ -100,22 +99,23 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val initialLife = 1
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Enemy)
-      assert(damageable.isCollidingWith(damager)(using distance = 0.1))
+      assert(damageable.isCollidingWith(damager))
 
-      When("Check collision")
-      val update = checkCollision(List(damageable, damager))
+      When("Check collision and apply damages")
+      val update = applyDamage(calculateCollisions(List(damageable, damager)))
 
-      Then("The damageable object should be damaged and destroyed")
+      Then("The map should have 2 elements, the damageable should be destroyed and the damager should be empty")
       assert(update.size == 2)
       for
-        elem <- update
+        element <- update
       yield
-        elem match
+        element._1 match
           case damageable: Damageable =>
-            assert(damageable.currentLife == 0)
+            assert(element._2.size == 1)
+            assert(element._2.contains(damager))
             assert(damageable.isDestroyed)
-          case damager: Damager => assert(damager.damageInflicted == 1)
-
+            assert(damageable.currentLife == initialLife - damager.damageInflicted)
+          case _ => assert(element._2.isEmpty)
     }
 
     Scenario("The objects collide one is both damageable and damager") {
@@ -123,21 +123,23 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val initialLife = 3
       val both = DamagerDamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Enemy)
-      assert(both.isCollidingWith(damager)(using distance = 0.1))
+      assert(both.isCollidingWith(damager))
 
-      When("Check collision")
-      val update = checkCollision(List(both, damager))
+      When("Check collision and apply damages")
+      val update = applyDamage(calculateCollisions(List(both, damager)))
 
-      Then("The object that is both damageable and damager should be damaged")
+      Then("The map should have 2 elements, the damageable should have damage and the damager should be empty")
       assert(update.size == 2)
       for
-        elem <- update
+        element <- update
       yield
-        elem match
+        element._1 match
           case damageable: Damageable =>
-            assert(damageable.currentLife == initialLife - 1)
+            assert(element._2.size == 1)
+            assert(element._2.contains(damager))
             assert(!damageable.isDestroyed)
-          case damager: Damager => assert(damager.damageInflicted == 1)
+            assert(damageable.currentLife == initialLife - damager.damageInflicted)
+          case _ => assert(element._2.isEmpty)
     }
 
     Scenario("Multiple objects collide") {
@@ -146,26 +148,28 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val both = DamagerDamageableTest(Point2D(0, 0), initialLife, Affiliation.Enemy)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Neutral)
-      assert(both.isCollidingWith(damager)(using distance = 0.1))
-      assert(both.isCollidingWith(damageable)(using distance = 0.1))
-      assert(damageable.isCollidingWith(damager)(using distance = 0.1))
+      assert(both.isCollidingWith(damager))
+      assert(both.isCollidingWith(damageable))
+      assert(damageable.isCollidingWith(damager))
 
-      When("Check collision")
-      val update = checkCollision(List(both, damager, damageable))
+      When("Check collision and apply damages")
+      val update = applyDamage(calculateCollisions(List(both, damager, damageable)))
 
       Then("The damageable objects should be damaged 2 times and the object that is both damageable and damager should be damaged 1 time")
       assert(update.size == 3)
       for
-        elem <- update
+        element <- update
       yield
-        elem match
+        element._1 match
           case damageable: Damageable =>
             damageable match
               case damager: Damager =>
+                assert(element._2.size == 1)
                 assert(damageable.currentLife == initialLife - 1)
-                assert(damager.damageInflicted == 1)
-              case _ => assert(damageable.currentLife == initialLife - 2)
+              case _ =>
+                assert(element._2.size == 2)
+                assert(damageable.currentLife == initialLife - 2)
             assert(!damageable.isDestroyed)
-          case damager: Damager => assert(damager.damageInflicted == 1)
+          case _ => assert(element._2.isEmpty)
     }
   }
