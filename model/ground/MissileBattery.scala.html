@@ -42,13 +42,13 @@
 </span>18 <span style=''>    /**
 </span>19 <span style=''>     * @return true: If the turret is reloading and still not able to shoot
 </span>20 <span style=''>     */
-</span>21 <span style=''>    </span><span style='background: #AEF1AE'>def isReloading</span><span style=''>: Boolean = </span><span style='background: #AEF1AE'>time.LocalDateTime.now().isBefore(lastShoot.plusSeconds(Constants.reloadingTime))</span><span style=''>
+</span>21 <span style=''>    </span><span style='background: #AEF1AE'>def isReadyForShoot</span><span style=''>: Boolean = </span><span style='background: #AEF1AE'>time.LocalDateTime.now().isAfter(lastShoot.plusSeconds(Constants.reloadingTime))</span><span style=''>
 </span>22 <span style=''>
 </span>23 <span style=''>    /**
 </span>24 <span style=''>     * @return a tuple of MissileBattery and Missile if turret is ready for shoot, None if turret is reloading
 </span>25 <span style=''>     */
 </span>26 <span style=''>    </span><span style='background: #AEF1AE'>def shootRocket</span><span style=''>(endingPoint: Point2D): Option[Tuple2[MissileBattery, Missile]] =
-</span>27 <span style=''>        if !</span><span style='background: #AEF1AE'>this.isReloading</span><span style=''> then
+</span>27 <span style=''>        if </span><span style='background: #AEF1AE'>this.isReadyForShoot</span><span style=''> then
 </span>28 <span style=''>            </span><span style='background: #AEF1AE'>Some((MissileBattery(position),
 </span>29 <span style=''></span><span style='background: #AEF1AE'>                Missile(Constants.missileHealth,
 </span>30 <span style=''></span><span style='background: #AEF1AE'>                    Affiliation.Friendly,
@@ -61,7 +61,7 @@
 </span>37 <span style=''>    /**
 </span>38 <span style=''>     * @return a string containing all the valuable informations
 </span>39 <span style=''>     */
-</span>40 <span style=''>    </span><span style='background: #F0ADAD'>override def toString</span><span style=''>: String = </span><span style='background: #F0ADAD'>&quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Reloading: &quot; + isReloading + &quot;;&quot;</span><span style=''>
+</span>40 <span style=''>    </span><span style='background: #AEF1AE'>override def toString</span><span style=''>: String = </span><span style='background: #AEF1AE'>&quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Ready for shoot: &quot; + isReadyForShoot + &quot;; Life: &quot; + life + &quot;\n&quot;</span><span style=''>
 </span>41 <span style=''>
 </span>42 <span style=''>    /**
 </span>43 <span style=''>     *  @return the affiliation of the object.
@@ -105,7 +105,31 @@
           11
         </td>
         <td>
-          501
+          585
+        </td>
+        <td>
+          442
+          -
+          466
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          now
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          time.LocalDateTime.now()
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          584
         </td>
         <td>
           374
@@ -129,7 +153,7 @@
           11
         </td>
         <td>
-          503
+          586
         </td>
         <td>
           442
@@ -150,34 +174,10 @@
         </td>
       </tr><tr>
         <td>
-          11
-        </td>
-        <td>
-          502
-        </td>
-        <td>
-          442
-          -
-          466
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          now
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          time.LocalDateTime.now()
-        </td>
-      </tr><tr>
-        <td>
           12
         </td>
         <td>
-          469
+          550
         </td>
         <td>
           541
@@ -201,7 +201,7 @@
           12
         </td>
         <td>
-          468
+          549
         </td>
         <td>
           598
@@ -225,7 +225,31 @@
           12
         </td>
         <td>
-          470
+          548
+        </td>
+        <td>
+          549
+          -
+          559
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          position.x
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          551
         </td>
         <td>
           523
@@ -249,87 +273,15 @@
         </td>
       </tr><tr>
         <td>
-          12
-        </td>
-        <td>
-          467
-        </td>
-        <td>
-          549
-          -
-          559
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          position.x
-        </td>
-      </tr><tr>
-        <td>
           20
         </td>
         <td>
-          472
+          552
         </td>
         <td>
-          1098
+          1046
           -
-          1121
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2long
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Constants.reloadingTime
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          474
-        </td>
-        <td>
-          1042
-          -
-          1123
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          isBefore
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          time.LocalDateTime.now().isBefore(lastShoot.plusSeconds(Constants.reloadingTime))
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          471
-        </td>
-        <td>
-          1042
-          -
-          1066
+          1070
         </td>
         <td>
           Apply
@@ -348,12 +300,36 @@
           20
         </td>
         <td>
-          473
+          555
         </td>
         <td>
-          1076
+          1046
           -
-          1122
+          1126
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isAfter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          time.LocalDateTime.now().isAfter(lastShoot.plusSeconds(Constants.reloadingTime))
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          554
+        </td>
+        <td>
+          1079
+          -
+          1125
         </td>
         <td>
           Apply
@@ -372,36 +348,60 @@
           20
         </td>
         <td>
-          475
+          553
         </td>
         <td>
-          1015
+          1101
           -
-          1030
+          1124
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          isReloading
+          int2long
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def isReloading
+          Constants.reloadingTime
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          556
+        </td>
+        <td>
+          1015
+          -
+          1034
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isReadyForShoot
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isReadyForShoot
         </td>
       </tr><tr>
         <td>
           25
         </td>
         <td>
-          485
+          566
         </td>
         <td>
-          1256
+          1259
           -
-          1271
+          1274
         </td>
         <td>
           DefDef
@@ -420,36 +420,36 @@
           26
         </td>
         <td>
-          476
+          557
         </td>
         <td>
-          1349
+          1351
           -
-          1365
+          1371
         </td>
         <td>
           Select
         </td>
         <td>
-          isReloading
+          isReadyForShoot
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          this.isReloading
+          this.isReadyForShoot
         </td>
       </tr><tr>
         <td>
           27
         </td>
         <td>
-          478
+          559
         </td>
         <td>
-          1389
+          1395
           -
-          1403
+          1409
         </td>
         <td>
           Select
@@ -468,12 +468,36 @@
           27
         </td>
         <td>
-          483
+          558
         </td>
         <td>
-          1383
+          1395
           -
-          1690
+          1409
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          MissileBattery
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          564
+        </td>
+        <td>
+          1389
+          -
+          1696
         </td>
         <td>
           Apply
@@ -494,39 +518,15 @@
         </td>
       </tr><tr>
         <td>
-          27
-        </td>
-        <td>
-          477
-        </td>
-        <td>
-          1389
-          -
-          1403
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          $lessinit$greater$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          MissileBattery
-        </td>
-      </tr><tr>
-        <td>
           28
         </td>
         <td>
-          482
+          563
         </td>
         <td>
-          1431
+          1437
           -
-          1688
+          1694
         </td>
         <td>
           Apply
@@ -549,36 +549,12 @@
           32
         </td>
         <td>
-          481
+          561
         </td>
         <td>
-          1631
+          1656
           -
-          1674
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Point2D(position.x,position.y+hitboxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          480
-        </td>
-        <td>
-          1650
-          -
-          1660
+          1666
         </td>
         <td>
           Select
@@ -597,12 +573,12 @@
           32
         </td>
         <td>
-          479
+          560
         </td>
         <td>
-          1639
+          1645
           -
-          1649
+          1655
         </td>
         <td>
           Select
@@ -618,15 +594,39 @@
         </td>
       </tr><tr>
         <td>
+          32
+        </td>
+        <td>
+          562
+        </td>
+        <td>
+          1637
+          -
+          1680
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Point2D(position.x,position.y+hitboxHeight)
+        </td>
+      </tr><tr>
+        <td>
           34
         </td>
         <td>
-          484
+          565
         </td>
         <td>
-          1748
+          1754
           -
-          1752
+          1758
         </td>
         <td>
           Ident
@@ -645,12 +645,12 @@
           39
         </td>
         <td>
-          487
+          568
         </td>
         <td>
-          1871
+          1877
           -
-          1918
+          1924
         </td>
         <td>
           Apply
@@ -661,7 +661,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           &quot;Missile battery --&gt; Position: x:&quot; + position.x
         </td>
       </tr><tr>
@@ -669,12 +669,12 @@
           39
         </td>
         <td>
-          490
+          577
         </td>
         <td>
-          1871
+          1877
           -
-          1939
+          2014
         </td>
         <td>
           Apply
@@ -685,92 +685,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y
+        <td style="background: #AEF1AE">
+          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Ready for shoot: &quot; + isReadyForShoot + &quot;; Life: &quot; + life + &quot;\n&quot;
         </td>
       </tr><tr>
         <td>
           39
         </td>
         <td>
-          489
+          567
         </td>
         <td>
-          1929
+          1914
           -
-          1939
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          position.y
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          492
-        </td>
-        <td>
-          1960
-          -
-          1971
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isReloading
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          isReloading
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          495
-        </td>
-        <td>
-          1839
-          -
-          1860
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          toString
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          override def toString
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          486
-        </td>
-        <td>
-          1908
-          -
-          1918
+          1924
         </td>
         <td>
           Select
@@ -781,7 +709,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           position.x
         </td>
       </tr><tr>
@@ -789,12 +717,12 @@
           39
         </td>
         <td>
-          488
+          576
         </td>
         <td>
-          1871
+          1877
           -
-          1926
+          2007
         </td>
         <td>
           Apply
@@ -805,7 +733,127 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
+          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Ready for shoot: &quot; + isReadyForShoot + &quot;; Life: &quot; + life
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          570
+        </td>
+        <td>
+          1935
+          -
+          1945
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          position.y
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          573
+        </td>
+        <td>
+          1972
+          -
+          1987
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isReadyForShoot
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          isReadyForShoot
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          572
+        </td>
+        <td>
+          1877
+          -
+          1969
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Ready for shoot: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          575
+        </td>
+        <td>
+          1877
+          -
+          2000
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Ready for shoot: &quot; + isReadyForShoot + &quot;; Life: &quot;
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          569
+        </td>
+        <td>
+          1877
+          -
+          1932
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
           &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot;
         </td>
       </tr><tr>
@@ -813,36 +861,36 @@
           39
         </td>
         <td>
-          491
+          578
         </td>
         <td>
-          1871
+          1845
           -
-          1957
+          1866
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          +
+          toString
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Reloading: &quot;
+        <td style="background: #AEF1AE">
+          override def toString
         </td>
       </tr><tr>
         <td>
           39
         </td>
         <td>
-          494
+          571
         </td>
         <td>
-          1871
+          1877
           -
-          1977
+          1945
         </td>
         <td>
           Apply
@@ -853,20 +901,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Reloading: &quot; + isReloading + &quot;;&quot;
+        <td style="background: #AEF1AE">
+          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y
         </td>
       </tr><tr>
         <td>
           39
         </td>
         <td>
-          493
+          574
         </td>
         <td>
-          1871
+          1877
           -
-          1971
+          1987
         </td>
         <td>
           Apply
@@ -877,20 +925,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Reloading: &quot; + isReloading
+        <td style="background: #AEF1AE">
+          &quot;Missile battery --&gt; Position: x:&quot; + position.x + &quot; y:&quot; + position.y + &quot;; Ready for shoot: &quot; + isReadyForShoot
         </td>
       </tr><tr>
         <td>
           44
         </td>
         <td>
-          496
+          579
         </td>
         <td>
-          2046
+          2083
           -
-          2070
+          2107
         </td>
         <td>
           DefDef
@@ -909,12 +957,12 @@
           49
         </td>
         <td>
-          497
+          580
         </td>
         <td>
-          2171
+          2208
           -
-          2190
+          2227
         </td>
         <td>
           DefDef
@@ -933,12 +981,12 @@
           54
         </td>
         <td>
-          498
+          581
         </td>
         <td>
-          2281
+          2318
           -
-          2305
+          2342
         </td>
         <td>
           DefDef
@@ -957,12 +1005,12 @@
           59
         </td>
         <td>
-          499
+          582
         </td>
         <td>
-          2426
+          2463
           -
-          2450
+          2487
         </td>
         <td>
           DefDef
@@ -981,12 +1029,12 @@
           65
         </td>
         <td>
-          500
+          583
         </td>
         <td>
-          2595
+          2632
           -
-          2618
+          2655
         </td>
         <td>
           DefDef
