@@ -9,12 +9,16 @@ object DamageableTest:
 
   def apply(position: Point2D, life: LifePoint, affiliation: Affiliation): Damageable = new DamageableTest(position, life, life, affiliation) with Scorable(1)
 
-case class DamageableTest(position: Point2D, currentLife: LifePoint, initialLife: LifePoint, affiliation: Affiliation) extends Damageable :
+class DamageableTest(_position: Point2D, _currentLife: LifePoint, _initialLife: LifePoint, _affiliation: Affiliation) extends Damageable :
 
-  protected def hitBox: HitBox = HitBoxPoint(position)
+  def affiliation: Affiliation = _affiliation
+  def currentLife: LifePoint = _currentLife
+  def initialLife: LifePoint = _initialLife
 
-  def takeDamage(damage: model.collisions.LifePoint): Damageable =
+  protected def hitBox: HitBox = HitBoxPoint(_position)
+
+  def takeDamage(damage: LifePoint): Damageable =
     this match
-      case _: Scorable => new DamageableTest(position, currentLife - damage, initialLife, affiliation) with Scorable(1)
-      case _ => this.copy(position, currentLife - damage)
+      case _: Scorable => new DamageableTest(_position, currentLife - damage, initialLife, affiliation) with Scorable(1)
+      case _ => new DamageableTest(_position, currentLife - damage, initialLife, affiliation)
 
