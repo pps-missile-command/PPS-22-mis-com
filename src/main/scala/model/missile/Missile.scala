@@ -18,40 +18,61 @@ trait Missile extends Damageable, Moveable:
 
   def finalPosition: Point2D
 
-  def direction: Vector2D
+  def direction: Vector2D = (position, finalPosition)
 
-  override def move(dt: Double): Missile
+  override def move(): Missile
+
+trait Scorable(val points: Int) extends Damageable
+
+case class MissileImpl(
+                        lifePoint: LifePoint,
+                        override val position: Point2D,
+                        override val finalPosition: Point2D,
+                        dt: DeltaTime,
+                        override val affiliation: Affiliation = Affiliation.Friendly,
+                        override val damage: LifePoint = damage,
+                        override val velocity: Double = velocity
+                      ) extends Missile with MissileDamageable(lifePoint, position, finalPosition):
+
+  val moveStrategy: MissileMovement = Missile.BasicMove(this)(_)
+  
+  override def takeDamage(damage: LifePoint): Missile = this match
+    case m if (m.currentLife - m.damage) <= 0 => newMissile(life = lifePointDeath)
+    case _ => newMissile(life = currentLife - damage)
+
+  override def move(): Missile = this match
+    case m if m.isDestroyed => newMissile(life = lifePointDeath)
+    case _ => newMissile(pos = moveStrategy(dt))
+
+  override def timeElapsed(dt: DeltaTime): Timeable = newMissile(_dt = dt)
+
+  private def newMissile(
+                          life: LifePoint = lifePoint,
+                          pos: Point2D = position,
+                          _dt: DeltaTime = dt
+                        ) = affiliation match
+    case Affiliation.Friendly => this.copy(lifePoint = life, position = pos, dt = _dt)
+    case Affiliation.Enemy =>
+      val score = this.asInstanceOf[Scorable].points
+      new MissileImpl(life, pos, finalPosition, _dt, affiliation, damage, velocity) with Scorable(score)
+    case _ => throw IllegalStateException()
+
 
 object Missile:
 
-  /**
-   *
-   * @param missile
-   * @param dt
-   * @return
-   */
-  def BasicMove(missile: Missile)(dt: Double): Missile = missile match
-    case m if m.isDestroyed => apply(lifePointDeath, missile.affiliation, missile.damage, missile.velocity, missile.position, missile.finalPosition)
-    case _ => apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --> (missile.direction * missile.velocity * dt), missile.finalPosition)
+  def enemyMissile(lifePoint: LifePoint = initialLife,
+                   _damage: LifePoint = damage,
+                   _velocity: Double = velocity,
+                   position: Point2D,
+                   finalPosition: Point2D,
+                   dt: DeltaTime,
+                   score: Int = 1): Missile = new MissileImpl(lifePoint, position, finalPosition, dt, affiliation = Affiliation.Enemy, damage = _damage, velocity = _velocity) with Scorable(1)
 
-  def apply(lifePoint: LifePoint, myAffiliation: Affiliation, myDamage: LifePoint, myVelocity: Double, myPosition: Point2D, myFinalPosition: Point2D) : Missile = new Missile with MissileDamageable(lifePoint, myPosition, myFinalPosition):
+  def BasicMove(missile: Missile)(dt: DeltaTime): Point2D = missile.position --> (missile.direction * missile.velocity * dt)
 
-    override def takeDamage(damage: LifePoint): Damageable = this match
-      case m if m.isDestroyed => apply(lifePointDeath, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)
-      case _ => apply(currentLife - damage, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)
-        
-    override def damage: LifePoint = myDamage
-
-    override def position: Point2D = myPosition
-
-    override def velocity: Double = myVelocity
-
-    override def finalPosition: Point2D = myFinalPosition
-
-    override def direction: Vector2D = (myPosition, myFinalPosition)
-
-    override def affiliation: Affiliation = myAffiliation
-
-    val moveStrategy: MissileMovement = Missile.BasicMove(this)(_)
-
-    override def move(dt: Double): Missile = moveStrategy(dt)
+  def apply(lifePoint: LifePoint = initialLife,
+            _damage: LifePoint = damage,
+            _velocity: Double = velocity,
+            position: Point2D,
+            finalPosition: Point2D,
+            dt: DeltaTime) : Missile = MissileImpl(lifePoint, position, finalPosition, dt, damage = _damage, velocity = _velocity)
