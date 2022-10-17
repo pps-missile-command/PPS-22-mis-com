@@ -24,61 +24,91 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint, lifePointDeath}
-</span>4 <span style=''>import model.elements2d.{Angle, Point2D, Vector2D}
-</span>5 <span style=''>
-</span>6 <span style=''>import scala.util.Random
+</span>3 <span style=''>import model.behavior.{Moveable, Timeable}
+</span>4 <span style=''>import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint, lifePointDeath}
+</span>5 <span style=''>import model.elements2d.{Angle, Point2D, Vector2D}
+</span>6 <span style=''>import model.explosion.Explosion
 </span>7 <span style=''>
-</span>8 <span style=''>given </span><span style='background: #AEF1AE'>Conversion[(Point2D, Point2D), Vector2D]</span><span style=''> with
-</span>9 <span style=''>  </span><span style='background: #AEF1AE'>override def apply</span><span style=''>(x: (Point2D, Point2D)): Vector2D = </span><span style='background: #AEF1AE'>(x._2 &lt;--&gt; x._1).normalize</span><span style=''>
-</span>10 <span style=''>
-</span>11 <span style=''>trait Missile extends Damageable, Moveable:
+</span>8 <span style=''>import scala.util.Random
+</span>9 <span style=''>
+</span>10 <span style=''>given </span><span style='background: #AEF1AE'>Conversion[(Point2D, Point2D), Vector2D]</span><span style=''> with
+</span>11 <span style=''>  </span><span style='background: #AEF1AE'>override def apply</span><span style=''>(x: (Point2D, Point2D)): Vector2D = </span><span style='background: #AEF1AE'>(x._2 &lt;--&gt; x._1).normalize</span><span style=''>
 </span>12 <span style=''>
-</span>13 <span style=''>  def damage: LifePoint
+</span>13 <span style=''>trait Missile extends Damageable, Moveable:
 </span>14 <span style=''>
-</span>15 <span style=''>  def position: Point2D
+</span>15 <span style=''>  def damage: LifePoint
 </span>16 <span style=''>
-</span>17 <span style=''>  def velocity: Double
+</span>17 <span style=''>  def position: Point2D
 </span>18 <span style=''>
-</span>19 <span style=''>  def finalPosition: Point2D
+</span>19 <span style=''>  def velocity: Double
 </span>20 <span style=''>
-</span>21 <span style=''>  def direction: Vector2D
+</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def direction</span><span style=''>: Vector2D = </span><span style='background: #AEF1AE'>(position, destination)</span><span style=''>
 </span>22 <span style=''>
-</span>23 <span style=''>  override def move(dt: Double): Missile
+</span>23 <span style=''>  override def move(): Missile
 </span>24 <span style=''>
-</span>25 <span style=''>object Missile:
+</span>25 <span style=''>  def explode: Explosion
 </span>26 <span style=''>
-</span>27 <span style=''>  /**
-</span>28 <span style=''>   *
-</span>29 <span style=''>   * @param missile
-</span>30 <span style=''>   * @param dt
-</span>31 <span style=''>   * @return
-</span>32 <span style=''>   */
-</span>33 <span style=''>  </span><span style='background: #AEF1AE'>def BasicMove</span><span style=''>(missile: Missile)(dt: Double): Missile = missile match
-</span>34 <span style=''>    </span><span style='background: #F0ADAD'>case m if m.isDestroyed</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(lifePointDeath, missile.affiliation, missile.damage, missile.velocity, missile.position, missile.finalPosition)</span><span style=''>
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --&gt; (missile.direction * missile.velocity * dt), missile.finalPosition)</span><span style=''>
-</span>36 <span style=''>
-</span>37 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(lifePoint: LifePoint, myAffiliation: Affiliation, myDamage: LifePoint, myVelocity: Double, myPosition: Point2D, myFinalPosition: Point2D) : Missile = new Missile with </span><span style='background: #AEF1AE'>MissileDamageable(lifePoint, myPosition, myFinalPosition)</span><span style=''>:
+</span>27 <span style=''>trait Scorable(val points: Int) extends Damageable
+</span>28 <span style=''>
+</span>29 <span style=''>case class MissileImpl(
+</span>30 <span style=''>                        lifePoint: LifePoint,
+</span>31 <span style=''>                        override val position: Point2D,
+</span>32 <span style=''>                        override val destination: Point2D,
+</span>33 <span style=''>                        dt: DeltaTime,
+</span>34 <span style=''>                        override val affiliation: Affiliation = Affiliation.Friendly,
+</span>35 <span style=''>                        override val damage: LifePoint = damage,
+</span>36 <span style=''>                        override val velocity: Double = velocity
+</span>37 <span style=''>                      ) extends Missile with </span><span style='background: #AEF1AE'>MissileDamageable(lifePoint, position, destination)</span><span style=''>:
 </span>38 <span style=''>
-</span>39 <span style=''>    </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: LifePoint): Damageable = this match
-</span>40 <span style=''>      </span><span style='background: #F0ADAD'>case m if m.isDestroyed</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(lifePointDeath, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)</span><span style=''>
-</span>41 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>apply(currentLife - damage, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)</span><span style=''>
-</span>42 <span style=''>        
-</span>43 <span style=''>    </span><span style='background: #AEF1AE'>override def damage</span><span style=''>: LifePoint = myDamage
+</span>39 <span style=''>  val moveStrategy: MissileMovement = </span><span style='background: #AEF1AE'>Missile.BasicMove(this)(_)</span><span style=''>
+</span>40 <span style=''>  
+</span>41 <span style=''>  </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: LifePoint): Missile = this match
+</span>42 <span style=''>    </span><span style='background: #F0ADAD'>case m if (m.currentLife - m.damage) &lt;= 0</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>newMissile(life = lifePointDeath)</span><span style=''>
+</span>43 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>newMissile(life = currentLife - damage)</span><span style=''>
 </span>44 <span style=''>
-</span>45 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = myPosition
-</span>46 <span style=''>
-</span>47 <span style=''>    </span><span style='background: #AEF1AE'>override def velocity</span><span style=''>: Double = myVelocity
+</span>45 <span style=''>  </span><span style='background: #AEF1AE'>override def move</span><span style=''>(): Missile = this match
+</span>46 <span style=''>    </span><span style='background: #F0ADAD'>case m if m.isDestroyed</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>newMissile(life = lifePointDeath)</span><span style=''>
+</span>47 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>newMissile(pos = moveStrategy(dt), _dt = 0)</span><span style=''>
 </span>48 <span style=''>
-</span>49 <span style=''>    </span><span style='background: #AEF1AE'>override def finalPosition</span><span style=''>: Point2D = myFinalPosition
+</span>49 <span style=''>  </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Missile = </span><span style='background: #AEF1AE'>newMissile(_dt = dt + this.dt)</span><span style=''>
 </span>50 <span style=''>
-</span>51 <span style=''>    </span><span style='background: #AEF1AE'>override def direction</span><span style=''>: Vector2D = </span><span style='background: #AEF1AE'>(myPosition, myFinalPosition)</span><span style=''>
+</span>51 <span style=''>  </span><span style='background: #F0ADAD'>override def destinationReached</span><span style=''>: Boolean = position == destination
 </span>52 <span style=''>
-</span>53 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = myAffiliation
+</span>53 <span style=''>  </span><span style='background: #F0ADAD'>override def explode</span><span style=''>: Explosion = </span><span style='background: #F0ADAD'>Explosion(damage, hitboxRadius = 10, position, affiliation)</span><span style=''>
 </span>54 <span style=''>
-</span>55 <span style=''>    val moveStrategy: MissileMovement = </span><span style='background: #AEF1AE'>Missile.BasicMove(this)(_)</span><span style=''>
-</span>56 <span style=''>
-</span>57 <span style=''>    </span><span style='background: #AEF1AE'>override def move</span><span style=''>(dt: Double): Missile = </span><span style='background: #AEF1AE'>moveStrategy(dt)</span><span style=''>
+</span>55 <span style=''>  </span><span style='background: #AEF1AE'>private def newMissile</span><span style=''>(
+</span>56 <span style=''>                          life: LifePoint = lifePoint,
+</span>57 <span style=''>                          pos: Point2D = position,
+</span>58 <span style=''>                          _dt: DeltaTime = dt
+</span>59 <span style=''>                        ) = affiliation match
+</span>60 <span style=''>    </span><span style='background: #AEF1AE'>case Affiliation.Friendly</span><span style=''> =&gt; this.copy(lifePoint = life, position = pos, dt = _dt)
+</span>61 <span style=''>    </span><span style='background: #AEF1AE'>case Affiliation.Enemy</span><span style=''> =&gt;
+</span>62 <span style=''>      val score = this.asInstanceOf[Scorable].points
+</span>63 <span style=''>      new </span><span style='background: #AEF1AE'>MissileImpl(life, pos, destination, _dt, affiliation, damage, velocity)</span><span style=''> with </span><span style='background: #AEF1AE'>Scorable(score)</span><span style=''>
+</span>64 <span style=''>    </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>throw IllegalStateException()</span><span style=''>
+</span>65 <span style=''>
+</span>66 <span style=''>
+</span>67 <span style=''>object Missile:
+</span>68 <span style=''>
+</span>69 <span style=''>  </span><span style='background: #AEF1AE'>def enemyMissile</span><span style=''>(lifePoint: LifePoint = initialLife,
+</span>70 <span style=''>                   _damage: LifePoint = damage,
+</span>71 <span style=''>                   _velocity: Double = velocity,
+</span>72 <span style=''>                   position: Point2D,
+</span>73 <span style=''>                   finalPosition: Point2D,
+</span>74 <span style=''>                   score: Int = 1): Missile = new </span><span style='background: #AEF1AE'>MissileImpl(lifePoint, position, finalPosition, 0, affiliation = Affiliation.Enemy, damage = _damage, velocity = _velocity)</span><span style=''> with </span><span style='background: #AEF1AE'>Scorable(1)</span><span style=''>
+</span>75 <span style=''>
+</span>76 <span style=''>  </span><span style='background: #AEF1AE'>def BasicMove</span><span style=''>(missile: Missile)(dt: DeltaTime): Point2D =
+</span>77 <span style=''>    val distanceToMove = </span><span style='background: #AEF1AE'>missile.velocity</span><span style=''> * dt
+</span>78 <span style=''>    val distanceToFinalPosition = </span><span style='background: #AEF1AE'>missile.position &lt;-&gt; missile.destination</span><span style=''>
+</span>79 <span style=''>    if distanceToMove &gt;= distanceToFinalPosition
+</span>80 <span style=''>    then </span><span style='background: #F0ADAD'>missile.destination</span><span style=''>
+</span>81 <span style=''>    else </span><span style='background: #AEF1AE'>missile.position --&gt; (missile.direction * distanceToMove</span><span style=''>)
+</span>82 <span style=''>
+</span>83 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(lifePoint: LifePoint = initialLife,
+</span>84 <span style=''>            _damage: LifePoint = damage,
+</span>85 <span style=''>            _velocity: Double = velocity,
+</span>86 <span style=''>            position: Point2D,
+</span>87 <span style=''>            finalPosition: Point2D) : Missile = </span><span style='background: #AEF1AE'>MissileImpl</span><span style=''>(lifePoint, position, finalPosition, 0, damage = _damage, velocity = _velocity)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -93,15 +123,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          7
+          9
         </td>
         <td>
-          628
+          659
         </td>
         <td>
-          207
+          283
           -
-          247
+          323
         </td>
         <td>
           Apply
@@ -117,87 +147,15 @@
         </td>
       </tr><tr>
         <td>
-          8
+          10
         </td>
         <td>
-          630
+          660
         </td>
         <td>
-          320
+          386
           -
-          324
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          _1
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x._1
-        </td>
-      </tr><tr>
-        <td>
-          8
-        </td>
-        <td>
-          633
-        </td>
-        <td>
-          255
-          -
-          273
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def apply
-        </td>
-      </tr><tr>
-        <td>
-          8
-        </td>
-        <td>
-          632
-        </td>
-        <td>
-          309
-          -
-          335
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          normalize
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (x._2 &lt;--&gt; x._1).normalize
-        </td>
-      </tr><tr>
-        <td>
-          8
-        </td>
-        <td>
-          629
-        </td>
-        <td>
-          310
-          -
-          314
+          390
         </td>
         <td>
           Select
@@ -213,15 +171,39 @@
         </td>
       </tr><tr>
         <td>
-          8
+          10
         </td>
         <td>
-          631
+          663
         </td>
         <td>
-          310
+          385
           -
-          324
+          411
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          normalize
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (x._2 &lt;--&gt; x._1).normalize
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          662
+        </td>
+        <td>
+          386
+          -
+          400
         </td>
         <td>
           Apply
@@ -237,210 +219,18 @@
         </td>
       </tr><tr>
         <td>
-          32
+          10
         </td>
         <td>
-          608
+          664
         </td>
         <td>
-          639
+          331
           -
-          652
+          349
         </td>
         <td>
           DefDef
-        </td>
-        <td>
-          BasicMove
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def BasicMove
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          594
-        </td>
-        <td>
-          722
-          -
-          735
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isDestroyed
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          m.isDestroyed
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          588
-        </td>
-        <td>
-          782
-          -
-          796
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          damage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.damage
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          591
-        </td>
-        <td>
-          834
-          -
-          855
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          finalPosition
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.finalPosition
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          590
-        </td>
-        <td>
-          816
-          -
-          832
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          position
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.position
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          593
-        </td>
-        <td>
-          712
-          -
-          735
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case m if m.isDestroyed
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          587
-        </td>
-        <td>
-          761
-          -
-          780
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          affiliation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.affiliation
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          589
-        </td>
-        <td>
-          798
-          -
-          814
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          velocity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.velocity
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          592
-        </td>
-        <td>
-          739
-          -
-          856
-        </td>
-        <td>
-          Apply
         </td>
         <td>
           apply
@@ -448,23 +238,71 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          apply(lifePointDeath, missile.affiliation, missile.damage, missile.velocity, missile.position, missile.finalPosition)
+        <td style="background: #AEF1AE">
+          override def apply
         </td>
       </tr><tr>
         <td>
-          34
+          10
         </td>
         <td>
-          600
+          661
         </td>
         <td>
-          975
+          396
           -
-          992
+          400
         </td>
         <td>
           Select
+        </td>
+        <td>
+          _1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          x._1
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          588
+        </td>
+        <td>
+          571
+          -
+          582
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          destination
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          590
+        </td>
+        <td>
+          534
+          -
+          547
+        </td>
+        <td>
+          DefDef
         </td>
         <td>
           direction
@@ -473,91 +311,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          missile.direction
+          def direction
         </td>
       </tr><tr>
         <td>
-          34
+          20
         </td>
         <td>
-          603
+          587
         </td>
         <td>
-          975
+          561
           -
-          1016
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          *
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missile.direction * missile.velocity * dt
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          597
-        </td>
-        <td>
-          919
-          -
-          933
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          damage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missile.damage
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          606
-        </td>
-        <td>
-          871
-          -
-          1041
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          apply(missile.currentLife, missile.affiliation, missile.damage, missile.velocity, missile.position --&gt; (missile.direction * missile.velocity * dt), missile.finalPosition)
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          599
-        </td>
-        <td>
-          953
-          -
-          969
+          569
         </td>
         <td>
           Select
@@ -569,211 +335,115 @@
           
         </td>
         <td style="background: #AEF1AE">
-          missile.position
+          position
         </td>
       </tr><tr>
         <td>
-          34
+          20
         </td>
         <td>
-          602
+          589
         </td>
         <td>
-          975
+          560
           -
-          1011
+          583
         </td>
         <td>
           Apply
         </td>
         <td>
-          *
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          missile.direction * missile.velocity
+          (position, destination)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          632
+        </td>
+        <td>
+          983
+          -
+          983
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          $lessinit$greater$default$5
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           34
         </td>
         <td>
-          596
+          633
         </td>
         <td>
-          898
+          1062
           -
-          917
+          1062
         </td>
         <td>
-          Select
+          DefDef
         </td>
         <td>
-          affiliation
+          $lessinit$greater$default$6
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          missile.affiliation
+        <td style="background: #F0ADAD">
+          
         </td>
       </tr><tr>
         <td>
-          34
+          35
         </td>
         <td>
-          605
+          634
         </td>
         <td>
-          1019
+          1126
           -
-          1040
+          1126
         </td>
         <td>
-          Select
+          DefDef
         </td>
         <td>
-          finalPosition
+          $lessinit$greater$default$7
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          missile.finalPosition
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          595
-        </td>
-        <td>
-          877
-          -
-          896
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          currentLife
-        </td>
-        <td>
+        <td style="background: #F0ADAD">
           
-        </td>
-        <td style="background: #AEF1AE">
-          missile.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          604
-        </td>
-        <td>
-          953
-          -
-          1016
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missile.position --&gt; (missile.direction * missile.velocity * dt
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          598
-        </td>
-        <td>
-          935
-          -
-          951
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          velocity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missile.velocity
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          607
-        </td>
-        <td>
-          861
-          -
-          867
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          601
-        </td>
-        <td>
-          995
-          -
-          1011
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          velocity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missile.velocity
         </td>
       </tr><tr>
         <td>
           36
         </td>
         <td>
-          609
+          591
         </td>
         <td>
-          1222
+          1180
           -
-          1279
+          1231
         </td>
         <td>
           Apply
@@ -785,43 +455,43 @@
           
         </td>
         <td style="background: #AEF1AE">
-          MissileDamageable(lifePoint, myPosition, myFinalPosition)
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          627
-        </td>
-        <td>
-          1045
-          -
-          1054
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def apply
+          MissileDamageable(lifePoint, position, destination)
         </td>
       </tr><tr>
         <td>
           38
         </td>
         <td>
-          616
+          592
         </td>
         <td>
-          1286
+          1272
           -
-          1309
+          1298
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          BasicMove
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.BasicMove(this)(_)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          603
+        </td>
+        <td>
+          1304
+          -
+          1327
         </td>
         <td>
           DefDef
@@ -837,39 +507,87 @@
         </td>
       </tr><tr>
         <td>
-          39
+          41
         </td>
         <td>
-          612
+          594
         </td>
         <td>
-          1370
+          1418
           -
-          1383
+          1428
         </td>
         <td>
           Select
         </td>
         <td>
-          isDestroyed
+          newMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          newMissile
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          597
+        </td>
+        <td>
+          1384
+          -
+          1397
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          currentLife
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          m.isDestroyed
+          m.currentLife
         </td>
       </tr><tr>
         <td>
-          39
+          41
         </td>
         <td>
-          611
+          593
         </td>
         <td>
-          1360
+          1418
           -
-          1383
+          1428
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          newMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          newMissile
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          596
+        </td>
+        <td>
+          1373
+          -
+          1414
         </td>
         <td>
           Block
@@ -881,43 +599,91 @@
           
         </td>
         <td style="background: #F0ADAD">
-          case m if m.isDestroyed
+          case m if (m.currentLife - m.damage) &lt;= 0
         </td>
       </tr><tr>
         <td>
-          39
+          41
         </td>
         <td>
-          610
+          595
         </td>
         <td>
-          1387
+          1418
           -
-          1474
+          1451
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          newMissile
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          apply(lifePointDeath, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)
+          newMissile(life = lifePointDeath)
         </td>
       </tr><tr>
         <td>
-          40
+          42
         </td>
         <td>
-          615
+          600
         </td>
         <td>
-          1481
+          1466
           -
-          1487
+          1476
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          newMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          newMissile
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          599
+        </td>
+        <td>
+          1466
+          -
+          1476
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          newMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          newMissile
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          602
+        </td>
+        <td>
+          1456
+          -
+          1462
         </td>
         <td>
           Block
@@ -933,39 +699,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          42
         </td>
         <td>
-          614
+          598
         </td>
         <td>
-          1491
+          1484
           -
-          1584
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          apply(currentLife - damage, myAffiliation, myDamage, myVelocity, myPosition, myFinalPosition)
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          613
-        </td>
-        <td>
-          1497
-          -
-          1508
+          1495
         </td>
         <td>
           Select
@@ -984,204 +726,36 @@
           42
         </td>
         <td>
-          617
+          601
         </td>
         <td>
-          1598
+          1466
           -
-          1617
+          1505
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          damage
+          newMissile
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          override def damage
+          newMissile(life = currentLife - damage)
         </td>
       </tr><tr>
         <td>
           44
         </td>
         <td>
-          618
+          613
         </td>
         <td>
-          1645
+          1509
           -
-          1666
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          position
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def position
-        </td>
-      </tr><tr>
-        <td>
-          46
-        </td>
-        <td>
-          619
-        </td>
-        <td>
-          1694
-          -
-          1715
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          velocity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def velocity
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          620
-        </td>
-        <td>
-          1742
-          -
-          1768
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          finalPosition
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def finalPosition
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          621
-        </td>
-        <td>
-          1836
-          -
-          1865
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (myPosition, myFinalPosition)
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          622
-        </td>
-        <td>
-          1801
-          -
-          1823
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          direction
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def direction
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          623
-        </td>
-        <td>
-          1871
-          -
-          1895
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          affiliation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def affiliation
-        </td>
-      </tr><tr>
-        <td>
-          54
-        </td>
-        <td>
-          624
-        </td>
-        <td>
-          1966
-          -
-          1992
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          BasicMove
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.BasicMove(this)(_)
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          626
-        </td>
-        <td>
-          1998
-          -
-          2015
+          1526
         </td>
         <td>
           DefDef
@@ -1197,15 +771,135 @@
         </td>
       </tr><tr>
         <td>
-          56
+          45
         </td>
         <td>
-          625
+          606
         </td>
         <td>
-          2039
+          1582
           -
-          2055
+          1615
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          newMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          newMissile(life = lifePointDeath)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          608
+        </td>
+        <td>
+          1565
+          -
+          1578
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          m.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          605
+        </td>
+        <td>
+          1582
+          -
+          1592
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          newMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          newMissile
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          604
+        </td>
+        <td>
+          1582
+          -
+          1592
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          newMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          newMissile
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          607
+        </td>
+        <td>
+          1555
+          -
+          1578
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case m if m.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          609
+        </td>
+        <td>
+          1647
+          -
+          1663
         </td>
         <td>
           Apply
@@ -1218,6 +912,1086 @@
         </td>
         <td style="background: #AEF1AE">
           moveStrategy(dt)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          612
+        </td>
+        <td>
+          1620
+          -
+          1626
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          611
+        </td>
+        <td>
+          1630
+          -
+          1673
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          newMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          newMissile(pos = moveStrategy(dt), _dt = 0)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          610
+        </td>
+        <td>
+          1630
+          -
+          1640
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          newMissile$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          newMissile
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          615
+        </td>
+        <td>
+          1728
+          -
+          1738
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          newMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          newMissile
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          617
+        </td>
+        <td>
+          1677
+          -
+          1701
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def timeElapsed
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          614
+        </td>
+        <td>
+          1728
+          -
+          1738
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          newMissile$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          newMissile
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          616
+        </td>
+        <td>
+          1728
+          -
+          1758
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          newMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          newMissile(_dt = dt + this.dt)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          618
+        </td>
+        <td>
+          1762
+          -
+          1793
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          destinationReached
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def destinationReached
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          620
+        </td>
+        <td>
+          1832
+          -
+          1852
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          explode
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def explode
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          619
+        </td>
+        <td>
+          1866
+          -
+          1925
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Explosion(damage, hitboxRadius = 10, position, affiliation)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          628
+        </td>
+        <td>
+          1929
+          -
+          1951
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          newMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          private def newMissile
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          629
+        </td>
+        <td>
+          1997
+          -
+          1997
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          newMissile$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          630
+        </td>
+        <td>
+          2049
+          -
+          2049
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          newMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          631
+        </td>
+        <td>
+          2102
+          -
+          2102
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          newMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          621
+        </td>
+        <td>
+          2155
+          -
+          2180
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case Affiliation.Friendly
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          624
+        </td>
+        <td>
+          2242
+          -
+          2264
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case Affiliation.Enemy
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          623
+        </td>
+        <td>
+          2408
+          -
+          2423
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Scorable(score)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          622
+        </td>
+        <td>
+          2331
+          -
+          2402
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          MissileImpl(life, pos, destination, _dt, affiliation, damage, velocity)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          627
+        </td>
+        <td>
+          2428
+          -
+          2434
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          626
+        </td>
+        <td>
+          2438
+          -
+          2467
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          throw
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          throw IllegalStateException()
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          625
+        </td>
+        <td>
+          2444
+          -
+          2467
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          IllegalStateException()
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          638
+        </td>
+        <td>
+          2529
+          -
+          2529
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          enemyMissile$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          637
+        </td>
+        <td>
+          2489
+          -
+          2505
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          enemyMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          639
+        </td>
+        <td>
+          2582
+          -
+          2582
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          enemyMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          640
+        </td>
+        <td>
+          2629
+          -
+          2629
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          enemyMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          636
+        </td>
+        <td>
+          2899
+          -
+          2910
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Scorable(1)
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          641
+        </td>
+        <td>
+          2752
+          -
+          2752
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          enemyMissile$default$6
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          635
+        </td>
+        <td>
+          2770
+          -
+          2893
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          MissileImpl(lifePoint, position, finalPosition, 0, affiliation = Affiliation.Enemy, damage = _damage, velocity = _velocity)
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          653
+        </td>
+        <td>
+          2914
+          -
+          2927
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          BasicMove
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def BasicMove
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          642
+        </td>
+        <td>
+          2997
+          -
+          3013
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.velocity
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          645
+        </td>
+        <td>
+          3053
+          -
+          3093
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;-&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position &lt;-&gt; missile.destination
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          644
+        </td>
+        <td>
+          3074
+          -
+          3093
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.destination
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          643
+        </td>
+        <td>
+          3053
+          -
+          3069
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          647
+        </td>
+        <td>
+          3152
+          -
+          3171
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.destination
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          646
+        </td>
+        <td>
+          3152
+          -
+          3171
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.destination
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          648
+        </td>
+        <td>
+          3181
+          -
+          3197
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          651
+        </td>
+        <td>
+          3181
+          -
+          3237
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position --&gt; (missile.direction * distanceToMove
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          650
+        </td>
+        <td>
+          3203
+          -
+          3237
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.direction * distanceToMove
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          649
+        </td>
+        <td>
+          3203
+          -
+          3220
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.direction
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          652
+        </td>
+        <td>
+          3181
+          -
+          3237
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position --&gt; (missile.direction * distanceToMove
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          656
+        </td>
+        <td>
+          3275
+          -
+          3275
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          655
+        </td>
+        <td>
+          3242
+          -
+          3251
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          657
+        </td>
+        <td>
+          3321
+          -
+          3321
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          658
+        </td>
+        <td>
+          3361
+          -
+          3361
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          654
+        </td>
+        <td>
+          3450
+          -
+          3461
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$5
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          MissileImpl
         </td>
       </tr>
     </table>
