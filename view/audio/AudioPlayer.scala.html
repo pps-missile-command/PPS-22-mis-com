@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/package.scala.html
+          view/audio/AudioPlayer.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,36 +22,27 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>import model.collisions.{Affiliation, Collisionable, Damageable}
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.audio
 </span>2 <span style=''>
-</span>3 <span style=''>package object model:
-</span>4 <span style=''>
-</span>5 <span style=''>  /**
-</span>6 <span style=''>   * Type alias for the point that are given in the game when an object is destroyed.
-</span>7 <span style=''>   */
-</span>8 <span style=''>  type ScorePoint = Int
-</span>9 <span style=''>
-</span>10 <span style=''>  /**
-</span>11 <span style=''>   * Trait that represents an object that give points when destroyed.
-</span>12 <span style=''>   */
-</span>13 <span style=''>  trait Scorable(val points: ScorePoint) extends Damageable
-</span>14 <span style=''>
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * Function that calculate the new score of the player.
-</span>17 <span style=''>   * It only add the points of the destroyed object if the one of the object that inflict damage to the damageable 
-</span>18 <span style=''>   * is owned by the player.
-</span>19 <span style=''>   *
-</span>20 <span style=''>   * @param collisionables a map that has as keys the damageable objects and as values a list with the damaeger that collides with them.
-</span>21 <span style=''>   * @param actualScore    the actual score of the player.
-</span>22 <span style=''>   * @return the new score of the player.
-</span>23 <span style=''>   */
-</span>24 <span style=''>  </span><span style='background: #AEF1AE'>def calculateNewScore</span><span style=''>(collisionables: Map[Collisionable, List[Collisionable]], actualScore: ScorePoint): ScorePoint =
-</span>25 <span style=''>    </span><span style='background: #AEF1AE'>def getScorePoint</span><span style=''>(collisionable: Collisionable, damagers: List[Collisionable]): ScorePoint =
-</span>26 <span style=''>      collisionable match
-</span>27 <span style=''>        </span><span style='background: #AEF1AE'>case scorable: Scorable if scorable.isDestroyed &amp;&amp; damagers.map(_.affiliation).contains(Affiliation.Friendly)</span><span style=''> =&gt; scorable.points
-</span>28 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; 0
-</span>29 <span style=''>
-</span>30 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.map((damageable, damagers) =&gt; getScorePoint(damageable, damagers)).sum</span><span style=''> + actualScore
+</span>3 <span style=''>import java.net.{MalformedURLException, URL}
+</span>4 <span style=''>import javax.sound.sampled.{AudioSystem, UnsupportedAudioFileException}
+</span>5 <span style=''>
+</span>6 <span style=''>object AudioPlayer:
+</span>7 <span style=''>    </span><span style='background: #F0ADAD'>def playAudio</span><span style=''>(URL_audio: String): Unit =
+</span>8 <span style=''>        try
+</span>9 <span style=''>            </span><span style='background: #F0ADAD'>val url = new URL(URL_audio)
+</span>10 <span style=''></span><span style='background: #F0ADAD'>            val audioIn = AudioSystem.getAudioInputStream(url)
+</span>11 <span style=''></span><span style='background: #F0ADAD'>            val clip = AudioSystem.getClip
+</span>12 <span style=''></span><span style='background: #F0ADAD'>            clip.open(audioIn)
+</span>13 <span style=''></span><span style='background: #F0ADAD'>            clip.start</span><span style=''>
+</span>14 <span style=''>        catch
+</span>15 <span style=''>            </span><span style='background: #F0ADAD'>case ex1: MalformedURLException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL not found&quot;)</span><span style=''>
+</span>16 <span style=''>            </span><span style='background: #F0ADAD'>case ex2: UnsupportedAudioFileException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL found, but not an audio&quot;)</span><span style=''>
+</span>17 <span style=''>            </span><span style='background: #F0ADAD'>case ex3: Throwable</span><span style=''> =&gt;
+</span>18 <span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>    //Add audio here
+</span>21 <span style=''>    val explosionSmall = &quot;https://www.shockwave-sound.com/sound-effects/explosion-sounds/Arcade%20Explo%20A.wav&quot;
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -66,63 +57,63 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          23
+          6
         </td>
         <td>
-          682
+          725
         </td>
         <td>
-          815
+          162
           -
-          836
+          175
         </td>
         <td>
           DefDef
         </td>
         <td>
-          calculateNewScore
+          playAudio
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          def calculateNewScore
+        <td style="background: #F0ADAD">
+          def playAudio
         </td>
       </tr><tr>
         <td>
-          24
+          8
         </td>
         <td>
-          678
+          714
         </td>
         <td>
-          937
+          237
           -
-          954
+          255
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          getScorePoint
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          def getScorePoint
+        <td style="background: #F0ADAD">
+          new URL(URL_audio)
         </td>
       </tr><tr>
         <td>
-          26
+          8
         </td>
         <td>
-          672
+          719
         </td>
         <td>
-          1064
+          227
           -
-          1173
+          415
         </td>
         <td>
           Block
@@ -133,116 +124,144 @@
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          case scorable: Scorable if scorable.isDestroyed &amp;&amp; damagers.map(_.affiliation).contains(Affiliation.Friendly)
+        <td style="background: #F0ADAD">
+          val url = new URL(URL_audio)
+            val audioIn = AudioSystem.getAudioInputStream(url)
+            val clip = AudioSystem.getClip
+            clip.open(audioIn)
+            clip.start
         </td>
       </tr><tr>
         <td>
-          26
+          9
         </td>
         <td>
-          675
+          715
         </td>
         <td>
-          1115
+          282
           -
-          1142
+          318
         </td>
         <td>
           Apply
         </td>
         <td>
-          map
+          getAudioInputStream
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          damagers.map(_.affiliation)
+        <td style="background: #F0ADAD">
+          AudioSystem.getAudioInputStream(url)
         </td>
       </tr><tr>
         <td>
-          26
+          10
         </td>
         <td>
-          674
+          716
         </td>
         <td>
-          1128
+          342
           -
-          1141
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          affiliation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.affiliation
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          673
-        </td>
-        <td>
-          1091
-          -
-          1111
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isDestroyed
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          scorable.isDestroyed
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          676
-        </td>
-        <td>
-          1115
-          -
-          1173
+          361
         </td>
         <td>
           Apply
         </td>
         <td>
-          contains
+          getClip
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          damagers.map(_.affiliation).contains(Affiliation.Friendly)
+        <td style="background: #F0ADAD">
+          AudioSystem.getClip
         </td>
       </tr><tr>
         <td>
-          27
+          11
         </td>
         <td>
-          677
+          717
         </td>
         <td>
-          1201
+          374
           -
-          1207
+          392
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          open
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          clip.open(audioIn)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          718
+        </td>
+        <td>
+          405
+          -
+          415
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          start
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          clip.start
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          720
+        </td>
+        <td>
+          477
+          -
+          501
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          println
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          println(&quot;URL not found&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          721
+        </td>
+        <td>
+          442
+          -
+          473
         </td>
         <td>
           Block
@@ -253,80 +272,80 @@
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          case _
+        <td style="background: #F0ADAD">
+          case ex1: MalformedURLException
         </td>
       </tr><tr>
         <td>
-          29
+          15
         </td>
         <td>
-          681
+          723
         </td>
         <td>
-          1218
+          514
           -
-          1303
+          553
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case ex2: UnsupportedAudioFileException
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          722
+        </td>
+        <td>
+          557
+          -
+          595
         </td>
         <td>
           Apply
         </td>
         <td>
-          sum
+          println
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          collisionables.map((damageable, damagers) =&gt; getScorePoint(damageable, damagers)).sum
+        <td style="background: #F0ADAD">
+          println(&quot;URL found, but not an audio&quot;)
         </td>
       </tr><tr>
         <td>
-          29
+          16
         </td>
         <td>
-          680
+          724
         </td>
         <td>
-          1218
+          608
           -
-          1299
+          627
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          map
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          collisionables.map((damageable, damagers) =&gt; getScorePoint(damageable, damagers))
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          679
-        </td>
-        <td>
-          1263
-          -
-          1298
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getScorePoint
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          getScorePoint(damageable, damagers)
+        <td style="background: #F0ADAD">
+          case ex3: Throwable
         </td>
       </tr>
     </table>

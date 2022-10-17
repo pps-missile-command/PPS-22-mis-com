@@ -50,76 +50,64 @@
 </span>26 <span style=''>  type Distance = Double
 </span>27 <span style=''>
 </span>28 <span style=''>  /**
-</span>29 <span style=''>   * Apply the damage to the damageable object as key in the map.
+</span>29 <span style=''>   * Check the collision between multiple collidables and apply the damages.
 </span>30 <span style=''>   *
-</span>31 <span style=''>   * @param collisionResults a map that has as keys the damageable objects and as values a list with the damaeger that collides with them
-</span>32 <span style=''>   * @return a map that has as keys the damageable objects update with the new damage and as values a list with the damaeger that collides with them
+</span>31 <span style=''>   * @param collisionables the collidables to check
+</span>32 <span style=''>   * @return a list of the collidables with their life updated
 </span>33 <span style=''>   */
-</span>34 <span style=''>  </span><span style='background: #AEF1AE'>def applyDamage</span><span style=''>(collisionResults: Map[Collisionable, List[Collisionable]]): Map[Collisionable, List[Collisionable]] =
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>def getDamage</span><span style=''>(collisionable: Collisionable): LifePoint =
-</span>36 <span style=''>      collisionable match
-</span>37 <span style=''>        </span><span style='background: #AEF1AE'>case damager: Damager</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>damager.damageInflicted</span><span style=''>
-</span>38 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; 0
-</span>39 <span style=''>
-</span>40 <span style=''>    </span><span style='background: #AEF1AE'>collisionResults.map(
-</span>41 <span style=''></span><span style='background: #AEF1AE'>      (collisionable, damagers) =&gt;
-</span>42 <span style=''></span><span style='background: #AEF1AE'>        collisionable match
-</span>43 <span style=''></span><span style='background: #AEF1AE'>          case damageable: Damageable =&gt; (damageable.takeDamage(damagers.map(getDamage _).sum), damagers)
-</span>44 <span style=''></span><span style='background: #AEF1AE'>          case _ =&gt; (collisionable, damagers)
-</span>45 <span style=''></span><span style='background: #AEF1AE'>    )</span><span style=''>
-</span>46 <span style=''>
-</span>47 <span style=''>
-</span>48 <span style=''>  /**
-</span>49 <span style=''>   * Check the collision between multiple collidables,
-</span>50 <span style=''>   * return a map that has as keys the damageable objects and as values list with the damaeger that collides with them.
-</span>51 <span style=''>   * The methods only check the collision between the damager and damageable that aren' on the same side .
-</span>52 <span style=''>   *
-</span>53 <span style=''>   * @param collisionables the collidables to check
-</span>54 <span style=''>   * @return a map that has as keys the damageable objects and as values a list with the damaeger that collides with them
-</span>55 <span style=''>   */
-</span>56 <span style=''>  </span><span style='background: #AEF1AE'>def calculateCollisions</span><span style=''>(collisionables: List[Collisionable]): Map[Collisionable, List[Collisionable]] =
-</span>57 <span style=''>    given Distance = 0.1
-</span>58 <span style=''>
-</span>59 <span style=''>    </span><span style='background: #AEF1AE'>def isDestroyed</span><span style=''>(collisionable: Collisionable): Boolean =
-</span>60 <span style=''>      collisionable match
-</span>61 <span style=''>        </span><span style='background: #AEF1AE'>case damageable: Damageable</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>damageable.isDestroyed</span><span style=''>
-</span>62 <span style=''>        </span><span style='background: #AEF1AE'>case _: Damager</span><span style=''> =&gt; false
-</span>63 <span style=''>
-</span>64 <span style=''>
-</span>65 <span style=''>    </span><span style='background: #AEF1AE'>def areOnTheSameSide</span><span style=''>(collisionable1: Collisionable, collisionable2: Collisionable): Boolean =
-</span>66 <span style=''>      </span><span style='background: #AEF1AE'>collisionable1.affiliation</span><span style=''> == </span><span style='background: #AEF1AE'>collisionable2.affiliation</span><span style=''>
-</span>67 <span style=''>
-</span>68 <span style=''>    </span><span style='background: #AEF1AE'>def isADamager</span><span style=''>(collisionable: Collisionable): Boolean =
-</span>69 <span style=''>      collisionable match
-</span>70 <span style=''>        </span><span style='background: #AEF1AE'>case _: Damager</span><span style=''> =&gt; true
-</span>71 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
-</span>72 <span style=''>
-</span>73 <span style=''>    </span><span style='background: #AEF1AE'>def isADamageable</span><span style=''>(collisionable: Collisionable): Boolean =
-</span>74 <span style=''>      collisionable match
-</span>75 <span style=''>        </span><span style='background: #AEF1AE'>case _: Damageable</span><span style=''> =&gt; true
-</span>76 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
-</span>77 <span style=''>
-</span>78 <span style=''>    val realCollision =
-</span>79 <span style=''>      </span><span style='background: #AEF1AE'>(for
-</span>80 <span style=''></span><span style='background: #AEF1AE'>        damager &lt;- collisionables
-</span>81 <span style=''></span><span style='background: #AEF1AE'>        if !isDestroyed(damager)
-</span>82 <span style=''></span><span style='background: #AEF1AE'>        if isADamager(damager)
-</span>83 <span style=''></span><span style='background: #AEF1AE'>        damageable &lt;- collisionables
-</span>84 <span style=''></span><span style='background: #AEF1AE'>        if !isDestroyed(damageable)
-</span>85 <span style=''></span><span style='background: #AEF1AE'>        if isADamageable(damageable)
-</span>86 <span style=''></span><span style='background: #AEF1AE'>        if !areOnTheSameSide(damager, damageable)
-</span>87 <span style=''></span><span style='background: #AEF1AE'>        if damager.isCollidingWith(damageable)
-</span>88 <span style=''></span><span style='background: #AEF1AE'>      yield
-</span>89 <span style=''></span><span style='background: #AEF1AE'>        (damageable, damager))
-</span>90 <span style=''></span><span style='background: #AEF1AE'>        .foldLeft(Map[Collisionable, List[Collisionable]]()
-</span>91 <span style=''></span><span style='background: #AEF1AE'>          .withDefaultValue(List.empty))((res, v) =&gt; {
-</span>92 <span style=''></span><span style='background: #AEF1AE'>          val key = v._1
-</span>93 <span style=''></span><span style='background: #AEF1AE'>          res + (key -&gt; (res(key) :+ v._2))
-</span>94 <span style=''></span><span style='background: #AEF1AE'>        })</span><span style=''>
-</span>95 <span style=''>    </span><span style='background: #AEF1AE'>(for
-</span>96 <span style=''></span><span style='background: #AEF1AE'>      collisionable &lt;- collisionables
-</span>97 <span style=''></span><span style='background: #AEF1AE'>    yield
-</span>98 <span style=''></span><span style='background: #AEF1AE'>      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty)).toMap</span><span style=''>
+</span>34 <span style=''>  </span><span style='background: #AEF1AE'>def checkCollision</span><span style=''>(collisionables: List[Collisionable]): List[Collisionable] =
+</span>35 <span style=''>    given Distance = 0.1
+</span>36 <span style=''>
+</span>37 <span style=''>    </span><span style='background: #AEF1AE'>def isDestroyed</span><span style=''>(collisionable: Collisionable): Boolean =
+</span>38 <span style=''>      collisionable match
+</span>39 <span style=''>        </span><span style='background: #AEF1AE'>case damageable: Damageable</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>damageable.isDestroyed</span><span style=''>
+</span>40 <span style=''>        </span><span style='background: #AEF1AE'>case _: Damager</span><span style=''> =&gt; false
+</span>41 <span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>    </span><span style='background: #AEF1AE'>def areOnTheSameSide</span><span style=''>(collisionable1: Collisionable, collisionable2: Collisionable): Boolean =
+</span>44 <span style=''>      </span><span style='background: #AEF1AE'>collisionable1.affiliation</span><span style=''> == </span><span style='background: #AEF1AE'>collisionable2.affiliation</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>    </span><span style='background: #AEF1AE'>def isADamager</span><span style=''>(collisionable: Collisionable): Boolean =
+</span>47 <span style=''>      collisionable match
+</span>48 <span style=''>        </span><span style='background: #AEF1AE'>case _: Damager</span><span style=''> =&gt; true
+</span>49 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
+</span>50 <span style=''>
+</span>51 <span style=''>    </span><span style='background: #AEF1AE'>def isADamageable</span><span style=''>(collisionable: Collisionable): Boolean =
+</span>52 <span style=''>      collisionable match
+</span>53 <span style=''>        </span><span style='background: #AEF1AE'>case _: Damageable</span><span style=''> =&gt; true
+</span>54 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
+</span>55 <span style=''>
+</span>56 <span style=''>    </span><span style='background: #AEF1AE'>def calculateDamage</span><span style=''>(possibleDamager: Collisionable, damageable: Collisionable): (Collisionable, LifePoint) =
+</span>57 <span style=''>      possibleDamager match
+</span>58 <span style=''>        </span><span style='background: #AEF1AE'>case damager: Damager</span><span style=''> =&gt; damageable match
+</span>59 <span style=''>          </span><span style='background: #AEF1AE'>case _: Damageable</span><span style=''> =&gt; (damageable, </span><span style='background: #AEF1AE'>damager.damageInflicted</span><span style=''>)
+</span>60 <span style=''>
+</span>61 <span style=''>    </span><span style='background: #AEF1AE'>def applyDamage</span><span style=''>(collisionable: Collisionable, damage: LifePoint): Collisionable =
+</span>62 <span style=''>      collisionable match
+</span>63 <span style=''>        </span><span style='background: #AEF1AE'>case damageable: Damageable</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>damageable.takeDamage(damage)</span><span style=''>
+</span>64 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; collisionable
+</span>65 <span style=''>        
+</span>66 <span style=''>    val damagesToInflict: Map[Collisionable, LifePoint] =
+</span>67 <span style=''>      </span><span style='background: #AEF1AE'>(for
+</span>68 <span style=''></span><span style='background: #AEF1AE'>        damager &lt;- collisionables
+</span>69 <span style=''></span><span style='background: #AEF1AE'>        if !isDestroyed(damager)
+</span>70 <span style=''></span><span style='background: #AEF1AE'>        if isADamager(damager)
+</span>71 <span style=''></span><span style='background: #AEF1AE'>        damageable &lt;- collisionables
+</span>72 <span style=''></span><span style='background: #AEF1AE'>        if !isDestroyed(damageable)
+</span>73 <span style=''></span><span style='background: #AEF1AE'>        if isADamageable(damageable)
+</span>74 <span style=''></span><span style='background: #AEF1AE'>        if !areOnTheSameSide(damager, damageable)
+</span>75 <span style=''></span><span style='background: #AEF1AE'>        if damager.isCollidingWith(damageable)
+</span>76 <span style=''></span><span style='background: #AEF1AE'>      yield
+</span>77 <span style=''></span><span style='background: #AEF1AE'>        calculateDamage(damager, damageable))
+</span>78 <span style=''></span><span style='background: #AEF1AE'>        .foldLeft(Map[Collisionable, LifePoint]()
+</span>79 <span style=''></span><span style='background: #AEF1AE'>          .withDefaultValue(0))((res, v) =&gt; {
+</span>80 <span style=''></span><span style='background: #AEF1AE'>          val key = v._1
+</span>81 <span style=''></span><span style='background: #AEF1AE'>          res + (key -&gt; (res(key) + v._2))
+</span>82 <span style=''></span><span style='background: #AEF1AE'>        })</span><span style=''>
+</span>83 <span style=''>    </span><span style='background: #AEF1AE'>for
+</span>84 <span style=''></span><span style='background: #AEF1AE'>      collisionable &lt;- collisionables
+</span>85 <span style=''></span><span style='background: #AEF1AE'>    yield
+</span>86 <span style=''></span><span style='background: #AEF1AE'>      applyDamage(collisionable, damagesToInflict(collisionable))</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -137,257 +125,60 @@
           33
         </td>
         <td>
-          245
+          281
         </td>
         <td>
-          822
+          661
           -
-          837
+          679
         </td>
         <td>
           DefDef
         </td>
         <td>
-          applyDamage
+          checkCollision
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def applyDamage
+          def checkCollision
         </td>
       </tr><tr>
         <td>
-          34
+          36
         </td>
         <td>
           237
         </td>
         <td>
-          944
+          770
           -
-          957
+          785
         </td>
         <td>
           DefDef
         </td>
         <td>
-          getDamage
+          isDestroyed
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def getDamage
+          def isDestroyed
         </td>
       </tr><tr>
         <td>
-          36
+          38
         </td>
         <td>
           235
         </td>
         <td>
-          1035
+          861
           -
-          1056
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case damager: Damager
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          234
-        </td>
-        <td>
-          1060
-          -
-          1083
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          damageInflicted
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damager.damageInflicted
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          236
-        </td>
-        <td>
-          1092
-          -
-          1098
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          244
-        </td>
-        <td>
-          1109
-          -
-          1351
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisionResults.map(
-      (collisionable, damagers) =&gt;
-        collisionable match
-          case damageable: Damageable =&gt; (damageable.takeDamage(damagers.map(getDamage _).sum), damagers)
-          case _ =&gt; (collisionable, damagers)
-    )
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          238
-        </td>
-        <td>
-          1271
-          -
-          1280
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getDamage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          getDamage
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          241
-        </td>
-        <td>
-          1236
-          -
-          1288
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          takeDamage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damageable.takeDamage(damagers.map(getDamage _).sum)
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          240
-        </td>
-        <td>
-          1258
-          -
-          1287
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          sum
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damagers.map(getDamage _).sum
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          239
-        </td>
-        <td>
-          1258
-          -
-          1283
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damagers.map(getDamage _)
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          242
-        </td>
-        <td>
-          1204
-          -
-          1231
+          888
         </td>
         <td>
           Block
@@ -403,15 +194,255 @@
         </td>
       </tr><tr>
         <td>
+          38
+        </td>
+        <td>
+          234
+        </td>
+        <td>
+          892
+          -
+          914
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damageable.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          236
+        </td>
+        <td>
+          923
+          -
+          938
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _: Damager
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          240
+        </td>
+        <td>
+          954
+          -
+          974
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          areOnTheSameSide
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def areOnTheSameSide
+        </td>
+      </tr><tr>
+        <td>
           43
+        </td>
+        <td>
+          238
+        </td>
+        <td>
+          1054
+          -
+          1080
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionable1.affiliation
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          239
+        </td>
+        <td>
+          1084
+          -
+          1110
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionable2.affiliation
+        </td>
+      </tr><tr>
+        <td>
+          45
         </td>
         <td>
           243
         </td>
         <td>
-          1310
+          1116
           -
-          1316
+          1130
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isADamager
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isADamager
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          241
+        </td>
+        <td>
+          1206
+          -
+          1221
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _: Damager
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          242
+        </td>
+        <td>
+          1238
+          -
+          1244
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          246
+        </td>
+        <td>
+          1259
+          -
+          1276
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isADamageable
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isADamageable
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          244
+        </td>
+        <td>
+          1352
+          -
+          1370
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _: Damageable
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          245
+        </td>
+        <td>
+          1387
+          -
+          1393
         </td>
         <td>
           Block
@@ -430,300 +461,84 @@
           55
         </td>
         <td>
-          292
+          250
         </td>
         <td>
-          1829
+          1408
           -
-          1852
+          1427
         </td>
         <td>
           DefDef
         </td>
         <td>
-          calculateCollisions
+          calculateDamage
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def calculateCollisions
+          def calculateDamage
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          249
+        </td>
+        <td>
+          1553
+          -
+          1574
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case damager: Damager
         </td>
       </tr><tr>
         <td>
           58
         </td>
         <td>
-          249
-        </td>
-        <td>
-          1963
-          -
-          1978
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          isDestroyed
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def isDestroyed
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
           247
         </td>
         <td>
-          2054
+          1640
           -
-          2081
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case damageable: Damageable
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          246
-        </td>
-        <td>
-          2085
-          -
-          2107
+          1663
         </td>
         <td>
           Select
         </td>
         <td>
-          isDestroyed
+          damageInflicted
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          damageable.isDestroyed
+          damager.damageInflicted
         </td>
       </tr><tr>
         <td>
-          61
+          58
         </td>
         <td>
           248
         </td>
         <td>
-          2116
+          1605
           -
-          2131
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _: Damager
-        </td>
-      </tr><tr>
-        <td>
-          64
-        </td>
-        <td>
-          252
-        </td>
-        <td>
-          2147
-          -
-          2167
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          areOnTheSameSide
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def areOnTheSameSide
-        </td>
-      </tr><tr>
-        <td>
-          65
-        </td>
-        <td>
-          250
-        </td>
-        <td>
-          2247
-          -
-          2273
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          affiliation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisionable1.affiliation
-        </td>
-      </tr><tr>
-        <td>
-          65
-        </td>
-        <td>
-          251
-        </td>
-        <td>
-          2277
-          -
-          2303
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          affiliation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisionable2.affiliation
-        </td>
-      </tr><tr>
-        <td>
-          67
-        </td>
-        <td>
-          255
-        </td>
-        <td>
-          2309
-          -
-          2323
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          isADamager
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def isADamager
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          253
-        </td>
-        <td>
-          2399
-          -
-          2414
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _: Damager
-        </td>
-      </tr><tr>
-        <td>
-          70
-        </td>
-        <td>
-          254
-        </td>
-        <td>
-          2431
-          -
-          2437
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          72
-        </td>
-        <td>
-          258
-        </td>
-        <td>
-          2452
-          -
-          2469
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          isADamageable
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def isADamageable
-        </td>
-      </tr><tr>
-        <td>
-          74
-        </td>
-        <td>
-          256
-        </td>
-        <td>
-          2545
-          -
-          2563
+          1623
         </td>
         <td>
           Block
@@ -739,15 +554,87 @@
         </td>
       </tr><tr>
         <td>
-          75
+          60
         </td>
         <td>
-          257
+          254
         </td>
         <td>
-          2580
+          1670
           -
-          2586
+          1685
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          applyDamage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def applyDamage
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          252
+        </td>
+        <td>
+          1786
+          -
+          1813
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case damageable: Damageable
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          251
+        </td>
+        <td>
+          1817
+          -
+          1846
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          takeDamage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damageable.takeDamage(damage)
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          253
+        </td>
+        <td>
+          1855
+          -
+          1861
         </td>
         <td>
           Block
@@ -763,15 +650,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          66
         </td>
         <td>
-          272
+          269
         </td>
         <td>
-          2628
+          1953
           -
-          2978
+          2318
         </td>
         <td>
           Apply
@@ -793,19 +680,44 @@
         if !areOnTheSameSide(damager, damageable)
         if damager.isCollidingWith(damageable)
       yield
-        (damageable, damager)
+        calculateDamage(damager, damageable)
         </td>
       </tr><tr>
         <td>
-          79
+          67
         </td>
         <td>
-          262
+          256
         </td>
         <td>
-          2640
+          1965
           -
-          2729
+          2023
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damager &lt;- collisionables
+        if !isDestroyed(damager)
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          258
+        </td>
+        <td>
+          1965
+          -
+          2054
         </td>
         <td>
           Apply
@@ -823,40 +735,15 @@
         </td>
       </tr><tr>
         <td>
-          79
+          68
         </td>
         <td>
-          260
+          255
         </td>
         <td>
-          2640
+          2003
           -
-          2698
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withFilter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damager &lt;- collisionables
-        if !isDestroyed(damager)
-        </td>
-      </tr><tr>
-        <td>
-          80
-        </td>
-        <td>
-          259
-        </td>
-        <td>
-          2678
-          -
-          2698
+          2023
         </td>
         <td>
           Apply
@@ -872,15 +759,15 @@
         </td>
       </tr><tr>
         <td>
-          81
+          69
         </td>
         <td>
-          261
+          257
         </td>
         <td>
-          2710
+          2035
           -
-          2729
+          2054
         </td>
         <td>
           Apply
@@ -896,15 +783,41 @@
         </td>
       </tr><tr>
         <td>
-          82
+          70
         </td>
         <td>
-          271
+          262
         </td>
         <td>
-          2738
+          2063
           -
-          2978
+          2164
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damageable &lt;- collisionables
+        if !isDestroyed(damageable)
+        if isADamageable(damageable)
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          268
+        </td>
+        <td>
+          2063
+          -
+          2318
         </td>
         <td>
           Apply
@@ -922,19 +835,19 @@
         if !areOnTheSameSide(damager, damageable)
         if damager.isCollidingWith(damageable)
       yield
-        (damageable, damager)
+        calculateDamage(damager, damageable)
         </td>
       </tr><tr>
         <td>
-          82
+          70
         </td>
         <td>
-          268
+          264
         </td>
         <td>
-          2738
+          2063
           -
-          2889
+          2214
         </td>
         <td>
           Apply
@@ -953,15 +866,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          70
         </td>
         <td>
-          270
+          266
         </td>
         <td>
-          2738
+          2063
           -
-          2936
+          2261
         </td>
         <td>
           Apply
@@ -981,15 +894,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          70
         </td>
         <td>
-          264
+          260
         </td>
         <td>
-          2738
+          2063
           -
-          2802
+          2127
         </td>
         <td>
           Apply
@@ -1006,41 +919,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          71
         </td>
         <td>
-          266
+          259
         </td>
         <td>
-          2738
+          2104
           -
-          2839
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withFilter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damageable &lt;- collisionables
-        if !isDestroyed(damageable)
-        if isADamageable(damageable)
-        </td>
-      </tr><tr>
-        <td>
-          83
-        </td>
-        <td>
-          263
-        </td>
-        <td>
-          2779
-          -
-          2802
+          2127
         </td>
         <td>
           Apply
@@ -1056,15 +943,15 @@
         </td>
       </tr><tr>
         <td>
-          84
+          72
         </td>
         <td>
-          265
+          261
         </td>
         <td>
-          2814
+          2139
           -
-          2839
+          2164
         </td>
         <td>
           Apply
@@ -1080,15 +967,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          73
         </td>
         <td>
-          267
+          263
         </td>
         <td>
-          2852
+          2177
           -
-          2889
+          2214
         </td>
         <td>
           Apply
@@ -1104,15 +991,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          74
         </td>
         <td>
-          269
+          265
         </td>
         <td>
-          2901
+          2226
           -
-          2936
+          2261
         </td>
         <td>
           Apply
@@ -1128,15 +1015,39 @@
         </td>
       </tr><tr>
         <td>
-          89
+          76
         </td>
         <td>
-          273
+          267
         </td>
         <td>
-          2998
+          2282
           -
-          3039
+          2318
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          calculateDamage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          calculateDamage(damager, damageable)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          270
+        </td>
+        <td>
+          2338
+          -
+          2369
         </td>
         <td>
           Apply
@@ -1148,19 +1059,44 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Map[Collisionable, List[Collisionable]]()
+          Map[Collisionable, LifePoint]()
         </td>
       </tr><tr>
         <td>
-          90
+          78
         </td>
         <td>
-          283
+          271
         </td>
         <td>
-          2627
+          2338
           -
-          3174
+          2400
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withDefaultValue
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Map[Collisionable, LifePoint]()
+          .withDefaultValue(0)
+        </td>
+      </tr><tr>
+        <td>
+          78
+        </td>
+        <td>
+          277
+        </td>
+        <td>
+          1952
+          -
+          2494
         </td>
         <td>
           Apply
@@ -1182,97 +1118,24 @@
         if !areOnTheSameSide(damager, damageable)
         if damager.isCollidingWith(damageable)
       yield
-        (damageable, damager))
-        .foldLeft(Map[Collisionable, List[Collisionable]]()
-          .withDefaultValue(List.empty))((res, v) =&gt; {
+        calculateDamage(damager, damageable))
+        .foldLeft(Map[Collisionable, LifePoint]()
+          .withDefaultValue(0))((res, v) =&gt; {
           val key = v._1
-          res + (key -&gt; (res(key) :+ v._2))
+          res + (key -&gt; (res(key) + v._2))
         })
         </td>
       </tr><tr>
         <td>
-          90
+          79
         </td>
         <td>
-          274
+          272
         </td>
         <td>
-          3068
+          2436
           -
-          3072
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          List
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          List
-        </td>
-      </tr><tr>
-        <td>
-          90
-        </td>
-        <td>
-          276
-        </td>
-        <td>
-          2998
-          -
-          3079
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withDefaultValue
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Map[Collisionable, List[Collisionable]]()
-          .withDefaultValue(List.empty)
-        </td>
-      </tr><tr>
-        <td>
-          90
-        </td>
-        <td>
-          275
-        </td>
-        <td>
-          3068
-          -
-          3078
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          empty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          List.empty
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          277
-        </td>
-        <td>
-          3115
-          -
-          3119
+          2440
         </td>
         <td>
           Select
@@ -1288,39 +1151,15 @@
         </td>
       </tr><tr>
         <td>
-          92
+          80
         </td>
         <td>
-          280
+          274
         </td>
         <td>
-          3145
+          2477
           -
-          3161
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          :+
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          res(key) :+ v._2
-        </td>
-      </tr><tr>
-        <td>
-          92
-        </td>
-        <td>
-          279
-        </td>
-        <td>
-          3157
-          -
-          3161
+          2481
         </td>
         <td>
           Select
@@ -1336,15 +1175,15 @@
         </td>
       </tr><tr>
         <td>
-          92
+          80
         </td>
         <td>
-          282
+          276
         </td>
         <td>
-          3130
+          2451
           -
-          3162
+          2482
         </td>
         <td>
           Apply
@@ -1356,43 +1195,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          res + (key -&gt; (res(key) :+ v._2)
+          res + (key -&gt; (res(key) + v._2)
         </td>
       </tr><tr>
         <td>
-          92
+          80
         </td>
         <td>
-          281
+          273
         </td>
         <td>
-          3137
+          2466
           -
-          3161
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          -&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          key -&gt; (res(key) :+ v._2
-        </td>
-      </tr><tr>
-        <td>
-          92
-        </td>
-        <td>
-          278
-        </td>
-        <td>
-          3145
-          -
-          3153
+          2474
         </td>
         <td>
           Apply
@@ -1408,42 +1223,39 @@
         </td>
       </tr><tr>
         <td>
-          94
+          80
         </td>
         <td>
-          291
+          275
         </td>
         <td>
-          3179
+          2458
           -
-          3352
+          2481
         </td>
         <td>
           Apply
         </td>
         <td>
-          toMap
+          -&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          (for
-      collisionable &lt;- collisionables
-    yield
-      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty)).toMap
+          key -&gt; (res(key) + v._2
         </td>
       </tr><tr>
         <td>
-          94
+          82
         </td>
         <td>
-          290
+          280
         </td>
         <td>
-          3180
+          2499
           -
-          3345
+          2616
         </td>
         <td>
           Apply
@@ -1458,67 +1270,43 @@
           for
       collisionable &lt;- collisionables
     yield
-      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty)
+      applyDamage(collisionable, damagesToInflict(collisionable))
         </td>
       </tr><tr>
         <td>
-          97
+          85
         </td>
         <td>
-          286
+          279
         </td>
         <td>
-          3300
+          2557
           -
-          3328
+          2616
         </td>
         <td>
-          Block
+          Apply
         </td>
         <td>
-          &lt;none&gt;
+          applyDamage
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          realCollision(collisionable)
+          applyDamage(collisionable, damagesToInflict(collisionable))
         </td>
       </tr><tr>
         <td>
-          97
+          85
         </td>
         <td>
-          289
+          278
         </td>
         <td>
-          3334
+          2584
           -
-          3344
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          List.empty
-        </td>
-      </tr><tr>
-        <td>
-          97
-        </td>
-        <td>
-          285
-        </td>
-        <td>
-          3300
-          -
-          3328
+          2615
         </td>
         <td>
           Apply
@@ -1530,79 +1318,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          realCollision(collisionable)
-        </td>
-      </tr><tr>
-        <td>
-          97
-        </td>
-        <td>
-          288
-        </td>
-        <td>
-          3334
-          -
-          3344
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          empty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          List.empty
-        </td>
-      </tr><tr>
-        <td>
-          97
-        </td>
-        <td>
-          284
-        </td>
-        <td>
-          3257
-          -
-          3294
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          realCollision.contains(collisionable)
-        </td>
-      </tr><tr>
-        <td>
-          97
-        </td>
-        <td>
-          287
-        </td>
-        <td>
-          3334
-          -
-          3338
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          List
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          List
+          damagesToInflict(collisionable)
         </td>
       </tr>
     </table>
