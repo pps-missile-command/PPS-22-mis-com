@@ -20,8 +20,8 @@ class MissileBatteryTest extends AnyFunSpec {
     describe("A missile battery") {
         it("should create a new turret in given position and with specified life") {
             val batteryTurret = MissileBattery(point)
-            assert(batteryTurret.position.x === xTest)
-            assert(batteryTurret.position.y === yTest)
+            assert(batteryTurret.bottomLeft_Position.x === xTest)
+            assert(batteryTurret.bottomLeft_Position.y === yTest)
             assert(batteryTurret.initialLife === Constants.missileBatteryInitialLife)
             assert(batteryTurret.currentLife === Constants.missileBatteryInitialLife)
         }
