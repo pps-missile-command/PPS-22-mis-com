@@ -2,7 +2,7 @@ package view
 
 import javafx.scene.image.{Image, ImageView}
 import model.collisions.Collisionable
-import model.missile.{CollisionableElement, Missile, MissileImpl, hitboxBase, hitboxHeight}
+import model.missile.{ Missile, MissileImpl, hitboxBase, hitboxHeight}
 
 case class CollisionableElement(imageView: ImageView, x: Double, y: Double)
 

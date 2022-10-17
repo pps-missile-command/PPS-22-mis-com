@@ -33,7 +33,7 @@ class MissileTest extends AnyFunSpec :
     it("should be scorable") {
       val missile = Missile.enemyMissile(initialLife, damage, velocity, startPosition, finalPosition)
       val mMissile = missile.takeDamage(2)
-      assert(missile.isInstanceOf[Scorable])
+      assert(mMissile.isInstanceOf[Scorable])
     }
     describe("with friendly role") {
       it("should have friendly affiliation") {
@@ -48,8 +48,7 @@ class MissileTest extends AnyFunSpec :
     }
     it("should move along its direction") {
       val missile = TestMissile()
-      val tmpMissile = missile.timeElapsed(dt)
-      val movedMissile = missile.move()
+      val movedMissile = missile.timeElapsed(dt).move()
       assert(movedMissile.position == (missile.position --> (missile.direction * missile.velocity * dt)))
     }
     it("should decrease its lifepoints when damaged") {

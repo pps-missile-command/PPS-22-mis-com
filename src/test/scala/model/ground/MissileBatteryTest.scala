@@ -52,7 +52,7 @@ class MissileBatteryTest extends AnyFunSpec {
             val tupled: Tuple2[MissileBattery, Missile] = values.get
             assert(!tupled._1.isReadyForShoot) //true. The turret shot, so is reloading
             assert(tupled._2.affiliation === Affiliation.Friendly)
-            assert(tupled._2.finalPosition === Point2D(10.0, 10.0))
+            assert(tupled._2.destination === Point2D(10.0, 10.0))
         }
 
         it("should get damaged and destroied if it have 0HP") {
