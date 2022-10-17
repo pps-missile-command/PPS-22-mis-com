@@ -66,8 +66,7 @@ object Missile:
                    _velocity: Double = velocity,
                    position: Point2D,
                    finalPosition: Point2D,
-                   dt: DeltaTime,
-                   score: Int = 1): Missile = new MissileImpl(lifePoint, position, finalPosition, dt, affiliation = Affiliation.Enemy, damage = _damage, velocity = _velocity) with Scorable(1)
+                   score: Int = 1): Missile = new MissileImpl(lifePoint, position, finalPosition, 0, affiliation = Affiliation.Enemy, damage = _damage, velocity = _velocity) with Scorable(1)
 
   def BasicMove(missile: Missile)(dt: DeltaTime): Point2D = missile.position --> (missile.direction * missile.velocity * dt)
 
@@ -75,5 +74,4 @@ object Missile:
             _damage: LifePoint = damage,
             _velocity: Double = velocity,
             position: Point2D,
-            finalPosition: Point2D,
-            dt: DeltaTime) : Missile = MissileImpl(lifePoint, position, finalPosition, dt, damage = _damage, velocity = _velocity)
+            finalPosition: Point2D) : Missile = MissileImpl(lifePoint, position, finalPosition, 0, damage = _damage, velocity = _velocity)

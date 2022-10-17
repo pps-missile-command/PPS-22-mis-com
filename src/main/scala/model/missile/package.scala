@@ -37,7 +37,7 @@ package object missile:
       for
         x <- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
         y <- Option.apply(maxHeight) //height del campo
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), finalDestination, 0.1)
+      yield Missile(initialLife, damage, velocity, Point2D(x, y), finalDestination)
 
     case RandomMissile =>
       for
@@ -45,6 +45,6 @@ package object missile:
         x <- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
         y <- Option.apply(maxHeight)
         damage <- Option.apply(damage)
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10), 0.1)
+      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))
 
-    case _ => Option(Missile(initialLife, damage, velocity, Point2D(0, 0), finalDestination, 0.1))
+    case _ => Option(Missile(initialLife, damage, velocity, Point2D(0, 0), finalDestination))
