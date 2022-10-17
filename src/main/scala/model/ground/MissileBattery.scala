@@ -27,10 +27,9 @@ case class MissileBattery(val position: Point2D, val life: LifePoint = Constants
         if this.isReadyForShoot then
             Some((MissileBattery(position),
                 Missile(Constants.missileHealth,
-                    Affiliation.Friendly,
                     Constants.missileFriendlyDamage,
                     Constants.missileFriendlySpeed,
-                    Point2D(position.x,position.y+hitboxHeight), endingPoint))) //If not reloading, allow shoot
+                    Point2D(position.x,position.y+Constants.missileBatteryHeightSize), endingPoint, 0))) //If not reloading, allow shoot
         else
             None
 
