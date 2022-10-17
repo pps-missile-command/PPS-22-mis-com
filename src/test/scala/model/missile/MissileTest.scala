@@ -16,7 +16,7 @@ object MissileTest:
   private val dt = 0.1
 
   //given affiliation: Affiliation = Affiliation.Enemy
-  val TestMissile : () => Missile = () => Missile(initialLife, damage, velocity, startPosition, finalPosition, dt)
+  val TestMissile : () => Missile = () => Missile(initialLife, damage, velocity, startPosition, finalPosition)
 
 
 class MissileTest extends AnyFunSpec :
@@ -26,12 +26,12 @@ class MissileTest extends AnyFunSpec :
   describe("A missile") {
     describe("with enemy role") {
       it("should have enemy affiliation") {
-        val missile = Missile.enemyMissile(initialLife, damage, velocity, startPosition, finalPosition, dt)
+        val missile = Missile.enemyMissile(initialLife, damage, velocity, startPosition, finalPosition)
         assert(missile.affiliation == Affiliation.Enemy)
       }
     }
     it("should be scorable") {
-      val missile = Missile.enemyMissile(initialLife, damage, velocity, startPosition, finalPosition, dt)
+      val missile = Missile.enemyMissile(initialLife, damage, velocity, startPosition, finalPosition)
       val mMissile = missile.takeDamage(2)
       assert(missile.isInstanceOf[Scorable])
     }

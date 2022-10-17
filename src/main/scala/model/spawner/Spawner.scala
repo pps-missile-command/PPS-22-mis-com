@@ -3,7 +3,7 @@ package model.spawner
 import model.collisions.Affiliation
 import model.elements2d.Point2D
 import model.missile.{DeltaTime, Missile, damage, initialLife, velocity}
-
+import model.missile.Missile
 import scala.util.Random
 
 /**
@@ -39,7 +39,7 @@ object Spawner:
             (i, x) <- randomX
             (j, y) <- randomY
             if i == j
-          yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x, y), Point2D(x, y), n)
+          yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x, y), Point2D(x, y))
         generator
       case _ => List()
 
