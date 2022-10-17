@@ -9,8 +9,8 @@ import utilities.Constants
 import java.time
 import java.time.LocalDateTime
 
-case class MissileBattery(val bottomLeft_Position: Point2D, val life: LifePoint = Constants.missileBatteryInitialLife, val lastShoot: LocalDateTime = time.LocalDateTime.now()) extends Damageable:
-    private val collider: HitBox = HitBoxRectangular(Point2D(bottomLeft_Position.x + Constants.missileBatteryBaseSize/2, bottomLeft_Position.y + Constants.missileBatteryHeightSize/2),
+case class MissileBattery(val position: Point2D, val life: LifePoint = Constants.missileBatteryInitialLife, val lastShoot: LocalDateTime = time.LocalDateTime.now()) extends Damageable:
+    private val collider: HitBox = HitBoxRectangular(Point2D(position.x + Constants.missileBatteryBaseSize/2, position.y + Constants.missileBatteryHeightSize/2),
                                                     Constants.missileBatteryBaseSize,
                                                     Constants.missileBatteryHeightSize,
                                                     Angle.Degree(0)) //collider of the object
@@ -25,19 +25,18 @@ case class MissileBattery(val bottomLeft_Position: Point2D, val life: LifePoint 
      */
     def shootRocket(endingPoint: Point2D): Option[Tuple2[MissileBattery, Missile]] =
         if this.isReadyForShoot then
-            Some((MissileBattery(bottomLeft_Position),
+            Some((MissileBattery(position),
                 Missile(Constants.missileHealth,
-                    Affiliation.Friendly,
                     Constants.missileFriendlyDamage,
                     Constants.missileFriendlySpeed,
-                    Point2D(bottomLeft_Position.x,bottomLeft_Position.y+hitboxHeight), endingPoint))) //If not reloading, allow shoot
+                    Point2D(position.x,position.y+Constants.missileBatteryHeightSize), endingPoint))) //If not reloading, allow shoot
         else
             None
 
     /**
      * @return a string containing all the valuable informations
      */
-    override def toString: String = "Missile battery --> Position: x:" + bottomLeft_Position.x + " y:" + bottomLeft_Position.y + "; Ready for shoot: " + isReadyForShoot + "; Life: " + life + "\n"
+    override def toString: String = "Missile battery --> Position: x:" + position.x + " y:" + position.y + "; Ready for shoot: " + isReadyForShoot + "; Life: " + life + "\n"
 
     /**
      *  @return the affiliation of the object.
@@ -63,4 +62,4 @@ case class MissileBattery(val bottomLeft_Position: Point2D, val life: LifePoint 
      * @param damage the damage that the object received.
      * @return the object with the new health.
      */
-    override def takeDamage(damage: LifePoint): MissileBattery = MissileBattery(bottomLeft_Position, life - damage, lastShoot)
+    override def takeDamage(damage: LifePoint): MissileBattery = MissileBattery(position, life - damage, lastShoot)
