@@ -7,6 +7,10 @@ import model.missile.Missile
 import utilities.Constants
 
 
+import java.net.URL
+import javax.sound.sampled._
+
+
 object Ground:
     def apply(cities: List[City], turrets: List[MissileBattery]): Ground = new Ground(cities, turrets)
     def apply(): Ground =
@@ -63,7 +67,7 @@ case class Ground(cities: List[City], turrets: List[MissileBattery]):
     def shootMissile(endPoint: Point2D): Tuple2[Ground, Missile] =
         def calculatePositions: List[Tuple2[Double, MissileBattery]] =
             for battery <- missileBatteryAlive if battery.isReadyForShoot
-                yield (battery.position <-> endPoint, battery)
+                yield (battery.bottomLeft_Position <-> endPoint, battery)
 
         val batteriesReadyForShoot = calculatePositions
         if(batteriesReadyForShoot.length > 0) then //only if there at least 1 turret ready for shoot, it will procede with shooting
