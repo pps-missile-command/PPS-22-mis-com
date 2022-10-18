@@ -27,31 +27,36 @@
 </span>3 <span style=''>package object model:
 </span>4 <span style=''>
 </span>5 <span style=''>  /**
-</span>6 <span style=''>   * Type alias for the point that are given in the game when an object is destroyed.
+</span>6 <span style=''>   * Type alias for the abstraction of virtual time
 </span>7 <span style=''>   */
-</span>8 <span style=''>  type ScorePoint = Int
+</span>8 <span style=''>  type DeltaTime = Double
 </span>9 <span style=''>
 </span>10 <span style=''>  /**
-</span>11 <span style=''>   * Trait that represents an object that give points when destroyed.
+</span>11 <span style=''>   * Type alias for the point that are given in the game when an object is destroyed.
 </span>12 <span style=''>   */
-</span>13 <span style=''>  trait Scorable(val points: ScorePoint) extends Damageable
+</span>13 <span style=''>  type ScorePoint = Int
 </span>14 <span style=''>
 </span>15 <span style=''>  /**
-</span>16 <span style=''>   * Function that calculate the new score of the player.
-</span>17 <span style=''>   * It only add the points of the destroyed object if the one of the object that inflict damage to the damageable 
-</span>18 <span style=''>   * is owned by the player.
-</span>19 <span style=''>   *
-</span>20 <span style=''>   * @param collisionables a map that has as keys the damageable objects and as values a list with the damaeger that collides with them.
-</span>21 <span style=''>   * @param actualScore    the actual score of the player.
-</span>22 <span style=''>   * @return the new score of the player.
-</span>23 <span style=''>   */
-</span>24 <span style=''>  </span><span style='background: #AEF1AE'>def calculateNewScore</span><span style=''>(collisionables: Map[Collisionable, List[Collisionable]], actualScore: ScorePoint): ScorePoint =
-</span>25 <span style=''>    </span><span style='background: #AEF1AE'>def getScorePoint</span><span style=''>(collisionable: Collisionable, damagers: List[Collisionable]): ScorePoint =
-</span>26 <span style=''>      collisionable match
-</span>27 <span style=''>        </span><span style='background: #AEF1AE'>case scorable: Scorable if scorable.isDestroyed &amp;&amp; damagers.map(_.affiliation).contains(Affiliation.Friendly)</span><span style=''> =&gt; scorable.points
-</span>28 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; 0
-</span>29 <span style=''>
-</span>30 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.map((damageable, damagers) =&gt; getScorePoint(damageable, damagers)).sum</span><span style=''> + actualScore
+</span>16 <span style=''>   * Trait that represents an object that give points when destroyed.
+</span>17 <span style=''>   */
+</span>18 <span style=''>  trait Scorable(val points: ScorePoint) extends Damageable
+</span>19 <span style=''>
+</span>20 <span style=''>  /**
+</span>21 <span style=''>   * Function that calculate the new score of the player.
+</span>22 <span style=''>   * It only add the points of the destroyed object if the one of the object that inflict damage to the damageable 
+</span>23 <span style=''>   * is owned by the player.
+</span>24 <span style=''>   *
+</span>25 <span style=''>   * @param collisionables a map that has as keys the damageable objects and as values a list with the damaeger that collides with them.
+</span>26 <span style=''>   * @param actualScore    the actual score of the player.
+</span>27 <span style=''>   * @return the new score of the player.
+</span>28 <span style=''>   */
+</span>29 <span style=''>  </span><span style='background: #AEF1AE'>def calculateNewScore</span><span style=''>(collisionables: Map[Collisionable, List[Collisionable]], actualScore: ScorePoint): ScorePoint =
+</span>30 <span style=''>    </span><span style='background: #AEF1AE'>def getScorePoint</span><span style=''>(collisionable: Collisionable, damagers: List[Collisionable]): ScorePoint =
+</span>31 <span style=''>      collisionable match
+</span>32 <span style=''>        </span><span style='background: #AEF1AE'>case scorable: Scorable if scorable.isDestroyed &amp;&amp; damagers.map(_.affiliation).contains(Affiliation.Friendly)</span><span style=''> =&gt; scorable.points
+</span>33 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; 0
+</span>34 <span style=''>
+</span>35 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.map((damageable, damagers) =&gt; getScorePoint(damageable, damagers)).sum</span><span style=''> + actualScore
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -66,15 +71,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          23
+          28
         </td>
         <td>
           715
         </td>
         <td>
-          815
+          906
           -
-          836
+          927
         </td>
         <td>
           DefDef
@@ -90,15 +95,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          29
         </td>
         <td>
           711
         </td>
         <td>
-          937
+          1028
           -
-          954
+          1045
         </td>
         <td>
           DefDef
@@ -114,15 +119,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          31
         </td>
         <td>
           705
         </td>
         <td>
-          1064
+          1155
           -
-          1173
+          1264
         </td>
         <td>
           Block
@@ -138,15 +143,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          31
         </td>
         <td>
           708
         </td>
         <td>
-          1115
+          1206
           -
-          1142
+          1233
         </td>
         <td>
           Apply
@@ -162,15 +167,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          31
         </td>
         <td>
           707
         </td>
         <td>
-          1128
+          1219
           -
-          1141
+          1232
         </td>
         <td>
           Select
@@ -186,15 +191,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          31
         </td>
         <td>
           706
         </td>
         <td>
-          1091
+          1182
           -
-          1111
+          1202
         </td>
         <td>
           Select
@@ -210,15 +215,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          31
         </td>
         <td>
           709
         </td>
         <td>
-          1115
+          1206
           -
-          1173
+          1264
         </td>
         <td>
           Apply
@@ -234,15 +239,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          32
         </td>
         <td>
           710
         </td>
         <td>
-          1201
+          1292
           -
-          1207
+          1298
         </td>
         <td>
           Block
@@ -258,15 +263,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
           714
         </td>
         <td>
-          1218
+          1309
           -
-          1303
+          1394
         </td>
         <td>
           Apply
@@ -282,15 +287,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
           713
         </td>
         <td>
-          1218
+          1309
           -
-          1299
+          1390
         </td>
         <td>
           Apply
@@ -306,15 +311,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
           712
         </td>
         <td>
-          1263
+          1354
           -
-          1298
+          1389
         </td>
         <td>
           Apply

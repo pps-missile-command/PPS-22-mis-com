@@ -29,49 +29,48 @@
 </span>5 <span style=''>import model.elements2d.{Angle, Point2D}
 </span>6 <span style=''>import model.missile.Missile
 </span>7 <span style=''>import model.collisions.Affiliation.*
-</span>8 <span style=''>
-</span>9 <span style=''>import scala.util.Random
-</span>10 <span style=''>
-</span>11 <span style=''>package object missile:
-</span>12 <span style=''>
-</span>13 <span style=''>  type DeltaTime = Double
-</span>14 <span style=''>
-</span>15 <span style=''>  sealed trait MissileType
-</span>16 <span style=''>  case class BasicMissile(affiliation: Affiliation) extends MissileType
-</span>17 <span style=''>  case object RandomMissile extends MissileType
-</span>18 <span style=''>  case object ZigZagMissile extends MissileType
-</span>19 <span style=''>
-</span>20 <span style=''>  val initialLife: LifePoint = 50
-</span>21 <span style=''>  val velocity: Double = 10
-</span>22 <span style=''>  val damage: Int = 1
-</span>23 <span style=''>  val hitboxBase: Double = 10.0
-</span>24 <span style=''>  val hitboxHeight: Double = 10.0
-</span>25 <span style=''>  val maxHeight: Int = 100
-</span>26 <span style=''>  val maxWidth: Int = 50
-</span>27 <span style=''>  val angle: Angle = Angle.Degree(90)
-</span>28 <span style=''>  
-</span>29 <span style=''>  val basicHitBox: (Point2D, Option[Angle]) =&gt; HitBox = (point_, angle_) =&gt; </span><span style='background: #F0ADAD'>HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))</span><span style=''>
-</span>30 <span style=''>
-</span>31 <span style=''>  type MissileMovement = (DeltaTime) =&gt; Point2D
-</span>32 <span style=''>
-</span>33 <span style=''>  given affiliation: Affiliation = Affiliation.Enemy
-</span>34 <span style=''>  //generating a random positioned missile of type T
-</span>35 <span style=''>  </span><span style='background: #AEF1AE'>def GenerateRandomMissile</span><span style=''>(missileType: MissileType, finalDestination: Point2D)(using random: Random): Option[Missile] = missileType match
-</span>36 <span style=''>    </span><span style='background: #AEF1AE'>case BasicMissile(affiliation)</span><span style=''> =&gt;
-</span>37 <span style=''>      </span><span style='background: #AEF1AE'>for
-</span>38 <span style=''></span><span style='background: #AEF1AE'>        x &lt;- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
-</span>39 <span style=''></span><span style='background: #AEF1AE'>        y &lt;- Option.apply(maxHeight) //height del campo
-</span>40 <span style=''></span><span style='background: #AEF1AE'>      yield Missile(initialLife, damage, velocity, Point2D(x, y), finalDestination)</span><span style=''>
-</span>41 <span style=''>
-</span>42 <span style=''>    </span><span style='background: #F0ADAD'>case RandomMissile</span><span style=''> =&gt;
-</span>43 <span style=''>      </span><span style='background: #F0ADAD'>for
-</span>44 <span style=''></span><span style='background: #F0ADAD'>        vel &lt;- Option.apply(Random.nextDouble() * velocity)
-</span>45 <span style=''></span><span style='background: #F0ADAD'>        x &lt;- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
-</span>46 <span style=''></span><span style='background: #F0ADAD'>        y &lt;- Option.apply(maxHeight)
-</span>47 <span style=''></span><span style='background: #F0ADAD'>        damage &lt;- Option.apply(damage)
-</span>48 <span style=''></span><span style='background: #F0ADAD'>      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))</span><span style=''>
-</span>49 <span style=''>
-</span>50 <span style=''>    </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>Option(Missile(initialLife, damage, velocity, Point2D(0, 0), finalDestination))</span><span style=''>
+</span>8 <span style=''>import model.behavior.*
+</span>9 <span style=''>
+</span>10 <span style=''>import scala.util.Random
+</span>11 <span style=''>
+</span>12 <span style=''>package object missile:
+</span>13 <span style=''>
+</span>14 <span style=''>  sealed trait MissileType
+</span>15 <span style=''>  case class BasicMissile(affiliation: Affiliation) extends MissileType
+</span>16 <span style=''>  case object RandomMissile extends MissileType
+</span>17 <span style=''>  case object ZigZagMissile extends MissileType
+</span>18 <span style=''>
+</span>19 <span style=''>  val initialLife: LifePoint = 50
+</span>20 <span style=''>  val velocity: Double = 10
+</span>21 <span style=''>  val damage: Int = 1
+</span>22 <span style=''>  val hitboxBase: Double = 10.0
+</span>23 <span style=''>  val hitboxHeight: Double = 10.0
+</span>24 <span style=''>  val maxHeight: Int = 100
+</span>25 <span style=''>  val maxWidth: Int = 50
+</span>26 <span style=''>  val angle: Angle = Angle.Degree(90)
+</span>27 <span style=''>  
+</span>28 <span style=''>  val basicHitBox: (Point2D, Option[Angle]) =&gt; HitBox = (point_, angle_) =&gt; </span><span style='background: #F0ADAD'>HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>  type MissileMovement = (DeltaTime) =&gt; Point2D
+</span>31 <span style=''>
+</span>32 <span style=''>  given affiliation: Affiliation = Affiliation.Enemy
+</span>33 <span style=''>  //generating a random positioned missile of type T
+</span>34 <span style=''>  </span><span style='background: #AEF1AE'>def GenerateRandomMissile</span><span style=''>(missileType: MissileType, finalDestination: Point2D)(using random: Random): Option[Missile] = missileType match
+</span>35 <span style=''>    </span><span style='background: #AEF1AE'>case BasicMissile(affiliation)</span><span style=''> =&gt;
+</span>36 <span style=''>      </span><span style='background: #AEF1AE'>for
+</span>37 <span style=''></span><span style='background: #AEF1AE'>        x &lt;- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
+</span>38 <span style=''></span><span style='background: #AEF1AE'>        y &lt;- Option.apply(maxHeight) //height del campo
+</span>39 <span style=''></span><span style='background: #AEF1AE'>      yield Missile(initialLife, damage, velocity, Point2D(x, y), finalDestination)</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>    </span><span style='background: #F0ADAD'>case RandomMissile</span><span style=''> =&gt;
+</span>42 <span style=''>      </span><span style='background: #F0ADAD'>for
+</span>43 <span style=''></span><span style='background: #F0ADAD'>        vel &lt;- Option.apply(Random.nextDouble() * velocity)
+</span>44 <span style=''></span><span style='background: #F0ADAD'>        x &lt;- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
+</span>45 <span style=''></span><span style='background: #F0ADAD'>        y &lt;- Option.apply(maxHeight)
+</span>46 <span style=''></span><span style='background: #F0ADAD'>        damage &lt;- Option.apply(damage)
+</span>47 <span style=''></span><span style='background: #F0ADAD'>      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))</span><span style=''>
+</span>48 <span style=''>
+</span>49 <span style=''>    </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>Option(Missile(initialLife, damage, velocity, Point2D(0, 0), finalDestination))</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -86,15 +85,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          28
+          27
         </td>
         <td>
           672
         </td>
         <td>
-          877
+          874
           -
-          900
+          897
         </td>
         <td>
           Apply
@@ -110,15 +109,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          27
         </td>
         <td>
           673
         </td>
         <td>
-          825
+          822
           -
-          901
+          898
         </td>
         <td>
           Apply
@@ -134,15 +133,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          33
         </td>
         <td>
           704
         </td>
         <td>
-          1060
+          1057
           -
-          1085
+          1082
         </td>
         <td>
           DefDef
@@ -158,15 +157,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          34
         </td>
         <td>
           683
         </td>
         <td>
-          1202
+          1199
           -
-          1232
+          1229
         </td>
         <td>
           Block
@@ -182,15 +181,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          35
         </td>
         <td>
           682
         </td>
         <td>
-          1242
+          1239
           -
-          1472
+          1469
         </td>
         <td>
           Apply
@@ -209,15 +208,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          36
         </td>
         <td>
           675
         </td>
         <td>
-          1259
+          1256
           -
-          1297
+          1294
         </td>
         <td>
           Apply
@@ -233,15 +232,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          36
         </td>
         <td>
           674
         </td>
         <td>
-          1272
+          1269
           -
-          1296
+          1293
         </td>
         <td>
           Apply
@@ -257,15 +256,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          37
         </td>
         <td>
           681
         </td>
         <td>
-          1341
+          1338
           -
-          1472
+          1469
         </td>
         <td>
           Apply
@@ -282,15 +281,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          37
         </td>
         <td>
           676
         </td>
         <td>
-          1346
+          1343
           -
-          1369
+          1366
         </td>
         <td>
           Apply
@@ -306,34 +305,10 @@
         </td>
       </tr><tr>
         <td>
-          39
+          38
         </td>
         <td>
           678
-        </td>
-        <td>
-          1451
-          -
-          1452
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          677
         </td>
         <td>
           1448
@@ -350,19 +325,43 @@
           
         </td>
         <td style="background: #AEF1AE">
+          y
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          677
+        </td>
+        <td>
+          1445
+          -
+          1446
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
           x
         </td>
       </tr><tr>
         <td>
-          39
+          38
         </td>
         <td>
           680
         </td>
         <td>
-          1401
+          1398
           -
-          1472
+          1469
         </td>
         <td>
           Apply
@@ -378,15 +377,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          38
         </td>
         <td>
           679
         </td>
         <td>
-          1440
+          1437
           -
-          1453
+          1450
         </td>
         <td>
           Apply
@@ -402,15 +401,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          40
         </td>
         <td>
           699
         </td>
         <td>
-          1478
+          1475
           -
-          1496
+          1493
         </td>
         <td>
           Block
@@ -426,15 +425,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          41
         </td>
         <td>
           698
         </td>
         <td>
-          1506
+          1503
           -
-          1814
+          1811
         </td>
         <td>
           Apply
@@ -455,15 +454,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          42
         </td>
         <td>
           684
         </td>
         <td>
-          1538
+          1535
           -
-          1557
+          1554
         </td>
         <td>
           Apply
@@ -479,15 +478,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          42
         </td>
         <td>
           685
         </td>
         <td>
-          1525
+          1522
           -
-          1569
+          1566
         </td>
         <td>
           Apply
@@ -503,15 +502,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          43
         </td>
         <td>
           687
         </td>
         <td>
-          1583
+          1580
           -
-          1621
+          1618
         </td>
         <td>
           Apply
@@ -527,15 +526,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          43
         </td>
         <td>
           686
         </td>
         <td>
-          1596
+          1593
           -
-          1620
+          1617
         </td>
         <td>
           Apply
@@ -551,15 +550,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          43
         </td>
         <td>
           697
         </td>
         <td>
-          1578
+          1575
           -
-          1814
+          1811
         </td>
         <td>
           Apply
@@ -578,15 +577,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          44
         </td>
         <td>
           696
         </td>
         <td>
-          1665
+          1662
           -
-          1814
+          1811
         </td>
         <td>
           Apply
@@ -604,15 +603,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          44
         </td>
         <td>
           688
         </td>
         <td>
-          1670
+          1667
           -
-          1693
+          1690
         </td>
         <td>
           Apply
@@ -628,15 +627,15 @@
         </td>
       </tr><tr>
         <td>
-          46
+          45
         </td>
         <td>
           695
         </td>
         <td>
-          1702
+          1699
           -
-          1814
+          1811
         </td>
         <td>
           Apply
@@ -653,15 +652,15 @@
         </td>
       </tr><tr>
         <td>
-          46
+          45
         </td>
         <td>
           689
         </td>
         <td>
-          1712
+          1709
           -
-          1732
+          1729
         </td>
         <td>
           Apply
@@ -677,10 +676,82 @@
         </td>
       </tr><tr>
         <td>
-          47
+          46
         </td>
         <td>
           690
+        </td>
+        <td>
+          1789
+          -
+          1790
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          x
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          693
+        </td>
+        <td>
+          1796
+          -
+          1810
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D(10,10)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          692
+        </td>
+        <td>
+          1781
+          -
+          1794
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D(x, y)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          691
         </td>
         <td>
           1792
@@ -697,91 +768,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
-          693
-        </td>
-        <td>
-          1799
-          -
-          1813
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(10,10)
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
-          692
-        </td>
-        <td>
-          1784
-          -
-          1797
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(x, y)
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
-          691
-        </td>
-        <td>
-          1795
-          -
-          1796
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
           y
         </td>
       </tr><tr>
         <td>
-          47
+          46
         </td>
         <td>
           694
         </td>
         <td>
-          1745
+          1742
           -
-          1814
+          1811
         </td>
         <td>
           Apply
@@ -797,15 +796,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          48
         </td>
         <td>
           702
         </td>
         <td>
-          1830
+          1827
           -
-          1909
+          1906
         </td>
         <td>
           Apply
@@ -821,15 +820,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          48
         </td>
         <td>
           701
         </td>
         <td>
-          1837
+          1834
           -
-          1908
+          1905
         </td>
         <td>
           Apply
@@ -845,15 +844,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          48
         </td>
         <td>
           700
         </td>
         <td>
-          1876
+          1873
           -
-          1889
+          1886
         </td>
         <td>
           Apply
@@ -869,15 +868,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          48
         </td>
         <td>
           703
         </td>
         <td>
-          1820
+          1817
           -
-          1826
+          1823
         </td>
         <td>
           Block
