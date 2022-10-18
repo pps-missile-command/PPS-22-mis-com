@@ -1,9 +1,10 @@
 package model.missile
 
-import model.behavior.{Moveable, Timeable}
+import model.behavior.*
 import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint, lifePointDeath}
 import model.elements2d.{Angle, Point2D, Vector2D}
 import model.explosion.Explosion
+import model.DeltaTime
 
 import scala.util.Random
 

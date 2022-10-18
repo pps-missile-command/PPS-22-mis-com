@@ -1,6 +1,6 @@
 package model.behavior
 
-import model.missile.DeltaTime
+import model.DeltaTime
 
 trait Timeable:
 

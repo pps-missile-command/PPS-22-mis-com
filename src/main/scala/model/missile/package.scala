@@ -5,12 +5,11 @@ import model.collisions.hitbox.HitBoxRectangular
 import model.elements2d.{Angle, Point2D}
 import model.missile.Missile
 import model.collisions.Affiliation.*
+import model.behavior.*
 
 import scala.util.Random
 
 package object missile:
-
-  type DeltaTime = Double
 
   sealed trait MissileType
   case class BasicMissile(affiliation: Affiliation) extends MissileType

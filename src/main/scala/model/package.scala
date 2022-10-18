@@ -3,6 +3,11 @@ import model.collisions.{Affiliation, Collisionable, Damageable}
 package object model:
 
   /**
+   * Type alias for the abstraction of virtual time
+   */
+  type DeltaTime = Double
+
+  /**
    * Type alias for the point that are given in the game when an object is destroyed.
    */
   type ScorePoint = Int
