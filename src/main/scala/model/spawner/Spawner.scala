@@ -9,17 +9,6 @@ import model.DeltaTime
 
 import scala.util.Random
 
-/**
- * Fare uno spawner che genera missili ad un intervallo di tempo variabile.
- * Deve poter essere modificato il tempo, e deve essere timeable.
- * Il dt deve essere minore o superiore al dt: se superiore allora genero più di un missile.
- * Ritorno una lista di missili. Sfrutto il generatore del singolo missile.
- * Devo prendere in input i parametri riguardo a altezza e larghezza (range) in cui generare i missili,
- * per poter essere riutilizzabile anche per il satellite ad esempio.
- *
- * classe lista di missili
- */
-
 trait Spawner(using Random) extends Timeable:
 
   def spawn(dt: DeltaTime): List[Missile]
