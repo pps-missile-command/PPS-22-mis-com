@@ -35,7 +35,7 @@ object Spawner:
     override def spawn(dt: DeltaTime): List[Missile] =
       val currentDt = dtSupplier()
       this.dtSupplier = () => 0
-      currentDt match
+      dt match
         case n if n >= interval =>
           val step: Int = (n / interval).toInt
           val randomX = (0 until step map { i => (i, Random.nextDouble() * maxWidth) }).toList
