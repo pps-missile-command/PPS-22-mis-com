@@ -1,7 +1,7 @@
 package model.behavior
 
 import model.elements2d.Point2D
-import model.missile.DeltaTime
+import model.DeltaTime
 
 trait Moveable extends Timeable :
   override def timeElapsed(dt: DeltaTime): Moveable
