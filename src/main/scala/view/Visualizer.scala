@@ -19,11 +19,13 @@ object Visualizer:
      * @param structure City to be used.
      * @return ImageView of the city passed.
      */
-    def prepareCityImage(structure: City): Tuple3[Image, Double, Double] =
+    def prepareCityImage(structure: City): Tuple5[Image, Double, Double, Double, Double] =
         (
         Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\city_" + structure.currentLife + ".png"),
         structure.position.x,
-        structure.position.y
+        structure.position.y,
+        Constants.cityBaseSize,
+        Constants.cityHeightSize
         )
 
     /***
@@ -31,11 +33,13 @@ object Visualizer:
      * @param structure Missile turret to be used.
      * @return ImageView of the missile turret passed
      */
-    def prepareMissileImageView(structure: MissileBattery): Tuple3[Image, Double, Double] =
+    def prepareBatteryMissileImage(structure: MissileBattery): Tuple5[Image, Double, Double, Double, Double] =
         (
         Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png"),
         structure.bottomLeft_Position.x,
-        structure.bottomLeft_Position.y
+        structure.bottomLeft_Position.y,
+        Constants.missileBatteryBaseSize,
+        Constants.missileBatteryHeightSize
         )
 
 
@@ -44,10 +48,10 @@ object Visualizer:
      * @param ground Ground to be used.
      * @return List of ImageView of all the structures in the ground.
      */
-    def printGround(ground: Ground): List[Tuple3[Image, Double, Double]] =
+    def printGround(ground: Ground): List[Tuple5[Image, Double, Double, Double, Double]] =
         (for structure <- ground.cities yield prepareCityImage(structure))
             ++
-            (for structure <- ground.turrets yield prepareMissileImageView(structure))
+            (for structure <- ground.turrets yield prepareBatteryMissileImage(structure))
 
 
 //    val conversion: Collisionable => CollisionableElement = _ match

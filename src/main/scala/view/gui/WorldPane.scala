@@ -1,9 +1,11 @@
-package view
+package view.gui
 
 import model.World
+import utilities.Constants
+import view.Visualizer
 
-import java.awt.{Color, Graphics, Image, Toolkit, event}
 import java.awt.event.MouseMotionListener
+import java.awt.*
 import javax.swing.JPanel
 
 
@@ -14,9 +16,10 @@ private class WorldPane(val world: World, width: Int, height: Int) extends JPane
     override def paintComponent(graphics: Graphics): Unit =
         super.paintComponent(graphics)
         graphics.clearRect(0, 0, width, height)
-        //var i: Image = Toolkit.getDefaultToolkit.getImage(resourceFolderPath +"city_3.png")
         Visualizer.printGround(world.ground).map(
-            imageData => graphics.drawImage(imageData._1, imageData._2.toInt, imageData._3.toInt, 150, 100, this)
+            imageData => graphics.drawImage(imageData._1, imageData._2.toInt, imageData._3.toInt,
+                imageData._4.toInt,
+                imageData._5.toInt, this)
             )
 //        world.all.foreach { entity =>
 //            val (x, y) = ((entity.position.x * width).toInt, (entity.position.y * height).toInt)

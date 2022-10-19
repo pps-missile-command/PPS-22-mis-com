@@ -1,16 +1,16 @@
-package view
+package view.gui
 
-import model.World
 import controller.Event
-
+import model.World
 import monix.eval.Task
 import monix.reactive.Observable
 import monix.reactive.subjects.PublishSubject
 import org.w3c.dom.events.MouseEvent
-import javax.swing.WindowConstants
+import view.gui.UI
+
 import java.awt.event.MouseMotionListener
 import java.awt.{Color, Graphics, event}
-import javax.swing.{JFrame, JPanel, SwingConstants, SwingUtilities}
+import javax.swing.*
 
 class GUI(width: Int, height: Int) extends UI:
     private val frame = JFrame("Game")

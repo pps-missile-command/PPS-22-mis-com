@@ -5,10 +5,7 @@ import model.elements2d.Point2D
 import model.ground.City
 import model.missile.Missile
 import utilities.Constants
-
-
-import java.net.URL
-import javax.sound.sampled._
+import view.ViewConstants
 
 
 object Ground:
@@ -17,14 +14,14 @@ object Ground:
         val cities =
             for y <- List.range(0, 2) //generate all cities in 2 waves.
                 x <- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-                    yield City(Point2D(Constants.missileBatteryBaseSize + Constants.turretSpacer +
+                    yield City(Point2D(Constants.missileBatteryBaseSize + 2* Constants.turretSpacer +
                                 (Constants.cityBaseSize + Constants.citySpacer) * x +
-                                (3 * Constants.cityBaseSize + 2 * Constants.citySpacer + 3 * Constants.turretSpacer + 2 * Constants.missileBatteryBaseSize) * y,
-                                0))
+                                (3 * Constants.cityBaseSize + 2 * Constants.citySpacer + 2 * Constants.turretSpacer + Constants.missileBatteryBaseSize) * y,
+                        ViewConstants.GUI_height - Constants.cityHeightSize))
         val turrets =
             for x <- List.range(0, 3)
-                yield MissileBattery(Point2D((Constants.missileBatteryBaseSize + 2 * Constants.turretSpacer + 3* Constants.cityBaseSize + 2 * Constants.citySpacer) * x
-                    ,0))
+                yield MissileBattery(Point2D(Constants.turretSpacer + (Constants.missileBatteryBaseSize + 2 * Constants.turretSpacer + 3* Constants.cityBaseSize + 2 * Constants.citySpacer) * x
+                    ,ViewConstants.GUI_height - Constants.missileBatteryHeightSize))
         Ground(cities, turrets)
 
 case class Ground(cities: List[City], turrets: List[MissileBattery]):
