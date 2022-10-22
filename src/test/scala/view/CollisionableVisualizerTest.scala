@@ -15,8 +15,5 @@ class CollisionableVisualizerTest extends AnyFunSpec :
         val visualElements = CollisionableVisualizer.printElements(missiles)
         assert(visualElements.size == 10)
       }
-      it("should return a view element for an explosion") {
-
-      }
     }
   }
