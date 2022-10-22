@@ -2,14 +2,10 @@ package view
 
 import java.awt.{Image, Toolkit}
 import model.collisions.{Collisionable, Damageable}
+import model.elements2d.Point2D
 import model.ground.{City, Ground, MissileBattery}
 import model.missile.{Missile, hitboxBase, hitboxHeight}
 import utilities.Constants
-import view.MissileView.getClass
-
-
-case class CollisionableElement(image: Image, x: Double, y: Double)
-
 
 object Visualizer:
     val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
@@ -19,11 +15,10 @@ object Visualizer:
      * @param structure City to be used.
      * @return ImageView of the city passed.
      */
-    def prepareCityImage(structure: City): Tuple5[Image, Double, Double, Double, Double] =
+    def prepareCityImage(structure: City): Tuple4[Image, Point2D, Int, Int] =
         (
         Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\city_" + structure.currentLife + ".png"),
-        structure.position.x,
-        structure.position.y,
+        structure.position,
         Constants.cityBaseSize,
         Constants.cityHeightSize
         )
@@ -33,37 +28,20 @@ object Visualizer:
      * @param structure Missile turret to be used.
      * @return ImageView of the missile turret passed
      */
-    def prepareBatteryMissileImage(structure: MissileBattery): Tuple5[Image, Double, Double, Double, Double] =
+    def prepareBatteryMissileImage(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
         (
         Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png"),
-        structure.bottomLeft_Position.x,
-        structure.bottomLeft_Position.y,
+        structure.bottomLeft_Position,
         Constants.missileBatteryBaseSize,
         Constants.missileBatteryHeightSize
         )
-
 
     /***
      * Method used for preparing a list of ImageView of a given ground.
      * @param ground Ground to be used.
      * @return List of ImageView of all the structures in the ground.
      */
-    def printGround(ground: Ground): List[Tuple5[Image, Double, Double, Double, Double]] =
+    def printGround(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
         (for structure <- ground.cities yield prepareCityImage(structure))
             ++
             (for structure <- ground.turrets yield prepareBatteryMissileImage(structure))
-
-
-//    val conversion: Collisionable => CollisionableElement = _ match
-//        case m: Missile => CollisionableElement(
-//            ImageView(Image(getClass.getResourceAsStream(""), hitboxBase, hitboxHeight, false, false)),
-//            m.position.x,
-//            m.position.y)
-//
-//    def apply(imageView: ImageView, x: Double, y: Double) =
-//        CollisionableElement(imageView, x, y)
-//
-//    def printMissiles(collisionables: List[Collisionable]): List[CollisionableElement] =
-//        for
-//            i <- collisionables
-//        yield conversion(i)

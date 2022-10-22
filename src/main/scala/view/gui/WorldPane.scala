@@ -17,9 +17,9 @@ private class WorldPane(val world: World, width: Int, height: Int) extends JPane
         super.paintComponent(graphics)
         graphics.clearRect(0, 0, width, height)
         Visualizer.printGround(world.ground).map(
-            imageData => graphics.drawImage(imageData._1, imageData._2.toInt, imageData._3.toInt,
-                imageData._4.toInt,
-                imageData._5.toInt, this)
+            imageData => graphics.drawImage(imageData._1, imageData._2.x.toInt, imageData._2.y.toInt,
+                imageData._3,
+                imageData._4, this)
             )
 //        world.all.foreach { entity =>
 //            val (x, y) = ((entity.position.x * width).toInt, (entity.position.y * height).toInt)
