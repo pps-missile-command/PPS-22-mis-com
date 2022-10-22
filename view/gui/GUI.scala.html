@@ -1,0 +1,649 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          view/gui/GUI.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
+</span>2 <span style=''>
+</span>3 <span style=''>import controller.Event
+</span>4 <span style=''>import model.World
+</span>5 <span style=''>import monix.eval.Task
+</span>6 <span style=''>import monix.reactive.Observable
+</span>7 <span style=''>import monix.reactive.subjects.PublishSubject
+</span>8 <span style=''>import org.w3c.dom.events.MouseEvent
+</span>9 <span style=''>import view.gui.UI
+</span>10 <span style=''>
+</span>11 <span style=''>import java.awt.event.MouseMotionListener
+</span>12 <span style=''>import java.awt.{Color, Graphics, event}
+</span>13 <span style=''>import javax.swing.*
+</span>14 <span style=''>
+</span>15 <span style=''>class GUI(width: Int, height: Int) extends UI:
+</span>16 <span style=''>    private val frame = </span><span style='background: #F0ADAD'>JFrame(&quot;Game&quot;)</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>    </span><span style='background: #F0ADAD'>frame.setSize(width, height)</span><span style=''>
+</span>19 <span style=''>    </span><span style='background: #F0ADAD'>frame.setVisible(true)</span><span style=''>
+</span>20 <span style=''>    </span><span style='background: #F0ADAD'>frame.setLocationRelativeTo(null)</span><span style=''>
+</span>21 <span style=''>    </span><span style='background: #F0ADAD'>frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)</span><span style=''>
+</span>22 <span style=''>
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>def render</span><span style=''>(world: World): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>24 <span style=''></span><span style='background: #F0ADAD'>        SwingUtilities.invokeAndWait { () =&gt;
+</span>25 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
+</span>26 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
+</span>27 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(WorldPane(world, width, height))
+</span>28 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.repaint()
+</span>29 <span style=''></span><span style='background: #F0ADAD'>        }
+</span>30 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>31 <span style=''>
+</span>32 <span style=''>    </span><span style='background: #F0ADAD'>def customRender</span><span style=''>(world: World) =
+</span>33 <span style=''>        </span><span style='background: #F0ADAD'>SwingUtilities.invokeAndWait { () =&gt;
+</span>34 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
+</span>35 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
+</span>36 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(WorldPane(world, width, height))
+</span>37 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.repaint()
+</span>38 <span style=''></span><span style='background: #F0ADAD'>        }</span><span style=''>
+</span>39 <span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>    </span><span style='background: #F0ADAD'>override def events</span><span style=''>: Observable[Event] = </span><span style='background: #F0ADAD'>???</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>    </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>: Task[Unit] = </span><span style='background: #F0ADAD'>???</span><span style=''>
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          846
+        </td>
+        <td>
+          396
+          -
+          410
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          JFrame(&quot;Game&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          847
+        </td>
+        <td>
+          416
+          -
+          444
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setSize
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.setSize(width, height)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          848
+        </td>
+        <td>
+          449
+          -
+          471
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setVisible
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.setVisible(true)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          849
+        </td>
+        <td>
+          476
+          -
+          509
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setLocationRelativeTo
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.setLocationRelativeTo(null)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          850
+        </td>
+        <td>
+          514
+          -
+          575
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setDefaultCloseOperation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          851
+        </td>
+        <td>
+          620
+          -
+          908
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Task {
+        SwingUtilities.invokeAndWait { () =&gt;
+            if (frame.getContentPane.getComponentCount != 0)
+                frame.getContentPane.remove(0)
+            frame.getContentPane.add(WorldPane(world, width, height))
+            frame.getContentPane.repaint()
+        }
+    }
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          852
+        </td>
+        <td>
+          581
+          -
+          591
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          render
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def render
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          864
+        </td>
+        <td>
+          914
+          -
+          930
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          customRender
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def customRender
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          863
+        </td>
+        <td>
+          955
+          -
+          1222
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          invokeAndWait
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          SwingUtilities.invokeAndWait { () =&gt;
+            if (frame.getContentPane.getComponentCount != 0)
+                frame.getContentPane.remove(0)
+            frame.getContentPane.add(WorldPane(world, width, height))
+            frame.getContentPane.repaint()
+        }
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          854
+        </td>
+        <td>
+          1008
+          -
+          1046
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getComponentCount
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane.getComponentCount
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          853
+        </td>
+        <td>
+          1008
+          -
+          1028
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getContentPane
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          855
+        </td>
+        <td>
+          1069
+          -
+          1089
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getContentPane
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          857
+        </td>
+        <td>
+          1069
+          -
+          1099
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane.remove(0)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          856
+        </td>
+        <td>
+          1069
+          -
+          1099
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          remove
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane.remove(0)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          860
+        </td>
+        <td>
+          1112
+          -
+          1169
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          add
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane.add(WorldPane(world, width, height))
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          859
+        </td>
+        <td>
+          1137
+          -
+          1168
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          WorldPane(world, width, height)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          858
+        </td>
+        <td>
+          1112
+          -
+          1132
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getContentPane
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          862
+        </td>
+        <td>
+          1182
+          -
+          1212
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          repaint
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane.repaint()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          861
+        </td>
+        <td>
+          1182
+          -
+          1202
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getContentPane
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          866
+        </td>
+        <td>
+          1229
+          -
+          1248
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          events
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def events
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          865
+        </td>
+        <td>
+          1270
+          -
+          1273
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          ???
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ???
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          868
+        </td>
+        <td>
+          1279
+          -
+          1300
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          gameOver
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def gameOver
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          867
+        </td>
+        <td>
+          1315
+          -
+          1318
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          ???
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ???
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

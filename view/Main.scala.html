@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/missile/MissileDamageable.scala.html
+          view/Main.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,19 +22,15 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.hitbox.HitBoxRectangular
-</span>4 <span style=''>import model.collisions.{Affiliation, Collisionable, Damageable, Distance, HitBox, LifePoint}
-</span>5 <span style=''>import model.elements2d.Point2D
-</span>6 <span style=''>
-</span>7 <span style=''>trait MissileDamageable(lifePoint: LifePoint, position: Point2D, finalPosition: Point2D) extends Damageable:
-</span>8 <span style=''>
-</span>9 <span style=''>  </span><span style='background: #F0ADAD'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #F0ADAD'>basicHitBox(position, (finalPosition &lt;--&gt; position).direction)</span><span style=''>
-</span>10 <span style=''>
-</span>11 <span style=''>  </span><span style='background: #F0ADAD'>override def initialLife</span><span style=''>: LifePoint = </span><span style='background: #F0ADAD'>initialLife</span><span style=''>
-</span>12 <span style=''>
-</span>13 <span style=''>  </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = lifePoint
+</span>3 <span style=''>import model.World
+</span>4 <span style=''>import view.gui.GUI
+</span>5 <span style=''>
+</span>6 <span style=''>object Main:
+</span>7 <span style=''>    </span><span style='background: #F0ADAD'>@main def startGame</span><span style=''>(): Unit =
+</span>8 <span style=''>        val swingUI = </span><span style='background: #F0ADAD'>new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)</span><span style=''> //39 is the number of pixels in the bar
+</span>9 <span style=''>        </span><span style='background: #F0ADAD'>swingUI.customRender(World.initialWorld)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -49,171 +45,99 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          8
+          6
         </td>
         <td>
-          681
+          807
         </td>
         <td>
-          374
+          71
           -
-          401
+          90
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          startGame
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          @main def startGame
+        </td>
+      </tr><tr>
+        <td>
+          7
+        </td>
+        <td>
+          804
+        </td>
+        <td>
+          123
+          -
+          186
         </td>
         <td>
           Apply
         </td>
         <td>
-          &lt;--&gt;
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          finalPosition &lt;--&gt; position
+          new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)
         </td>
       </tr><tr>
         <td>
           8
         </td>
         <td>
-          684
+          806
         </td>
         <td>
-          311
+          235
           -
-          340
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          hitBox
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          override protected def hitBox
-        </td>
-      </tr><tr>
-        <td>
-          8
-        </td>
-        <td>
-          683
-        </td>
-        <td>
-          351
-          -
-          413
+          275
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          customRender
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          basicHitBox(position, (finalPosition &lt;--&gt; position).direction)
+          swingUI.customRender(World.initialWorld)
         </td>
       </tr><tr>
         <td>
           8
         </td>
         <td>
-          682
+          805
         </td>
         <td>
-          373
+          256
           -
-          412
+          274
         </td>
         <td>
           Select
         </td>
         <td>
-          direction
+          initialWorld
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          (finalPosition &lt;--&gt; position).direction
-        </td>
-      </tr><tr>
-        <td>
-          10
-        </td>
-        <td>
-          686
-        </td>
-        <td>
-          417
-          -
-          441
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          initialLife
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          override def initialLife
-        </td>
-      </tr><tr>
-        <td>
-          10
-        </td>
-        <td>
-          685
-        </td>
-        <td>
-          455
-          -
-          466
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          initialLife
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          initialLife
-        </td>
-      </tr><tr>
-        <td>
-          12
-        </td>
-        <td>
-          687
-        </td>
-        <td>
-          470
-          -
-          494
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          currentLife
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def currentLife
+          World.initialWorld
         </td>
       </tr>
     </table>
