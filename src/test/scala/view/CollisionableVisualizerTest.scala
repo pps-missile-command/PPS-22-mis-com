@@ -4,11 +4,7 @@ import model.spawner.Spawner
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
-object CollisionableVisualizerTest:
-  ???
-
 class CollisionableVisualizerTest extends AnyFunSpec :
-  import CollisionableVisualizerTest._
 
   describe("A collisionable visualizer") {
     describe("that convert collisionable elements into graphic ones") {
