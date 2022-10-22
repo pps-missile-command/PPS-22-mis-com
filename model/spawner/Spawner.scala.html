@@ -33,55 +33,44 @@
 </span>9 <span style=''>
 </span>10 <span style=''>import scala.util.Random
 </span>11 <span style=''>
-</span>12 <span style=''>/**
-</span>13 <span style=''> * Fare uno spawner che genera missili ad un intervallo di tempo variabile.
-</span>14 <span style=''> * Deve poter essere modificato il tempo, e deve essere timeable.
-</span>15 <span style=''> * Il dt deve essere minore o superiore al dt: se superiore allora genero più di un missile.
-</span>16 <span style=''> * Ritorno una lista di missili. Sfrutto il generatore del singolo missile.
-</span>17 <span style=''> * Devo prendere in input i parametri riguardo a altezza e larghezza (range) in cui generare i missili,
-</span>18 <span style=''> * per poter essere riutilizzabile anche per il satellite ad esempio.
-</span>19 <span style=''> *
-</span>20 <span style=''> * classe lista di missili
-</span>21 <span style=''> */
-</span>22 <span style=''>
-</span>23 <span style=''>trait Spawner(using Random) extends Timeable:
-</span>24 <span style=''>
-</span>25 <span style=''>  def spawn(dt: DeltaTime): List[Missile]
-</span>26 <span style=''>
-</span>27 <span style=''>object Spawner:
-</span>28 <span style=''>
-</span>29 <span style=''>  given affiliation: Affiliation = Affiliation.Enemy
-</span>30 <span style=''>
-</span>31 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(interval: DeltaTime, maxWidth: Double, maxHeight: Double, dt: DeltaTime = 0): Spawner = new </span><span style='background: #AEF1AE'>Spawner(using Random)</span><span style=''> {
-</span>32 <span style=''>
-</span>33 <span style=''>    var dtSupplier : () =&gt; DeltaTime = () =&gt; dt
-</span>34 <span style=''>
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(dt: DeltaTime): List[Missile] =
-</span>36 <span style=''>      val currentDt = </span><span style='background: #AEF1AE'>dtSupplier()</span><span style=''>
-</span>37 <span style=''>      this.dtSupplier = () =&gt; 0
-</span>38 <span style=''>      dt match
-</span>39 <span style=''>        </span><span style='background: #AEF1AE'>case n if n &gt;= interval</span><span style=''> =&gt;
-</span>40 <span style=''>          val step: Int = (n / interval).toInt
-</span>41 <span style=''>          val randomX = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
-</span>42 <span style=''>          val randomY = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
-</span>43 <span style=''>          val generator: List[Missile] =
-</span>44 <span style=''>            </span><span style='background: #AEF1AE'>for
-</span>45 <span style=''></span><span style='background: #AEF1AE'>              (i, x) &lt;- randomX
-</span>46 <span style=''></span><span style='background: #AEF1AE'>              (j, y) &lt;- randomY
-</span>47 <span style=''></span><span style='background: #AEF1AE'>              if i == j
-</span>48 <span style=''></span><span style='background: #AEF1AE'>            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x, y), Point2D(x, y))</span><span style=''>
-</span>49 <span style=''>          generator
-</span>50 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>List()</span><span style=''>
-</span>51 <span style=''>
-</span>52 <span style=''>    </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Spawner = </span><span style='background: #F0ADAD'>Spawner.apply(interval, maxWidth, maxHeight, dtSupplier() + _dt)</span><span style=''>
-</span>53 <span style=''>
-</span>54 <span style=''>  }
-</span>55 <span style=''>
-</span>56 <span style=''>  </span><span style='background: #F0ADAD'>@main def test</span><span style=''>(): Unit = {
-</span>57 <span style=''>    val spawner = </span><span style='background: #F0ADAD'>Spawner(5, 10, 10)</span><span style=''>
-</span>58 <span style=''>
-</span>59 <span style=''>    </span><span style='background: #F0ADAD'>println(spawner.spawn(10))</span><span style=''>
-</span>60 <span style=''>  }
+</span>12 <span style=''>trait Spawner(using Random) extends Timeable:
+</span>13 <span style=''>
+</span>14 <span style=''>  def spawn(dt: DeltaTime): List[Missile]
+</span>15 <span style=''>
+</span>16 <span style=''>object Spawner:
+</span>17 <span style=''>
+</span>18 <span style=''>  given affiliation: Affiliation = Affiliation.Enemy
+</span>19 <span style=''>
+</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(interval: DeltaTime, maxWidth: Double, maxHeight: Double, dt: DeltaTime = 0): Spawner = new </span><span style='background: #AEF1AE'>Spawner(using Random)</span><span style=''> {
+</span>21 <span style=''>
+</span>22 <span style=''>    var dtSupplier : () =&gt; DeltaTime = () =&gt; dt
+</span>23 <span style=''>
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(dt: DeltaTime): List[Missile] =
+</span>25 <span style=''>      val currentDt = </span><span style='background: #AEF1AE'>dtSupplier()</span><span style=''>
+</span>26 <span style=''>      this.dtSupplier = () =&gt; 0
+</span>27 <span style=''>      dt match
+</span>28 <span style=''>        </span><span style='background: #AEF1AE'>case n if n &gt;= interval</span><span style=''> =&gt;
+</span>29 <span style=''>          val step: Int = (n / interval).toInt
+</span>30 <span style=''>          val randomX = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
+</span>31 <span style=''>          val randomY = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
+</span>32 <span style=''>          val generator: List[Missile] =
+</span>33 <span style=''>            </span><span style='background: #AEF1AE'>for
+</span>34 <span style=''></span><span style='background: #AEF1AE'>              (i, x) &lt;- randomX
+</span>35 <span style=''></span><span style='background: #AEF1AE'>              (j, y) &lt;- randomY
+</span>36 <span style=''></span><span style='background: #AEF1AE'>              if i == j
+</span>37 <span style=''></span><span style='background: #AEF1AE'>            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x, y), Point2D(x, y))</span><span style=''>
+</span>38 <span style=''>          generator
+</span>39 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>List()</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>    </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Spawner = </span><span style='background: #F0ADAD'>Spawner.apply(interval, maxWidth, maxHeight, dtSupplier() + _dt)</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>  }
+</span>44 <span style=''>
+</span>45 <span style=''>  </span><span style='background: #F0ADAD'>@main def test</span><span style=''>(): Unit = {
+</span>46 <span style=''>    val spawner = </span><span style='background: #F0ADAD'>Spawner(5, 10, 10)</span><span style=''>
+</span>47 <span style=''>
+</span>48 <span style=''>    </span><span style='background: #F0ADAD'>println(spawner.spawn(10))</span><span style=''>
+</span>49 <span style=''>  }
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -96,15 +85,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          30
+          19
         </td>
         <td>
-          765
+          756
         </td>
         <td>
-          943
+          419
           -
-          952
+          428
         </td>
         <td>
           DefDef
@@ -120,15 +109,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          19
         </td>
         <td>
-          732
+          723
         </td>
         <td>
-          1045
+          521
           -
-          1066
+          542
         </td>
         <td>
           Apply
@@ -144,15 +133,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          19
         </td>
         <td>
-          766
+          757
         </td>
         <td>
-          1027
+          503
           -
-          1027
+          503
         </td>
         <td>
           DefDef
@@ -168,15 +157,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          23
         </td>
         <td>
-          761
+          752
         </td>
         <td>
-          1123
+          599
           -
-          1141
+          617
         </td>
         <td>
           DefDef
@@ -192,15 +181,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          24
         </td>
         <td>
-          733
+          724
         </td>
         <td>
-          1196
+          672
           -
-          1208
+          684
         </td>
         <td>
           Apply
@@ -216,15 +205,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          27
         </td>
         <td>
-          758
+          749
         </td>
         <td>
-          1264
+          740
           -
-          1287
+          763
         </td>
         <td>
           Block
@@ -240,15 +229,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          29
         </td>
         <td>
-          738
+          729
         </td>
         <td>
-          1362
+          838
           -
-          1432
+          908
         </td>
         <td>
           Select
@@ -264,15 +253,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          29
         </td>
         <td>
-          735
+          726
         </td>
         <td>
-          1363
+          839
           -
-          1375
+          851
         </td>
         <td>
           Apply
@@ -288,15 +277,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          29
         </td>
         <td>
-          737
+          728
         </td>
         <td>
-          1363
+          839
           -
-          1424
+          900
         </td>
         <td>
           Apply
@@ -312,87 +301,111 @@
         </td>
       </tr><tr>
         <td>
-          40
+          29
+        </td>
+        <td>
+          725
+        </td>
+        <td>
+          839
+          -
+          840
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          intWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          727
+        </td>
+        <td>
+          867
+          -
+          886
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Random.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          732
+        </td>
+        <td>
+          962
+          -
+          981
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Random.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          731
+        </td>
+        <td>
+          934
+          -
+          946
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          until
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0 until step
+        </td>
+      </tr><tr>
+        <td>
+          30
         </td>
         <td>
           734
         </td>
         <td>
-          1363
+          933
           -
-          1364
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          intWrapper
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          0
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          736
-        </td>
-        <td>
-          1391
-          -
-          1410
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Random.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          741
-        </td>
-        <td>
-          1486
-          -
-          1505
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Random.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          743
-        </td>
-        <td>
-          1457
-          -
-          1527
+          1003
         </td>
         <td>
           Select
@@ -408,39 +421,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          30
         </td>
         <td>
-          740
+          733
         </td>
         <td>
-          1458
+          934
           -
-          1470
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          until
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          0 until step
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          742
-        </td>
-        <td>
-          1458
-          -
-          1519
+          995
         </td>
         <td>
           Apply
@@ -456,15 +445,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          30
         </td>
         <td>
-          739
+          730
         </td>
         <td>
-          1458
+          934
           -
-          1459
+          935
         </td>
         <td>
           Apply
@@ -480,15 +469,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          32
         </td>
         <td>
-          757
+          748
         </td>
         <td>
-          1581
+          1057
           -
-          1772
+          1248
         </td>
         <td>
           Apply
@@ -508,15 +497,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          33
         </td>
         <td>
-          756
+          747
         </td>
         <td>
-          1599
+          1075
           -
-          1605
+          1081
         </td>
         <td>
           Block
@@ -532,15 +521,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          33
         </td>
         <td>
-          744
+          735
         </td>
         <td>
-          1599
+          1075
           -
-          1605
+          1081
         </td>
         <td>
           Literal
@@ -556,15 +545,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          33
         </td>
         <td>
-          745
+          736
         </td>
         <td>
-          1599
+          1075
           -
-          1616
+          1092
         </td>
         <td>
           Apply
@@ -580,15 +569,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          34
         </td>
         <td>
-          747
+          738
         </td>
         <td>
-          1631
+          1107
           -
-          1648
+          1124
         </td>
         <td>
           Apply
@@ -604,15 +593,39 @@
         </td>
       </tr><tr>
         <td>
-          45
+          34
         </td>
         <td>
-          755
+          737
         </td>
         <td>
-          1631
+          1107
           -
-          1772
+          1113
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (j, y)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          746
+        </td>
+        <td>
+          1107
+          -
+          1248
         </td>
         <td>
           Apply
@@ -630,39 +643,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          34
         </td>
         <td>
-          746
+          740
         </td>
         <td>
-          1631
+          1107
           -
-          1637
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (j, y)
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          749
-        </td>
-        <td>
-          1631
-          -
-          1672
+          1148
         </td>
         <td>
           Apply
@@ -679,15 +668,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          34
         </td>
         <td>
-          754
+          745
         </td>
         <td>
-          1631
+          1107
           -
-          1637
+          1113
         </td>
         <td>
           Block
@@ -703,15 +692,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          34
         </td>
         <td>
-          748
+          739
         </td>
         <td>
-          1631
+          1107
           -
-          1637
+          1113
         </td>
         <td>
           Apply
@@ -727,15 +716,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          36
         </td>
         <td>
-          750
+          741
         </td>
         <td>
-          1743
+          1219
           -
-          1756
+          1232
         </td>
         <td>
           Apply
@@ -751,15 +740,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          36
         </td>
         <td>
-          753
+          744
         </td>
         <td>
-          1691
+          1167
           -
-          1772
+          1248
         </td>
         <td>
           Apply
@@ -775,15 +764,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          36
         </td>
         <td>
-          752
+          743
         </td>
         <td>
-          1691
+          1167
           -
-          1711
+          1187
         </td>
         <td>
           Select
@@ -799,15 +788,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          36
         </td>
         <td>
-          751
+          742
         </td>
         <td>
-          1758
+          1234
           -
-          1771
+          1247
         </td>
         <td>
           Apply
@@ -823,15 +812,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          38
         </td>
         <td>
-          759
+          750
         </td>
         <td>
-          1811
+          1287
           -
-          1817
+          1293
         </td>
         <td>
           Apply
@@ -847,15 +836,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          38
         </td>
         <td>
-          760
+          751
         </td>
         <td>
-          1801
+          1277
           -
-          1807
+          1283
         </td>
         <td>
           Block
@@ -871,15 +860,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          40
         </td>
         <td>
-          762
+          753
         </td>
         <td>
-          1920
+          1396
           -
-          1932
+          1408
         </td>
         <td>
           Apply
@@ -895,15 +884,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          40
         </td>
         <td>
-          764
+          755
         </td>
         <td>
-          1823
+          1299
           -
-          1847
+          1323
         </td>
         <td>
           DefDef
@@ -919,15 +908,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          40
         </td>
         <td>
-          763
+          754
         </td>
         <td>
-          1875
+          1351
           -
-          1939
+          1415
         </td>
         <td>
           Apply
@@ -943,15 +932,15 @@
         </td>
       </tr><tr>
         <td>
-          55
+          44
         </td>
         <td>
-          771
+          762
         </td>
         <td>
-          1948
+          1424
           -
-          1962
+          1438
         </td>
         <td>
           DefDef
@@ -967,15 +956,15 @@
         </td>
       </tr><tr>
         <td>
-          56
+          45
         </td>
         <td>
-          768
+          759
         </td>
         <td>
-          1993
+          1469
           -
-          2011
+          1487
         </td>
         <td>
           Apply
@@ -991,15 +980,15 @@
         </td>
       </tr><tr>
         <td>
-          56
+          45
         </td>
         <td>
-          767
+          758
         </td>
         <td>
-          1993
+          1469
           -
-          2000
+          1476
         </td>
         <td>
           Select
@@ -1015,15 +1004,15 @@
         </td>
       </tr><tr>
         <td>
-          58
+          47
         </td>
         <td>
-          770
+          761
         </td>
         <td>
-          2017
+          1493
           -
-          2043
+          1519
         </td>
         <td>
           Apply
@@ -1039,15 +1028,15 @@
         </td>
       </tr><tr>
         <td>
-          58
+          47
         </td>
         <td>
-          769
+          760
         </td>
         <td>
-          2025
+          1501
           -
-          2042
+          1518
         </td>
         <td>
           Apply
