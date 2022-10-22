@@ -15,37 +15,45 @@ object ExplosionTest:
 class ExplosionTest extends AnyFunSpec :
   import ExplosionTest.*
   import model.missile.MissileTest.TestMissile
+  import model.explosion.MaxTime
+  given maxTime: MaxTime = 10
 
   describe("An explosion") {
     describe("circular") {
       describe("when created") {
         it("should have damage specified in input") {
-          val explosion = Explosion(damage, radius, position, Affiliation.Friendly)
+          given affiliation: Affiliation = Affiliation.Friendly
+          val explosion = Explosion(damage, radius, position)
           assert(explosion.damageInflicted == damage)
         }
         it("should have valid damage value even if a negative one is specified") {
-          val explosion = Explosion(-damage, radius, position, Affiliation.Friendly)
+          given affiliation: Affiliation = Affiliation.Friendly
+          val explosion = Explosion(-damage, radius, position)
           assert(explosion.damageInflicted == damage)
         }
         it("should have valid radius value even if a negative one is specified") {
-          val explosion = Explosion(damage, -radius, position, Affiliation.Friendly)
+          given affiliation: Affiliation = Affiliation.Friendly
+          val explosion = Explosion(damage, -radius, position)
           assert(explosion.radius == radius)
         }
         it("should throw IllegalArgumentException when damage is assigned to 0") {
           assertThrows[IllegalArgumentException] {
-            Explosion(0, radius, position, Affiliation.Friendly)
+            given affiliation: Affiliation = Affiliation.Friendly
+            Explosion(0, radius, position)
           }
         }
         it("should throw IllegalArgumentException when radius is assigned to 0") {
           assertThrows[IllegalArgumentException] {
-            Explosion(damage, 0, position, Affiliation.Friendly)
+            given affiliation: Affiliation = Affiliation.Friendly
+            Explosion(damage, 0, position)
           }
         }
       }
       describe("when a point is inside its action radius") {
         it("should recognize a collision") {
           given distance : Distance = 1
-          val explosion = Explosion(damage, radius, position, Affiliation.Friendly)
+          given affiliation: Affiliation = Affiliation.Friendly
+          val explosion = Explosion(damage, radius, position)
           val startPosition = Point2D(3,3)
           val point = new Collisionable {
 
@@ -55,6 +63,15 @@ class ExplosionTest extends AnyFunSpec :
           }
 
           assert(explosion.isCollidingWith(point))
+
+        }
+      }
+      describe("when exploding") {
+        it("should be into exploding state until the max time") {
+          given affiliation: Affiliation = Affiliation.Friendly
+          val explosion = Explosion(damage, radius, position)
+          val newExplosion = explosion.timeElapsed(14)
+          assert(newExplosion.terminated, true)
         }
       }
     }
