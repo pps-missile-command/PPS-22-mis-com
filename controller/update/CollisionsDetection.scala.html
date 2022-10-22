@@ -1,0 +1,167 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          controller/update/CollisionsDetection.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller.update
+</span>2 <span style=''>
+</span>3 <span style=''>import controller.Event
+</span>4 <span style=''>import controller.Event.TimePassed
+</span>5 <span style=''>import controller.update.Update.on
+</span>6 <span style=''>import model.{World, calculateNewScore}
+</span>7 <span style=''>import model.collisions.{Collisionable, Damageable, applyDamage, calculateCollisions}
+</span>8 <span style=''>import model.ground.{City, Ground, MissileBattery}
+</span>9 <span style=''>import model.missile.Missile
+</span>10 <span style=''>import monix.eval.Task
+</span>11 <span style=''>
+</span>12 <span style=''>/**
+</span>13 <span style=''> * Object that return an update function for the world to be update with the aftermath of its components collisions
+</span>14 <span style=''> */
+</span>15 <span style=''>object CollisionsDetection:
+</span>16 <span style=''>  /**
+</span>17 <span style=''>   * Apply function used to update the world to be update with the aftermath of its components collisions
+</span>18 <span style=''>   *
+</span>19 <span style=''>   * @return An Update that update the world to be update with the aftermath of its components collisions
+</span>20 <span style=''>   */
+</span>21 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, world: World) =&gt;
+</span>22 <span style=''></span><span style='background: #F0ADAD'>    Task {
+</span>23 <span style=''></span><span style='background: #F0ADAD'>      def createNewGround(collisionables: List[Collisionable]): (Ground, List[Collisionable]) =
+</span>24 <span style=''></span><span style='background: #F0ADAD'>        val (collisions, groundElements) = collisionables.partition(_ match
+</span>25 <span style=''></span><span style='background: #F0ADAD'>          case _: MissileBattery =&gt; false
+</span>26 <span style=''></span><span style='background: #F0ADAD'>          case _: City =&gt; false
+</span>27 <span style=''></span><span style='background: #F0ADAD'>          case _ =&gt; true
+</span>28 <span style=''></span><span style='background: #F0ADAD'>        )
+</span>29 <span style=''></span><span style='background: #F0ADAD'>        val (missileBatteries, cities) = groundElements.partition(_ match
+</span>30 <span style=''></span><span style='background: #F0ADAD'>          case _: MissileBattery =&gt; true
+</span>31 <span style=''></span><span style='background: #F0ADAD'>          case _: City =&gt; false
+</span>32 <span style=''></span><span style='background: #F0ADAD'>        )
+</span>33 <span style=''></span><span style='background: #F0ADAD'>        (Ground(
+</span>34 <span style=''></span><span style='background: #F0ADAD'>          cities.map(_.asInstanceOf[City]),
+</span>35 <span style=''></span><span style='background: #F0ADAD'>          missileBatteries.map(_.asInstanceOf[MissileBattery])
+</span>36 <span style=''></span><span style='background: #F0ADAD'>        ), collisions)
+</span>37 <span style=''></span><span style='background: #F0ADAD'>
+</span>38 <span style=''></span><span style='background: #F0ADAD'>      def isDestroyed(collisionable: Collisionable): Boolean = collisionable match
+</span>39 <span style=''></span><span style='background: #F0ADAD'>        case damageable: Damageable =&gt; damageable.isDestroyed
+</span>40 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; false
+</span>41 <span style=''></span><span style='background: #F0ADAD'>
+</span>42 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables ++ world.ground.cities ++ world.ground.turrets
+</span>43 <span style=''></span><span style='background: #F0ADAD'>      val collisionableAfterCollisions = applyDamage(calculateCollisions(collisionables))
+</span>44 <span style=''></span><span style='background: #F0ADAD'>      val newScore = calculateNewScore(collisionableAfterCollisions, world.score)
+</span>45 <span style=''></span><span style='background: #F0ADAD'>      val (newGround, newCollisionables) = createNewGround(collisionableAfterCollisions.keys.toList)
+</span>46 <span style=''></span><span style='background: #F0ADAD'>      val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed)
+</span>47 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = newNotDestroyedCollisionables, score = newScore, ground = newGround)
+</span>48 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>49 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          41
+        </td>
+        <td>
+          734
+          -
+          743
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          40
+        </td>
+        <td>
+          756
+          -
+          2131
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          on
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          on[TimePassed] { (_: Event, world: World) =&gt;
+    Task {
+      def createNewGround(collisionables: List[Collisionable]): (Ground, List[Collisionable]) =
+        val (collisions, groundElements) = collisionables.partition(_ match
+          case _: MissileBattery =&gt; false
+          case _: City =&gt; false
+          case _ =&gt; true
+        )
+        val (missileBatteries, cities) = groundElements.partition(_ match
+          case _: MissileBattery =&gt; true
+          case _: City =&gt; false
+        )
+        (Ground(
+          cities.map(_.asInstanceOf[City]),
+          missileBatteries.map(_.asInstanceOf[MissileBattery])
+        ), collisions)
+
+      def isDestroyed(collisionable: Collisionable): Boolean = collisionable match
+        case damageable: Damageable =&gt; damageable.isDestroyed
+        case _ =&gt; false
+
+      val collisionables = world.collisionables ++ world.ground.cities ++ world.ground.turrets
+      val collisionableAfterCollisions = applyDamage(calculateCollisions(collisionables))
+      val newScore = calculateNewScore(collisionableAfterCollisions, world.score)
+      val (newGround, newCollisionables) = createNewGround(collisionableAfterCollisions.keys.toList)
+      val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed)
+      world.copy(collisionables = newNotDestroyedCollisionables, score = newScore, ground = newGround)
+    }
+  }
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

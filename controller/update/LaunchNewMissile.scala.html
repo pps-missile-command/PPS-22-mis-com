@@ -1,0 +1,121 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          controller/update/LaunchNewMissile.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller.update
+</span>2 <span style=''>
+</span>3 <span style=''>import controller.Event
+</span>4 <span style=''>import controller.Event.LaunchMissileTo
+</span>5 <span style=''>import controller.update.Update.on
+</span>6 <span style=''>import model.World
+</span>7 <span style=''>import model.behavior.Moveable
+</span>8 <span style=''>import model.collisions.Collisionable
+</span>9 <span style=''>import monix.eval.Task
+</span>10 <span style=''>
+</span>11 <span style=''>/**
+</span>12 <span style=''> * Object that return an update function for the world to be updated when the user launch a missile.
+</span>13 <span style=''> */
+</span>14 <span style=''>object LaunchNewMissile:
+</span>15 <span style=''>
+</span>16 <span style=''>  /**
+</span>17 <span style=''>   * Apply function used to update the world to be updated when the user launch a missile.
+</span>18 <span style=''>   *
+</span>19 <span style=''>   * @return an update function for the world to be updated when the user launch a missile.
+</span>20 <span style=''>   */
+</span>21 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =&gt;
+</span>22 <span style=''></span><span style='background: #F0ADAD'>    Task {
+</span>23 <span style=''></span><span style='background: #F0ADAD'>      val (ground, missile) = world.ground.shootMissile(event.position)
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = world.collisionables :+ missile, ground = ground)
+</span>25 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>26 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          43
+        </td>
+        <td>
+          575
+          -
+          584
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          42
+        </td>
+        <td>
+          597
+          -
+          837
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          on
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =&gt;
+    Task {
+      val (ground, missile) = world.ground.shootMissile(event.position)
+      world.copy(collisionables = world.collisionables :+ missile, ground = ground)
+    }
+  }
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
