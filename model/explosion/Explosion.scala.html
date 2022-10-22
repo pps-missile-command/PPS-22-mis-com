@@ -24,54 +24,63 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.explosion
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.hitbox.HitBoxCircular
-</span>4 <span style=''>import model.collisions.{Affiliation, Collisionable, Damager, HitBox, LifePoint}
-</span>5 <span style=''>import model.elements2d.Point2D
-</span>6 <span style=''>
-</span>7 <span style=''>trait Explosion extends Damager:
+</span>3 <span style=''>import model.DeltaTime
+</span>4 <span style=''>import model.behavior.Timeable
+</span>5 <span style=''>import model.collisions.hitbox.HitBoxCircular
+</span>6 <span style=''>import model.collisions.{Affiliation, Collisionable, Damager, HitBox, LifePoint}
+</span>7 <span style=''>import model.elements2d.Point2D
 </span>8 <span style=''>
-</span>9 <span style=''>  def position: Point2D
+</span>9 <span style=''>trait Explosion extends Damager, Timeable:
 </span>10 <span style=''>
-</span>11 <span style=''>  def radius: Double
+</span>11 <span style=''>  def position: Point2D
 </span>12 <span style=''>
-</span>13 <span style=''>object Explosion:
+</span>13 <span style=''>  def radius: Double
 </span>14 <span style=''>
-</span>15 <span style=''>  //ritornare un optional in base agli input
-</span>16 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(damageToInflict: LifePoint, hitboxRadius: Double, myPosition: Point2D, parentAffiliation: Affiliation): Explosion = new Explosion {
-</span>17 <span style=''>
-</span>18 <span style=''>    (damageToInflict, hitboxRadius) match
-</span>19 <span style=''>      </span><span style='background: #AEF1AE'>case (n, m) if n == 0 || m == 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>throw new IllegalArgumentException()</span><span style=''>
-</span>20 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; ()
-</span>21 <span style=''>
-</span>22 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = myPosition
-</span>23 <span style=''>
-</span>24 <span style=''>    </span><span style='background: #AEF1AE'>override def radius</span><span style=''>: Double = hitboxRadius match
-</span>25 <span style=''>      </span><span style='background: #F0ADAD'>case n if n &gt; 0</span><span style=''> =&gt; hitboxRadius
-</span>26 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(hitboxRadius)</span><span style=''>
-</span>27 <span style=''>
-</span>28 <span style=''>    /**
-</span>29 <span style=''>     * The damage inflicted by this object.
-</span>30 <span style=''>     *
-</span>31 <span style=''>     * @return the damage inflicted by this object.
-</span>32 <span style=''>     */
-</span>33 <span style=''>    </span><span style='background: #AEF1AE'>override def damageInflicted</span><span style=''>: LifePoint = damageToInflict match
-</span>34 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &gt; 0</span><span style=''> =&gt; damageToInflict
-</span>35 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(damageToInflict)</span><span style=''>
+</span>15 <span style=''>  def terminated: Boolean
+</span>16 <span style=''>
+</span>17 <span style=''>  override def timeElapsed(dt: DeltaTime): Explosion
+</span>18 <span style=''>
+</span>19 <span style=''>object Explosion:
+</span>20 <span style=''>
+</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(damageToInflict: LifePoint, hitboxRadius: Double, myPosition: Point2D, dt: DeltaTime = 0)(using maxTime: MaxTime, parentAffiliation: Affiliation): Explosion = new Explosion {
+</span>22 <span style=''>
+</span>23 <span style=''>    (damageToInflict, hitboxRadius) match
+</span>24 <span style=''>      </span><span style='background: #AEF1AE'>case (n, m) if n == 0 || m == 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>throw new IllegalArgumentException()</span><span style=''>
+</span>25 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; ()
+</span>26 <span style=''>
+</span>27 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = myPosition
+</span>28 <span style=''>
+</span>29 <span style=''>    </span><span style='background: #AEF1AE'>override def radius</span><span style=''>: Double = hitboxRadius match
+</span>30 <span style=''>      </span><span style='background: #F0ADAD'>case n if n &gt; 0</span><span style=''> =&gt; hitboxRadius
+</span>31 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(hitboxRadius)</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Explosion = </span><span style='background: #AEF1AE'>apply(damageToInflict, hitboxRadius, myPosition, dt + _dt)</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>    </span><span style='background: #AEF1AE'>override def terminated</span><span style=''>: Boolean = dt &gt;= maxTime
 </span>36 <span style=''>
 </span>37 <span style=''>    /**
-</span>38 <span style=''>     * Return the hit box of the object.
+</span>38 <span style=''>     * The damage inflicted by this object.
 </span>39 <span style=''>     *
-</span>40 <span style=''>     * @return the hit box of the object.
+</span>40 <span style=''>     * @return the damage inflicted by this object.
 </span>41 <span style=''>     */
-</span>42 <span style=''>    </span><span style='background: #AEF1AE'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #AEF1AE'>HitBoxCircular(position, hitboxRadius)</span><span style=''>
-</span>43 <span style=''>
-</span>44 <span style=''>    /**
-</span>45 <span style=''>     * Return the affiliation of the object.
-</span>46 <span style=''>     *
-</span>47 <span style=''>     * @return the affiliation of the object.
-</span>48 <span style=''>     */
-</span>49 <span style=''>    </span><span style='background: #F0ADAD'>override def affiliation</span><span style=''>: Affiliation = parentAffiliation
-</span>50 <span style=''>  }
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>override def damageInflicted</span><span style=''>: LifePoint = damageToInflict match
+</span>43 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &gt; 0</span><span style=''> =&gt; damageToInflict
+</span>44 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(damageToInflict)</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>    /**
+</span>47 <span style=''>     * Return the hit box of the object.
+</span>48 <span style=''>     *
+</span>49 <span style=''>     * @return the hit box of the object.
+</span>50 <span style=''>     */
+</span>51 <span style=''>    </span><span style='background: #AEF1AE'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #AEF1AE'>HitBoxCircular(position, hitboxRadius)</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>    /**
+</span>54 <span style=''>     * Return the affiliation of the object.
+</span>55 <span style=''>     *
+</span>56 <span style=''>     * @return the affiliation of the object.
+</span>57 <span style=''>     */
+</span>58 <span style=''>    </span><span style='background: #F0ADAD'>override def affiliation</span><span style=''>: Affiliation = parentAffiliation
+</span>59 <span style=''>  }
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -86,15 +95,39 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          15
+          20
         </td>
         <td>
-          536
+          453
         </td>
         <td>
-          332
+          529
           -
-          341
+          529
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          452
+        </td>
+        <td>
+          432
+          -
+          441
         </td>
         <td>
           DefDef
@@ -110,63 +143,15 @@
         </td>
       </tr><tr>
         <td>
-          18
+          23
         </td>
         <td>
-          519
+          433
         </td>
         <td>
-          564
+          701
           -
-          594
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          new IllegalArgumentException()
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          521
-        </td>
-        <td>
-          523
-          -
-          554
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case (n, m) if n == 0 || m == 0
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          520
-        </td>
-        <td>
-          558
-          -
-          594
+          737
         </td>
         <td>
           Apply
@@ -182,15 +167,63 @@
         </td>
       </tr><tr>
         <td>
-          19
+          23
         </td>
         <td>
-          522
+          432
         </td>
         <td>
-          601
+          707
           -
-          607
+          737
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          new IllegalArgumentException()
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          434
+        </td>
+        <td>
+          666
+          -
+          697
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case (n, m) if n == 0 || m == 0
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          435
+        </td>
+        <td>
+          744
+          -
+          750
         </td>
         <td>
           Block
@@ -206,15 +239,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          26
         </td>
         <td>
-          523
+          436
         </td>
         <td>
-          619
+          762
           -
-          640
+          783
         </td>
         <td>
           DefDef
@@ -230,15 +263,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          28
         </td>
         <td>
-          527
+          440
         </td>
         <td>
-          668
+          811
           -
-          687
+          830
         </td>
         <td>
           DefDef
@@ -254,15 +287,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          29
         </td>
         <td>
-          524
+          437
         </td>
         <td>
-          723
+          866
           -
-          738
+          881
         </td>
         <td>
           Block
@@ -278,15 +311,39 @@
         </td>
       </tr><tr>
         <td>
-          25
+          30
         </td>
         <td>
-          525
+          439
         </td>
         <td>
-          780
+          904
           -
-          802
+          919
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case n if n &lt; 0
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          438
+        </td>
+        <td>
+          923
+          -
+          945
         </td>
         <td>
           Apply
@@ -302,39 +359,87 @@
         </td>
       </tr><tr>
         <td>
-          25
+          32
         </td>
         <td>
-          526
+          442
         </td>
         <td>
-          761
+          951
           -
-          776
+          975
         </td>
         <td>
-          Block
+          DefDef
         </td>
         <td>
-          &lt;none&gt;
+          timeElapsed
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          case n if n &lt; 0
+          override def timeElapsed
         </td>
       </tr><tr>
         <td>
           32
         </td>
         <td>
-          531
+          441
         </td>
         <td>
-          927
+          1005
           -
-          955
+          1063
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          apply(damageToInflict, hitboxRadius, myPosition, dt + _dt)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          443
+        </td>
+        <td>
+          1069
+          -
+          1092
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          terminated
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def terminated
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          447
+        </td>
+        <td>
+          1242
+          -
+          1270
         </td>
         <td>
           DefDef
@@ -350,15 +455,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          42
         </td>
         <td>
-          528
+          444
         </td>
         <td>
-          997
+          1312
           -
-          1012
+          1327
         </td>
         <td>
           Block
@@ -374,39 +479,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          43
         </td>
         <td>
-          530
+          445
         </td>
         <td>
-          1038
+          1372
           -
-          1053
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case n if n &lt; 0
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          529
-        </td>
-        <td>
-          1057
-          -
-          1082
+          1397
         </td>
         <td>
           Apply
@@ -422,15 +503,39 @@
         </td>
       </tr><tr>
         <td>
-          41
+          43
         </td>
         <td>
-          532
+          446
         </td>
         <td>
-          1249
+          1353
           -
-          1257
+          1368
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case n if n &lt; 0
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          448
+        </td>
+        <td>
+          1564
+          -
+          1572
         </td>
         <td>
           Select
@@ -446,15 +551,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          50
         </td>
         <td>
-          534
+          450
         </td>
         <td>
-          1194
+          1509
           -
-          1223
+          1538
         </td>
         <td>
           DefDef
@@ -470,15 +575,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          50
         </td>
         <td>
-          533
+          449
         </td>
         <td>
-          1234
+          1549
           -
-          1272
+          1587
         </td>
         <td>
           Apply
@@ -494,15 +599,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          57
         </td>
         <td>
-          535
+          451
         </td>
         <td>
-          1392
+          1707
           -
-          1416
+          1731
         </td>
         <td>
           DefDef

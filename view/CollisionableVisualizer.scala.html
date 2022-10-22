@@ -24,28 +24,48 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view
 </span>2 <span style=''>
-</span>3 <span style=''>import javafx.scene.image.{Image, ImageView}
-</span>4 <span style=''>import model.collisions.Collisionable
-</span>5 <span style=''>import model.missile.{ Missile, MissileImpl, hitboxBase, hitboxHeight}
+</span>3 <span style=''>import com.sun.javafx.geom.Ellipse2D
+</span>4 <span style=''>
+</span>5 <span style=''>import java.awt.{Image, Toolkit}
 </span>6 <span style=''>
-</span>7 <span style=''>case class CollisionableElement(imageView: ImageView, x: Double, y: Double)
-</span>8 <span style=''>
-</span>9 <span style=''>object MissileView:
-</span>10 <span style=''>  val resourceFolderPath: String = </span><span style='background: #F0ADAD'>???</span><span style=''>
+</span>7 <span style=''>import model.collisions.Collisionable
+</span>8 <span style=''>import model.elements2d.Point2D
+</span>9 <span style=''>import model.explosion.Explosion
+</span>10 <span style=''>import model.missile.{Missile, MissileImpl, hitboxBase, hitboxHeight}
 </span>11 <span style=''>
-</span>12 <span style=''>  val conversion: Collisionable =&gt; CollisionableElement = _ match
-</span>13 <span style=''>    </span><span style='background: #F0ADAD'>case m: Missile</span><span style=''> =&gt; CollisionableElement(
-</span>14 <span style=''>      </span><span style='background: #F0ADAD'>ImageView(Image(getClass.getResourceAsStream(&quot;&quot;), hitboxBase, hitboxHeight, false, false))</span><span style=''>,
-</span>15 <span style=''>      </span><span style='background: #F0ADAD'>m.position.x</span><span style=''>,
-</span>16 <span style=''>      </span><span style='background: #F0ADAD'>m.position.y</span><span style=''>)
-</span>17 <span style=''>
-</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(imageView: ImageView, x: Double, y: Double) =
-</span>19 <span style=''>    CollisionableElement(imageView, x, y)
-</span>20 <span style=''>
-</span>21 <span style=''>  </span><span style='background: #F0ADAD'>def printMissiles</span><span style=''>(collisionables: List[Collisionable]): List[CollisionableElement] =
-</span>22 <span style=''>    </span><span style='background: #F0ADAD'>for
-</span>23 <span style=''></span><span style='background: #F0ADAD'>      i &lt;- collisionables
-</span>24 <span style=''></span><span style='background: #F0ADAD'>    yield conversion(i)</span><span style=''>
+</span>12 <span style=''>import java.awt.Toolkit
+</span>13 <span style=''>import java.awt.image.BufferedImage
+</span>14 <span style=''>import javax.imageio.ImageIO
+</span>15 <span style=''>import java.io.File
+</span>16 <span style=''>
+</span>17 <span style=''>/*extension (p: ImageElement)
+</span>18 <span style=''>  def map[A](f: ImageElement =&gt; A) = f(p)
+</span>19 <span style=''>  def flatMap[A](f: ImageElement =&gt; CollisionableElement) = f(p)
+</span>20 <span style=''>*/
+</span>21 <span style=''>
+</span>22 <span style=''>case class CollisionableElement(image: Image, position: Point2D, baseWidth: Int, baseHeight: Int)
+</span>23 <span style=''>case class ImageElement(src: String, position: Point2D)
+</span>24 <span style=''>
+</span>25 <span style=''>given </span><span style='background: #AEF1AE'>Conversion[Double, Int]</span><span style=''> with
+</span>26 <span style=''>  </span><span style='background: #AEF1AE'>override def apply</span><span style=''>(x: Double): Int = x.toInt
+</span>27 <span style=''>
+</span>28 <span style=''>object CollisionableVisualizer:
+</span>29 <span style=''>  //TODO string resource
+</span>30 <span style=''>  val resourceFolderPath: String = (</span><span style='background: #AEF1AE'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
+</span>31 <span style=''>
+</span>32 <span style=''>  val conversion: Collisionable =&gt; CollisionableElement = (c: Collisionable) =&gt;
+</span>33 <span style=''>    val imageElement = c match
+</span>34 <span style=''>    </span><span style='background: #AEF1AE'>case m: Missile</span><span style=''> =&gt; ImageElement(&quot; &quot;, </span><span style='background: #AEF1AE'>m.position</span><span style=''>)
+</span>35 <span style=''>    </span><span style='background: #F0ADAD'>case e: Explosion</span><span style=''> =&gt; ImageElement(&quot; &quot;, </span><span style='background: #F0ADAD'>e.position</span><span style=''>)
+</span>36 <span style=''>
+</span>37 <span style=''>    val img = </span><span style='background: #AEF1AE'>Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\city_&quot; + 2 + &quot;.png&quot;)</span><span style=''> //element.src
+</span>38 <span style=''>
+</span>39 <span style=''>    CollisionableElement(img, imageElement.position, </span><span style='background: #AEF1AE'>hitboxBase</span><span style=''>, </span><span style='background: #AEF1AE'>hitboxHeight</span><span style=''>)
+</span>40 <span style=''>
+</span>41 <span style=''>  </span><span style='background: #AEF1AE'>def printElements</span><span style=''>(collisionables: List[Collisionable]): List[CollisionableElement] =
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>for
+</span>43 <span style=''></span><span style='background: #AEF1AE'>      i &lt;- collisionables
+</span>44 <span style=''></span><span style='background: #AEF1AE'>    yield conversion(i)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -60,39 +80,183 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          9
+          24
         </td>
         <td>
-          862
+          794
         </td>
         <td>
-          301
+          672
           -
-          304
+          695
         </td>
         <td>
-          Ident
+          Apply
         </td>
         <td>
-          ???
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          ???
+        <td style="background: #AEF1AE">
+          Conversion[Double, Int]
         </td>
       </tr><tr>
         <td>
-          12
+          25
         </td>
         <td>
-          870
+          795
         </td>
         <td>
-          376
+          703
           -
-          391
+          721
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def apply
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          777
+        </td>
+        <td>
+          842
+          -
+          872
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getProperty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          System.getProperty(&quot;user.dir&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          779
+        </td>
+        <td>
+          842
+          -
+          910
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          778
+        </td>
+        <td>
+          842
+          -
+          881
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          toString
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          System.getProperty(&quot;user.dir&quot;).toString
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          781
+        </td>
+        <td>
+          1028
+          -
+          1043
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case m: Missile
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          780
+        </td>
+        <td>
+          1065
+          -
+          1075
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          m.position
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          783
+        </td>
+        <td>
+          1081
+          -
+          1098
         </td>
         <td>
           Block
@@ -104,91 +268,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          case m: Missile
+          case e: Explosion
         </td>
       </tr><tr>
         <td>
-          13
+          34
         </td>
         <td>
-          864
+          782
         </td>
         <td>
-          433
+          1120
           -
-          512
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Image(getClass.getResourceAsStream(&quot;&quot;), hitboxBase, hitboxHeight, false, false)
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          863
-        </td>
-        <td>
-          439
-          -
-          471
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getResourceAsStream
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          getClass.getResourceAsStream(&quot;&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          865
-        </td>
-        <td>
-          423
-          -
-          513
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ImageView(Image(getClass.getResourceAsStream(&quot;&quot;), hitboxBase, hitboxHeight, false, false))
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          866
-        </td>
-        <td>
-          521
-          -
-          531
+          1130
         </td>
         <td>
           Select
@@ -200,94 +292,142 @@
           
         </td>
         <td style="background: #F0ADAD">
-          m.position
+          e.position
         </td>
       </tr><tr>
         <td>
-          14
+          36
         </td>
         <td>
-          867
+          786
         </td>
         <td>
-          521
+          1184
           -
-          533
+          1218
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          x
+          +
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          m.position.x
+        <td style="background: #AEF1AE">
+          resourceFolderPath + &quot;\\city_&quot; + 2
         </td>
       </tr><tr>
         <td>
-          15
+          36
         </td>
         <td>
-          869
+          788
         </td>
         <td>
-          541
+          1147
           -
-          553
+          1228
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          y
+          getImage
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          m.position.y
+        <td style="background: #AEF1AE">
+          Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\city_&quot; + 2 + &quot;.png&quot;)
         </td>
       </tr><tr>
         <td>
-          15
+          36
         </td>
         <td>
-          868
+          785
         </td>
         <td>
-          541
+          1184
           -
-          551
+          1214
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          position
+          +
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          m.position
+        <td style="background: #AEF1AE">
+          resourceFolderPath + &quot;\\city_&quot;
         </td>
       </tr><tr>
         <td>
-          17
+          36
         </td>
         <td>
-          871
+          784
         </td>
         <td>
-          558
+          1147
           -
-          567
+          1174
         </td>
         <td>
-          DefDef
+          Apply
+        </td>
+        <td>
+          getDefaultToolkit
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Toolkit.getDefaultToolkit()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          787
+        </td>
+        <td>
+          1184
+          -
+          1227
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          resourceFolderPath + &quot;\\city_&quot; + 2 + &quot;.png&quot;
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          790
+        </td>
+        <td>
+          1309
+          -
+          1321
+        </td>
+        <td>
+          Apply
         </td>
         <td>
           apply
@@ -295,44 +435,68 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          def apply
+        <td style="background: #AEF1AE">
+          hitboxHeight
         </td>
       </tr><tr>
         <td>
-          20
+          38
         </td>
         <td>
-          874
+          789
         </td>
         <td>
-          659
+          1297
           -
-          676
+          1307
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitboxBase
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          793
+        </td>
+        <td>
+          1326
+          -
+          1343
         </td>
         <td>
           DefDef
         </td>
         <td>
-          printMissiles
+          printElements
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          def printMissiles
+        <td style="background: #AEF1AE">
+          def printElements
         </td>
       </tr><tr>
         <td>
-          21
+          41
         </td>
         <td>
-          873
+          792
         </td>
         <td>
-          748
+          1415
           -
-          801
+          1468
         </td>
         <td>
           Apply
@@ -343,22 +507,22 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           for
       i &lt;- collisionables
     yield conversion(i)
         </td>
       </tr><tr>
         <td>
-          23
+          43
         </td>
         <td>
-          872
+          791
         </td>
         <td>
-          788
+          1455
           -
-          801
+          1468
         </td>
         <td>
           Apply
@@ -369,7 +533,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           conversion(i)
         </td>
       </tr>
