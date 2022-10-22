@@ -37,40 +37,36 @@
 </span>13 <span style=''>
 </span>14 <span style=''>  def spawn(dt: DeltaTime): List[Missile]
 </span>15 <span style=''>
-</span>16 <span style=''>object Spawner:
+</span>16 <span style=''>  override def timeElapsed(dt: DeltaTime): Spawner
 </span>17 <span style=''>
-</span>18 <span style=''>  given affiliation: Affiliation = Affiliation.Enemy
+</span>18 <span style=''>object Spawner:
 </span>19 <span style=''>
-</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(interval: DeltaTime, maxWidth: Double, maxHeight: Double, dt: DeltaTime = 0): Spawner = new </span><span style='background: #AEF1AE'>Spawner(using Random)</span><span style=''> {
+</span>20 <span style=''>  given affiliation: Affiliation = Affiliation.Enemy
 </span>21 <span style=''>
-</span>22 <span style=''>    var dtSupplier : () =&gt; DeltaTime = () =&gt; dt
+</span>22 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(interval: DeltaTime, maxWidth: Double, maxHeight: Double, dt: DeltaTime = 0): Spawner = new </span><span style='background: #AEF1AE'>Spawner(using Random)</span><span style=''> {
 </span>23 <span style=''>
-</span>24 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(dt: DeltaTime): List[Missile] =
-</span>25 <span style=''>      val currentDt = </span><span style='background: #AEF1AE'>dtSupplier()</span><span style=''>
-</span>26 <span style=''>      this.dtSupplier = () =&gt; 0
-</span>27 <span style=''>      dt match
-</span>28 <span style=''>        </span><span style='background: #AEF1AE'>case n if n &gt;= interval</span><span style=''> =&gt;
-</span>29 <span style=''>          val step: Int = (n / interval).toInt
-</span>30 <span style=''>          val randomX = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
-</span>31 <span style=''>          val randomY = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
-</span>32 <span style=''>          val generator: List[Missile] =
-</span>33 <span style=''>            </span><span style='background: #AEF1AE'>for
-</span>34 <span style=''></span><span style='background: #AEF1AE'>              (i, x) &lt;- randomX
-</span>35 <span style=''></span><span style='background: #AEF1AE'>              (j, y) &lt;- randomY
-</span>36 <span style=''></span><span style='background: #AEF1AE'>              if i == j
-</span>37 <span style=''></span><span style='background: #AEF1AE'>            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x, y), Point2D(x, y))</span><span style=''>
-</span>38 <span style=''>          generator
-</span>39 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>List()</span><span style=''>
-</span>40 <span style=''>
-</span>41 <span style=''>    </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Spawner = </span><span style='background: #F0ADAD'>Spawner.apply(interval, maxWidth, maxHeight, dtSupplier() + _dt)</span><span style=''>
+</span>24 <span style=''>    private var dtSupplier : () =&gt; DeltaTime = () =&gt; dt
+</span>25 <span style=''>
+</span>26 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(dt: DeltaTime): List[Missile] =
+</span>27 <span style=''>      val currentDt = </span><span style='background: #AEF1AE'>dtSupplier()</span><span style=''>
+</span>28 <span style=''>      this.dtSupplier = () =&gt; 0
+</span>29 <span style=''>      dt match
+</span>30 <span style=''>        </span><span style='background: #AEF1AE'>case n if n &gt;= interval</span><span style=''> =&gt;
+</span>31 <span style=''>          val step: Int = (n / interval).toInt
+</span>32 <span style=''>          val randomX_start = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
+</span>33 <span style=''>          val randomX_end = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
+</span>34 <span style=''>          val generator: List[Missile] =
+</span>35 <span style=''>            </span><span style='background: #AEF1AE'>for
+</span>36 <span style=''></span><span style='background: #AEF1AE'>              (i, x_start) &lt;- randomX_start
+</span>37 <span style=''></span><span style='background: #AEF1AE'>              (j, x_end) &lt;- randomX_end
+</span>38 <span style=''></span><span style='background: #AEF1AE'>              if i == j
+</span>39 <span style=''></span><span style='background: #AEF1AE'>            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x_start, maxHeight), Point2D(x_end, 0))</span><span style=''> //TODO coordinate campo
+</span>40 <span style=''>          generator
+</span>41 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>List()</span><span style=''>
 </span>42 <span style=''>
-</span>43 <span style=''>  }
+</span>43 <span style=''>    </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Spawner = </span><span style='background: #F0ADAD'>Spawner.apply(interval, maxWidth, maxHeight, dtSupplier() + _dt)</span><span style=''>
 </span>44 <span style=''>
-</span>45 <span style=''>  </span><span style='background: #F0ADAD'>@main def test</span><span style=''>(): Unit = {
-</span>46 <span style=''>    val spawner = </span><span style='background: #F0ADAD'>Spawner(5, 10, 10)</span><span style=''>
-</span>47 <span style=''>
-</span>48 <span style=''>    </span><span style='background: #F0ADAD'>println(spawner.spawn(10))</span><span style=''>
-</span>49 <span style=''>  }
+</span>45 <span style=''>  }
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -85,15 +81,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
           756
         </td>
         <td>
-          419
+          471
           -
-          428
+          480
         </td>
         <td>
           DefDef
@@ -109,15 +105,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
           723
         </td>
         <td>
-          521
+          573
           -
-          542
+          594
         </td>
         <td>
           Apply
@@ -133,15 +129,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
           757
         </td>
         <td>
-          503
+          555
           -
-          503
+          555
         </td>
         <td>
           DefDef
@@ -157,15 +153,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          25
         </td>
         <td>
           752
         </td>
         <td>
-          599
+          659
           -
-          617
+          677
         </td>
         <td>
           DefDef
@@ -181,15 +177,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          26
         </td>
         <td>
           724
         </td>
         <td>
-          672
+          732
           -
-          684
+          744
         </td>
         <td>
           Apply
@@ -205,15 +201,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          29
         </td>
         <td>
           749
         </td>
         <td>
-          740
+          800
           -
-          763
+          823
         </td>
         <td>
           Block
@@ -229,15 +225,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          31
         </td>
         <td>
           729
         </td>
         <td>
-          838
+          904
           -
-          908
+          974
         </td>
         <td>
           Select
@@ -253,15 +249,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          31
         </td>
         <td>
           726
         </td>
         <td>
-          839
+          905
           -
-          851
+          917
         </td>
         <td>
           Apply
@@ -277,15 +273,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          31
         </td>
         <td>
           728
         </td>
         <td>
-          839
+          905
           -
-          900
+          966
         </td>
         <td>
           Apply
@@ -301,15 +297,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          31
         </td>
         <td>
           725
         </td>
         <td>
-          839
+          905
           -
-          840
+          906
         </td>
         <td>
           Apply
@@ -325,159 +321,159 @@
         </td>
       </tr><tr>
         <td>
-          29
+          31
         </td>
         <td>
           727
         </td>
         <td>
-          867
-          -
-          886
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Random.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          732
-        </td>
-        <td>
-          962
-          -
-          981
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Random.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          731
-        </td>
-        <td>
-          934
-          -
-          946
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          until
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          0 until step
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          734
-        </td>
-        <td>
           933
           -
-          1003
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          toList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          733
-        </td>
-        <td>
-          934
-          -
-          995
+          952
         </td>
         <td>
           Apply
         </td>
         <td>
-          map
+          nextDouble
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          730
-        </td>
-        <td>
-          934
-          -
-          935
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          intWrapper
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          0
+          Random.nextDouble()
         </td>
       </tr><tr>
         <td>
           32
         </td>
         <td>
+          732
+        </td>
+        <td>
+          1032
+          -
+          1051
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Random.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          731
+        </td>
+        <td>
+          1004
+          -
+          1016
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          until
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0 until step
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          734
+        </td>
+        <td>
+          1003
+          -
+          1073
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toList
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          733
+        </td>
+        <td>
+          1004
+          -
+          1065
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          730
+        </td>
+        <td>
+          1004
+          -
+          1005
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          intWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
           748
         </td>
         <td>
-          1057
+          1127
           -
-          1248
+          1356
         </td>
         <td>
           Apply
@@ -490,22 +486,22 @@
         </td>
         <td style="background: #AEF1AE">
           for
-              (i, x) &lt;- randomX
-              (j, y) &lt;- randomY
+              (i, x_start) &lt;- randomX_start
+              (j, x_end) &lt;- randomX_end
               if i == j
-            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x, y), Point2D(x, y))
+            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x_start, maxHeight), Point2D(x_end, 0))
         </td>
       </tr><tr>
         <td>
-          33
+          35
         </td>
         <td>
           747
         </td>
         <td>
-          1075
+          1145
           -
-          1081
+          1157
         </td>
         <td>
           Block
@@ -517,19 +513,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          (i, x)
+          (i, x_start)
         </td>
       </tr><tr>
         <td>
-          33
+          35
         </td>
         <td>
           735
         </td>
         <td>
-          1075
+          1145
           -
-          1081
+          1157
         </td>
         <td>
           Literal
@@ -541,19 +537,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          (i, x)
+          (i, x_start)
         </td>
       </tr><tr>
         <td>
-          33
+          35
         </td>
         <td>
           736
         </td>
         <td>
-          1075
+          1145
           -
-          1092
+          1174
         </td>
         <td>
           Apply
@@ -565,19 +561,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          (i, x) &lt;- randomX
+          (i, x_start) &lt;- randomX_start
         </td>
       </tr><tr>
         <td>
-          34
+          36
         </td>
         <td>
           738
         </td>
         <td>
-          1107
+          1189
           -
-          1124
+          1214
         </td>
         <td>
           Apply
@@ -589,19 +585,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          (j, y) &lt;- randomY
+          (j, x_end) &lt;- randomX_end
         </td>
       </tr><tr>
         <td>
-          34
+          36
         </td>
         <td>
           737
         </td>
         <td>
-          1107
+          1189
           -
-          1113
+          1199
         </td>
         <td>
           Literal
@@ -613,19 +609,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          (j, y)
+          (j, x_end)
         </td>
       </tr><tr>
         <td>
-          34
+          36
         </td>
         <td>
           746
         </td>
         <td>
-          1107
+          1189
           -
-          1248
+          1356
         </td>
         <td>
           Apply
@@ -637,21 +633,21 @@
           
         </td>
         <td style="background: #AEF1AE">
-          (j, y) &lt;- randomY
+          (j, x_end) &lt;- randomX_end
               if i == j
-            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x, y), Point2D(x, y))
+            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x_start, maxHeight), Point2D(x_end, 0))
         </td>
       </tr><tr>
         <td>
-          34
+          36
         </td>
         <td>
           740
         </td>
         <td>
-          1107
+          1189
           -
-          1148
+          1238
         </td>
         <td>
           Apply
@@ -663,20 +659,20 @@
           
         </td>
         <td style="background: #AEF1AE">
-          (j, y) &lt;- randomY
+          (j, x_end) &lt;- randomX_end
               if i == j
         </td>
       </tr><tr>
         <td>
-          34
+          36
         </td>
         <td>
           745
         </td>
         <td>
-          1107
+          1189
           -
-          1113
+          1199
         </td>
         <td>
           Block
@@ -688,19 +684,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          (j, y)
+          (j, x_end)
         </td>
       </tr><tr>
         <td>
-          34
+          36
         </td>
         <td>
           739
         </td>
         <td>
-          1107
+          1189
           -
-          1113
+          1199
         </td>
         <td>
           Apply
@@ -712,19 +708,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          (j, y)
+          (j, x_end)
         </td>
       </tr><tr>
         <td>
-          36
+          38
         </td>
         <td>
           741
         </td>
         <td>
-          1219
+          1309
           -
-          1232
+          1336
         </td>
         <td>
           Apply
@@ -736,19 +732,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Point2D(x, y)
+          Point2D(x_start, maxHeight)
         </td>
       </tr><tr>
         <td>
-          36
+          38
         </td>
         <td>
           744
         </td>
         <td>
-          1167
+          1257
           -
-          1248
+          1356
         </td>
         <td>
           Apply
@@ -760,19 +756,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Missile.enemyMissile(initialLife, damage, velocity, Point2D(x, y), Point2D(x, y))
+          Missile.enemyMissile(initialLife, damage, velocity, Point2D(x_start, maxHeight), Point2D(x_end, 0))
         </td>
       </tr><tr>
         <td>
-          36
+          38
         </td>
         <td>
           743
         </td>
         <td>
-          1167
+          1257
           -
-          1187
+          1277
         </td>
         <td>
           Select
@@ -788,15 +784,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          38
         </td>
         <td>
           742
         </td>
         <td>
-          1234
+          1338
           -
-          1247
+          1355
         </td>
         <td>
           Apply
@@ -808,19 +804,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Point2D(x, y)
+          Point2D(x_end, 0)
         </td>
       </tr><tr>
         <td>
-          38
+          40
         </td>
         <td>
           750
         </td>
         <td>
-          1287
+          1419
           -
-          1293
+          1425
         </td>
         <td>
           Apply
@@ -836,15 +832,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          40
         </td>
         <td>
           751
         </td>
         <td>
-          1277
+          1409
           -
-          1283
+          1415
         </td>
         <td>
           Block
@@ -860,15 +856,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          42
         </td>
         <td>
           753
         </td>
         <td>
-          1396
+          1528
           -
-          1408
+          1540
         </td>
         <td>
           Apply
@@ -884,15 +880,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          42
         </td>
         <td>
           755
         </td>
         <td>
-          1299
+          1431
           -
-          1323
+          1455
         </td>
         <td>
           DefDef
@@ -908,15 +904,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          42
         </td>
         <td>
           754
         </td>
         <td>
-          1351
+          1483
           -
-          1415
+          1547
         </td>
         <td>
           Apply
@@ -929,126 +925,6 @@
         </td>
         <td style="background: #F0ADAD">
           Spawner.apply(interval, maxWidth, maxHeight, dtSupplier() + _dt)
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          762
-        </td>
-        <td>
-          1424
-          -
-          1438
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          test
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          @main def test
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          759
-        </td>
-        <td>
-          1469
-          -
-          1487
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Spawner(5, 10, 10)
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          758
-        </td>
-        <td>
-          1469
-          -
-          1476
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          apply$default$4
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Spawner
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
-          761
-        </td>
-        <td>
-          1493
-          -
-          1519
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(spawner.spawn(10))
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
-          760
-        </td>
-        <td>
-          1501
-          -
-          1518
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          spawn
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          spawner.spawn(10)
         </td>
       </tr>
     </table>
