@@ -8,6 +8,10 @@ import monix.reactive.subjects.PublishSubject
 import org.w3c.dom.events.MouseEvent
 import view.gui.UI
 
+import model.elements2d.Point2D
+
+import controller.Event
+
 import java.awt.event.MouseMotionListener
 import java.awt.{Color, Graphics, event}
 import javax.swing.*
@@ -38,6 +42,18 @@ class GUI(width: Int, height: Int) extends UI:
         }
 
 
-    override def events: Observable[Event] = ???
+    override def events: Observable[Event] = frame.getContentPane
+      .mouseObservable()
+      .map((x, y) => (x / width.toDouble, y / height.toDouble))
+      .map((x, y) => Event.LaunchMissileTo(Point2D(x, y)) )
 
-    override def gameOver: Task[Unit] = ???
+    override def gameOver: Task[Unit] = Task {
+        SwingUtilities.invokeAndWait { () =>
+            if (frame.getContentPane.getComponentCount != 0)
+                0 to (frame.getContentPane.getComponentCount - 1) foreach { i=>
+                    frame.getContentPane.remove(i)
+                }
+            frame.getContentPane.add(EndGamePane(width, height))
+            frame.getContentPane.repaint()
+        }
+    }
