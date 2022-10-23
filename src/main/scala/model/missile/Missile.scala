@@ -3,10 +3,14 @@ package model.missile
 import model.behavior.*
 import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint, lifePointDeath}
 import model.elements2d.{Angle, Point2D, Vector2D}
-import model.explosion.Explosion
+import model.explosion.{Explosion, MaxTime}
 import model.DeltaTime
+import model.explosion.MaxTime
 
 import scala.util.Random
+
+//TODO scegliere max explosion time
+given maxTime: MaxTime = ???
 
 given Conversion[(Point2D, Point2D), Vector2D] with
   override def apply(x: (Point2D, Point2D)): Vector2D = (x._2 <--> x._1).normalize
@@ -31,7 +35,7 @@ case class MissileImpl(
                         lifePoint: LifePoint,
                         override val position: Point2D,
                         override val destination: Point2D,
-                        dt: DeltaTime,
+                        dt: DeltaTime = 0,
                         override val affiliation: Affiliation = Affiliation.Friendly,
                         override val damage: LifePoint = damage,
                         override val velocity: Double = velocity
@@ -51,7 +55,7 @@ case class MissileImpl(
 
   override def destinationReached: Boolean = position == destination
 
-  override def explode: Explosion = Explosion(damage, hitboxRadius = 10, position, affiliation)
+  override def explode: Explosion = Explosion(damage, hitboxRadius = 10, position)
 
   private def newMissile(
                           life: LifePoint = lifePoint,
