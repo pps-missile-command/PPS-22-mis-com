@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/gui/WorldPane.scala.html
+          view/gui/MouseHandler.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -24,35 +24,23 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
 </span>2 <span style=''>
-</span>3 <span style=''>import model.World
-</span>4 <span style=''>import utilities.Constants
-</span>5 <span style=''>import view.Visualizer
-</span>6 <span style=''>
-</span>7 <span style=''>import java.awt.event.MouseMotionListener
-</span>8 <span style=''>import java.awt.*
-</span>9 <span style=''>import javax.swing.JPanel
-</span>10 <span style=''>
-</span>11 <span style=''>
-</span>12 <span style=''>private class WorldPane(val world: World, width: Int, height: Int) extends </span><span style='background: #F0ADAD'>JPanel</span><span style=''>:
-</span>13 <span style=''>    </span><span style='background: #F0ADAD'>this.setSize(width, height)</span><span style=''>
-</span>14 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
-</span>15 <span style=''>
-</span>16 <span style=''>    </span><span style='background: #F0ADAD'>override def paintComponent</span><span style=''>(graphics: Graphics): Unit =
-</span>17 <span style=''>        </span><span style='background: #F0ADAD'>super.paintComponent(graphics)</span><span style=''>
-</span>18 <span style=''>        </span><span style='background: #F0ADAD'>graphics.clearRect(0, 0, width, height)</span><span style=''>
-</span>19 <span style=''>        </span><span style='background: #F0ADAD'>Visualizer.printGround(world.ground).map(
-</span>20 <span style=''></span><span style='background: #F0ADAD'>            imageData =&gt; graphics.drawImage(imageData._1, imageData._2.x.toInt, imageData._2.y.toInt,
-</span>21 <span style=''></span><span style='background: #F0ADAD'>                imageData._3,
-</span>22 <span style=''></span><span style='background: #F0ADAD'>                imageData._4, this)
-</span>23 <span style=''></span><span style='background: #F0ADAD'>            )</span><span style=''>
-</span>24 <span style=''>//        world.all.foreach { entity =&gt;
-</span>25 <span style=''>//            val (x, y) = ((entity.position.x * width).toInt, (entity.position.y * height).toInt)
-</span>26 <span style=''>//            val (widthCircle, heightCircle) = ((entity.diameter * width).toInt, (entity.diameter * height).toInt)
-</span>27 <span style=''>//            graphics.setColor(Color.getHSBColor(entity.size.toFloat, 1, 0.5))
-</span>28 <span style=''>//            graphics.fillOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
-</span>29 <span style=''>//            graphics.setColor(Color.BLACK)
-</span>30 <span style=''>//            graphics.drawOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
-</span>31 <span style=''>//        }
+</span>3 <span style=''>import java.awt.Component
+</span>4 <span style=''>import monix.execution.cancelables.SingleAssignCancelable
+</span>5 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
+</span>6 <span style=''>import monix.reactive.subjects.PublishSubject
+</span>7 <span style=''>
+</span>8 <span style=''>import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
+</span>9 <span style=''>
+</span>10 <span style=''>extension (component: Component)
+</span>11 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[(Int, Int)] =
+</span>12 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
+</span>13 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter:
+</span>14 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
+</span>15 <span style=''></span><span style='background: #F0ADAD'>          println(&quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;)
+</span>16 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext((e.getX, e.getY))
+</span>17 <span style=''></span><span style='background: #F0ADAD'>      )
+</span>18 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
+</span>19 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -67,15 +55,94 @@
         <th>Code</th>
       </tr><tr>
         <td>
+          10
+        </td>
+        <td>
+          904
+        </td>
+        <td>
+          308
+          -
+          327
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          mouseObservable
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def mouseObservable
+        </td>
+      </tr><tr>
+        <td>
           11
         </td>
         <td>
-          905
+          903
         </td>
         <td>
-          251
+          360
           -
-          257
+          676
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          create
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
+      component.addMouseListener(new MouseAdapter:
+        override def mouseClicked(e: MouseEvent): Unit =
+          println(&quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;)
+          subject.onNext((e.getX, e.getY))
+      )
+      SingleAssignCancelable()
+    }
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          888
+        </td>
+        <td>
+          360
+          -
+          377
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          create$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Observable.create
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          889
+        </td>
+        <td>
+          456
+          -
+          468
         </td>
         <td>
           Apply
@@ -87,91 +154,71 @@
           
         </td>
         <td style="background: #F0ADAD">
-          JPanel
+          MouseAdapter
         </td>
       </tr><tr>
         <td>
           12
         </td>
         <td>
-          906
+          901
         </td>
         <td>
-          263
+          425
           -
-          290
+          639
         </td>
         <td>
           Apply
         </td>
         <td>
-          setSize
+          addMouseListener
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          this.setSize(width, height)
+          component.addMouseListener(new MouseAdapter:
+        override def mouseClicked(e: MouseEvent): Unit =
+          println(&quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;)
+          subject.onNext((e.getX, e.getY))
+      )
         </td>
       </tr><tr>
         <td>
           13
         </td>
         <td>
-          908
+          900
         </td>
         <td>
-          329
+          478
           -
-          368
+          503
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          toString
+          mouseClicked
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString
+          override def mouseClicked
         </td>
       </tr><tr>
         <td>
-          13
+          14
         </td>
         <td>
-          907
+          891
         </td>
         <td>
-          329
+          545
           -
-          359
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getProperty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          909
-        </td>
-        <td>
-          329
-          -
-          397
+          565
         </td>
         <td>
           Apply
@@ -183,253 +230,247 @@
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
+          &quot;CLICKED (&quot; + e.getX
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          890
+        </td>
+        <td>
+          559
+          -
+          565
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getX
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          893
+        </td>
+        <td>
+          575
+          -
+          581
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getY
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getY
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          896
+        </td>
+        <td>
+          537
+          -
+          588
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          println
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          println(&quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          895
+        </td>
+        <td>
+          545
+          -
+          587
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          892
+        </td>
+        <td>
+          545
+          -
+          572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;CLICKED (&quot; + e.getX + &quot;, &quot;
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          894
+        </td>
+        <td>
+          545
+          -
+          581
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY
         </td>
       </tr><tr>
         <td>
           15
         </td>
         <td>
-          919
+          899
         </td>
         <td>
-          404
+          599
           -
-          431
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          paintComponent
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          override def paintComponent
-        </td>
-      </tr><tr>
-        <td>
-          16
-        </td>
-        <td>
-          910
-        </td>
-        <td>
-          468
-          -
-          498
+          631
         </td>
         <td>
           Apply
         </td>
         <td>
-          paintComponent
+          onNext
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          super.paintComponent(graphics)
+          subject.onNext((e.getX, e.getY))
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          898
+        </td>
+        <td>
+          623
+          -
+          629
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getY
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getY
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          897
+        </td>
+        <td>
+          615
+          -
+          621
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getX
         </td>
       </tr><tr>
         <td>
           17
         </td>
         <td>
-          911
+          902
         </td>
         <td>
-          507
+          646
           -
-          546
+          670
         </td>
         <td>
           Apply
         </td>
         <td>
-          clearRect
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          graphics.clearRect(0, 0, width, height)
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          918
-        </td>
-        <td>
-          555
-          -
-          778
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Visualizer.printGround(world.ground).map(
-            imageData =&gt; graphics.drawImage(imageData._1, imageData._2.x.toInt, imageData._2.y.toInt,
-                imageData._3,
-                imageData._4, this)
-            )
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          912
-        </td>
-        <td>
-          555
-          -
-          591
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          printGround
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Visualizer.printGround(world.ground)
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          917
-        </td>
-        <td>
-          622
-          -
-          764
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          drawImage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          graphics.drawImage(imageData._1, imageData._2.x.toInt, imageData._2.y.toInt,
-                imageData._3,
-                imageData._4, this)
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          914
-        </td>
-        <td>
-          655
-          -
-          669
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          imageData._2.x
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          913
-        </td>
-        <td>
-          655
-          -
-          667
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          _2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          imageData._2
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          916
-        </td>
-        <td>
-          677
-          -
-          691
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          imageData._2.y
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          915
-        </td>
-        <td>
-          677
-          -
-          689
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          _2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          imageData._2
+          SingleAssignCancelable()
         </td>
       </tr>
     </table>
