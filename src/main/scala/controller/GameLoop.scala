@@ -6,7 +6,7 @@ import monix.execution.Scheduler.Implicits.global
 import monix.reactive.subjects.PublishSubject
 import monix.reactive.{Observable, Observer, OverflowStrategy}
 import org.reactivestreams.Subscriber
-import view.UI
+import view.gui.UI
 import model.World
 import controller.update._
 
