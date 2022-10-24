@@ -1,6 +1,5 @@
 package view
 
-import javafx.embed.swing.JFXPanel
 import model.ground.Ground
 import org.scalatest.funspec.AnyFunSpec
 
