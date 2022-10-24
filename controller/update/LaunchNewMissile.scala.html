@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/Main.scala.html
+          controller/update/LaunchNewMissile.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,15 +22,32 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller.update
 </span>2 <span style=''>
-</span>3 <span style=''>import model.World
-</span>4 <span style=''>import view.gui.GUI
-</span>5 <span style=''>
-</span>6 <span style=''>object Main:
-</span>7 <span style=''>    </span><span style='background: #F0ADAD'>@main def startGame</span><span style=''>(): Unit =
-</span>8 <span style=''>        val swingUI = </span><span style='background: #F0ADAD'>new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)</span><span style=''> //39 is the number of pixels in the bar
-</span>9 <span style=''>        </span><span style='background: #F0ADAD'>swingUI.customRender(World.initialWorld)</span><span style=''>
+</span>3 <span style=''>import controller.Event
+</span>4 <span style=''>import controller.Event.LaunchMissileTo
+</span>5 <span style=''>import controller.update.Update.on
+</span>6 <span style=''>import model.World
+</span>7 <span style=''>import model.behavior.Moveable
+</span>8 <span style=''>import model.collisions.Collisionable
+</span>9 <span style=''>import monix.eval.Task
+</span>10 <span style=''>
+</span>11 <span style=''>/**
+</span>12 <span style=''> * Object that return an update function for the world to be updated when the user launch a missile.
+</span>13 <span style=''> */
+</span>14 <span style=''>object LaunchNewMissile:
+</span>15 <span style=''>
+</span>16 <span style=''>  /**
+</span>17 <span style=''>   * Apply function used to update the world to be updated when the user launch a missile.
+</span>18 <span style=''>   *
+</span>19 <span style=''>   * @return an update function for the world to be updated when the user launch a missile.
+</span>20 <span style=''>   */
+</span>21 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =&gt;
+</span>22 <span style=''></span><span style='background: #F0ADAD'>    Task {
+</span>23 <span style=''></span><span style='background: #F0ADAD'>      val (ground, missile) = world.ground.shootMissile(event.position)
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = world.collisionables :+ missile, ground = ground)
+</span>25 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>26 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -45,99 +62,56 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          6
+          20
         </td>
         <td>
-          894
+          43
         </td>
         <td>
-          71
+          575
           -
-          90
+          584
         </td>
         <td>
           DefDef
         </td>
         <td>
-          startGame
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          @main def startGame
+          def apply
         </td>
       </tr><tr>
         <td>
-          7
+          20
         </td>
         <td>
-          891
+          42
         </td>
         <td>
-          123
+          597
           -
-          186
+          837
         </td>
         <td>
           Apply
         </td>
         <td>
-          &lt;init&gt;
+          on
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)
-        </td>
-      </tr><tr>
-        <td>
-          8
-        </td>
-        <td>
-          893
-        </td>
-        <td>
-          235
-          -
-          275
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          customRender
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          swingUI.customRender(World.initialWorld)
-        </td>
-      </tr><tr>
-        <td>
-          8
-        </td>
-        <td>
-          892
-        </td>
-        <td>
-          256
-          -
-          274
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          initialWorld
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          World.initialWorld
+          on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =&gt;
+    Task {
+      val (ground, missile) = world.ground.shootMissile(event.position)
+      world.copy(collisionables = world.collisionables :+ missile, ground = ground)
+    }
+  }
         </td>
       </tr>
     </table>

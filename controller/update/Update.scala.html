@@ -1,0 +1,877 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          controller/update/Update.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller.update
+</span>2 <span style=''>
+</span>3 <span style=''>import monix.eval.Task
+</span>4 <span style=''>import monix.reactive.Observable
+</span>5 <span style=''>
+</span>6 <span style=''>import scala.annotation.tailrec
+</span>7 <span style=''>import scala.reflect.ClassTag
+</span>8 <span style=''>import controller.Event
+</span>9 <span style=''>import model.World
+</span>10 <span style=''>
+</span>11 <span style=''>/**
+</span>12 <span style=''> * A trait for function from pair (Event, World) to [[Task]] World, Update.
+</span>13 <span style=''> * Used to update the world.
+</span>14 <span style=''> */
+</span>15 <span style=''>trait Update extends ((Event, World) =&gt; Task[(World, Update)]) :
+</span>16 <span style=''>  /**
+</span>17 <span style=''>   * Allows to update the world to be computed after this one.
+</span>18 <span style=''>   *
+</span>19 <span style=''>   * @param control the update to be computed after this one.
+</span>20 <span style=''>   * @return a new update with the world and the sequence of the two update.
+</span>21 <span style=''>   */
+</span>22 <span style=''>  </span><span style='background: #F0ADAD'>def andThen</span><span style=''>(control: Update): Update = (event: Event, world: World) =&gt;
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>this (event, world)
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      .flatMap { case (world, left) =&gt; control(event, world).map { case (world, right) =&gt; (left, right, world) } }
+</span>25 <span style=''></span><span style='background: #F0ADAD'>      .map { case (left, right, world) =&gt; (world, Update.combineTwo(left, right)) }</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>/**
+</span>28 <span style=''> * Companion object for [[Update]].
+</span>29 <span style=''> */
+</span>30 <span style=''>object Update:
+</span>31 <span style=''>  /*extension (function: (Event, World) =&gt; (World, Update))
+</span>32 <span style=''>    def lift: Update =
+</span>33 <span style=''>      (event: Event, agar: World) =&gt; Task(function(event, agar))*/
+</span>34 <span style=''>
+</span>35 <span style=''>  /*def same(function: (Event, World) =&gt; World): Update = (event: Event, world: World) =&gt;
+</span>36 <span style=''>    Task(function(event, world), same(function))*/
+</span>37 <span style=''>
+</span>38 <span style=''>  /**
+</span>39 <span style=''>   * Function that allow the instruction to be executed only if the [[Event]] E happened.
+</span>40 <span style=''>   *
+</span>41 <span style=''>   * @param control the update to be executed.
+</span>42 <span style=''>   * @param ev      the [[Event]] that must happen.
+</span>43 <span style=''>   * @tparam E the type of the [[Event]].
+</span>44 <span style=''>   * @return the update that will be executed only if the [[Event]] E happened.
+</span>45 <span style=''>   */
+</span>46 <span style=''>  </span><span style='background: #F0ADAD'>def on</span><span style=''>[E &lt;: Event](control: (E, World) =&gt; Task[World])(using ev: ClassTag[E]): Update =
+</span>47 <span style=''>    lazy val result: Update = (event: Event, world: World) =&gt;
+</span>48 <span style=''>      event match
+</span>49 <span style=''>        </span><span style='background: #F0ADAD'>case event: </span><span style=''>E =&gt; (</span><span style='background: #F0ADAD'>control(event, world).map(world =&gt; (world, result))</span><span style=''>)
+</span>50 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>Task((world, result))</span><span style=''>
+</span>51 <span style=''>    result
+</span>52 <span style=''>
+</span>53 <span style=''>  /*
+</span>54 <span style=''>  val empty: Update = (_: Event, world: World) =&gt; Task((world, empty))
+</span>55 <span style=''>  */
+</span>56 <span style=''>
+</span>57 <span style=''>  /**
+</span>58 <span style=''>   * Function that allow two [[Update]] to be executed in sequence.
+</span>59 <span style=''>   *
+</span>60 <span style=''>   * @param engineA the first [[Update]] to be executed.
+</span>61 <span style=''>   * @param engineB the second [[Update]] to be executed.
+</span>62 <span style=''>   * @return The [[Update]] that will execute the two [[Update]] in sequence.
+</span>63 <span style=''>   */
+</span>64 <span style=''>  </span><span style='background: #F0ADAD'>def combineTwo</span><span style=''>(engineA: Update, engineB: Update): Update = (event: Event, world: World) =&gt;
+</span>65 <span style=''>    </span><span style='background: #F0ADAD'>for
+</span>66 <span style=''></span><span style='background: #F0ADAD'>      updateA &lt;- engineA.apply(event, world)
+</span>67 <span style=''></span><span style='background: #F0ADAD'>      (newWorld, newEngineA) = updateA
+</span>68 <span style=''></span><span style='background: #F0ADAD'>      updateB &lt;- engineB(event, newWorld)
+</span>69 <span style=''></span><span style='background: #F0ADAD'>      (lastWorld, newEngineB) = updateB
+</span>70 <span style=''></span><span style='background: #F0ADAD'>    yield (lastWorld, combineTwo(newEngineA, newEngineB))</span><span style=''>
+</span>71 <span style=''>
+</span>72 <span style=''>  /**
+</span>73 <span style=''>   * Function that allow a sequence of [[Update]] to be executed in sequence.
+</span>74 <span style=''>   * @param engines the sequence of [[Update]] to be executed.
+</span>75 <span style=''>   * @return The [[Update]] that will execute the sequence of [[Update]] in sequence.
+</span>76 <span style=''>   */
+</span>77 <span style=''>  </span><span style='background: #F0ADAD'>def combine</span><span style=''>(engines: Update*): Update = </span><span style='background: #F0ADAD'>engines.reduce(_.andThen(_))</span><span style=''>
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          53
+        </td>
+        <td>
+          589
+          -
+          600
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          andThen
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def andThen
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          44
+        </td>
+        <td>
+          664
+          -
+          683
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this (event, world)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          47
+        </td>
+        <td>
+          723
+          -
+          796
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          control(event, world).map { case (world, right) =&gt; (left, right, world) }
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          46
+        </td>
+        <td>
+          751
+          -
+          770
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case (world, right)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          49
+        </td>
+        <td>
+          664
+          -
+          798
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this (event, world)
+      .flatMap { case (world, left) =&gt; control(event, world).map { case (world, right) =&gt; (left, right, world) } }
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          45
+        </td>
+        <td>
+          723
+          -
+          744
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          control(event, world)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          48
+        </td>
+        <td>
+          701
+          -
+          719
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case (world, left)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          50
+        </td>
+        <td>
+          849
+          -
+          879
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          combineTwo
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Update.combineTwo(left, right)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          52
+        </td>
+        <td>
+          664
+          -
+          882
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this (event, world)
+      .flatMap { case (world, left) =&gt; control(event, world).map { case (world, right) =&gt; (left, right, world) } }
+      .map { case (left, right, world) =&gt; (world, Update.combineTwo(left, right)) }
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          51
+        </td>
+        <td>
+          812
+          -
+          837
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case (left, right, world)
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          59
+        </td>
+        <td>
+          1566
+          -
+          1572
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          on
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def on
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          56
+        </td>
+        <td>
+          1742
+          -
+          1754
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case event: 
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          55
+        </td>
+        <td>
+          1760
+          -
+          1811
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          control(event, world).map(world =&gt; (world, result))
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          54
+        </td>
+        <td>
+          1760
+          -
+          1781
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          control(event, world)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          58
+        </td>
+        <td>
+          1821
+          -
+          1827
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          57
+        </td>
+        <td>
+          1831
+          -
+          1852
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Task((world, result))
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          71
+        </td>
+        <td>
+          2227
+          -
+          2241
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          combineTwo
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def combineTwo
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          70
+        </td>
+        <td>
+          2322
+          -
+          2549
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          for
+      updateA &lt;- engineA.apply(event, world)
+      (newWorld, newEngineA) = updateA
+      updateB &lt;- engineB(event, newWorld)
+      (lastWorld, newEngineB) = updateB
+    yield (lastWorld, combineTwo(newEngineA, newEngineB))
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          62
+        </td>
+        <td>
+          2332
+          -
+          2399
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          updateA &lt;- engineA.apply(event, world)
+      (newWorld, newEngineA)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          60
+        </td>
+        <td>
+          2343
+          -
+          2370
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          engineA.apply(event, world)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          69
+        </td>
+        <td>
+          2332
+          -
+          2399
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          updateA &lt;- engineA.apply(event, world)
+      (newWorld, newEngineA)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          61
+        </td>
+        <td>
+          2377
+          -
+          2399
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          (newWorld, newEngineA)
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          68
+        </td>
+        <td>
+          2416
+          -
+          2549
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          updateB &lt;- engineB(event, newWorld)
+      (lastWorld, newEngineB) = updateB
+    yield (lastWorld, combineTwo(newEngineA, newEngineB))
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          65
+        </td>
+        <td>
+          2416
+          -
+          2481
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          updateB &lt;- engineB(event, newWorld)
+      (lastWorld, newEngineB)
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          67
+        </td>
+        <td>
+          2416
+          -
+          2481
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          updateB &lt;- engineB(event, newWorld)
+      (lastWorld, newEngineB)
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          63
+        </td>
+        <td>
+          2427
+          -
+          2451
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          engineB(event, newWorld)
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          64
+        </td>
+        <td>
+          2458
+          -
+          2481
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          (lastWorld, newEngineB)
+        </td>
+      </tr><tr>
+        <td>
+          69
+        </td>
+        <td>
+          66
+        </td>
+        <td>
+          2514
+          -
+          2548
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          combineTwo
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          combineTwo(newEngineA, newEngineB)
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          74
+        </td>
+        <td>
+          2792
+          -
+          2803
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          combine
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def combine
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          73
+        </td>
+        <td>
+          2832
+          -
+          2860
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          reduce
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          engines.reduce(_.andThen(_))
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          72
+        </td>
+        <td>
+          2847
+          -
+          2859
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          andThen
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          _.andThen(_)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
