@@ -11,7 +11,7 @@ class CollisionableVisualizerTest extends AnyFunSpec :
       it("should return a view element of all missiles") {
         val spawner = Spawner(1, 10, 10)
         val newSpawner = spawner.timeElapsed(10)
-        val missiles = spawner.spawn(10)
+        val missiles = newSpawner.spawn()._1
         val visualElements = CollisionableVisualizer.printElements(missiles)
         assert(visualElements.size == 10)
       }
