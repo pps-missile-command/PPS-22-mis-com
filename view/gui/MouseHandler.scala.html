@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/collisions/hitbox/HitBoxPoint.scala.html
+          view/gui/MouseHandler.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,41 +22,25 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions.hitbox
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.*
-</span>4 <span style=''>import model.collisions.hitbox.HitBoxSymmetric
-</span>5 <span style=''>import model.elements2d.Point2D
-</span>6 <span style=''>import model.elements2d.Point2D.GivenEquality.given
-</span>7 <span style=''>import org.scalactic.Equality
-</span>8 <span style=''>import org.scalactic.TripleEquals.*
+</span>3 <span style=''>import java.awt.Component
+</span>4 <span style=''>import monix.execution.cancelables.SingleAssignCancelable
+</span>5 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
+</span>6 <span style=''>import monix.reactive.subjects.PublishSubject
+</span>7 <span style=''>
+</span>8 <span style=''>import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
 </span>9 <span style=''>
-</span>10 <span style=''>/**
-</span>11 <span style=''> * Factory for an hit box that is a point.
-</span>12 <span style=''> */
-</span>13 <span style=''>object HitBoxPoint:
-</span>14 <span style=''>
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * Returns a new hit box that contains only a point.
-</span>17 <span style=''>   *
-</span>18 <span style=''>   * @param point the point in the hit box
-</span>19 <span style=''>   * @return a new hit box that contains only a point
-</span>20 <span style=''>   */
-</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(point: Point2D): HitBox = HitBoxPoint(point)
-</span>22 <span style=''>
-</span>23 <span style=''>  private case class HitBoxPoint(point: Point2D) extends HitBoxSymmetric :
-</span>24 <span style=''>
-</span>25 <span style=''>    </span><span style='background: #AEF1AE'>protected def max</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>Option(values.head)</span><span style=''>
-</span>26 <span style=''>
-</span>27 <span style=''>    </span><span style='background: #AEF1AE'>protected def min</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>max(values)</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>    </span><span style='background: #AEF1AE'>protected def x</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(point.x)</span><span style=''>
-</span>30 <span style=''>
-</span>31 <span style=''>    </span><span style='background: #AEF1AE'>protected def y</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(point.y)</span><span style=''>
-</span>32 <span style=''>
-</span>33 <span style=''>    </span><span style='background: #AEF1AE'>override def area</span><span style=''>(using step: Distance = 0): Iterator[Point2D] = </span><span style='background: #AEF1AE'>Iterator(point)</span><span style=''>
-</span>34 <span style=''>
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean = </span><span style='background: #AEF1AE'>point === this.point</span><span style=''>
+</span>10 <span style=''>extension (component: Component)
+</span>11 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[(Int, Int)] =
+</span>12 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
+</span>13 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter:
+</span>14 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
+</span>15 <span style=''></span><span style='background: #F0ADAD'>          println(&quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;)
+</span>16 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext((e.getX, e.getY))
+</span>17 <span style=''></span><span style='background: #F0ADAD'>      )
+</span>18 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
+</span>19 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -71,435 +55,422 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
-        </td>
-        <td>
-          216
-        </td>
-        <td>
-          500
-          -
-          509
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def apply
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          218
-        </td>
-        <td>
-          698
-          -
-          717
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Option(values.head)
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          217
-        </td>
-        <td>
-          705
-          -
-          716
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          head
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          values.head
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          219
-        </td>
-        <td>
-          636
-          -
-          653
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          max
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def max
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          220
-        </td>
-        <td>
-          785
-          -
-          796
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          max
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          max(values)
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          221
-        </td>
-        <td>
-          723
-          -
-          740
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          min
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def min
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          223
-        </td>
-        <td>
-          838
-          -
-          855
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Iterable(point.x)
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          222
-        </td>
-        <td>
-          847
-          -
-          854
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.x
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          224
-        </td>
-        <td>
-          802
-          -
-          817
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def x
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          227
-        </td>
-        <td>
-          861
-          -
-          876
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def y
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          226
-        </td>
-        <td>
-          897
-          -
-          914
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Iterable(point.y)
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          225
-        </td>
-        <td>
-          906
-          -
-          913
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point.y
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          229
-        </td>
-        <td>
-          920
-          -
-          937
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          area
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def area
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          228
+          10
         </td>
         <td>
           985
+        </td>
+        <td>
+          308
           -
-          1000
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Iterator(point)
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          230
-        </td>
-        <td>
-          961
-          -
-          961
+          327
         </td>
         <td>
           DefDef
         </td>
         <td>
-          area$default$1
+          mouseObservable
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          
+          def mouseObservable
         </td>
       </tr><tr>
         <td>
-          34
+          11
         </td>
         <td>
-          232
+          969
         </td>
         <td>
-          1089
+          360
           -
-          1109
+          377
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          create$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Observable.create
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          984
+        </td>
+        <td>
+          360
+          -
+          676
         </td>
         <td>
           Apply
         </td>
         <td>
-          ===
+          create
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          point === this.point
+        <td style="background: #F0ADAD">
+          Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
+      component.addMouseListener(new MouseAdapter:
+        override def mouseClicked(e: MouseEvent): Unit =
+          println(&quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;)
+          subject.onNext((e.getX, e.getY))
+      )
+      SingleAssignCancelable()
+    }
         </td>
       </tr><tr>
         <td>
-          34
+          12
         </td>
         <td>
-          231
+          982
         </td>
         <td>
-          1089
+          425
           -
-          1094
+          639
         </td>
         <td>
           Apply
         </td>
         <td>
-          convertToEqualizer
+          addMouseListener
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          point
+        <td style="background: #F0ADAD">
+          component.addMouseListener(new MouseAdapter:
+        override def mouseClicked(e: MouseEvent): Unit =
+          println(&quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;)
+          subject.onNext((e.getX, e.getY))
+      )
         </td>
       </tr><tr>
         <td>
-          34
+          12
         </td>
         <td>
-          233
+          970
         </td>
         <td>
-          1006
+          456
           -
-          1027
+          468
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          MouseAdapter
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          981
+        </td>
+        <td>
+          478
+          -
+          503
         </td>
         <td>
           DefDef
         </td>
         <td>
-          contains
+          mouseClicked
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          override def contains
+        <td style="background: #F0ADAD">
+          override def mouseClicked
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          977
+        </td>
+        <td>
+          537
+          -
+          588
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          println
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          println(&quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          971
+        </td>
+        <td>
+          559
+          -
+          565
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getX
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          974
+        </td>
+        <td>
+          575
+          -
+          581
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getY
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getY
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          973
+        </td>
+        <td>
+          545
+          -
+          572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;CLICKED (&quot; + e.getX + &quot;, &quot;
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          976
+        </td>
+        <td>
+          545
+          -
+          587
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY + &quot;)&quot;
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          972
+        </td>
+        <td>
+          545
+          -
+          565
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;CLICKED (&quot; + e.getX
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          975
+        </td>
+        <td>
+          545
+          -
+          581
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;CLICKED (&quot; + e.getX + &quot;, &quot; + e.getY
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          980
+        </td>
+        <td>
+          599
+          -
+          631
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          onNext
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          subject.onNext((e.getX, e.getY))
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          979
+        </td>
+        <td>
+          623
+          -
+          629
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getY
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getY
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          978
+        </td>
+        <td>
+          615
+          -
+          621
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getX
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          983
+        </td>
+        <td>
+          646
+          -
+          670
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          SingleAssignCancelable()
         </td>
       </tr>
     </table>
