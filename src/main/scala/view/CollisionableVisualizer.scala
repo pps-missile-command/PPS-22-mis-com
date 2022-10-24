@@ -1,7 +1,5 @@
 package view
 
-import com.sun.javafx.geom.Ellipse2D
-
 import java.awt.{Image, Toolkit}
 
 import model.collisions.Collisionable
