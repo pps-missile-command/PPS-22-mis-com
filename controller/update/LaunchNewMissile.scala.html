@@ -44,10 +44,13 @@
 </span>20 <span style=''>   */
 </span>21 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =&gt;
 </span>22 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>23 <span style=''></span><span style='background: #F0ADAD'>      val (ground, missile) = world.ground.shootMissile(event.position)
-</span>24 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = world.collisionables :+ missile, ground = ground)
-</span>25 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>26 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>23 <span style=''></span><span style='background: #F0ADAD'>      val (ground, missile) = world.ground.shootMissile(event.position, 0) //TODO fix deltatime
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      if (missile.nonEmpty) then
+</span>25 <span style=''></span><span style='background: #F0ADAD'>        world.copy(collisionables = world.collisionables :+ missile.get, ground = ground)
+</span>26 <span style=''></span><span style='background: #F0ADAD'>      else
+</span>27 <span style=''></span><span style='background: #F0ADAD'>        world.copy(collisionables = world.collisionables, ground = ground)
+</span>28 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>29 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -94,7 +97,7 @@
         <td>
           597
           -
-          837
+          986
         </td>
         <td>
           Apply
@@ -108,8 +111,11 @@
         <td style="background: #F0ADAD">
           on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =&gt;
     Task {
-      val (ground, missile) = world.ground.shootMissile(event.position)
-      world.copy(collisionables = world.collisionables :+ missile, ground = ground)
+      val (ground, missile) = world.ground.shootMissile(event.position, 0) //TODO fix deltatime
+      if (missile.nonEmpty) then
+        world.copy(collisionables = world.collisionables :+ missile.get, ground = ground)
+      else
+        world.copy(collisionables = world.collisionables, ground = ground)
     }
   }
         </td>
