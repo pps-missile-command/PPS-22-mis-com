@@ -86,14 +86,14 @@
 </span>62 <span style=''>     * @param endPoint Point where the missile should explode
 </span>63 <span style=''>     * @return Tuple containing the new updated ground and the missile shooted. Missile is null if all turrets were reloading
 </span>64 <span style=''>     */
-</span>65 <span style=''>    </span><span style='background: #AEF1AE'>def shootMissile</span><span style=''>(endPoint: Point2D, dt: DeltaTime): Tuple2[Ground, Option[Missile]] =
+</span>65 <span style=''>    </span><span style='background: #AEF1AE'>def shootMissile</span><span style=''>(endPoint: Point2D): Tuple2[Ground, Option[Missile]] =
 </span>66 <span style=''>        </span><span style='background: #AEF1AE'>def calculatePositions</span><span style=''>: List[Tuple2[Double, MissileBattery]] =
-</span>67 <span style=''>            </span><span style='background: #AEF1AE'>for battery &lt;- missileBatteryAlive if battery.isReadyForShoot(dt)
+</span>67 <span style=''>            </span><span style='background: #AEF1AE'>for battery &lt;- missileBatteryAlive if battery.isReadyForShoot
 </span>68 <span style=''></span><span style='background: #AEF1AE'>                yield (battery.bottomLeft_Position &lt;-&gt; endPoint, battery)</span><span style=''>
 </span>69 <span style=''>
 </span>70 <span style=''>        val batteriesReadyForShoot = </span><span style='background: #AEF1AE'>calculatePositions</span><span style=''>
 </span>71 <span style=''>        if(</span><span style='background: #AEF1AE'>batteriesReadyForShoot.length</span><span style=''> &gt; 0) then //only if there at least 1 turret ready for shoot, it will procede with shooting
-</span>72 <span style=''>            </span><span style='background: #AEF1AE'>val missilesBatteryInformations = batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint, dt).get
+</span>72 <span style=''>            </span><span style='background: #AEF1AE'>val missilesBatteryInformations = batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint).get
 </span>73 <span style=''></span><span style='background: #AEF1AE'>            val newTurrets = turrets.map( t =&gt; if (t == batteriesReadyForShoot.minBy(_._1)._2) missilesBatteryInformations._1 else t)
 </span>74 <span style=''></span><span style='background: #AEF1AE'>            (Ground(cities, newTurrets) , Some(missilesBatteryInformations._2))</span><span style=''>
 </span>75 <span style=''>        else
@@ -1037,9 +1037,9 @@
           602
         </td>
         <td>
-          2688
+          2673
           -
-          2710
+          2695
         </td>
         <td>
           DefDef
@@ -1061,9 +1061,9 @@
           597
         </td>
         <td>
-          2778
+          2763
           -
-          2797
+          2782
         </td>
         <td>
           Select
@@ -1085,9 +1085,9 @@
           599
         </td>
         <td>
-          2767
+          2752
           -
-          2828
+          2809
         </td>
         <td>
           Apply
@@ -1099,7 +1099,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          battery &lt;- missileBatteryAlive if battery.isReadyForShoot(dt)
+          battery &lt;- missileBatteryAlive if battery.isReadyForShoot
         </td>
       </tr><tr>
         <td>
@@ -1109,12 +1109,12 @@
           598
         </td>
         <td>
-          2801
+          2786
           -
-          2828
+          2809
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
           isReadyForShoot
@@ -1123,7 +1123,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          battery.isReadyForShoot(dt)
+          battery.isReadyForShoot
         </td>
       </tr><tr>
         <td>
@@ -1133,9 +1133,9 @@
           601
         </td>
         <td>
-          2763
+          2748
           -
-          2902
+          2883
         </td>
         <td>
           Apply
@@ -1147,7 +1147,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          for battery &lt;- missileBatteryAlive if battery.isReadyForShoot(dt)
+          for battery &lt;- missileBatteryAlive if battery.isReadyForShoot
                 yield (battery.bottomLeft_Position &lt;-&gt; endPoint, battery)
         </td>
       </tr><tr>
@@ -1158,9 +1158,9 @@
           600
         </td>
         <td>
-          2852
+          2833
           -
-          2892
+          2873
         </td>
         <td>
           Apply
@@ -1182,9 +1182,9 @@
           603
         </td>
         <td>
-          2941
+          2922
           -
-          2959
+          2940
         </td>
         <td>
           Ident
@@ -1206,9 +1206,9 @@
           604
         </td>
         <td>
-          2971
+          2952
           -
-          3000
+          2981
         </td>
         <td>
           Select
@@ -1230,9 +1230,9 @@
           606
         </td>
         <td>
-          3138
+          3119
           -
-          3175
+          3156
         </td>
         <td>
           Select
@@ -1254,9 +1254,9 @@
           608
         </td>
         <td>
-          3138
+          3119
           -
-          3205
+          3182
         </td>
         <td>
           Select
@@ -1268,7 +1268,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint, dt).get
+          batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint).get
         </td>
       </tr><tr>
         <td>
@@ -1278,9 +1278,9 @@
           617
         </td>
         <td>
-          3104
+          3085
           -
-          3419
+          3396
         </td>
         <td>
           Block
@@ -1292,7 +1292,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          val missilesBatteryInformations = batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint, dt).get
+          val missilesBatteryInformations = batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint).get
             val newTurrets = turrets.map( t =&gt; if (t == batteriesReadyForShoot.minBy(_._1)._2) missilesBatteryInformations._1 else t)
             (Ground(cities, newTurrets) , Some(missilesBatteryInformations._2))
         </td>
@@ -1304,9 +1304,9 @@
           605
         </td>
         <td>
-          3138
+          3119
           -
-          3172
+          3153
         </td>
         <td>
           Apply
@@ -1328,9 +1328,9 @@
           607
         </td>
         <td>
-          3138
+          3119
           -
-          3201
+          3178
         </td>
         <td>
           Apply
@@ -1342,7 +1342,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint, dt)
+          batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint)
         </td>
       </tr><tr>
         <td>
@@ -1352,9 +1352,9 @@
           609
         </td>
         <td>
-          3262
+          3239
           -
-          3296
+          3273
         </td>
         <td>
           Apply
@@ -1376,9 +1376,9 @@
           612
         </td>
         <td>
-          3301
+          3278
           -
-          3331
+          3308
         </td>
         <td>
           Block
@@ -1400,9 +1400,9 @@
           611
         </td>
         <td>
-          3301
+          3278
           -
-          3331
+          3308
         </td>
         <td>
           Select
@@ -1424,9 +1424,9 @@
           614
         </td>
         <td>
-          3235
+          3212
           -
-          3339
+          3316
         </td>
         <td>
           Apply
@@ -1448,9 +1448,9 @@
           613
         </td>
         <td>
-          3337
+          3314
           -
-          3338
+          3315
         </td>
         <td>
           Ident
@@ -1472,9 +1472,9 @@
           610
         </td>
         <td>
-          3262
+          3239
           -
-          3299
+          3276
         </td>
         <td>
           Select
@@ -1496,9 +1496,9 @@
           615
         </td>
         <td>
-          3353
+          3330
           -
-          3379
+          3356
         </td>
         <td>
           Apply
@@ -1520,9 +1520,9 @@
           616
         </td>
         <td>
-          3387
+          3364
           -
-          3417
+          3394
         </td>
         <td>
           Select
@@ -1544,9 +1544,9 @@
           618
         </td>
         <td>
-          3446
+          3423
           -
-          3469
+          3446
         </td>
         <td>
           Apply
@@ -1568,9 +1568,9 @@
           619
         </td>
         <td>
-          3445
+          3422
           -
-          3476
+          3453
         </td>
         <td>
           Apply
@@ -1592,9 +1592,9 @@
           633
         </td>
         <td>
-          3772
+          3749
           -
-          3786
+          3763
         </td>
         <td>
           DefDef
@@ -1616,9 +1616,9 @@
           634
         </td>
         <td>
-          3852
+          3829
           -
-          3852
+          3829
         </td>
         <td>
           DefDef
@@ -1640,9 +1640,9 @@
           621
         </td>
         <td>
-          3959
+          3936
           -
-          3985
+          3962
         </td>
         <td>
           Apply
@@ -1664,9 +1664,9 @@
           624
         </td>
         <td>
-          3924
+          3901
           -
-          3993
+          3970
         </td>
         <td>
           Apply
@@ -1688,9 +1688,9 @@
           623
         </td>
         <td>
-          3991
+          3968
           -
-          3992
+          3969
         </td>
         <td>
           Ident
@@ -1712,9 +1712,9 @@
           626
         </td>
         <td>
-          3892
+          3869
           -
-          3904
+          3881
         </td>
         <td>
           Block
@@ -1736,9 +1736,9 @@
           622
         </td>
         <td>
-          3959
+          3936
           -
-          3985
+          3962
         </td>
         <td>
           Block
@@ -1760,9 +1760,9 @@
           625
         </td>
         <td>
-          4006
+          3983
           -
-          4039
+          4016
         </td>
         <td>
           Apply
@@ -1784,9 +1784,9 @@
           627
         </td>
         <td>
-          4127
+          4104
           -
-          4153
+          4130
         </td>
         <td>
           Apply
@@ -1808,9 +1808,9 @@
           630
         </td>
         <td>
-          4091
+          4068
           -
-          4161
+          4138
         </td>
         <td>
           Apply
@@ -1832,9 +1832,9 @@
           632
         </td>
         <td>
-          4048
+          4025
           -
-          4070
+          4047
         </td>
         <td>
           Block
@@ -1856,9 +1856,9 @@
           629
         </td>
         <td>
-          4159
+          4136
           -
-          4160
+          4137
         </td>
         <td>
           Ident
@@ -1880,9 +1880,9 @@
           628
         </td>
         <td>
-          4127
+          4104
           -
-          4153
+          4130
         </td>
         <td>
           Block
@@ -1904,9 +1904,9 @@
           631
         </td>
         <td>
-          4174
+          4151
           -
-          4207
+          4184
         </td>
         <td>
           Apply
@@ -1928,9 +1928,9 @@
           637
         </td>
         <td>
-          4507
+          4484
           -
-          4521
+          4498
         </td>
         <td>
           DefDef
@@ -1952,9 +1952,9 @@
           636
         </td>
         <td>
-          4727
+          4704
           -
-          4800
+          4777
         </td>
         <td>
           Apply
@@ -1976,9 +1976,9 @@
           635
         </td>
         <td>
-          4760
+          4737
           -
-          4798
+          4775
         </td>
         <td>
           Apply
@@ -2000,9 +2000,9 @@
           644
         </td>
         <td>
-          5133
+          5110
           -
-          5147
+          5124
         </td>
         <td>
           DefDef
@@ -2024,9 +2024,9 @@
           639
         </td>
         <td>
-          5256
+          5233
           -
-          5275
+          5252
         </td>
         <td>
           Literal
@@ -2048,9 +2048,9 @@
           642
         </td>
         <td>
-          5256
+          5233
           -
-          5275
+          5252
         </td>
         <td>
           Assign
@@ -2072,9 +2072,9 @@
           638
         </td>
         <td>
-          5280
+          5257
           -
-          5302
+          5279
         </td>
         <td>
           Apply
@@ -2096,9 +2096,9 @@
           640
         </td>
         <td>
-          5256
+          5233
           -
-          5303
+          5280
         </td>
         <td>
           Apply
@@ -2120,9 +2120,9 @@
           643
         </td>
         <td>
-          5251
+          5228
           -
-          5369
+          5346
         </td>
         <td>
           Apply
@@ -2145,9 +2145,9 @@
           641
         </td>
         <td>
-          5329
+          5306
           -
-          5369
+          5346
         </td>
         <td>
           Apply
