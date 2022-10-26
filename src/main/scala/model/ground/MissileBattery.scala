@@ -26,14 +26,14 @@ case class MissileBattery(val bottomLeft_Position: Point2D,
     /**
      * @return true: If the turret is reloading and still not able to shoot
      */
-    def isReadyForShoot(actualdt: DeltaTime): Boolean = actualdt - dt >= missileTurretReloadTimems
+    def isReadyForShoot: Boolean = dt >= missileTurretReloadTimems
 
     /**
      * @return a tuple of MissileBattery and Missile if turret is ready for shoot, None if turret is reloading
      */
-    def shootRocket(endingPoint: Point2D, actualdt: DeltaTime): Option[Tuple2[MissileBattery, Missile]] =
-        if this.isReadyForShoot(actualdt) then
-            Some((timeElapsed(actualdt),
+    def shootRocket(endingPoint: Point2D): Option[Tuple2[MissileBattery, Missile]] =
+        if this.isReadyForShoot then
+            Some((this.copy(dt = 0),
                 Missile(Constants.missileHealth,
                     Constants.missileFriendlyDamage,
                     Constants.missileFriendlySpeed,
@@ -44,7 +44,7 @@ case class MissileBattery(val bottomLeft_Position: Point2D,
     /**
      * @return a string containing all the valuable informations
      */
-    override def toString: String = "Missile battery --> Position: x:" + bottomLeft_Position.x + " y:" + bottomLeft_Position.y + "; Life: " + life + "; Internal digital time: " + dt + "\n"
+    override def toString: String = "Missile battery --> Position: x:" + bottomLeft_Position.x + " y:" + bottomLeft_Position.y + "; Ready for shoot: " + isReadyForShoot + "; Life: " + life + "; Internal digital time: " + dt + "\n"
 
     /**
      *  @return the affiliation of the object.
