@@ -32,11 +32,11 @@ class GroundTest extends AnyFunSpec with BeforeAndAfterAll :
         it("should create a new ground after shoot with missile and reloading turret") {
             var ground2 = ground.shootMissile(shootPoint)
             ground = ground2._1
-            assert(ground2._2 === null) //true. Turrets are reloading, so all of them can't shoot the missile
+            assert(ground2._2.isEmpty) //true. Turrets are reloading, so all of them can't shoot the missile
             Thread.sleep(3000)
             ground2 = ground.shootMissile(shootPoint);
             ground = ground2._1
-            assert(ground2._2 != null) //true. 1 turret shoot the missile
+            assert(ground2._2.nonEmpty) //true. 1 turret shoot the missile
             assert(!ground.turrets(0).isReadyForShoot) //false. 1° turret is reloading because it shooted
             assert(ground.turrets(1).isReadyForShoot) //true. 2° and 3° turret didn't shoot
             assert(ground.turrets(2).isReadyForShoot) //true. 2° and 3° turret didn't shoot
@@ -50,7 +50,7 @@ class GroundTest extends AnyFunSpec with BeforeAndAfterAll :
             ground2 = ground.shootMissile(shootPoint)
             ground = ground2._1
             //2° missile shooted
-            assert(ground2._2 != null) //true. I shooted twice, the missile is shooted from middle battery
+            assert(ground2._2.nonEmpty) //true. I shooted twice, the missile is shooted from middle battery
             assert(!ground.turrets(0).isReadyForShoot) //false. Turret is reloading
             assert(!ground.turrets(1).isReadyForShoot) //false. Turret is reloading
             assert(ground.turrets(2).isReadyForShoot) //true. Turret is ready for shoot
@@ -74,7 +74,7 @@ class GroundTest extends AnyFunSpec with BeforeAndAfterAll :
             val turrets = ground.turrets.map( t => t.takeDamage(3))
             ground = Ground(ground.cities, turrets)
             var ground2 = ground.shootMissile(shootPoint)
-            assert(ground2._2 == null)
+            assert(ground2._2.isEmpty)
         }
 
         describe("Test new way of dealing damage") {
