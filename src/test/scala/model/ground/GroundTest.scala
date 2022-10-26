@@ -40,20 +40,19 @@ class GroundTest extends AnyFunSpec with BeforeAndAfterAll :
             resultContainer = ground.shootMissile(shootPoint, testdt);
             ground = resultContainer._1
             assert(resultContainer._2.nonEmpty) //true. 1 turret shoot the missile
-            assert(!ground.turrets(0).isReadyForShoot(0)) //false. 1° turret is reloading because it shooted
+            assert(ground.turrets(0).isReadyForShoot(testdt) == false) //false. 1° turret is reloading because it shooted
             assert(ground.turrets(1).isReadyForShoot(testdt)) //true. 2° and 3° turret didn't shoot
             assert(ground.turrets(2).isReadyForShoot(testdt)) //true. 2° and 3° turret didn't shoot
         }
 
         it("should handle multiple shoots") {
-            ground = ground.shootMissile(shootPoint,3000)._1
-            //first missile shooted
-            ground = ground.shootMissile(shootPoint, 3000)._1
-            //2° missile shooted
+            testdt = 3000
+            ground = ground.shootMissile(shootPoint,testdt)._1 //first missile shooted
+            ground = ground.shootMissile(shootPoint, testdt)._1 //2° missile shooted
             assert(ground._2.nonEmpty) //true. I shooted twice, the missile is shooted from middle battery
-            assert(ground.turrets(0).isReadyForShoot(0) == false) //false. Turret is reloading
-            assert(ground.turrets(1).isReadyForShoot(0) == false) //false. Turret is reloading
-            assert(ground.turrets(2).isReadyForShoot(0)) //true. Turret is ready for shoot
+            assert(ground.turrets(0).isReadyForShoot(testdt) == false) //false. Turret is reloading
+            assert(ground.turrets(1).isReadyForShoot(testdt) == false) //false. Turret is reloading
+            assert(ground.turrets(2).isReadyForShoot(testdt)) //true. Turret is ready for shoot
         }
 
         it("should destroy a city if hitted") {
@@ -73,12 +72,12 @@ class GroundTest extends AnyFunSpec with BeforeAndAfterAll :
         it("should destroy all the cities and try to shoot") {
             val turrets = ground.turrets.map( t => t.takeDamage(3))
             ground = Ground(ground.cities, turrets)
-            var ground2 = ground.shootMissile(shootPoint, 3000)
+            testdt = 3000
+            var ground2 = ground.shootMissile(shootPoint, testdt)
             assert(ground2._2.isEmpty)
         }
 
         describe("Test new way of dealing damage") {
-
             it("should deal damage to a specified city") {
                 //use last city as an example
                 ground = Ground()

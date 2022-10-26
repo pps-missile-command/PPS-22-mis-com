@@ -73,7 +73,7 @@ case class MissileBattery(val bottomLeft_Position: Point2D,
     override def takeDamage(damage: LifePoint): MissileBattery = this.copy(life = life - damage)
 
     /**
-     * @param actualdt actual digital time
-     * @return A MissileBattery with the new time
+     * @param actualdt Digital time passed since last update
+     * @return A MissileBattery with the new digital time
      */
     override def timeElapsed(actualdt: DeltaTime): MissileBattery = this.copy(dt = dt + actualdt)
