@@ -1,5 +1,6 @@
 package model.ground
 
+import model.DeltaTime
 import model.elements2d.Point2D
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funspec.AnyFunSpec
@@ -7,10 +8,12 @@ import org.scalatest.funspec.AnyFunSpec
 class GroundTest extends AnyFunSpec with BeforeAndAfterAll :
     var ground = Ground()
     val shootPoint = Point2D(0, 10)
+    var testdt: DeltaTime = 0;
     //before each test, it will regenerate the ground as new
     override def beforeAll(): Unit = {
         super.beforeAll()
         ground = Ground()
+        testdt = 0;
     }
 
     describe("The ground") {
@@ -30,30 +33,27 @@ class GroundTest extends AnyFunSpec with BeforeAndAfterAll :
         }
 
         it("should create a new ground after shoot with missile and reloading turret") {
-            var ground2 = ground.shootMissile(shootPoint)
-            ground = ground2._1
-            assert(ground2._2.isEmpty) //true. Turrets are reloading, so all of them can't shoot the missile
-            Thread.sleep(3000)
-            ground2 = ground.shootMissile(shootPoint);
-            ground = ground2._1
-            assert(ground2._2.nonEmpty) //true. 1 turret shoot the missile
-            assert(!ground.turrets(0).isReadyForShoot) //false. 1° turret is reloading because it shooted
-            assert(ground.turrets(1).isReadyForShoot) //true. 2° and 3° turret didn't shoot
-            assert(ground.turrets(2).isReadyForShoot) //true. 2° and 3° turret didn't shoot
+            var resultContainer = ground.shootMissile(shootPoint, testdt)
+            ground = resultContainer._1
+            assert(resultContainer._2.isEmpty) //true. Turrets are reloading, so all of them can't shoot the missile
+            testdt = testdt + 3000
+            resultContainer = ground.shootMissile(shootPoint, testdt);
+            ground = resultContainer._1
+            assert(resultContainer._2.nonEmpty) //true. 1 turret shoot the missile
+            assert(!ground.turrets(0).isReadyForShoot(0)) //false. 1° turret is reloading because it shooted
+            assert(ground.turrets(1).isReadyForShoot(testdt)) //true. 2° and 3° turret didn't shoot
+            assert(ground.turrets(2).isReadyForShoot(testdt)) //true. 2° and 3° turret didn't shoot
         }
 
         it("should handle multiple shoots") {
-            Thread.sleep(3000)
-            var ground2 = ground.shootMissile(shootPoint)
-            ground = ground2._1
+            ground = ground.shootMissile(shootPoint,3000)._1
             //first missile shooted
-            ground2 = ground.shootMissile(shootPoint)
-            ground = ground2._1
+            ground = ground.shootMissile(shootPoint, 3000)._1
             //2° missile shooted
-            assert(ground2._2.nonEmpty) //true. I shooted twice, the missile is shooted from middle battery
-            assert(!ground.turrets(0).isReadyForShoot) //false. Turret is reloading
-            assert(!ground.turrets(1).isReadyForShoot) //false. Turret is reloading
-            assert(ground.turrets(2).isReadyForShoot) //true. Turret is ready for shoot
+            assert(ground._2.nonEmpty) //true. I shooted twice, the missile is shooted from middle battery
+            assert(ground.turrets(0).isReadyForShoot(0) == false) //false. Turret is reloading
+            assert(ground.turrets(1).isReadyForShoot(0) == false) //false. Turret is reloading
+            assert(ground.turrets(2).isReadyForShoot(0)) //true. Turret is ready for shoot
         }
 
         it("should destroy a city if hitted") {
@@ -73,7 +73,7 @@ class GroundTest extends AnyFunSpec with BeforeAndAfterAll :
         it("should destroy all the cities and try to shoot") {
             val turrets = ground.turrets.map( t => t.takeDamage(3))
             ground = Ground(ground.cities, turrets)
-            var ground2 = ground.shootMissile(shootPoint)
+            var ground2 = ground.shootMissile(shootPoint, 3000)
             assert(ground2._2.isEmpty)
         }
 

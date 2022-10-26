@@ -1,5 +1,6 @@
 package model.ground
 
+import model.DeltaTime
 import model.collisions.{Damageable, LifePoint}
 import model.elements2d.Point2D
 import model.ground.City
@@ -61,14 +62,14 @@ case class Ground(cities: List[City], turrets: List[MissileBattery]):
      * @param endPoint Point where the missile should explode
      * @return Tuple containing the new updated ground and the missile shooted. Missile is null if all turrets were reloading
      */
-    def shootMissile(endPoint: Point2D): Tuple2[Ground, Option[Missile]] =
+    def shootMissile(endPoint: Point2D, dt: DeltaTime): Tuple2[Ground, Option[Missile]] =
         def calculatePositions: List[Tuple2[Double, MissileBattery]] =
-            for battery <- missileBatteryAlive if battery.isReadyForShoot
+            for battery <- missileBatteryAlive if battery.isReadyForShoot(dt)
                 yield (battery.bottomLeft_Position <-> endPoint, battery)
 
         val batteriesReadyForShoot = calculatePositions
         if(batteriesReadyForShoot.length > 0) then //only if there at least 1 turret ready for shoot, it will procede with shooting
-            val missilesBatteryInformations = batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint).get
+            val missilesBatteryInformations = batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint, dt).get
             val newTurrets = turrets.map( t => if (t == batteriesReadyForShoot.minBy(_._1)._2) missilesBatteryInformations._1 else t)
             (Ground(cities, newTurrets) , Some(missilesBatteryInformations._2))
         else

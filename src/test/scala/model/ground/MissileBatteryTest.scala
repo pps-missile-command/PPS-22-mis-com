@@ -2,20 +2,27 @@ package model.ground
 
 import model.collisions.Affiliation
 import model.elements2d.Point2D
-import model.ground
+import model.{DeltaTime, ground}
 import model.ground.MissileBattery
 import model.missile.Missile
 import org.scalactic.{Equality, TolerantNumerics}
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funspec.AnyFunSpec
 import utilities.Constants
 
 import java.time
 
-class MissileBatteryTest extends AnyFunSpec {
+class MissileBatteryTest extends AnyFunSpec with BeforeAndAfterAll{
 
-    private val xTest = 3.0
-    private val yTest = 4.0
+    val xTest = 3.0
+    val yTest = 4.0
     val point = Point2D(xTest, yTest)
+    var testdt: DeltaTime = 0;
+
+    override def beforeAll(): Unit = {
+        super.beforeAll()
+        testdt = 0;
+    }
 
     describe("A missile battery") {
         it("should create a new turret in given position and with specified life") {
@@ -28,11 +35,11 @@ class MissileBatteryTest extends AnyFunSpec {
 
         it("should fail if you shoot twice in a row without waiting") {
             val batteryTurret = ground.MissileBattery(point)
-            assert(!batteryTurret.isReadyForShoot) //false. When turret got created, the reload will start
-            Thread.sleep(2000)
-            assert(!batteryTurret.isReadyForShoot) //false. Turret is still reloading
-            Thread.sleep(1000)
-            assert(batteryTurret.isReadyForShoot) //false. Turret finished reloading
+            assert(!batteryTurret.isReadyForShoot(testdt)) //false. When turret got created, the reload will start
+            testdt = testdt + 2000
+            assert(!batteryTurret.isReadyForShoot(testdt)) //false. Turret is still reloading
+            testdt = testdt + 1000
+            assert(batteryTurret.isReadyForShoot(testdt)) //true. Turret finished reloading
         }
         it("should be a friendly unit") {
             val batteryTurret = ground.MissileBattery(point)
@@ -41,16 +48,16 @@ class MissileBatteryTest extends AnyFunSpec {
 
         it("should fail if you shoot right after creating a turret") {
             val batteryTurret = ground.MissileBattery(point)
-            assert(batteryTurret.shootRocket(point).isEmpty)
+            assert(batteryTurret.shootRocket(point, 0).isEmpty)
         }
         it("should pass if you shoot after waiting for the reload time") {
             val batteryTurret = ground.MissileBattery(point)
-            Thread.sleep(3000)
-            val values = batteryTurret.shootRocket(Point2D(10.0, 10.0))
+            testdt = 3000
+            val values = batteryTurret.shootRocket(Point2D(10.0, 10.0), testdt)
             assert(values.nonEmpty)
             
             val tupled: Tuple2[MissileBattery, Missile] = values.get
-            assert(!tupled._1.isReadyForShoot) //true. The turret shot, so is reloading
+            assert(!tupled._1.isReadyForShoot(testdt)) //true. The turret shot, so is reloading
             assert(tupled._2.affiliation === Affiliation.Friendly)
             assert(tupled._2.destination === Point2D(10.0, 10.0))
         }
@@ -60,12 +67,6 @@ class MissileBatteryTest extends AnyFunSpec {
             val batteryTurret2 = batteryTurret.takeDamage(3)
             assert(batteryTurret2.currentLife === 0)
             assert(batteryTurret2.isDestroyed)
-        }
-        it("should keep the same reload time if turret get damaged") {
-            val batteryTurret = ground.MissileBattery(point)
-            Thread.sleep(3000)
-            val batteryTurret2 = batteryTurret.takeDamage(1)
-            assert(batteryTurret2.isReadyForShoot) //true. The turret already reloaded before
         }
     }
 }

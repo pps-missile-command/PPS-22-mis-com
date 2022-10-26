@@ -20,7 +20,7 @@ object LaunchNewMissile:
    */
   def apply(): Update = on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =>
     Task {
-      val (ground, missile) = world.ground.shootMissile(event.position)
+      val (ground, missile) = world.ground.shootMissile(event.position, 0) //TODO fix deltatime
       if (missile.nonEmpty) then
         world.copy(collisionables = world.collisionables :+ missile.get, ground = ground)
       else
