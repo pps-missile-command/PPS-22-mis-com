@@ -2,7 +2,7 @@ package model.ground
 
 import model.collisions.Affiliation
 import model.elements2d.Point2D
-import model.ground
+import model.{DeltaTime, ground}
 import model.ground.MissileBattery
 import model.missile.Missile
 import org.scalactic.{Equality, TolerantNumerics}
@@ -11,10 +11,10 @@ import utilities.Constants
 
 import java.time
 
-class MissileBatteryTest extends AnyFunSpec {
+class MissileBatteryTest extends AnyFunSpec{
 
-    private val xTest = 3.0
-    private val yTest = 4.0
+    val xTest = 3.0
+    val yTest = 4.0
     val point = Point2D(xTest, yTest)
 
     describe("A missile battery") {
@@ -27,12 +27,12 @@ class MissileBatteryTest extends AnyFunSpec {
         }
 
         it("should fail if you shoot twice in a row without waiting") {
-            val batteryTurret = ground.MissileBattery(point)
-            assert(!batteryTurret.isReadyForShoot) //false. When turret got created, the reload will start
-            Thread.sleep(2000)
-            assert(!batteryTurret.isReadyForShoot) //false. Turret is still reloading
-            Thread.sleep(1000)
-            assert(batteryTurret.isReadyForShoot) //false. Turret finished reloading
+            var batteryTurret = ground.MissileBattery(point)
+            assert(batteryTurret.isReadyForShoot == false) //false. When turret got created, the reload will start
+            batteryTurret = batteryTurret.timeElapsed(1000)
+            assert(batteryTurret.isReadyForShoot == false) //false. Turret is still reloading
+            batteryTurret = batteryTurret.timeElapsed(2000)
+            assert(batteryTurret.isReadyForShoot) //true. Turret finished reloading
         }
         it("should be a friendly unit") {
             val batteryTurret = ground.MissileBattery(point)
@@ -44,8 +44,8 @@ class MissileBatteryTest extends AnyFunSpec {
             assert(batteryTurret.shootRocket(point).isEmpty)
         }
         it("should pass if you shoot after waiting for the reload time") {
-            val batteryTurret = ground.MissileBattery(point)
-            Thread.sleep(3000)
+            var batteryTurret = ground.MissileBattery(point)
+            batteryTurret = batteryTurret.timeElapsed(3000)
             val values = batteryTurret.shootRocket(Point2D(10.0, 10.0))
             assert(values.nonEmpty)
             
@@ -60,12 +60,6 @@ class MissileBatteryTest extends AnyFunSpec {
             val batteryTurret2 = batteryTurret.takeDamage(3)
             assert(batteryTurret2.currentLife === 0)
             assert(batteryTurret2.isDestroyed)
-        }
-        it("should keep the same reload time if turret get damaged") {
-            val batteryTurret = ground.MissileBattery(point)
-            Thread.sleep(3000)
-            val batteryTurret2 = batteryTurret.takeDamage(1)
-            assert(batteryTurret2.isReadyForShoot) //true. The turret already reloaded before
         }
     }
 }
