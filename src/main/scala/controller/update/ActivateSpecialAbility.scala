@@ -4,6 +4,7 @@ import controller.Event
 import controller.Event.TimePassed
 import controller.update.Update.on
 import model.World
+import model.explosion.Explosion
 import model.behavior.Moveable
 import model.collisions.Collisionable
 import model.missile.Missile
@@ -24,9 +25,13 @@ object ActivateSpecialAbility:
         case missile: Missile if missile.destinationReached => missile.explode
         case _ => collisionable
 
+      def isTerminated(collisionable: Collisionable): Boolean = collisionable match
+        case explosion: Explosion => explosion.terminated
+        case _ => false
+
       val collisionables = world.collisionables.map(activateSpecialAbility)
-      //val (newMissiles, spawner) = world.spawner.spawn()
-      //world.copy(collisionables = collisionables ++ newMissiles, spawner = spawner)
-      world.copy(collisionables = collisionables)
+      val remainedCollisionables = collisionables.filterNot(isTerminated)
+      val (newMissiles, spawner) = world.spawner.spawn()
+      world.copy(collisionables = remainedCollisionables ++ newMissiles, spawner = spawner)
     }
   }
