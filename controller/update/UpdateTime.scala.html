@@ -31,28 +31,30 @@
 </span>7 <span style=''>import controller.update.Update.*
 </span>8 <span style=''>import model.behavior.Timeable
 </span>9 <span style=''>import model.collisions.Collisionable
-</span>10 <span style=''>
+</span>10 <span style=''>import model.ground.Ground
 </span>11 <span style=''>
-</span>12 <span style=''>/**
-</span>13 <span style=''> * Object that return an update function for the world to update the time of its components
-</span>14 <span style=''> */
-</span>15 <span style=''>object UpdateTime:
-</span>16 <span style=''>  /**
-</span>17 <span style=''>   * Apply function used to update the time of the game components
-</span>18 <span style=''>   *
-</span>19 <span style=''>   * @return An Update that update the time of the game components
-</span>20 <span style=''>   */
-</span>21 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (event: TimePassed, world: World) =&gt;
-</span>22 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>23 <span style=''></span><span style='background: #F0ADAD'>      def updateTimeble(collisionable: Collisionable): Collisionable = collisionable match
-</span>24 <span style=''></span><span style='background: #F0ADAD'>        case timeable: Timeable =&gt; timeable.timeElapsed(event.deltaTime).asInstanceOf[Collisionable]
-</span>25 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; collisionable
-</span>26 <span style=''></span><span style='background: #F0ADAD'>
-</span>27 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables.map(updateTimeble)
-</span>28 <span style=''></span><span style='background: #F0ADAD'>      val spawner = world.spawner//.timeElapsed(event.deltaTime)
-</span>29 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = collisionables, spawner = spawner)
-</span>30 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>31 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>12 <span style=''>
+</span>13 <span style=''>/**
+</span>14 <span style=''> * Object that return an update function for the world to update the time of its components
+</span>15 <span style=''> */
+</span>16 <span style=''>object UpdateTime:
+</span>17 <span style=''>  /**
+</span>18 <span style=''>   * Apply function used to update the time of the game components
+</span>19 <span style=''>   *
+</span>20 <span style=''>   * @return An Update that update the time of the game components
+</span>21 <span style=''>   */
+</span>22 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (event: TimePassed, world: World) =&gt;
+</span>23 <span style=''></span><span style='background: #F0ADAD'>    Task {
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      def updateTimeble(collisionable: Collisionable): Collisionable = collisionable match
+</span>25 <span style=''></span><span style='background: #F0ADAD'>        case timeable: Timeable =&gt; timeable.timeElapsed(event.deltaTime).asInstanceOf[Collisionable]
+</span>26 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; collisionable
+</span>27 <span style=''></span><span style='background: #F0ADAD'>
+</span>28 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables.map(updateTimeble)
+</span>29 <span style=''></span><span style='background: #F0ADAD'>      val spawner = world.spawner.timeElapsed(event.deltaTime)
+</span>30 <span style=''></span><span style='background: #F0ADAD'>      val ground = Ground(world.ground.cities, world.ground.turrets.map(_.timeElapsed(event.deltaTime)))
+</span>31 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = collisionables, spawner = spawner, ground = ground)
+</span>32 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>33 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -67,15 +69,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
           77
         </td>
         <td>
-          514
+          541
           -
-          1014
+          1161
         </td>
         <td>
           Apply
@@ -94,22 +96,23 @@
         case _ =&gt; collisionable
 
       val collisionables = world.collisionables.map(updateTimeble)
-      val spawner = world.spawner//.timeElapsed(event.deltaTime)
-      world.copy(collisionables = collisionables, spawner = spawner)
+      val spawner = world.spawner.timeElapsed(event.deltaTime)
+      val ground = Ground(world.ground.cities, world.ground.turrets.map(_.timeElapsed(event.deltaTime)))
+      world.copy(collisionables = collisionables, spawner = spawner, ground = ground)
     }
   }
         </td>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
           78
         </td>
         <td>
-          492
+          519
           -
-          501
+          528
         </td>
         <td>
           DefDef

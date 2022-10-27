@@ -83,7 +83,7 @@
 </span>59 <span style=''>    </span><span style='background: #AEF1AE'>def isDestroyed</span><span style=''>(collisionable: Collisionable): Boolean =
 </span>60 <span style=''>      collisionable match
 </span>61 <span style=''>        </span><span style='background: #AEF1AE'>case damageable: Damageable</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>damageable.isDestroyed</span><span style=''>
-</span>62 <span style=''>        </span><span style='background: #AEF1AE'>case _: Damager</span><span style=''> =&gt; false
+</span>62 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
 </span>63 <span style=''>
 </span>64 <span style=''>
 </span>65 <span style=''>    </span><span style='background: #AEF1AE'>def areOnTheSameSide</span><span style=''>(collisionable1: Collisionable, collisionable2: Collisionable): Boolean =
@@ -98,13 +98,13 @@
 </span>74 <span style=''>      collisionable match
 </span>75 <span style=''>        </span><span style='background: #AEF1AE'>case _: Damageable</span><span style=''> =&gt; true
 </span>76 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
-</span>77 <span style=''>
+</span>77 <span style=''>    val notNullCollisionables = </span><span style='background: #AEF1AE'>collisionables.filterNot(_ == null)</span><span style=''>
 </span>78 <span style=''>    val realCollision =
 </span>79 <span style=''>      </span><span style='background: #AEF1AE'>(for
-</span>80 <span style=''></span><span style='background: #AEF1AE'>        damager &lt;- collisionables
+</span>80 <span style=''></span><span style='background: #AEF1AE'>        damager &lt;- notNullCollisionables
 </span>81 <span style=''></span><span style='background: #AEF1AE'>        if !isDestroyed(damager)
 </span>82 <span style=''></span><span style='background: #AEF1AE'>        if isADamager(damager)
-</span>83 <span style=''></span><span style='background: #AEF1AE'>        damageable &lt;- collisionables
+</span>83 <span style=''></span><span style='background: #AEF1AE'>        damageable &lt;- notNullCollisionables
 </span>84 <span style=''></span><span style='background: #AEF1AE'>        if !isDestroyed(damageable)
 </span>85 <span style=''></span><span style='background: #AEF1AE'>        if isADamageable(damageable)
 </span>86 <span style=''></span><span style='background: #AEF1AE'>        if !areOnTheSameSide(damager, damageable)
@@ -117,9 +117,10 @@
 </span>93 <span style=''></span><span style='background: #AEF1AE'>          res + (key -&gt; (res(key) :+ v._2))
 </span>94 <span style=''></span><span style='background: #AEF1AE'>        })</span><span style=''>
 </span>95 <span style=''>    </span><span style='background: #AEF1AE'>(for
-</span>96 <span style=''></span><span style='background: #AEF1AE'>      collisionable &lt;- collisionables
+</span>96 <span style=''></span><span style='background: #AEF1AE'>      collisionable &lt;- notNullCollisionables
 </span>97 <span style=''></span><span style='background: #AEF1AE'>    yield
-</span>98 <span style=''></span><span style='background: #AEF1AE'>      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty)).toMap</span><span style=''>
+</span>98 <span style=''></span><span style='background: #AEF1AE'>      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty))
+</span>99 <span style=''></span><span style='background: #AEF1AE'>      .toMap</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -430,7 +431,7 @@
           55
         </td>
         <td>
-          380
+          381
         </td>
         <td>
           1829
@@ -531,7 +532,7 @@
         <td>
           2116
           -
-          2131
+          2122
         </td>
         <td>
           Block
@@ -543,7 +544,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          case _: Damager
+          case _
         </td>
       </tr><tr>
         <td>
@@ -553,9 +554,9 @@
           340
         </td>
         <td>
-          2147
+          2138
           -
-          2167
+          2158
         </td>
         <td>
           DefDef
@@ -577,9 +578,9 @@
           339
         </td>
         <td>
-          2277
+          2268
           -
-          2303
+          2294
         </td>
         <td>
           Select
@@ -601,9 +602,9 @@
           338
         </td>
         <td>
-          2247
+          2238
           -
-          2273
+          2264
         </td>
         <td>
           Select
@@ -625,9 +626,9 @@
           343
         </td>
         <td>
-          2309
+          2300
           -
-          2323
+          2314
         </td>
         <td>
           DefDef
@@ -649,9 +650,9 @@
           341
         </td>
         <td>
-          2399
+          2390
           -
-          2414
+          2405
         </td>
         <td>
           Block
@@ -673,9 +674,9 @@
           342
         </td>
         <td>
-          2431
+          2422
           -
-          2437
+          2428
         </td>
         <td>
           Block
@@ -697,9 +698,9 @@
           346
         </td>
         <td>
-          2452
+          2443
           -
-          2469
+          2460
         </td>
         <td>
           DefDef
@@ -721,9 +722,9 @@
           344
         </td>
         <td>
-          2545
+          2536
           -
-          2563
+          2554
         </td>
         <td>
           Block
@@ -745,9 +746,9 @@
           345
         </td>
         <td>
-          2580
+          2571
           -
-          2586
+          2577
         </td>
         <td>
           Block
@@ -763,15 +764,39 @@
         </td>
       </tr><tr>
         <td>
+          76
+        </td>
+        <td>
+          347
+        </td>
+        <td>
+          2619
+          -
+          2654
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filterNot
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables.filterNot(_ == null)
+        </td>
+      </tr><tr>
+        <td>
           78
         </td>
         <td>
-          360
+          361
         </td>
         <td>
-          2628
+          2686
           -
-          2978
+          3050
         </td>
         <td>
           Apply
@@ -784,10 +809,10 @@
         </td>
         <td style="background: #AEF1AE">
           for
-        damager &lt;- collisionables
+        damager &lt;- notNullCollisionables
         if !isDestroyed(damager)
         if isADamager(damager)
-        damageable &lt;- collisionables
+        damageable &lt;- notNullCollisionables
         if !isDestroyed(damageable)
         if isADamageable(damageable)
         if !areOnTheSameSide(damager, damageable)
@@ -800,12 +825,12 @@
           79
         </td>
         <td>
-          348
+          349
         </td>
         <td>
-          2640
-          -
           2698
+          -
+          2763
         </td>
         <td>
           Apply
@@ -817,7 +842,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          damager &lt;- collisionables
+          damager &lt;- notNullCollisionables
         if !isDestroyed(damager)
         </td>
       </tr><tr>
@@ -825,12 +850,12 @@
           79
         </td>
         <td>
-          350
+          351
         </td>
         <td>
-          2640
+          2698
           -
-          2729
+          2794
         </td>
         <td>
           Apply
@@ -842,7 +867,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          damager &lt;- collisionables
+          damager &lt;- notNullCollisionables
         if !isDestroyed(damager)
         if isADamager(damager)
         </td>
@@ -851,12 +876,12 @@
           80
         </td>
         <td>
-          347
+          348
         </td>
         <td>
-          2678
+          2743
           -
-          2698
+          2763
         </td>
         <td>
           Apply
@@ -875,12 +900,12 @@
           81
         </td>
         <td>
-          349
+          350
         </td>
         <td>
-          2710
+          2775
           -
-          2729
+          2794
         </td>
         <td>
           Apply
@@ -899,12 +924,12 @@
           82
         </td>
         <td>
-          358
+          355
         </td>
         <td>
-          2738
+          2803
           -
-          2936
+          2911
         </td>
         <td>
           Apply
@@ -916,60 +941,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          damageable &lt;- collisionables
-        if !isDestroyed(damageable)
-        if isADamageable(damageable)
-        if !areOnTheSameSide(damager, damageable)
-        if damager.isCollidingWith(damageable)
-        </td>
-      </tr><tr>
-        <td>
-          82
-        </td>
-        <td>
-          352
-        </td>
-        <td>
-          2738
-          -
-          2802
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withFilter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damageable &lt;- collisionables
-        if !isDestroyed(damageable)
-        </td>
-      </tr><tr>
-        <td>
-          82
-        </td>
-        <td>
-          354
-        </td>
-        <td>
-          2738
-          -
-          2839
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withFilter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damageable &lt;- collisionables
+          damageable &lt;- notNullCollisionables
         if !isDestroyed(damageable)
         if isADamageable(damageable)
         </td>
@@ -978,12 +950,12 @@
           82
         </td>
         <td>
-          359
+          360
         </td>
         <td>
-          2738
+          2803
           -
-          2978
+          3050
         </td>
         <td>
           Apply
@@ -995,7 +967,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          damageable &lt;- collisionables
+          damageable &lt;- notNullCollisionables
         if !isDestroyed(damageable)
         if isADamageable(damageable)
         if !areOnTheSameSide(damager, damageable)
@@ -1008,12 +980,12 @@
           82
         </td>
         <td>
-          356
+          357
         </td>
         <td>
-          2738
+          2803
           -
-          2889
+          2961
         </td>
         <td>
           Apply
@@ -1025,22 +997,75 @@
           
         </td>
         <td style="background: #AEF1AE">
-          damageable &lt;- collisionables
+          damageable &lt;- notNullCollisionables
         if !isDestroyed(damageable)
         if isADamageable(damageable)
         if !areOnTheSameSide(damager, damageable)
         </td>
       </tr><tr>
         <td>
+          82
+        </td>
+        <td>
+          359
+        </td>
+        <td>
+          2803
+          -
+          3008
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damageable &lt;- notNullCollisionables
+        if !isDestroyed(damageable)
+        if isADamageable(damageable)
+        if !areOnTheSameSide(damager, damageable)
+        if damager.isCollidingWith(damageable)
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          353
+        </td>
+        <td>
+          2803
+          -
+          2874
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damageable &lt;- notNullCollisionables
+        if !isDestroyed(damageable)
+        </td>
+      </tr><tr>
+        <td>
           83
         </td>
         <td>
-          351
+          352
         </td>
         <td>
-          2779
+          2851
           -
-          2802
+          2874
         </td>
         <td>
           Apply
@@ -1059,12 +1084,12 @@
           84
         </td>
         <td>
-          353
+          354
         </td>
         <td>
-          2814
+          2886
           -
-          2839
+          2911
         </td>
         <td>
           Apply
@@ -1083,12 +1108,12 @@
           85
         </td>
         <td>
-          355
+          356
         </td>
         <td>
-          2852
+          2924
           -
-          2889
+          2961
         </td>
         <td>
           Apply
@@ -1107,12 +1132,12 @@
           86
         </td>
         <td>
-          357
+          358
         </td>
         <td>
-          2901
+          2973
           -
-          2936
+          3008
         </td>
         <td>
           Apply
@@ -1131,12 +1156,12 @@
           89
         </td>
         <td>
-          361
+          362
         </td>
         <td>
-          2998
+          3070
           -
-          3039
+          3111
         </td>
         <td>
           Apply
@@ -1158,34 +1183,9 @@
           364
         </td>
         <td>
-          2998
+          3140
           -
-          3079
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withDefaultValue
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Map[Collisionable, List[Collisionable]]()
-          .withDefaultValue(List.empty)
-        </td>
-      </tr><tr>
-        <td>
-          90
-        </td>
-        <td>
-          363
-        </td>
-        <td>
-          3068
-          -
-          3078
+          3150
         </td>
         <td>
           Select
@@ -1204,12 +1204,51 @@
           90
         </td>
         <td>
-          362
+          372
         </td>
         <td>
-          3068
+          2685
           -
-          3072
+          3246
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          foldLeft
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (for
+        damager &lt;- notNullCollisionables
+        if !isDestroyed(damager)
+        if isADamager(damager)
+        damageable &lt;- notNullCollisionables
+        if !isDestroyed(damageable)
+        if isADamageable(damageable)
+        if !areOnTheSameSide(damager, damageable)
+        if damager.isCollidingWith(damageable)
+      yield
+        (damageable, damager))
+        .foldLeft(Map[Collisionable, List[Collisionable]]()
+          .withDefaultValue(List.empty))((res, v) =&gt; {
+          val key = v._1
+          res + (key -&gt; (res(key) :+ v._2))
+        })
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          363
+        </td>
+        <td>
+          3140
+          -
+          3144
         </td>
         <td>
           Ident
@@ -1228,51 +1267,37 @@
           90
         </td>
         <td>
-          371
+          365
         </td>
         <td>
-          2627
+          3070
           -
-          3174
+          3151
         </td>
         <td>
           Apply
         </td>
         <td>
-          foldLeft
+          withDefaultValue
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          (for
-        damager &lt;- collisionables
-        if !isDestroyed(damager)
-        if isADamager(damager)
-        damageable &lt;- collisionables
-        if !isDestroyed(damageable)
-        if isADamageable(damageable)
-        if !areOnTheSameSide(damager, damageable)
-        if damager.isCollidingWith(damageable)
-      yield
-        (damageable, damager))
-        .foldLeft(Map[Collisionable, List[Collisionable]]()
-          .withDefaultValue(List.empty))((res, v) =&gt; {
-          val key = v._1
-          res + (key -&gt; (res(key) :+ v._2))
-        })
+          Map[Collisionable, List[Collisionable]]()
+          .withDefaultValue(List.empty)
         </td>
       </tr><tr>
         <td>
           91
         </td>
         <td>
-          365
+          366
         </td>
         <td>
-          3115
+          3187
           -
-          3119
+          3191
         </td>
         <td>
           Select
@@ -1294,81 +1319,9 @@
           367
         </td>
         <td>
-          3157
+          3217
           -
-          3161
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          _2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          v._2
-        </td>
-      </tr><tr>
-        <td>
-          92
-        </td>
-        <td>
-          370
-        </td>
-        <td>
-          3130
-          -
-          3162
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          res + (key -&gt; (res(key) :+ v._2)
-        </td>
-      </tr><tr>
-        <td>
-          92
-        </td>
-        <td>
-          369
-        </td>
-        <td>
-          3137
-          -
-          3161
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          -&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          key -&gt; (res(key) :+ v._2
-        </td>
-      </tr><tr>
-        <td>
-          92
-        </td>
-        <td>
-          366
-        </td>
-        <td>
-          3145
-          -
-          3153
+          3225
         </td>
         <td>
           Apply
@@ -1387,12 +1340,36 @@
           92
         </td>
         <td>
-          368
+          370
         </td>
         <td>
-          3145
+          3209
           -
-          3161
+          3233
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          -&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          key -&gt; (res(key) :+ v._2
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          369
+        </td>
+        <td>
+          3217
+          -
+          3233
         </td>
         <td>
           Apply
@@ -1408,42 +1385,63 @@
         </td>
       </tr><tr>
         <td>
-          94
+          92
         </td>
         <td>
-          379
+          368
         </td>
         <td>
-          3179
+          3229
           -
-          3352
+          3233
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          toMap
+          _2
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          (for
-      collisionable &lt;- collisionables
-    yield
-      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty)).toMap
+          v._2
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          371
+        </td>
+        <td>
+          3202
+          -
+          3234
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          res + (key -&gt; (res(key) :+ v._2)
         </td>
       </tr><tr>
         <td>
           94
         </td>
         <td>
-          378
+          379
         </td>
         <td>
-          3180
+          3252
           -
-          3345
+          3424
         </td>
         <td>
           Apply
@@ -1456,9 +1454,37 @@
         </td>
         <td style="background: #AEF1AE">
           for
-      collisionable &lt;- collisionables
+      collisionable &lt;- notNullCollisionables
     yield
       (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty)
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          380
+        </td>
+        <td>
+          3251
+          -
+          3438
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          toMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (for
+      collisionable &lt;- notNullCollisionables
+    yield
+      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty))
+      .toMap
         </td>
       </tr><tr>
         <td>
@@ -1468,57 +1494,9 @@
           373
         </td>
         <td>
-          3300
+          3336
           -
-          3328
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          realCollision(collisionable)
-        </td>
-      </tr><tr>
-        <td>
-          97
-        </td>
-        <td>
-          376
-        </td>
-        <td>
-          3334
-          -
-          3344
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          empty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          List.empty
-        </td>
-      </tr><tr>
-        <td>
-          97
-        </td>
-        <td>
-          372
-        </td>
-        <td>
-          3257
-          -
-          3294
+          3373
         </td>
         <td>
           Apply
@@ -1537,12 +1515,12 @@
           97
         </td>
         <td>
-          375
+          376
         </td>
         <td>
-          3334
+          3413
           -
-          3338
+          3417
         </td>
         <td>
           Ident
@@ -1561,12 +1539,12 @@
           97
         </td>
         <td>
-          377
+          378
         </td>
         <td>
-          3334
+          3413
           -
-          3344
+          3423
         </td>
         <td>
           Block
@@ -1585,18 +1563,66 @@
           97
         </td>
         <td>
-          374
+          375
         </td>
         <td>
-          3300
+          3379
           -
-          3328
+          3407
         </td>
         <td>
           Block
         </td>
         <td>
           &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          realCollision(collisionable)
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          377
+        </td>
+        <td>
+          3413
+          -
+          3423
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          empty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          List.empty
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          374
+        </td>
+        <td>
+          3379
+          -
+          3407
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
         </td>
         <td>
           
