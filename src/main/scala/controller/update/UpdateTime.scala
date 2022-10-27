@@ -7,6 +7,7 @@ import model.*
 import controller.update.Update.*
 import model.behavior.Timeable
 import model.collisions.Collisionable
+import model.ground.Ground
 
 
 /**
@@ -25,7 +26,8 @@ object UpdateTime:
         case _ => collisionable
 
       val collisionables = world.collisionables.map(updateTimeble)
-      val spawner = world.spawner//.timeElapsed(event.deltaTime)
-      world.copy(collisionables = collisionables, spawner = spawner)
+      val spawner = world.spawner.timeElapsed(event.deltaTime)
+      val ground = Ground(world.ground.cities, world.ground.turrets.map(_.timeElapsed(event.deltaTime)))
+      world.copy(collisionables = collisionables, spawner = spawner, ground = ground)
     }
   }
