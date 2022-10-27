@@ -21,9 +21,8 @@ object LaunchNewMissile:
   def apply(): Update = on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =>
     Task {
       val (ground, missile) = world.ground.shootMissile(event.position)
-      if (missile.nonEmpty) then
-        world.copy(collisionables = world.collisionables :+ missile.get, ground = ground)
-      else
-        world.copy(collisionables = world.collisionables, ground = ground)
+      missile match
+        case Some(missile) => world.copy(collisionables = world.collisionables :+ missile, ground = ground)
+        case None => world.copy(collisionables = world.collisionables, ground = ground)
     }
   }
