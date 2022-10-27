@@ -67,6 +67,32 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       yield
         assert(element._2.isEmpty)
     }
+
+    Scenario("There are no objects") {
+      Given("No objects")
+
+      val collisionables = List.empty[Collisionable]
+
+      When("Calculate collision")
+      val update = applyDamage(calculateCollisions(collisionables))
+
+      Then("The map should be empty")
+      assert(update.isEmpty)
+    }
+
+    Scenario("The object is null"){
+      Given("An object null")
+
+      val collisionables = List[Collisionable](null)
+
+
+      When("Calculate collision")
+      val update = applyDamage(calculateCollisions(collisionables))
+
+
+      Then("The map should be empty")
+      assert(update.isEmpty)
+    }
   }
 
   Feature("Inflict damage") {

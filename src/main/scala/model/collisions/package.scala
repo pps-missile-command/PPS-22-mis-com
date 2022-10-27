@@ -59,7 +59,7 @@ package object collisions:
     def isDestroyed(collisionable: Collisionable): Boolean =
       collisionable match
         case damageable: Damageable => damageable.isDestroyed
-        case _: Damager => false
+        case _ => false
 
 
     def areOnTheSameSide(collisionable1: Collisionable, collisionable2: Collisionable): Boolean =
@@ -74,13 +74,13 @@ package object collisions:
       collisionable match
         case _: Damageable => true
         case _ => false
-
+    val notNullCollisionables = collisionables.filterNot(_ == null)
     val realCollision =
       (for
-        damager <- collisionables
+        damager <- notNullCollisionables
         if !isDestroyed(damager)
         if isADamager(damager)
-        damageable <- collisionables
+        damageable <- notNullCollisionables
         if !isDestroyed(damageable)
         if isADamageable(damageable)
         if !areOnTheSameSide(damager, damageable)
@@ -93,6 +93,7 @@ package object collisions:
           res + (key -> (res(key) :+ v._2))
         })
     (for
-      collisionable <- collisionables
+      collisionable <- notNullCollisionables
     yield
-      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty)).toMap
+      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty))
+      .toMap
