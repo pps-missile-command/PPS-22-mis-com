@@ -35,7 +35,7 @@
 </span>11 <span style=''>
 </span>12 <span style=''>trait Spawner(using Random) extends Timeable:
 </span>13 <span style=''>
-</span>14 <span style=''>  def spawn(dt: DeltaTime): List[Missile]
+</span>14 <span style=''>  def spawn(): (List[Missile], Spawner)
 </span>15 <span style=''>
 </span>16 <span style=''>  override def timeElapsed(dt: DeltaTime): Spawner
 </span>17 <span style=''>
@@ -43,30 +43,26 @@
 </span>19 <span style=''>
 </span>20 <span style=''>  given affiliation: Affiliation = Affiliation.Enemy
 </span>21 <span style=''>
-</span>22 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(interval: DeltaTime, maxWidth: Double, maxHeight: Double, dt: DeltaTime = 0): Spawner = new </span><span style='background: #AEF1AE'>Spawner(using Random)</span><span style=''> {
+</span>22 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(interval: DeltaTime, maxWidth: Double, maxHeight: Double, timeFromStart: DeltaTime = 0, dt: DeltaTime = 0): Spawner = new </span><span style='background: #AEF1AE'>Spawner(using Random)</span><span style=''> {
 </span>23 <span style=''>
-</span>24 <span style=''>    private var dtSupplier : () =&gt; DeltaTime = () =&gt; dt
-</span>25 <span style=''>
-</span>26 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(dt: DeltaTime): List[Missile] =
-</span>27 <span style=''>      val currentDt = </span><span style='background: #AEF1AE'>dtSupplier()</span><span style=''>
-</span>28 <span style=''>      this.dtSupplier = () =&gt; 0
-</span>29 <span style=''>      dt match
-</span>30 <span style=''>        </span><span style='background: #AEF1AE'>case n if n &gt;= interval</span><span style=''> =&gt;
-</span>31 <span style=''>          val step: Int = (n / interval).toInt
-</span>32 <span style=''>          val randomX_start = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
-</span>33 <span style=''>          val randomX_end = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
-</span>34 <span style=''>          val generator: List[Missile] =
-</span>35 <span style=''>            </span><span style='background: #AEF1AE'>for
-</span>36 <span style=''></span><span style='background: #AEF1AE'>              (i, x_start) &lt;- randomX_start
-</span>37 <span style=''></span><span style='background: #AEF1AE'>              (j, x_end) &lt;- randomX_end
-</span>38 <span style=''></span><span style='background: #AEF1AE'>              if i == j
-</span>39 <span style=''></span><span style='background: #AEF1AE'>            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x_start, maxHeight), Point2D(x_end, 0))</span><span style=''> //TODO coordinate campo
-</span>40 <span style=''>          generator
-</span>41 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>List()</span><span style=''>
-</span>42 <span style=''>
-</span>43 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Spawner = </span><span style='background: #AEF1AE'>Spawner.apply(interval, maxWidth, maxHeight, dtSupplier() + _dt)</span><span style=''>
-</span>44 <span style=''>
-</span>45 <span style=''>  }
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): (List[Missile], Spawner) =
+</span>25 <span style=''>      dt match
+</span>26 <span style=''>        </span><span style='background: #AEF1AE'>case n if n &gt;= interval</span><span style=''> =&gt;
+</span>27 <span style=''>          val step: Int = (n / interval).toInt
+</span>28 <span style=''>          val randomX_start = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
+</span>29 <span style=''>          val randomX_end = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, Random.nextDouble() * maxWidth) }).toList</span><span style=''>
+</span>30 <span style=''>          val generator: List[Missile] =
+</span>31 <span style=''>            </span><span style='background: #AEF1AE'>for
+</span>32 <span style=''></span><span style='background: #AEF1AE'>              (i, x_start) &lt;- randomX_start
+</span>33 <span style=''></span><span style='background: #AEF1AE'>              (j, x_end) &lt;- randomX_end
+</span>34 <span style=''></span><span style='background: #AEF1AE'>              if i == j
+</span>35 <span style=''></span><span style='background: #AEF1AE'>            yield Missile.enemyMissile(initialLife, damage, velocity, Point2D(x_start, maxHeight), Point2D(x_end, 0))</span><span style=''> //TODO coordinate campo
+</span>36 <span style=''>          (generator, </span><span style='background: #AEF1AE'>Spawner(interval, maxWidth, maxHeight, timeFromStart)</span><span style=''>)
+</span>37 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; (</span><span style='background: #AEF1AE'>List()</span><span style=''>, this)
+</span>38 <span style=''>
+</span>39 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Spawner = </span><span style='background: #AEF1AE'>Spawner.apply(interval, maxWidth, maxHeight, timeFromStart + dt, dt + _dt)</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>  }
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -87,33 +83,9 @@
           848
         </td>
         <td>
-          555
+          469
           -
-          555
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply$default$4
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          847
-        </td>
-        <td>
-          471
-          -
-          480
+          478
         </td>
         <td>
           DefDef
@@ -132,12 +104,12 @@
           21
         </td>
         <td>
-          814
+          815
         </td>
         <td>
-          573
+          601
           -
-          594
+          622
         </td>
         <td>
           Apply
@@ -153,15 +125,63 @@
         </td>
       </tr><tr>
         <td>
-          25
+          21
         </td>
         <td>
-          843
+          850
         </td>
         <td>
-          659
+          583
           -
-          677
+          583
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$5
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          849
+        </td>
+        <td>
+          564
+          -
+          564
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          845
+        </td>
+        <td>
+          630
+          -
+          648
         </td>
         <td>
           DefDef
@@ -177,39 +197,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          25
         </td>
         <td>
-          815
+          842
         </td>
         <td>
-          732
+          702
           -
-          744
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          dtSupplier()
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          840
-        </td>
-        <td>
-          800
-          -
-          823
+          725
         </td>
         <td>
           Block
@@ -225,15 +221,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          27
         </td>
         <td>
           819
         </td>
         <td>
-          905
+          807
           -
-          966
+          868
         </td>
         <td>
           Apply
@@ -249,15 +245,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          27
         </td>
         <td>
           818
         </td>
         <td>
-          933
+          835
           -
-          952
+          854
         </td>
         <td>
           Apply
@@ -273,15 +269,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          27
         </td>
         <td>
           817
         </td>
         <td>
-          905
+          807
           -
-          917
+          819
         </td>
         <td>
           Apply
@@ -297,15 +293,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          27
         </td>
         <td>
           820
         </td>
         <td>
-          904
+          806
           -
-          974
+          876
         </td>
         <td>
           Select
@@ -321,15 +317,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          27
         </td>
         <td>
           816
         </td>
         <td>
-          905
+          807
           -
-          906
+          808
         </td>
         <td>
           Apply
@@ -345,15 +341,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          28
         </td>
         <td>
           822
         </td>
         <td>
-          1004
+          906
           -
-          1016
+          918
         </td>
         <td>
           Apply
@@ -369,15 +365,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          28
         </td>
         <td>
           821
         </td>
         <td>
-          1004
+          906
           -
-          1005
+          907
         </td>
         <td>
           Apply
@@ -393,15 +389,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          28
         </td>
         <td>
           824
         </td>
         <td>
-          1004
+          906
           -
-          1065
+          967
         </td>
         <td>
           Apply
@@ -417,15 +413,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          28
         </td>
         <td>
           823
         </td>
         <td>
-          1032
+          934
           -
-          1051
+          953
         </td>
         <td>
           Apply
@@ -441,15 +437,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          28
         </td>
         <td>
           825
         </td>
         <td>
-          1003
+          905
           -
-          1073
+          975
         </td>
         <td>
           Select
@@ -465,15 +461,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          30
         </td>
         <td>
           839
         </td>
         <td>
-          1127
+          1029
           -
-          1356
+          1258
         </td>
         <td>
           Apply
@@ -493,15 +489,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          31
         </td>
         <td>
           827
         </td>
         <td>
-          1145
+          1047
           -
-          1174
+          1076
         </td>
         <td>
           Apply
@@ -517,15 +513,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          31
         </td>
         <td>
           826
         </td>
         <td>
-          1145
+          1047
           -
-          1157
+          1059
         </td>
         <td>
           Literal
@@ -541,15 +537,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          31
         </td>
         <td>
           838
         </td>
         <td>
-          1145
+          1047
           -
-          1157
+          1059
         </td>
         <td>
           Block
@@ -565,15 +561,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          32
         </td>
         <td>
           828
         </td>
         <td>
-          1189
+          1091
           -
-          1199
+          1101
         </td>
         <td>
           Literal
@@ -589,15 +585,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          32
         </td>
         <td>
           837
         </td>
         <td>
-          1189
+          1091
           -
-          1356
+          1258
         </td>
         <td>
           Apply
@@ -615,15 +611,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          32
         </td>
         <td>
           831
         </td>
         <td>
-          1189
+          1091
           -
-          1238
+          1140
         </td>
         <td>
           Apply
@@ -640,15 +636,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          32
         </td>
         <td>
           830
         </td>
         <td>
-          1189
+          1091
           -
-          1199
+          1101
         </td>
         <td>
           Apply
@@ -664,15 +660,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          32
         </td>
         <td>
           836
         </td>
         <td>
-          1189
+          1091
           -
-          1199
+          1101
         </td>
         <td>
           Block
@@ -688,15 +684,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          32
         </td>
         <td>
           829
         </td>
         <td>
-          1189
+          1091
           -
-          1214
+          1116
         </td>
         <td>
           Apply
@@ -712,15 +708,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          34
         </td>
         <td>
           833
         </td>
         <td>
-          1338
+          1240
           -
-          1355
+          1257
         </td>
         <td>
           Apply
@@ -736,15 +732,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          34
         </td>
         <td>
           835
         </td>
         <td>
-          1257
+          1159
           -
-          1356
+          1258
         </td>
         <td>
           Apply
@@ -760,15 +756,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          34
         </td>
         <td>
           832
         </td>
         <td>
-          1309
+          1211
           -
-          1336
+          1238
         </td>
         <td>
           Apply
@@ -784,15 +780,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          34
         </td>
         <td>
           834
         </td>
         <td>
-          1257
+          1159
           -
-          1277
+          1179
         </td>
         <td>
           Select
@@ -808,15 +804,63 @@
         </td>
       </tr><tr>
         <td>
-          40
+          35
         </td>
         <td>
-          842
+          841
         </td>
         <td>
-          1409
+          1305
           -
-          1415
+          1358
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Spawner(interval, maxWidth, maxHeight, timeFromStart)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          840
+        </td>
+        <td>
+          1305
+          -
+          1312
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$5
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Spawner
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          844
+        </td>
+        <td>
+          1368
+          -
+          1374
         </td>
         <td>
           Block
@@ -832,15 +876,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          36
         </td>
         <td>
-          841
+          843
         </td>
         <td>
-          1419
+          1379
           -
-          1425
+          1385
         </td>
         <td>
           Apply
@@ -856,15 +900,39 @@
         </td>
       </tr><tr>
         <td>
-          42
+          38
         </td>
         <td>
           846
         </td>
         <td>
-          1431
+          1450
           -
-          1455
+          1524
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Spawner.apply(interval, maxWidth, maxHeight, timeFromStart + dt, dt + _dt)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          847
+        </td>
+        <td>
+          1398
+          -
+          1422
         </td>
         <td>
           DefDef
@@ -877,54 +945,6 @@
         </td>
         <td style="background: #AEF1AE">
           override def timeElapsed
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          845
-        </td>
-        <td>
-          1483
-          -
-          1547
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Spawner.apply(interval, maxWidth, maxHeight, dtSupplier() + _dt)
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          844
-        </td>
-        <td>
-          1528
-          -
-          1540
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          dtSupplier()
         </td>
       </tr>
     </table>
