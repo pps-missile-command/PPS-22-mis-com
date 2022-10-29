@@ -24,7 +24,7 @@ object GameLoop:
    */
   private val time: Observable[Event] = TimeFlow
     .tickEach(50 milliseconds)
-    .map(_.toDouble)
+    .map(_.toDouble/1000)
     .map(Event.TimePassed.apply)
 
   /**
