@@ -13,14 +13,11 @@ import java.io.File
 case class CollisionableElement(image: BufferedImage, baseWidth: Int, baseHeight: Int,
                                 position: Point2D, angle: Angle = Angle.Degree(0))
 
-given Conversion[Double, Int] with
-  override def apply(x: Double): Int = x.toInt
-
 object CollisionableVisualizer:
 
   val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
 
-  def printElements(collisionables: List[Collisionable]): List[CollisionableElement] =
+  def printElements(collisionables: List[Collisionable])(using conversion: Conversion[Double, Int]): List[CollisionableElement] =
 
     val conversion: Collisionable => CollisionableElement = (c: Collisionable) => c match
       case m: Missile with MissileDamageable =>

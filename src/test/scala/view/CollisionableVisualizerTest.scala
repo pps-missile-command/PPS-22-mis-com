@@ -6,6 +6,9 @@ import org.scalatest.matchers.should.Matchers
 
 class CollisionableVisualizerTest extends AnyFunSpec :
 
+  given Conversion[Double, Int] with
+    override def apply(x: Double): Int = x.toInt
+
   describe("A collisionable visualizer") {
     describe("that convert collisionable elements into graphic ones") {
       it("should return a view element of all missiles") {
