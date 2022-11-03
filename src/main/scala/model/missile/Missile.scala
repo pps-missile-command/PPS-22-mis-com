@@ -3,14 +3,12 @@ package model.missile
 import model.behavior.*
 import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint, lifePointDeath}
 import model.elements2d.{Angle, Point2D, Vector2D}
-import model.explosion.{Explosion, MaxTime}
+import model.explosion.{Explosion, MaxTime, standardRadius}
 import model.DeltaTime
-import model.explosion.MaxTime
 
 import scala.util.Random
 
-//TODO scegliere max explosion time
-given maxTime: MaxTime = ???
+given maxTime: MaxTime = 8
 
 given Conversion[(Point2D, Point2D), Vector2D] with
   override def apply(x: (Point2D, Point2D)): Vector2D = (x._2 <--> x._1).normalize
@@ -43,9 +41,10 @@ case class MissileImpl(
 
   val moveStrategy: MissileMovement = Missile.BasicMove(this)(_)
   
-  override def takeDamage(damage: LifePoint): Missile = this match
-    case m if (m.currentLife - m.damage) <= 0 => newMissile(life = lifePointDeath)
-    case _ => newMissile(life = currentLife - damage)
+  override def takeDamage(damageToInflict: LifePoint): Missile = damageToInflict match
+    case n if (currentLife - n) <= 0 => newMissile(life = lifePointDeath)
+    case n if (n > 0) => newMissile(life = currentLife - n)
+    case _ => this
 
   override def move(): Missile = this match
     case m if m.isDestroyed => newMissile(life = lifePointDeath)
@@ -55,7 +54,9 @@ case class MissileImpl(
 
   override def destinationReached: Boolean = position == destination
 
-  override def explode: Explosion = Explosion(damage, hitboxRadius = 10, position)
+  override def explode: Explosion =
+    given expAffiliation: Affiliation = affiliation
+    Explosion(damage, hitboxRadius = standardRadius, position)
 
   private def newMissile(
                           life: LifePoint = lifePoint,
@@ -67,7 +68,6 @@ case class MissileImpl(
       val score = this.asInstanceOf[Scorable].points
       new MissileImpl(life, pos, destination, _dt, affiliation, damage, velocity) with Scorable(score)
     case _ => throw IllegalStateException()
-
 
 object Missile:
 
@@ -83,10 +83,10 @@ object Missile:
     val distanceToFinalPosition = missile.position <-> missile.destination
     if distanceToMove >= distanceToFinalPosition
     then missile.destination
-    else missile.position --> (missile.direction * distanceToMove)
+    else missile.position --> (missile.direction * distanceToMove * (-1))
 
   def apply(lifePoint: LifePoint = initialLife,
             _damage: LifePoint = damage,
             _velocity: Double = velocity,
             position: Point2D,
-            finalPosition: Point2D) : Missile = MissileImpl(lifePoint, position, finalPosition, 0, damage = _damage, velocity = _velocity)
+            finalPosition: Point2D) : Missile = MissileImpl(lifePoint, position, finalPosition, dt = 0, damage = _damage, velocity = _velocity)

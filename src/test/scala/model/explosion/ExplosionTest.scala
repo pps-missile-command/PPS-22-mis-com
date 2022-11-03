@@ -6,6 +6,7 @@ import model.elements2d.Point2D
 import model.collisions.Distance
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import model.missile.*
 
 object ExplosionTest:
   val damage = 10
@@ -72,6 +73,19 @@ class ExplosionTest extends AnyFunSpec :
           val explosion = Explosion(damage, radius, position)
           val newExplosion = explosion.timeElapsed(14)
           assert(newExplosion.terminated, true)
+        }
+      }
+    }
+    describe("A missile") {
+      describe("when exploding") {
+        it("should generate an explosion with its own affiliation type") {
+          val missile = Missile(0,
+            damage,
+            velocity,
+            Point2D(0, 0), Point2D(0, 0))
+          val explosion = missile.explode
+          assert(missile.affiliation == Affiliation.Friendly)
+          assert(explosion.affiliation == Affiliation.Friendly)
         }
       }
     }
