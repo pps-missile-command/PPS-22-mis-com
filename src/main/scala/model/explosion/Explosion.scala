@@ -27,7 +27,7 @@ object Explosion:
     override def position: Point2D = myPosition
 
     override def radius: Double = hitboxRadius match
-      case n if n > 0 => hitboxRadius
+      case n if n >= 0 => hitboxRadius
       case n if n < 0 => Math.abs(hitboxRadius)
 
     override def timeElapsed(_dt: DeltaTime): Explosion = apply(damageToInflict, hitboxRadius, myPosition, dt + _dt)
