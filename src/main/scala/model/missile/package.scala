@@ -16,11 +16,11 @@ package object missile:
   case object RandomMissile extends MissileType
   case object ZigZagMissile extends MissileType
 
-  val initialLife: LifePoint = 50
-  val velocity: Double = 10
+  val initialLife: LifePoint = 1
+  val velocity: Double = 100
   val damage: Int = 1
   val hitboxBase: Double = 10.0
-  val hitboxHeight: Double = 10.0
+  val hitboxHeight: Double = 30.0
   val maxHeight: Int = 100
   val maxWidth: Int = 50
   val angle: Angle = Angle.Degree(90)
