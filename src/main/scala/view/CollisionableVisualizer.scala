@@ -1,43 +1,43 @@
 package view
 
-import java.awt.{Image, Toolkit}
-
+import java.awt.{Color, Image, Toolkit}
 import model.collisions.Collisionable
-import model.elements2d.Point2D
+import model.elements2d.{Angle, Point2D}
 import model.explosion.Explosion
-import model.missile.{Missile, MissileImpl, hitboxBase, hitboxHeight}
+import model.missile.{Missile, MissileDamageable, MissileImpl, hitboxBase, hitboxHeight}
 
-import java.awt.Toolkit
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.File
 
-/*extension (p: ImageElement)
-  def map[A](f: ImageElement => A) = f(p)
-  def flatMap[A](f: ImageElement => CollisionableElement) = f(p)
-*/
-
-case class CollisionableElement(image: Image, position: Point2D, baseWidth: Int, baseHeight: Int)
-case class ImageElement(src: String, position: Point2D)
+case class CollisionableElement(image: BufferedImage, baseWidth: Int, baseHeight: Int,
+                                position: Point2D, angle: Angle = Angle.Degree(0))
 
 given Conversion[Double, Int] with
   override def apply(x: Double): Int = x.toInt
 
 object CollisionableVisualizer:
-  //TODO string resource
+
   val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
 
-  val conversion: Collisionable => CollisionableElement = (c: Collisionable) =>
-    val imageElement = c match
-    case m: Missile => ImageElement(" ", m.position)
-    case e: Explosion => ImageElement(" ", e.position)
-
-    val img = Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\city_" + 2 + ".png") //element.src
-
-    CollisionableElement(img, imageElement.position, hitboxBase, hitboxHeight)
-
   def printElements(collisionables: List[Collisionable]): List[CollisionableElement] =
-    for
-      i <- collisionables
-    yield conversion(i)
+
+    val conversion: Collisionable => CollisionableElement = (c: Collisionable) => c match
+      case m: Missile with MissileDamageable =>
+        var optImage:  Option[BufferedImage] = Option.empty
+        try {
+          val img = ImageIO.read(new File(resourceFolderPath + "\\city_" + 2 + ".png"))
+          optImage = Option(img)
+        }
+        CollisionableElement(optImage.getOrElse(null), hitboxBase, hitboxHeight, m.position, m.angle.getOrElse(Angle.Degree(0)))
+      case e: Explosion =>
+        val diameter = e.radius * 2
+        val bi = new BufferedImage(diameter,diameter, BufferedImage.TYPE_INT_ARGB)
+        val g2d = bi.createGraphics()
+        g2d.setColor(Color.RED)
+        g2d.drawOval(0, 0, diameter, diameter)
+        g2d.dispose()
+        CollisionableElement(bi, diameter, diameter, e.position)
+
+    collisionables.map(conversion)
 
