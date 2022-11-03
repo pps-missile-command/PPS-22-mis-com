@@ -9,7 +9,7 @@ import scala.util.Random
 object MissileTest:
 
   //retta passante per due punti
-  private val damage = 10
+  private val damage = 1
   private val velocity = 10
   private val startPosition = Point2D(0,0)
   private val finalPosition = Point2D(10,10)
@@ -49,7 +49,7 @@ class MissileTest extends AnyFunSpec :
     it("should move along its direction") {
       val missile = TestMissile()
       val movedMissile = missile.timeElapsed(dt).move()
-      assert(movedMissile.position == (missile.position --> (missile.direction * missile.velocity * dt)))
+      assert(movedMissile.position == (missile.position --> (missile.direction * missile.velocity * dt)) * (-1))
     }
     it("should decrease its lifepoints when damaged") {
       val missile = TestMissile()
