@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/audio/AudioPlayer.scala.html
+          model/missile/zigzag/ZigZagMissile.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,27 +22,31 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.audio
-</span>2 <span style=''>
-</span>3 <span style=''>import java.net.{MalformedURLException, URL}
-</span>4 <span style=''>import javax.sound.sampled.{AudioSystem, UnsupportedAudioFileException}
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile.zigzag
+</span>2 <span style=''>import model.collisions.Affiliation
+</span>3 <span style=''>import model.elements2d.Point2D
+</span>4 <span style=''>import model.missile.*
 </span>5 <span style=''>
-</span>6 <span style=''>object AudioPlayer:
-</span>7 <span style=''>    </span><span style='background: #F0ADAD'>def playAudio</span><span style=''>(URL_audio: String): Unit =
-</span>8 <span style=''>        try
-</span>9 <span style=''>            </span><span style='background: #F0ADAD'>val url = new URL(URL_audio)
-</span>10 <span style=''></span><span style='background: #F0ADAD'>            val audioIn = AudioSystem.getAudioInputStream(url)
-</span>11 <span style=''></span><span style='background: #F0ADAD'>            val clip = AudioSystem.getClip
-</span>12 <span style=''></span><span style='background: #F0ADAD'>            clip.open(audioIn)
-</span>13 <span style=''></span><span style='background: #F0ADAD'>            clip.start</span><span style=''>
-</span>14 <span style=''>        catch
-</span>15 <span style=''>            </span><span style='background: #F0ADAD'>case ex1: MalformedURLException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL not found&quot;)</span><span style=''>
-</span>16 <span style=''>            </span><span style='background: #F0ADAD'>case ex2: UnsupportedAudioFileException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL found, but not an audio&quot;)</span><span style=''>
-</span>17 <span style=''>            </span><span style='background: #F0ADAD'>case ex3: Throwable</span><span style=''> =&gt;
-</span>18 <span style=''>
+</span>6 <span style=''>import scala.util.Random
+</span>7 <span style=''>
+</span>8 <span style=''>object ZigZagMissile:
+</span>9 <span style=''>
+</span>10 <span style=''>  trait ZigZagMissile:
+</span>11 <span style=''>    missile: Missile =&gt;
+</span>12 <span style=''>      </span><span style='background: #F0ADAD'>def zigzag</span><span style=''>(): Boolean = true
+</span>13 <span style=''>
+</span>14 <span style=''>    </span><span style='background: #F0ADAD'>override def move</span><span style=''>(): Missile =
+</span>15 <span style=''>      </span><span style='background: #F0ADAD'>println(&quot;OVERRIDE&quot;)</span><span style=''>
+</span>16 <span style=''>      this
+</span>17 <span style=''>
+</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>() = new </span><span style='background: #F0ADAD'>MissileImpl(5, Point2D(0,0), Point2D(5,5))</span><span style=''> with ZigZagMissile
 </span>19 <span style=''>
-</span>20 <span style=''>    //Add audio here
-</span>21 <span style=''>    val explosionSmall = &quot;https://www.shockwave-sound.com/sound-effects/explosion-sounds/Arcade%20Explo%20A.wav&quot;
+</span>20 <span style=''></span><span style='background: #F0ADAD'>@main def test</span><span style=''>() =
+</span>21 <span style=''>  import ZigZagMissile.*
+</span>22 <span style=''>  given random: </span><span style='background: #F0ADAD'>Random()</span><span style=''>
+</span>23 <span style=''>  val zigzagMissile = </span><span style='background: #F0ADAD'>apply()</span><span style=''>
+</span>24 <span style=''>  </span><span style='background: #F0ADAD'>zigzagMissile.zigzag()</span><span style=''>
+</span>25 <span style=''>  </span><span style='background: #F0ADAD'>zigzagMissile.move()</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -57,67 +61,183 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          6
+          11
         </td>
         <td>
-          974
+          808
         </td>
         <td>
-          162
+          223
           -
-          175
+          233
         </td>
         <td>
           DefDef
         </td>
         <td>
-          playAudio
+          zigzag
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def playAudio
+          def zigzag
         </td>
       </tr><tr>
         <td>
-          8
+          13
         </td>
         <td>
-          968
+          810
         </td>
         <td>
-          227
+          257
           -
-          415
+          274
         </td>
         <td>
-          Block
+          DefDef
         </td>
         <td>
-          &lt;none&gt;
+          move
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          val url = new URL(URL_audio)
-            val audioIn = AudioSystem.getAudioInputStream(url)
-            val clip = AudioSystem.getClip
-            clip.open(audioIn)
-            clip.start
+          override def move
         </td>
       </tr><tr>
         <td>
-          8
+          14
         </td>
         <td>
-          963
+          809
         </td>
         <td>
-          237
+          294
           -
-          255
+          313
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          println
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          println(&quot;OVERRIDE&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          813
+        </td>
+        <td>
+          346
+          -
+          357
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          MissileImpl
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          812
+        </td>
+        <td>
+          375
+          -
+          387
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D(5,5)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          815
+        </td>
+        <td>
+          346
+          -
+          357
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$6
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          MissileImpl
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          818
+        </td>
+        <td>
+          328
+          -
+          337
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          817
+        </td>
+        <td>
+          346
+          -
+          388
         </td>
         <td>
           Apply
@@ -129,223 +249,199 @@
           
         </td>
         <td style="background: #F0ADAD">
-          new URL(URL_audio)
+          MissileImpl(5, Point2D(0,0), Point2D(5,5))
         </td>
       </tr><tr>
         <td>
-          9
+          17
         </td>
         <td>
-          964
+          811
         </td>
         <td>
-          282
-          -
-          318
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getAudioInputStream
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          AudioSystem.getAudioInputStream(url)
-        </td>
-      </tr><tr>
-        <td>
-          10
-        </td>
-        <td>
-          965
-        </td>
-        <td>
-          342
-          -
           361
+          -
+          373
         </td>
         <td>
           Apply
         </td>
         <td>
-          getClip
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          AudioSystem.getClip
+          Point2D(0,0)
         </td>
       </tr><tr>
         <td>
-          11
+          17
         </td>
         <td>
-          966
+          814
         </td>
         <td>
-          374
+          346
           -
-          392
+          357
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          open
+          $lessinit$greater$default$5
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          clip.open(audioIn)
+          MissileImpl
         </td>
       </tr><tr>
         <td>
-          12
+          17
         </td>
         <td>
-          967
+          816
         </td>
         <td>
-          405
+          346
           -
-          415
+          357
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          start
+          $lessinit$greater$default$7
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          clip.start
+          MissileImpl
         </td>
       </tr><tr>
         <td>
-          14
+          19
         </td>
         <td>
-          970
+          823
         </td>
         <td>
-          442
+          409
           -
-          473
+          423
         </td>
         <td>
-          Block
+          DefDef
         </td>
         <td>
-          &lt;none&gt;
+          test
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          case ex1: MalformedURLException
+          @main def test
         </td>
       </tr><tr>
         <td>
-          14
+          21
         </td>
         <td>
-          969
+          819
         </td>
         <td>
+          469
+          -
           477
-          -
-          501
         </td>
         <td>
           Apply
         </td>
         <td>
-          println
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          println(&quot;URL not found&quot;)
+          Random()
         </td>
       </tr><tr>
         <td>
-          15
+          22
         </td>
         <td>
-          971
+          820
         </td>
         <td>
-          557
+          500
           -
-          595
+          507
         </td>
         <td>
           Apply
         </td>
         <td>
-          println
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          println(&quot;URL found, but not an audio&quot;)
+          apply()
         </td>
       </tr><tr>
         <td>
-          15
+          23
         </td>
         <td>
-          972
+          821
         </td>
         <td>
-          514
+          510
           -
-          553
+          532
         </td>
         <td>
-          Block
+          Apply
         </td>
         <td>
-          &lt;none&gt;
+          zigzag
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          case ex2: UnsupportedAudioFileException
+          zigzagMissile.zigzag()
         </td>
       </tr><tr>
         <td>
-          16
+          24
         </td>
         <td>
-          973
+          822
         </td>
         <td>
-          608
+          535
           -
-          627
+          555
         </td>
         <td>
-          Block
+          Apply
         </td>
         <td>
-          &lt;none&gt;
+          move
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          case ex3: Throwable
+          zigzagMissile.move()
         </td>
       </tr>
     </table>
