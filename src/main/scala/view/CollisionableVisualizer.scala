@@ -15,7 +15,8 @@ case class CollisionableElement(image: BufferedImage, baseWidth: Int, baseHeight
 
 object CollisionableVisualizer:
 
-  val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
+  val fileSeparator: String = File.separator;
+  val resourceFolderPath: String = (System.getProperty("user.dir").toString + fileSeparator + "src" + fileSeparator +  "main" + fileSeparator +  "resources" + fileSeparator)
 
   def printElements(collisionables: List[Collisionable])(using conversion: Conversion[Double, Int]): List[CollisionableElement] =
 
@@ -23,7 +24,7 @@ object CollisionableVisualizer:
       case m: Missile with MissileDamageable =>
         var optImage:  Option[BufferedImage] = Option.empty
         try {
-          val img = ImageIO.read(new File(resourceFolderPath + "\\city_" + 2 + ".png"))
+          val img = ImageIO.read(new File(resourceFolderPath + "city_" + 2 + ".png"))
           optImage = Option(img)
         }
         CollisionableElement(optImage.getOrElse(null), hitboxBase, hitboxHeight, m.position, m.angle.getOrElse(Angle.Degree(0)))
