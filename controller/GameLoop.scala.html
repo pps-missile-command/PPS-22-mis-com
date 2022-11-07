@@ -53,31 +53,32 @@
 </span>29 <span style=''>
 </span>30 <span style=''>  /**
 </span>31 <span style=''>   * start the game loop.
-</span>32 <span style=''>   * @param ui the ui that will be used to show the game.
-</span>33 <span style=''>   * @return a task that will execute the game.
-</span>34 <span style=''>   */
-</span>35 <span style=''>  </span><span style='background: #F0ADAD'>def start</span><span style=''>(ui: UI): Task[Unit] =
-</span>36 <span style=''>
-</span>37 <span style=''>    given OverflowStrategy[Event] = </span><span style='background: #F0ADAD'>OverflowStrategy.Default</span><span style=''>
-</span>38 <span style=''>
-</span>39 <span style=''>    val world = </span><span style='background: #F0ADAD'>World.initialWorld</span><span style=''>
-</span>40 <span style=''>    val controls: Update = </span><span style='background: #F0ADAD'>Update.combine(
-</span>41 <span style=''></span><span style='background: #F0ADAD'>      UpdateTime(),
-</span>42 <span style=''></span><span style='background: #F0ADAD'>      UpdatePosition(),
-</span>43 <span style=''></span><span style='background: #F0ADAD'>      ActivateSpecialAbility(),
-</span>44 <span style=''></span><span style='background: #F0ADAD'>      CollisionsDetection(),
-</span>45 <span style=''></span><span style='background: #F0ADAD'>      LaunchNewMissile()
-</span>46 <span style=''></span><span style='background: #F0ADAD'>    )</span><span style=''>
-</span>47 <span style=''>
-</span>48 <span style=''>    val init = </span><span style='background: #F0ADAD'>Task((world, controls))</span><span style=''>
-</span>49 <span style=''>    val events =
-</span>50 <span style=''>      </span><span style='background: #F0ADAD'>Observable(time, ui.events.throttleLast(50 milliseconds)).merge</span><span style=''>
-</span>51 <span style=''>    </span><span style='background: #F0ADAD'>events
-</span>52 <span style=''></span><span style='background: #F0ADAD'>      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
-</span>53 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (world, _) =&gt; ui.render(world) }
-</span>54 <span style=''></span><span style='background: #F0ADAD'>      .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
-</span>55 <span style=''></span><span style='background: #F0ADAD'>      .append(ui.gameOver)
-</span>56 <span style=''></span><span style='background: #F0ADAD'>      .completedL</span><span style=''>
+</span>32 <span style=''>   *
+</span>33 <span style=''>   * @param ui the ui that will be used to show the game.
+</span>34 <span style=''>   * @return a task that will execute the game.
+</span>35 <span style=''>   */
+</span>36 <span style=''>  </span><span style='background: #F0ADAD'>def start</span><span style=''>(ui: UI): Task[Unit] =
+</span>37 <span style=''>
+</span>38 <span style=''>    given OverflowStrategy[Event] = </span><span style='background: #F0ADAD'>OverflowStrategy.Default</span><span style=''>
+</span>39 <span style=''>
+</span>40 <span style=''>    val world = </span><span style='background: #F0ADAD'>World.initialWorld</span><span style=''>
+</span>41 <span style=''>    val controls: Update = </span><span style='background: #F0ADAD'>Update.combine(
+</span>42 <span style=''></span><span style='background: #F0ADAD'>      UpdateTime(),
+</span>43 <span style=''></span><span style='background: #F0ADAD'>      UpdatePosition(),
+</span>44 <span style=''></span><span style='background: #F0ADAD'>      ActivateSpecialAbility(),
+</span>45 <span style=''></span><span style='background: #F0ADAD'>      CollisionsDetection(),
+</span>46 <span style=''></span><span style='background: #F0ADAD'>      LaunchNewMissile()
+</span>47 <span style=''></span><span style='background: #F0ADAD'>    )</span><span style=''>
+</span>48 <span style=''>
+</span>49 <span style=''>    val init = </span><span style='background: #F0ADAD'>Task((world, controls))</span><span style=''>
+</span>50 <span style=''>    val events =
+</span>51 <span style=''>      </span><span style='background: #F0ADAD'>Observable(time, ui.events.throttleLast(50 milliseconds)).merge</span><span style=''>
+</span>52 <span style=''>    </span><span style='background: #F0ADAD'>events
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
+</span>54 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (world, _) =&gt; ui.render(world) }
+</span>55 <span style=''></span><span style='background: #F0ADAD'>      .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
+</span>56 <span style=''></span><span style='background: #F0ADAD'>      .completedL
+</span>57 <span style=''></span><span style='background: #F0ADAD'>      .doOnFinish(_ =&gt; ui.gameOver)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -194,15 +195,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          35
         </td>
         <td>
           30
         </td>
         <td>
-          913
+          918
           -
-          922
+          927
         </td>
         <td>
           DefDef
@@ -218,15 +219,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          37
         </td>
         <td>
           4
         </td>
         <td>
-          982
+          987
           -
-          1006
+          1011
         </td>
         <td>
           Select
@@ -242,15 +243,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          39
         </td>
         <td>
           5
         </td>
         <td>
-          1024
+          1029
           -
-          1042
+          1047
         </td>
         <td>
           Select
@@ -266,15 +267,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          40
         </td>
         <td>
           11
         </td>
         <td>
-          1070
+          1075
           -
-          1221
+          1226
         </td>
         <td>
           Apply
@@ -296,15 +297,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          41
         </td>
         <td>
           6
         </td>
         <td>
-          1092
+          1097
           -
-          1104
+          1109
         </td>
         <td>
           Apply
@@ -320,15 +321,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          42
         </td>
         <td>
           7
         </td>
         <td>
-          1112
+          1117
           -
-          1128
+          1133
         </td>
         <td>
           Apply
@@ -344,15 +345,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
           8
         </td>
         <td>
-          1136
+          1141
           -
-          1160
+          1165
         </td>
         <td>
           Apply
@@ -368,15 +369,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          44
         </td>
         <td>
           9
         </td>
         <td>
-          1168
+          1173
           -
-          1189
+          1194
         </td>
         <td>
           Apply
@@ -392,15 +393,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          45
         </td>
         <td>
           10
         </td>
         <td>
-          1197
+          1202
           -
-          1215
+          1220
         </td>
         <td>
           Apply
@@ -416,15 +417,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          48
         </td>
         <td>
           12
         </td>
         <td>
-          1238
+          1243
           -
-          1261
+          1266
         </td>
         <td>
           Apply
@@ -440,15 +441,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          50
         </td>
         <td>
           17
         </td>
         <td>
-          1285
+          1290
           -
-          1348
+          1353
         </td>
         <td>
           Apply
@@ -464,15 +465,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          50
         </td>
         <td>
           14
         </td>
         <td>
-          1325
+          1330
           -
-          1340
+          1345
         </td>
         <td>
           Select
@@ -488,15 +489,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          50
         </td>
         <td>
           13
         </td>
         <td>
-          1302
+          1307
           -
-          1311
+          1316
         </td>
         <td>
           Select
@@ -512,15 +513,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          50
         </td>
         <td>
           16
         </td>
         <td>
-          1285
+          1290
           -
-          1342
+          1347
         </td>
         <td>
           Apply
@@ -536,15 +537,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          50
         </td>
         <td>
           15
         </td>
         <td>
-          1302
+          1307
           -
-          1341
+          1346
         </td>
         <td>
           Apply
@@ -560,15 +561,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          52
         </td>
         <td>
           20
         </td>
         <td>
-          1353
+          1358
           -
-          1443
+          1448
         </td>
         <td>
           Apply
@@ -585,15 +586,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          52
         </td>
         <td>
           19
         </td>
         <td>
-          1384
+          1389
           -
-          1415
+          1420
         </td>
         <td>
           Block
@@ -609,15 +610,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          52
         </td>
         <td>
           18
         </td>
         <td>
-          1419
+          1424
           -
-          1441
+          1446
         </td>
         <td>
           Apply
@@ -633,15 +634,15 @@
         </td>
       </tr><tr>
         <td>
-          52
+          53
         </td>
         <td>
           23
         </td>
         <td>
-          1353
+          1358
           -
-          1499
+          1504
         </td>
         <td>
           Apply
@@ -659,15 +660,15 @@
         </td>
       </tr><tr>
         <td>
-          52
+          53
         </td>
         <td>
           22
         </td>
         <td>
-          1462
+          1467
           -
-          1477
+          1482
         </td>
         <td>
           Block
@@ -683,15 +684,15 @@
         </td>
       </tr><tr>
         <td>
-          52
+          53
         </td>
         <td>
           21
         </td>
         <td>
-          1481
+          1486
           -
-          1497
+          1502
         </td>
         <td>
           Apply
@@ -707,15 +708,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          54
         </td>
         <td>
           26
         </td>
         <td>
-          1353
+          1358
           -
-          1563
+          1568
         </td>
         <td>
           Apply
@@ -734,15 +735,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          54
         </td>
         <td>
           25
         </td>
         <td>
-          1519
+          1524
           -
-          1534
+          1539
         </td>
         <td>
           Block
@@ -758,15 +759,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          54
         </td>
         <td>
           24
         </td>
         <td>
-          1538
+          1543
           -
-          1561
+          1566
         </td>
         <td>
           Select
@@ -782,67 +783,15 @@
         </td>
       </tr><tr>
         <td>
-          54
-        </td>
-        <td>
-          28
-        </td>
-        <td>
-          1353
-          -
-          1590
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          append
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          events
-      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
-      .doOnNext { case (world, _) =&gt; ui.render(world) }
-      .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
-      .append(ui.gameOver)
-        </td>
-      </tr><tr>
-        <td>
-          54
+          55
         </td>
         <td>
           27
         </td>
         <td>
-          1578
+          1358
           -
-          1589
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          gameOver
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ui.gameOver
-        </td>
-      </tr><tr>
-        <td>
-          55
-        </td>
-        <td>
-          29
-        </td>
-        <td>
-          1353
-          -
-          1608
+          1586
         </td>
         <td>
           Select
@@ -858,8 +807,60 @@
       .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
       .doOnNext { case (world, _) =&gt; ui.render(world) }
       .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
-      .append(ui.gameOver)
       .completedL
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          29
+        </td>
+        <td>
+          1358
+          -
+          1622
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          doOnFinish
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          events
+      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
+      .doOnNext { case (world, _) =&gt; ui.render(world) }
+      .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
+      .completedL
+      .doOnFinish(_ =&gt; ui.gameOver)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          28
+        </td>
+        <td>
+          1610
+          -
+          1621
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          gameOver
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ui.gameOver
         </td>
       </tr>
     </table>
