@@ -29,6 +29,7 @@ object GameLoop:
 
   /**
    * start the game loop.
+   *
    * @param ui the ui that will be used to show the game.
    * @return a task that will execute the game.
    */
@@ -52,5 +53,5 @@ object GameLoop:
       .scanEval(init) { case ((world, controls), event) => controls(event, world) }
       .doOnNext { case (world, _) => ui.render(world) }
       .takeWhile { case (world, _) => world.ground.stillAlive }
-      .append(ui.gameOver)
       .completedL
+      .doOnFinish(_ => ui.gameOver)
