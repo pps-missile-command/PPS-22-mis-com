@@ -48,7 +48,6 @@ class GUI(width: Int, height: Int) extends UI:
       .map((x, y) => Event.LaunchMissileTo(Point2D(x, y)) )
 
     override def gameOver: Task[Unit] = Task {
-        println("hello1")
         SwingUtilities.invokeAndWait { () =>
             if (frame.getContentPane.getComponentCount != 0)
                 frame.getContentPane.remove(0)
@@ -63,30 +62,10 @@ class GUI(width: Int, height: Int) extends UI:
                     Main.startGame()
                 }
             })
-            button.setText("RIGIOCA")
             panel.add(button)
 
             frame.getContentPane.add(panel)
-            frame.getContentPane.repaint()
             frame.revalidate()
             frame.repaint()
-            println("hello2")
         }
     }
-    
-//    def gameOverRender: Task[Unit] = Task {
-//        println("hello1")
-//        SwingUtilities.invokeAndWait { () =>
-//            if (frame.getContentPane.getComponentCount != 0)
-//                frame.getContentPane.remove(0)
-//            val panel = new JPanel()
-//            panel.setSize(width, height)
-//            panel.setLayout(new FlowLayout())
-//            val button = new JButton()
-//            button.setText("RIGIOCA")
-//            panel.add(button)
-//            frame.getContentPane.add(panel)
-//            frame.getContentPane.repaint()
-//            println("hello2")
-//        }
-//    }
