@@ -7,7 +7,8 @@ import model.ground.MissileBattery
 import model.missile.Missile
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
-import utilities.Constants
+import utilities._
+
 
 import java.time
 
@@ -22,8 +23,8 @@ class MissileBatteryTest extends AnyFunSpec{
             val batteryTurret = MissileBattery(point)
             assert(batteryTurret.bottomLeft_Position.x === xTest)
             assert(batteryTurret.bottomLeft_Position.y === yTest)
-            assert(batteryTurret.initialLife === Constants.missileBatteryInitialLife)
-            assert(batteryTurret.currentLife === Constants.missileBatteryInitialLife)
+            assert(batteryTurret.initialLife === missileBatteryInitialLife)
+            assert(batteryTurret.currentLife === missileBatteryInitialLife)
         }
 
         it("should fail if you shoot twice in a row without waiting") {
