@@ -30,9 +30,9 @@ class MissileBatteryTest extends AnyFunSpec{
         it("should fail if you shoot twice in a row without waiting") {
             var batteryTurret = ground.MissileBattery(point)
             assert(batteryTurret.isReadyForShoot == false) //false. When turret got created, the reload will start
-            batteryTurret = batteryTurret.timeElapsed(1000)
+            batteryTurret = batteryTurret.timeElapsed(1)
             assert(batteryTurret.isReadyForShoot == false) //false. Turret is still reloading
-            batteryTurret = batteryTurret.timeElapsed(2000)
+            batteryTurret = batteryTurret.timeElapsed(2)
             assert(batteryTurret.isReadyForShoot) //true. Turret finished reloading
         }
         it("should be a friendly unit") {
@@ -46,7 +46,7 @@ class MissileBatteryTest extends AnyFunSpec{
         }
         it("should pass if you shoot after waiting for the reload time") {
             var batteryTurret = ground.MissileBattery(point)
-            batteryTurret = batteryTurret.timeElapsed(3000)
+            batteryTurret = batteryTurret.timeElapsed(3)
             val values = batteryTurret.shootRocket(Point2D(10.0, 10.0))
             assert(values.nonEmpty)
             
