@@ -7,6 +7,8 @@ import model.ground.{City, Ground, MissileBattery}
 import model.missile.{Missile, hitboxBase, hitboxHeight}
 import utilities.Constants
 
+import javax.imageio.ImageIO
+
 object Visualizer:
     val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
 
@@ -17,10 +19,10 @@ object Visualizer:
      */
     def prepareCityImage(structure: City): Tuple4[Image, Point2D, Int, Int] =
         (
-        Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\city_" + structure.currentLife + ".png"),
-        structure.position,
-        Constants.cityBaseSize,
-        Constants.cityHeightSize
+            ImageIO.read(getClass.getResource("/city_" + structure.currentLife + ".png")),
+            structure.position,
+            Constants.cityBaseSize,
+            Constants.cityHeightSize
         )
 
     /***
@@ -30,10 +32,10 @@ object Visualizer:
      */
     def prepareBatteryMissileImage(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
         (
-        Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png"),
-        structure.bottomLeft_Position,
-        Constants.missileBatteryBaseSize,
-        Constants.missileBatteryHeightSize
+            ImageIO.read(getClass.getResource("/Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png")),
+            structure.bottomLeft_Position,
+            Constants.missileBatteryBaseSize,
+            Constants.missileBatteryHeightSize
         )
 
     /***
