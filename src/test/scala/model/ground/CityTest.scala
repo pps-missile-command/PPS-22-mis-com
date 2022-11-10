@@ -3,7 +3,8 @@ package model.ground
 import model.collisions.Affiliation
 import model.elements2d.Point2D
 import org.scalatest.funspec.AnyFunSpec
-import utilities.Constants
+import utilities._
+
 
 class CityTest extends AnyFunSpec {
     private val xTest = 3.0
@@ -15,8 +16,8 @@ class CityTest extends AnyFunSpec {
         it("should create a new city in given position and with correct life") {
             assert(city.position.x === xTest)
             assert(city.position.y === yTest)
-            assert(city.initialLife === Constants.cityInitialLife)
-            assert(city.currentLife === Constants.cityInitialLife)
+            assert(city.initialLife === cityInitialLife)
+            assert(city.currentLife === cityInitialLife)
         }
         it("should be friendly and have 3HP") {
             assert(city.affiliation === Affiliation.Friendly)

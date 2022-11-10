@@ -5,28 +5,27 @@ import model.behavior.Timeable
 import model.collisions.hitbox.HitBoxRectangular
 import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint}
 import model.elements2d.*
-import model.missile.{Missile, hitboxHeight}
-import utilities.Constants
+import model.missile.{Missile, hitboxHeight, velocity}
+import utilities._
 
 import java.time
 import java.time.LocalDateTime
 
-val missileTurretReloadTimems = 3000
 
 case class MissileBattery(val bottomLeft_Position: Point2D,
-                          val life: LifePoint = Constants.missileBatteryInitialLife,
+                          val life: LifePoint = missileBatteryInitialLife,
                           dt: DeltaTime = 0) extends Damageable, Timeable:
 
 
-    private val collider: HitBox = HitBoxRectangular(Point2D(bottomLeft_Position.x + Constants.missileBatteryBaseSize/2, bottomLeft_Position.y + Constants.missileBatteryHeightSize/2),
-                                                    Constants.missileBatteryBaseSize,
-                                                    Constants.missileBatteryHeightSize,
+    private val collider: HitBox = HitBoxRectangular(Point2D(bottomLeft_Position.x + missileBatteryBaseSize/2, bottomLeft_Position.y + missileBatteryHeightSize/2),
+                                                    missileBatteryBaseSize,
+                                                    missileBatteryHeightSize,
                                                     Angle.Degree(0)) //collider of the object
 
     /**
      * @return true: If the turret is reloading and still not able to shoot
      */
-    def isReadyForShoot: Boolean = dt >= missileTurretReloadTimems
+    def isReadyForShoot: Boolean = dt >= reloadingTime
 
     /**
      * @return a tuple of MissileBattery and Missile if turret is ready for shoot, None if turret is reloading
@@ -34,10 +33,12 @@ case class MissileBattery(val bottomLeft_Position: Point2D,
     def shootRocket(endingPoint: Point2D): Option[Tuple2[MissileBattery, Missile]] =
         if this.isReadyForShoot then
             Some((this.copy(dt = 0),
-                Missile(Constants.missileHealth,
-                    Constants.missileFriendlyDamage,
-                    Constants.missileFriendlySpeed,
-                    Point2D(bottomLeft_Position.x,bottomLeft_Position.y+Constants.missileBatteryHeightSize), endingPoint))) //If not reloading, allow shoot
+                Missile(missileHealth,
+                    missileFriendlyDamage,
+                    velocity,
+                    Point2D(bottomLeft_Position.x + missileBatteryBaseSize,
+                            bottomLeft_Position.y + 0.8 * missileBatteryHeightSize),
+                    endingPoint))) //If not reloading, allow shoot
         else
             None
 
@@ -59,7 +60,7 @@ case class MissileBattery(val bottomLeft_Position: Point2D,
     /**
      *  @return the initial health of the object.
      */
-    override def initialLife: LifePoint = Constants.missileBatteryInitialLife
+    override def initialLife: LifePoint = missileBatteryInitialLife
 
     /**
      *  @return the current health of the object.

@@ -1,7 +1,6 @@
 package view.gui
 
 import model.World
-import utilities.Constants
 import view.{CollisionableVisualizer, Visualizer}
 
 import java.awt.event.MouseMotionListener

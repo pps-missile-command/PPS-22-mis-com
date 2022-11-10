@@ -5,7 +5,9 @@ import model.collisions.{Collisionable, Damageable}
 import model.elements2d.Point2D
 import model.ground.{City, Ground, MissileBattery}
 import model.missile.{Missile, hitboxBase, hitboxHeight}
-import utilities.Constants
+import utilities._
+
+
 
 object Visualizer:
     val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
@@ -19,8 +21,8 @@ object Visualizer:
         (
         Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\city_" + structure.currentLife + ".png"),
         structure.position,
-        Constants.cityBaseSize,
-        Constants.cityHeightSize
+        cityBaseSize,
+        cityHeightSize
         )
 
     /***
@@ -32,8 +34,8 @@ object Visualizer:
         (
         Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png"),
         structure.bottomLeft_Position,
-        Constants.missileBatteryBaseSize,
-        Constants.missileBatteryHeightSize
+        missileBatteryBaseSize,
+        missileBatteryHeightSize
         )
 
     /***
