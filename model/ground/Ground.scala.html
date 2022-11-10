@@ -29,111 +29,112 @@
 </span>5 <span style=''>import model.elements2d.Point2D
 </span>6 <span style=''>import model.ground.City
 </span>7 <span style=''>import model.missile.Missile
-</span>8 <span style=''>import utilities.Constants
-</span>9 <span style=''>import view.ViewConstants
+</span>8 <span style=''>import view.ViewConstants
+</span>9 <span style=''>import utilities._
 </span>10 <span style=''>
 </span>11 <span style=''>
-</span>12 <span style=''>object Ground:
-</span>13 <span style=''>    </span><span style='background: #AEF1AE'>def apply</span><span style=''>(cities: List[City], turrets: List[MissileBattery]): Ground = </span><span style='background: #AEF1AE'>new Ground(cities, turrets)</span><span style=''>
-</span>14 <span style=''>    </span><span style='background: #AEF1AE'>def apply</span><span style=''>(): Ground =
-</span>15 <span style=''>        val cities =
-</span>16 <span style=''>            </span><span style='background: #AEF1AE'>for y &lt;- List.range(0, 2) //generate all cities in 2 waves.
-</span>17 <span style=''></span><span style='background: #AEF1AE'>                x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-</span>18 <span style=''></span><span style='background: #AEF1AE'>                    yield City(Point2D(Constants.missileBatteryBaseSize + 2* Constants.turretSpacer +
-</span>19 <span style=''></span><span style='background: #AEF1AE'>                                (Constants.cityBaseSize + Constants.citySpacer) * x +
-</span>20 <span style=''></span><span style='background: #AEF1AE'>                                (3 * Constants.cityBaseSize + 2 * Constants.citySpacer + 2 * Constants.turretSpacer + Constants.missileBatteryBaseSize) * y,
-</span>21 <span style=''></span><span style='background: #AEF1AE'>                        ViewConstants.GUI_height - Constants.cityHeightSize))</span><span style=''>
-</span>22 <span style=''>        val turrets =
-</span>23 <span style=''>            </span><span style='background: #AEF1AE'>for x &lt;- List.range(0, 3)
-</span>24 <span style=''></span><span style='background: #AEF1AE'>                yield MissileBattery(Point2D(Constants.turretSpacer + (Constants.missileBatteryBaseSize + 2 * Constants.turretSpacer + 3* Constants.cityBaseSize + 2 * Constants.citySpacer) * x
-</span>25 <span style=''></span><span style='background: #AEF1AE'>                    ,ViewConstants.GUI_height - Constants.missileBatteryHeightSize))</span><span style=''>
-</span>26 <span style=''>        </span><span style='background: #AEF1AE'>Ground(cities, turrets)</span><span style=''>
-</span>27 <span style=''>
-</span>28 <span style=''>case class Ground(cities: List[City], turrets: List[MissileBattery]):
-</span>29 <span style=''>
-</span>30 <span style=''>    /***
-</span>31 <span style=''>     * @return Return all the cities that are still alive
-</span>32 <span style=''>     */
-</span>33 <span style=''>    </span><span style='background: #AEF1AE'>def citiesAlive</span><span style=''> =
-</span>34 <span style=''>        </span><span style='background: #AEF1AE'>for city &lt;- cities if city.currentLife &gt; 0
-</span>35 <span style=''></span><span style='background: #AEF1AE'>            yield city</span><span style=''>
-</span>36 <span style=''>
-</span>37 <span style=''>    /***
-</span>38 <span style=''>     * @return Return the number of cities that are still alive
-</span>39 <span style=''>     */
-</span>40 <span style=''>    </span><span style='background: #AEF1AE'>def numberOfCitiesAlive</span><span style=''>: Int = </span><span style='background: #AEF1AE'>citiesAlive.length</span><span style=''>
-</span>41 <span style=''>
-</span>42 <span style=''>    /***
-</span>43 <span style=''>     * @return Return all the missile batteries that are still alive
-</span>44 <span style=''>     */
-</span>45 <span style=''>    </span><span style='background: #AEF1AE'>def missileBatteryAlive</span><span style=''> =
-</span>46 <span style=''>        </span><span style='background: #AEF1AE'>for battery &lt;- turrets if battery.currentLife &gt; 0
-</span>47 <span style=''></span><span style='background: #AEF1AE'>            yield battery</span><span style=''>
-</span>48 <span style=''>
-</span>49 <span style=''>    /***
-</span>50 <span style=''>     * @return Return the number of missile batteries that are still alive
-</span>51 <span style=''>     */
-</span>52 <span style=''>    </span><span style='background: #AEF1AE'>def numberOfMissileBatteryAlive</span><span style=''>: Int = </span><span style='background: #AEF1AE'>missileBatteryAlive.length</span><span style=''>
-</span>53 <span style=''>
-</span>54 <span style=''>    /***
-</span>55 <span style=''>     * Method used for check if the player is still alive
-</span>56 <span style=''>     * @return True if there are at least 1 city alive
-</span>57 <span style=''>     */
-</span>58 <span style=''>    </span><span style='background: #AEF1AE'>def stillAlive</span><span style=''>: Boolean = </span><span style='background: #AEF1AE'>numberOfCitiesAlive</span><span style=''> &gt; 0
-</span>59 <span style=''>
-</span>60 <span style=''>    /***
-</span>61 <span style=''>     * Method used for shooting the nearest turret to a determinate point.
-</span>62 <span style=''>     * @param endPoint Point where the missile should explode
-</span>63 <span style=''>     * @return Tuple containing the new updated ground and the missile shooted. Missile is null if all turrets were reloading
-</span>64 <span style=''>     */
-</span>65 <span style=''>    </span><span style='background: #AEF1AE'>def shootMissile</span><span style=''>(endPoint: Point2D): Tuple2[Ground, Option[Missile]] =
-</span>66 <span style=''>        </span><span style='background: #AEF1AE'>def calculatePositions</span><span style=''>: List[Tuple2[Double, MissileBattery]] =
-</span>67 <span style=''>            </span><span style='background: #AEF1AE'>for battery &lt;- missileBatteryAlive if battery.isReadyForShoot
-</span>68 <span style=''></span><span style='background: #AEF1AE'>                yield (battery.bottomLeft_Position &lt;-&gt; endPoint, battery)</span><span style=''>
-</span>69 <span style=''>
-</span>70 <span style=''>        val batteriesReadyForShoot = </span><span style='background: #AEF1AE'>calculatePositions</span><span style=''>
-</span>71 <span style=''>        if(</span><span style='background: #AEF1AE'>batteriesReadyForShoot.length</span><span style=''> &gt; 0) then //only if there at least 1 turret ready for shoot, it will procede with shooting
-</span>72 <span style=''>            </span><span style='background: #AEF1AE'>val missilesBatteryInformations = batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint).get
-</span>73 <span style=''></span><span style='background: #AEF1AE'>            val newTurrets = turrets.map( t =&gt; if (t == batteriesReadyForShoot.minBy(_._1)._2) missilesBatteryInformations._1 else t)
-</span>74 <span style=''></span><span style='background: #AEF1AE'>            (Ground(cities, newTurrets) , Some(missilesBatteryInformations._2))</span><span style=''>
-</span>75 <span style=''>        else
-</span>76 <span style=''>            </span><span style='background: #AEF1AE'>(Ground(cities, turrets), None)</span><span style=''>
-</span>77 <span style=''>
-</span>78 <span style=''>    /***
-</span>79 <span style=''>     * Method used for deal damage to a determinate structure.
-</span>80 <span style=''>     * @param structure Object of the structure that have to take damage.
-</span>81 <span style=''>     * @param damageDealed Damage that the structure have to take.
-</span>82 <span style=''>     * @return A new ground containing all the informations updated.
-</span>83 <span style=''>     */
-</span>84 <span style=''>    </span><span style='background: #AEF1AE'>def dealDamage</span><span style=''>(structure: Damageable, damageDealed: LifePoint, ground: Ground = this): Ground = structure match
-</span>85 <span style=''>        </span><span style='background: #AEF1AE'>case c: City</span><span style=''> =&gt; val newCities = </span><span style='background: #AEF1AE'>ground.cities.map(o =&gt; if (o == c) o.takeDamage(damageDealed) else o)</span><span style=''>
-</span>86 <span style=''>            </span><span style='background: #AEF1AE'>Ground(newCities, ground.turrets)</span><span style=''>
-</span>87 <span style=''>        </span><span style='background: #AEF1AE'>case m: MissileBattery</span><span style=''> =&gt; val newTurrets = </span><span style='background: #AEF1AE'>ground.turrets.map(o =&gt; if (o == m) o.takeDamage(damageDealed) else o)</span><span style=''>
-</span>88 <span style=''>            </span><span style='background: #AEF1AE'>Ground(ground.cities, newTurrets)</span><span style=''>
-</span>89 <span style=''>
-</span>90 <span style=''>    /***
-</span>91 <span style=''>     * Method used for deal damage to a determinate set of structures
-</span>92 <span style=''>     * @param structures List of structures that have to take damage.
-</span>93 <span style=''>     * @param damageDealed Damage that the structures have to take.
-</span>94 <span style=''>     * @return A new ground containing all the informations updated.
-</span>95 <span style=''>     */
-</span>96 <span style=''>    </span><span style='background: #AEF1AE'>def dealDamage</span><span style=''>(structures: List[Damageable], damageDealed: LifePoint): Ground =
-</span>97 <span style=''>        var newGround = this
-</span>98 <span style=''>        //structures.foreach( structure =&gt; newGround = dealDamage(structure, damageDealed, newGround))
-</span>99 <span style=''>        </span><span style='background: #AEF1AE'>structures.map( s =&gt; newGround = dealDamage(s, damageDealed, newGround) )</span><span style=''>
-</span>100 <span style=''>        newGround
-</span>101 <span style=''>
-</span>102 <span style=''>    /***
-</span>103 <span style=''>     * Method used for deal different damages to a determinate set of structures
-</span>104 <span style=''>     * @param structures List of structures that have to take damage.
-</span>105 <span style=''>     * @param damages List of damages that the structures have to take.
-</span>106 <span style=''>     * @return A new ground containing all the informations updated.
-</span>107 <span style=''>     */
-</span>108 <span style=''>    </span><span style='background: #AEF1AE'>def dealDamage</span><span style=''>(structures: List[Damageable], damages: List[LifePoint]): Ground =
-</span>109 <span style=''>        var newGround = this
-</span>110 <span style=''>        </span><span style='background: #AEF1AE'>for ((structure, damage) &lt;- (structures zip damages))
-</span>111 <span style=''></span><span style='background: #AEF1AE'>            newGround = dealDamage(structure, damage, newGround)</span><span style=''>
-</span>112 <span style=''>        newGround
+</span>12 <span style=''>
+</span>13 <span style=''>object Ground:
+</span>14 <span style=''>    </span><span style='background: #AEF1AE'>def apply</span><span style=''>(cities: List[City], turrets: List[MissileBattery]): Ground = </span><span style='background: #AEF1AE'>new Ground(cities, turrets)</span><span style=''>
+</span>15 <span style=''>    </span><span style='background: #AEF1AE'>def apply</span><span style=''>(): Ground =
+</span>16 <span style=''>        val cities =
+</span>17 <span style=''>            </span><span style='background: #AEF1AE'>for y &lt;- List.range(0, 2) //generate all cities in 2 waves.
+</span>18 <span style=''></span><span style='background: #AEF1AE'>                x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
+</span>19 <span style=''></span><span style='background: #AEF1AE'>                    yield City(Point2D(missileBatteryBaseSize + 2* turretSpacer +
+</span>20 <span style=''></span><span style='background: #AEF1AE'>                                (cityBaseSize + citySpacer) * x +
+</span>21 <span style=''></span><span style='background: #AEF1AE'>                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
+</span>22 <span style=''></span><span style='background: #AEF1AE'>                        ViewConstants.GUI_height - cityHeightSize))</span><span style=''>
+</span>23 <span style=''>        val turrets =
+</span>24 <span style=''>            </span><span style='background: #AEF1AE'>for x &lt;- List.range(0, 3)
+</span>25 <span style=''></span><span style='background: #AEF1AE'>                yield MissileBattery(Point2D(turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
+</span>26 <span style=''></span><span style='background: #AEF1AE'>                    ,ViewConstants.GUI_height - missileBatteryHeightSize))</span><span style=''>
+</span>27 <span style=''>        </span><span style='background: #AEF1AE'>Ground(cities, turrets)</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>case class Ground(cities: List[City], turrets: List[MissileBattery]):
+</span>30 <span style=''>
+</span>31 <span style=''>    /***
+</span>32 <span style=''>     * @return Return all the cities that are still alive
+</span>33 <span style=''>     */
+</span>34 <span style=''>    </span><span style='background: #AEF1AE'>def citiesAlive</span><span style=''> =
+</span>35 <span style=''>        </span><span style='background: #AEF1AE'>for city &lt;- cities if city.currentLife &gt; 0
+</span>36 <span style=''></span><span style='background: #AEF1AE'>            yield city</span><span style=''>
+</span>37 <span style=''>
+</span>38 <span style=''>    /***
+</span>39 <span style=''>     * @return Return the number of cities that are still alive
+</span>40 <span style=''>     */
+</span>41 <span style=''>    </span><span style='background: #AEF1AE'>def numberOfCitiesAlive</span><span style=''>: Int = </span><span style='background: #AEF1AE'>citiesAlive.length</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>    /***
+</span>44 <span style=''>     * @return Return all the missile batteries that are still alive
+</span>45 <span style=''>     */
+</span>46 <span style=''>    </span><span style='background: #AEF1AE'>def missileBatteryAlive</span><span style=''> =
+</span>47 <span style=''>        </span><span style='background: #AEF1AE'>for battery &lt;- turrets if battery.currentLife &gt; 0
+</span>48 <span style=''></span><span style='background: #AEF1AE'>            yield battery</span><span style=''>
+</span>49 <span style=''>
+</span>50 <span style=''>    /***
+</span>51 <span style=''>     * @return Return the number of missile batteries that are still alive
+</span>52 <span style=''>     */
+</span>53 <span style=''>    </span><span style='background: #AEF1AE'>def numberOfMissileBatteryAlive</span><span style=''>: Int = </span><span style='background: #AEF1AE'>missileBatteryAlive.length</span><span style=''>
+</span>54 <span style=''>
+</span>55 <span style=''>    /***
+</span>56 <span style=''>     * Method used for check if the player is still alive
+</span>57 <span style=''>     * @return True if there are at least 1 city alive
+</span>58 <span style=''>     */
+</span>59 <span style=''>    </span><span style='background: #AEF1AE'>def stillAlive</span><span style=''>: Boolean = </span><span style='background: #AEF1AE'>numberOfCitiesAlive</span><span style=''> &gt; 0
+</span>60 <span style=''>
+</span>61 <span style=''>    /***
+</span>62 <span style=''>     * Method used for shooting the nearest turret to a determinate point.
+</span>63 <span style=''>     * @param endPoint Point where the missile should explode
+</span>64 <span style=''>     * @return Tuple containing the new updated ground and the missile shooted. Missile is null if all turrets were reloading
+</span>65 <span style=''>     */
+</span>66 <span style=''>    </span><span style='background: #AEF1AE'>def shootMissile</span><span style=''>(endPoint: Point2D): Tuple2[Ground, Option[Missile]] =
+</span>67 <span style=''>        </span><span style='background: #AEF1AE'>def calculatePositions</span><span style=''>: List[Tuple2[Double, MissileBattery]] =
+</span>68 <span style=''>            </span><span style='background: #AEF1AE'>for battery &lt;- missileBatteryAlive if battery.isReadyForShoot
+</span>69 <span style=''></span><span style='background: #AEF1AE'>                yield (battery.bottomLeft_Position &lt;-&gt; endPoint, battery)</span><span style=''>
+</span>70 <span style=''>
+</span>71 <span style=''>        val batteriesReadyForShoot = </span><span style='background: #AEF1AE'>calculatePositions</span><span style=''>
+</span>72 <span style=''>        if(</span><span style='background: #AEF1AE'>batteriesReadyForShoot.length</span><span style=''> &gt; 0) then //only if there at least 1 turret ready for shoot, it will procede with shooting
+</span>73 <span style=''>            </span><span style='background: #AEF1AE'>val missilesBatteryInformations = batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint).get
+</span>74 <span style=''></span><span style='background: #AEF1AE'>            val newTurrets = turrets.map( t =&gt; if (t == batteriesReadyForShoot.minBy(_._1)._2) missilesBatteryInformations._1 else t)
+</span>75 <span style=''></span><span style='background: #AEF1AE'>            (Ground(cities, newTurrets) , Some(missilesBatteryInformations._2))</span><span style=''>
+</span>76 <span style=''>        else
+</span>77 <span style=''>            </span><span style='background: #AEF1AE'>(Ground(cities, turrets), None)</span><span style=''>
+</span>78 <span style=''>
+</span>79 <span style=''>    /***
+</span>80 <span style=''>     * Method used for deal damage to a determinate structure.
+</span>81 <span style=''>     * @param structure Object of the structure that have to take damage.
+</span>82 <span style=''>     * @param damageDealed Damage that the structure have to take.
+</span>83 <span style=''>     * @return A new ground containing all the informations updated.
+</span>84 <span style=''>     */
+</span>85 <span style=''>    </span><span style='background: #AEF1AE'>def dealDamage</span><span style=''>(structure: Damageable, damageDealed: LifePoint, ground: Ground = this): Ground = structure match
+</span>86 <span style=''>        </span><span style='background: #AEF1AE'>case c: City</span><span style=''> =&gt; val newCities = </span><span style='background: #AEF1AE'>ground.cities.map(o =&gt; if (o == c) o.takeDamage(damageDealed) else o)</span><span style=''>
+</span>87 <span style=''>            </span><span style='background: #AEF1AE'>Ground(newCities, ground.turrets)</span><span style=''>
+</span>88 <span style=''>        </span><span style='background: #AEF1AE'>case m: MissileBattery</span><span style=''> =&gt; val newTurrets = </span><span style='background: #AEF1AE'>ground.turrets.map(o =&gt; if (o == m) o.takeDamage(damageDealed) else o)</span><span style=''>
+</span>89 <span style=''>            </span><span style='background: #AEF1AE'>Ground(ground.cities, newTurrets)</span><span style=''>
+</span>90 <span style=''>
+</span>91 <span style=''>    /***
+</span>92 <span style=''>     * Method used for deal damage to a determinate set of structures
+</span>93 <span style=''>     * @param structures List of structures that have to take damage.
+</span>94 <span style=''>     * @param damageDealed Damage that the structures have to take.
+</span>95 <span style=''>     * @return A new ground containing all the informations updated.
+</span>96 <span style=''>     */
+</span>97 <span style=''>    </span><span style='background: #AEF1AE'>def dealDamage</span><span style=''>(structures: List[Damageable], damageDealed: LifePoint): Ground =
+</span>98 <span style=''>        var newGround = this
+</span>99 <span style=''>        //structures.foreach( structure =&gt; newGround = dealDamage(structure, damageDealed, newGround))
+</span>100 <span style=''>        </span><span style='background: #AEF1AE'>structures.map( s =&gt; newGround = dealDamage(s, damageDealed, newGround) )</span><span style=''>
+</span>101 <span style=''>        newGround
+</span>102 <span style=''>
+</span>103 <span style=''>    /***
+</span>104 <span style=''>     * Method used for deal different damages to a determinate set of structures
+</span>105 <span style=''>     * @param structures List of structures that have to take damage.
+</span>106 <span style=''>     * @param damages List of damages that the structures have to take.
+</span>107 <span style=''>     * @return A new ground containing all the informations updated.
+</span>108 <span style=''>     */
+</span>109 <span style=''>    </span><span style='background: #AEF1AE'>def dealDamage</span><span style=''>(structures: List[Damageable], damages: List[LifePoint]): Ground =
+</span>110 <span style=''>        var newGround = this
+</span>111 <span style=''>        </span><span style='background: #AEF1AE'>for ((structure, damage) &lt;- (structures zip damages))
+</span>112 <span style=''></span><span style='background: #AEF1AE'>            newGround = dealDamage(structure, damage, newGround)</span><span style=''>
+</span>113 <span style=''>        newGround
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -148,15 +149,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          12
+          13
         </td>
         <td>
           564
         </td>
         <td>
-          324
+          317
           -
-          351
+          344
         </td>
         <td>
           Apply
@@ -172,15 +173,15 @@
         </td>
       </tr><tr>
         <td>
-          12
+          13
         </td>
         <td>
           565
         </td>
         <td>
-          253
+          246
           -
-          262
+          255
         </td>
         <td>
           DefDef
@@ -196,15 +197,15 @@
         </td>
       </tr><tr>
         <td>
-          13
+          14
         </td>
         <td>
           582
         </td>
         <td>
-          356
+          349
           -
-          365
+          358
         </td>
         <td>
           DefDef
@@ -220,15 +221,15 @@
         </td>
       </tr><tr>
         <td>
-          15
+          16
         </td>
         <td>
           573
         </td>
         <td>
-          411
+          404
           -
-          1010
+          913
         </td>
         <td>
           Apply
@@ -242,22 +243,22 @@
         <td style="background: #AEF1AE">
           for y &lt;- List.range(0, 2) //generate all cities in 2 waves.
                 x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-                    yield City(Point2D(Constants.missileBatteryBaseSize + 2* Constants.turretSpacer +
-                                (Constants.cityBaseSize + Constants.citySpacer) * x +
-                                (3 * Constants.cityBaseSize + 2 * Constants.citySpacer + 2 * Constants.turretSpacer + Constants.missileBatteryBaseSize) * y,
-                        ViewConstants.GUI_height - Constants.cityHeightSize))
+                    yield City(Point2D(missileBatteryBaseSize + 2* turretSpacer +
+                                (cityBaseSize + citySpacer) * x +
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
+                        ViewConstants.GUI_height - cityHeightSize))
         </td>
       </tr><tr>
         <td>
-          15
+          16
         </td>
         <td>
           566
         </td>
         <td>
-          420
+          413
           -
-          436
+          429
         </td>
         <td>
           Apply
@@ -273,15 +274,15 @@
         </td>
       </tr><tr>
         <td>
-          16
+          17
         </td>
         <td>
           567
         </td>
         <td>
-          492
+          485
           -
-          508
+          501
         </td>
         <td>
           Apply
@@ -297,15 +298,15 @@
         </td>
       </tr><tr>
         <td>
-          16
+          17
         </td>
         <td>
           572
         </td>
         <td>
-          487
+          480
           -
-          1010
+          913
         </td>
         <td>
           Apply
@@ -318,22 +319,22 @@
         </td>
         <td style="background: #AEF1AE">
           x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-                    yield City(Point2D(Constants.missileBatteryBaseSize + 2* Constants.turretSpacer +
-                                (Constants.cityBaseSize + Constants.citySpacer) * x +
-                                (3 * Constants.cityBaseSize + 2 * Constants.citySpacer + 2 * Constants.turretSpacer + Constants.missileBatteryBaseSize) * y,
-                        ViewConstants.GUI_height - Constants.cityHeightSize))
+                    yield City(Point2D(missileBatteryBaseSize + 2* turretSpacer +
+                                (cityBaseSize + citySpacer) * x +
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
+                        ViewConstants.GUI_height - cityHeightSize))
         </td>
       </tr><tr>
         <td>
-          17
+          18
         </td>
         <td>
           568
         </td>
         <td>
-          627
+          620
           -
-          931
+          844
         </td>
         <td>
           Apply
@@ -345,21 +346,21 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Constants.missileBatteryBaseSize + 2* Constants.turretSpacer +
-                                (Constants.cityBaseSize + Constants.citySpacer) * x +
-                                (3 * Constants.cityBaseSize + 2 * Constants.citySpacer + 2 * Constants.turretSpacer + Constants.missileBatteryBaseSize) * y
+          missileBatteryBaseSize + 2* turretSpacer +
+                                (cityBaseSize + citySpacer) * x +
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y
         </td>
       </tr><tr>
         <td>
-          17
+          18
         </td>
         <td>
           570
         </td>
         <td>
-          619
+          612
           -
-          1009
+          912
         </td>
         <td>
           Apply
@@ -371,22 +372,22 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Point2D(Constants.missileBatteryBaseSize + 2* Constants.turretSpacer +
-                                (Constants.cityBaseSize + Constants.citySpacer) * x +
-                                (3 * Constants.cityBaseSize + 2 * Constants.citySpacer + 2 * Constants.turretSpacer + Constants.missileBatteryBaseSize) * y,
-                        ViewConstants.GUI_height - Constants.cityHeightSize)
+          Point2D(missileBatteryBaseSize + 2* turretSpacer +
+                                (cityBaseSize + citySpacer) * x +
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
+                        ViewConstants.GUI_height - cityHeightSize)
         </td>
       </tr><tr>
         <td>
-          17
+          18
         </td>
         <td>
           571
         </td>
         <td>
-          614
+          607
           -
-          618
+          611
         </td>
         <td>
           Select
@@ -402,15 +403,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
           569
         </td>
         <td>
-          957
+          870
           -
-          1008
+          911
         </td>
         <td>
           Apply
@@ -422,19 +423,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          ViewConstants.GUI_height - Constants.cityHeightSize
+          ViewConstants.GUI_height - cityHeightSize
         </td>
       </tr><tr>
         <td>
-          22
+          23
         </td>
         <td>
           580
         </td>
         <td>
-          1045
+          948
           -
-          1348
+          1192
         </td>
         <td>
           Apply
@@ -447,20 +448,20 @@
         </td>
         <td style="background: #AEF1AE">
           for x &lt;- List.range(0, 3)
-                yield MissileBattery(Point2D(Constants.turretSpacer + (Constants.missileBatteryBaseSize + 2 * Constants.turretSpacer + 3* Constants.cityBaseSize + 2 * Constants.citySpacer) * x
-                    ,ViewConstants.GUI_height - Constants.missileBatteryHeightSize))
+                yield MissileBattery(Point2D(turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
+                    ,ViewConstants.GUI_height - missileBatteryHeightSize))
         </td>
       </tr><tr>
         <td>
-          22
+          23
         </td>
         <td>
           574
         </td>
         <td>
-          1054
+          957
           -
-          1070
+          973
         </td>
         <td>
           Apply
@@ -476,15 +477,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
           577
         </td>
         <td>
-          1108
+          1011
           -
-          1347
+          1191
         </td>
         <td>
           Apply
@@ -496,20 +497,20 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Point2D(Constants.turretSpacer + (Constants.missileBatteryBaseSize + 2 * Constants.turretSpacer + 3* Constants.cityBaseSize + 2 * Constants.citySpacer) * x
-                    ,ViewConstants.GUI_height - Constants.missileBatteryHeightSize)
+          Point2D(turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
+                    ,ViewConstants.GUI_height - missileBatteryHeightSize)
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
           579
         </td>
         <td>
-          1093
+          996
           -
-          1107
+          1010
         </td>
         <td>
           Select
@@ -525,15 +526,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
           575
         </td>
         <td>
-          1116
+          1019
           -
-          1263
+          1117
         </td>
         <td>
           Apply
@@ -545,19 +546,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Constants.turretSpacer + (Constants.missileBatteryBaseSize + 2 * Constants.turretSpacer + 3* Constants.cityBaseSize + 2 * Constants.citySpacer) * x
+          turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
           578
         </td>
         <td>
-          1093
+          996
           -
-          1107
+          1010
         </td>
         <td>
           Select
@@ -573,15 +574,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          25
         </td>
         <td>
           576
         </td>
         <td>
-          1285
+          1139
           -
-          1346
+          1190
         </td>
         <td>
           Apply
@@ -593,19 +594,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          ViewConstants.GUI_height - Constants.missileBatteryHeightSize
+          ViewConstants.GUI_height - missileBatteryHeightSize
         </td>
       </tr><tr>
         <td>
-          25
+          26
         </td>
         <td>
           581
         </td>
         <td>
-          1357
+          1201
           -
-          1380
+          1224
         </td>
         <td>
           Apply
@@ -621,15 +622,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          33
         </td>
         <td>
           586
         </td>
         <td>
-          1532
+          1376
           -
-          1547
+          1391
         </td>
         <td>
           DefDef
@@ -645,15 +646,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          34
         </td>
         <td>
           585
         </td>
         <td>
-          1558
+          1402
           -
-          1623
+          1467
         </td>
         <td>
           Apply
@@ -670,15 +671,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          34
         </td>
         <td>
           584
         </td>
         <td>
-          1562
+          1406
           -
-          1600
+          1444
         </td>
         <td>
           Apply
@@ -694,15 +695,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          34
         </td>
         <td>
           583
         </td>
         <td>
-          1580
+          1424
           -
-          1596
+          1440
         </td>
         <td>
           Select
@@ -718,15 +719,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          40
         </td>
         <td>
           588
         </td>
         <td>
-          1741
+          1585
           -
-          1759
+          1603
         </td>
         <td>
           Select
@@ -742,15 +743,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          40
         </td>
         <td>
           587
         </td>
         <td>
-          1741
+          1585
           -
-          1752
+          1596
         </td>
         <td>
           Select
@@ -766,15 +767,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          40
         </td>
         <td>
           589
         </td>
         <td>
-          1710
+          1554
           -
-          1733
+          1577
         </td>
         <td>
           DefDef
@@ -790,15 +791,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          45
         </td>
         <td>
           593
         </td>
         <td>
-          1851
+          1695
           -
-          1874
+          1718
         </td>
         <td>
           DefDef
@@ -814,15 +815,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          46
         </td>
         <td>
           591
         </td>
         <td>
-          1889
+          1733
           -
-          1934
+          1778
         </td>
         <td>
           Apply
@@ -838,15 +839,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          46
         </td>
         <td>
           590
         </td>
         <td>
-          1911
+          1755
           -
-          1930
+          1774
         </td>
         <td>
           Select
@@ -862,15 +863,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          46
         </td>
         <td>
           592
         </td>
         <td>
-          1885
+          1729
           -
-          1960
+          1804
         </td>
         <td>
           Apply
@@ -887,15 +888,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          52
         </td>
         <td>
           594
         </td>
         <td>
-          2097
+          1941
           -
-          2116
+          1960
         </td>
         <td>
           Select
@@ -911,15 +912,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          52
         </td>
         <td>
           596
         </td>
         <td>
-          2058
+          1902
           -
-          2089
+          1933
         </td>
         <td>
           DefDef
@@ -935,15 +936,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          52
         </td>
         <td>
           595
         </td>
         <td>
-          2097
+          1941
           -
-          2123
+          1967
         </td>
         <td>
           Select
@@ -959,15 +960,15 @@
         </td>
       </tr><tr>
         <td>
-          57
+          58
         </td>
         <td>
           597
         </td>
         <td>
-          2285
+          2129
           -
-          2304
+          2148
         </td>
         <td>
           Select
@@ -983,15 +984,15 @@
         </td>
       </tr><tr>
         <td>
-          57
+          58
         </td>
         <td>
           598
         </td>
         <td>
-          2259
+          2103
           -
-          2273
+          2117
         </td>
         <td>
           DefDef
@@ -1007,15 +1008,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          65
         </td>
         <td>
           622
         </td>
         <td>
-          2594
+          2438
           -
-          2610
+          2454
         </td>
         <td>
           DefDef
@@ -1031,15 +1032,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          66
         </td>
         <td>
           604
         </td>
         <td>
-          2673
+          2517
           -
-          2695
+          2539
         </td>
         <td>
           DefDef
@@ -1055,15 +1056,15 @@
         </td>
       </tr><tr>
         <td>
-          66
+          67
         </td>
         <td>
           600
         </td>
         <td>
-          2786
+          2630
           -
-          2809
+          2653
         </td>
         <td>
           Select
@@ -1079,15 +1080,15 @@
         </td>
       </tr><tr>
         <td>
-          66
+          67
         </td>
         <td>
           603
         </td>
         <td>
-          2748
+          2592
           -
-          2883
+          2727
         </td>
         <td>
           Apply
@@ -1104,15 +1105,15 @@
         </td>
       </tr><tr>
         <td>
-          66
+          67
         </td>
         <td>
           599
         </td>
         <td>
-          2763
+          2607
           -
-          2782
+          2626
         </td>
         <td>
           Select
@@ -1128,15 +1129,15 @@
         </td>
       </tr><tr>
         <td>
-          66
+          67
         </td>
         <td>
           601
         </td>
         <td>
-          2752
+          2596
           -
-          2809
+          2653
         </td>
         <td>
           Apply
@@ -1152,15 +1153,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          68
         </td>
         <td>
           602
         </td>
         <td>
-          2833
+          2677
           -
-          2873
+          2717
         </td>
         <td>
           Apply
@@ -1176,15 +1177,15 @@
         </td>
       </tr><tr>
         <td>
-          69
+          70
         </td>
         <td>
           605
         </td>
         <td>
-          2922
+          2766
           -
-          2940
+          2784
         </td>
         <td>
           Ident
@@ -1200,15 +1201,15 @@
         </td>
       </tr><tr>
         <td>
-          70
+          71
         </td>
         <td>
           606
         </td>
         <td>
-          2952
+          2796
           -
-          2981
+          2825
         </td>
         <td>
           Select
@@ -1224,15 +1225,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          72
         </td>
         <td>
           609
         </td>
         <td>
-          3119
+          2963
           -
-          3178
+          3022
         </td>
         <td>
           Apply
@@ -1248,15 +1249,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          72
         </td>
         <td>
           608
         </td>
         <td>
-          3119
+          2963
           -
-          3156
+          3000
         </td>
         <td>
           Select
@@ -1272,15 +1273,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          72
         </td>
         <td>
           607
         </td>
         <td>
-          3119
+          2963
           -
-          3153
+          2997
         </td>
         <td>
           Apply
@@ -1296,15 +1297,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          72
         </td>
         <td>
           610
         </td>
         <td>
-          3119
+          2963
           -
-          3182
+          3026
         </td>
         <td>
           Select
@@ -1320,15 +1321,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          72
         </td>
         <td>
           619
         </td>
         <td>
-          3085
+          2929
           -
-          3396
+          3240
         </td>
         <td>
           Block
@@ -1346,15 +1347,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          73
         </td>
         <td>
           612
         </td>
         <td>
-          3239
+          3083
           -
-          3276
+          3120
         </td>
         <td>
           Select
@@ -1370,15 +1371,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          73
         </td>
         <td>
           615
         </td>
         <td>
-          3314
+          3158
           -
-          3315
+          3159
         </td>
         <td>
           Ident
@@ -1394,15 +1395,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          73
         </td>
         <td>
           611
         </td>
         <td>
-          3239
+          3083
           -
-          3273
+          3117
         </td>
         <td>
           Apply
@@ -1418,15 +1419,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          73
         </td>
         <td>
           614
         </td>
         <td>
-          3278
+          3122
           -
-          3308
+          3152
         </td>
         <td>
           Block
@@ -1442,15 +1443,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          73
         </td>
         <td>
           613
         </td>
         <td>
-          3278
+          3122
           -
-          3308
+          3152
         </td>
         <td>
           Select
@@ -1466,15 +1467,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          73
         </td>
         <td>
           616
         </td>
         <td>
-          3212
+          3056
           -
-          3316
+          3160
         </td>
         <td>
           Apply
@@ -1490,15 +1491,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
           618
         </td>
         <td>
-          3364
+          3208
           -
-          3394
+          3238
         </td>
         <td>
           Select
@@ -1514,15 +1515,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
           617
         </td>
         <td>
-          3330
+          3174
           -
-          3356
+          3200
         </td>
         <td>
           Apply
@@ -1538,15 +1539,15 @@
         </td>
       </tr><tr>
         <td>
-          75
+          76
         </td>
         <td>
           621
         </td>
         <td>
-          3422
+          3266
           -
-          3453
+          3297
         </td>
         <td>
           Apply
@@ -1562,15 +1563,15 @@
         </td>
       </tr><tr>
         <td>
-          75
+          76
         </td>
         <td>
           620
         </td>
         <td>
-          3423
+          3267
           -
-          3446
+          3290
         </td>
         <td>
           Apply
@@ -1586,15 +1587,15 @@
         </td>
       </tr><tr>
         <td>
-          83
+          84
         </td>
         <td>
           636
         </td>
         <td>
-          3829
+          3673
           -
-          3829
+          3673
         </td>
         <td>
           DefDef
@@ -1610,15 +1611,15 @@
         </td>
       </tr><tr>
         <td>
-          83
+          84
         </td>
         <td>
           635
         </td>
         <td>
-          3749
+          3593
           -
-          3763
+          3607
         </td>
         <td>
           DefDef
@@ -1634,15 +1635,15 @@
         </td>
       </tr><tr>
         <td>
-          84
+          85
         </td>
         <td>
           624
         </td>
         <td>
-          3936
+          3780
           -
-          3962
+          3806
         </td>
         <td>
           Block
@@ -1658,15 +1659,15 @@
         </td>
       </tr><tr>
         <td>
-          84
+          85
         </td>
         <td>
           623
         </td>
         <td>
-          3936
+          3780
           -
-          3962
+          3806
         </td>
         <td>
           Apply
@@ -1682,15 +1683,15 @@
         </td>
       </tr><tr>
         <td>
-          84
+          85
         </td>
         <td>
           626
         </td>
         <td>
-          3901
+          3745
           -
-          3970
+          3814
         </td>
         <td>
           Apply
@@ -1706,15 +1707,15 @@
         </td>
       </tr><tr>
         <td>
-          84
+          85
         </td>
         <td>
           625
         </td>
         <td>
-          3968
+          3812
           -
-          3969
+          3813
         </td>
         <td>
           Ident
@@ -1730,15 +1731,15 @@
         </td>
       </tr><tr>
         <td>
-          84
+          85
         </td>
         <td>
           628
         </td>
         <td>
-          3869
+          3713
           -
-          3881
+          3725
         </td>
         <td>
           Block
@@ -1754,15 +1755,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           627
         </td>
         <td>
-          3983
+          3827
           -
-          4016
+          3860
         </td>
         <td>
           Apply
@@ -1778,15 +1779,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          87
         </td>
         <td>
           630
         </td>
         <td>
-          4104
+          3948
           -
-          4130
+          3974
         </td>
         <td>
           Block
@@ -1802,15 +1803,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          87
         </td>
         <td>
           632
         </td>
         <td>
-          4068
+          3912
           -
-          4138
+          3982
         </td>
         <td>
           Apply
@@ -1826,15 +1827,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          87
         </td>
         <td>
           629
         </td>
         <td>
-          4104
+          3948
           -
-          4130
+          3974
         </td>
         <td>
           Apply
@@ -1850,15 +1851,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          87
         </td>
         <td>
           631
         </td>
         <td>
-          4136
+          3980
           -
-          4137
+          3981
         </td>
         <td>
           Ident
@@ -1874,15 +1875,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          87
         </td>
         <td>
           634
         </td>
         <td>
-          4025
+          3869
           -
-          4047
+          3891
         </td>
         <td>
           Block
@@ -1898,15 +1899,15 @@
         </td>
       </tr><tr>
         <td>
-          87
+          88
         </td>
         <td>
           633
         </td>
         <td>
-          4151
+          3995
           -
-          4184
+          4028
         </td>
         <td>
           Apply
@@ -1922,15 +1923,15 @@
         </td>
       </tr><tr>
         <td>
-          95
+          96
         </td>
         <td>
           639
         </td>
         <td>
-          4484
+          4328
           -
-          4498
+          4342
         </td>
         <td>
           DefDef
@@ -1946,15 +1947,15 @@
         </td>
       </tr><tr>
         <td>
-          98
+          99
         </td>
         <td>
           638
         </td>
         <td>
-          4704
+          4548
           -
-          4777
+          4621
         </td>
         <td>
           Apply
@@ -1970,15 +1971,15 @@
         </td>
       </tr><tr>
         <td>
-          98
+          99
         </td>
         <td>
           637
         </td>
         <td>
-          4737
+          4581
           -
-          4775
+          4619
         </td>
         <td>
           Apply
@@ -1994,15 +1995,15 @@
         </td>
       </tr><tr>
         <td>
-          107
+          108
         </td>
         <td>
           646
         </td>
         <td>
-          5110
+          4954
           -
-          5124
+          4968
         </td>
         <td>
           DefDef
@@ -2018,15 +2019,15 @@
         </td>
       </tr><tr>
         <td>
-          109
+          110
         </td>
         <td>
           645
         </td>
         <td>
-          5228
+          5072
           -
-          5346
+          5190
         </td>
         <td>
           Apply
@@ -2043,15 +2044,15 @@
         </td>
       </tr><tr>
         <td>
-          109
+          110
         </td>
         <td>
           642
         </td>
         <td>
-          5233
+          5077
           -
-          5280
+          5124
         </td>
         <td>
           Apply
@@ -2067,15 +2068,15 @@
         </td>
       </tr><tr>
         <td>
-          109
+          110
         </td>
         <td>
           641
         </td>
         <td>
-          5233
+          5077
           -
-          5252
+          5096
         </td>
         <td>
           Literal
@@ -2091,15 +2092,15 @@
         </td>
       </tr><tr>
         <td>
-          109
+          110
         </td>
         <td>
           644
         </td>
         <td>
-          5233
+          5077
           -
-          5252
+          5096
         </td>
         <td>
           Assign
@@ -2115,15 +2116,15 @@
         </td>
       </tr><tr>
         <td>
-          109
+          110
         </td>
         <td>
           640
         </td>
         <td>
-          5257
+          5101
           -
-          5279
+          5123
         </td>
         <td>
           Apply
@@ -2139,15 +2140,15 @@
         </td>
       </tr><tr>
         <td>
-          110
+          111
         </td>
         <td>
           643
         </td>
         <td>
-          5306
+          5150
           -
-          5346
+          5190
         </td>
         <td>
           Apply
