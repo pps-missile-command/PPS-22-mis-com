@@ -1,7 +1,7 @@
 package view
 
 import java.awt.{Color, Image, Toolkit}
-import model.collisions.Collisionable
+import model.collisions.{Affiliation, Collisionable}
 import model.elements2d.{Angle, Point2D}
 import model.explosion.Explosion
 import model.missile.{Missile, MissileDamageable, MissileImpl, hitboxBase, hitboxHeight}
@@ -21,8 +21,9 @@ object CollisionableVisualizer:
       case m: Missile with MissileDamageable =>
         var optImage:  Option[BufferedImage] = Option.empty
         try {
-          val img = ImageIO.read(getClass.getResource("/city_" + 2 + ".png"))
-          optImage = Option(img)
+          m.affiliation match
+            case Affiliation.Enemy => optImage = Option(ImageIO.read(getClass.getResource("/enemy_missile.png")))
+            case _ => optImage = Option(ImageIO.read(getClass.getResource("/friendly_missile.png")))
         }
         CollisionableElement(optImage.getOrElse(null), hitboxBase, hitboxHeight, m.position, m.angle.getOrElse(Angle.Degree(0)))
       case e: Explosion =>
