@@ -10,7 +10,6 @@ import java.awt.geom.AffineTransform
 import java.awt.image.{AffineTransformOp, BufferedImage}
 import javax.swing.{JButton, JPanel}
 import model.elements2d.Angle
-import view.CollisionableVisualizer.resourceFolderPath
 
 import java.io.File
 import javax.imageio.ImageIO
