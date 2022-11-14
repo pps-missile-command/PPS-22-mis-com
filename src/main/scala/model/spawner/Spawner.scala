@@ -21,7 +21,7 @@ trait Spawner(using Random) extends Timeable:
 
 object Spawner:
 
-  def apply(interval: DeltaTime, maxWidth: Double, maxHeight: Double, timeFromStart: DeltaTime = 0, dt: DeltaTime = 0, mapper: Double => Double = ???): Spawner = new Spawner(using Random) {
+  def apply(interval: DeltaTime, maxWidth: Double, maxHeight: Double, timeFromStart: DeltaTime = 0, dt: DeltaTime = 0, mapper: Double => Double = view.viewMapper): Spawner = new Spawner(using Random) {
     
     override def spawn(): (List[Missile], Spawner) =
       dt match

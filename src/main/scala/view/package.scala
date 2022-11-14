@@ -1,3 +1,3 @@
 package object view:
   
-  val viewMapper: (Double) => Double = ???
+  val viewMapper: (Double) => Double = _ * (ViewConstants.GUI_width / model.World.width)
