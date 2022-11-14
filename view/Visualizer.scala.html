@@ -31,46 +31,44 @@
 </span>7 <span style=''>import model.missile.{Missile, hitboxBase, hitboxHeight}
 </span>8 <span style=''>import utilities.Constants
 </span>9 <span style=''>
-</span>10 <span style=''>import javax.imageio.ImageIO
-</span>11 <span style=''>
-</span>12 <span style=''>object Visualizer:
-</span>13 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
-</span>14 <span style=''>
-</span>15 <span style=''>    /***
-</span>16 <span style=''>     * Method used for preparing the ImageView of a city.
-</span>17 <span style=''>     * @param structure City to be used.
-</span>18 <span style=''>     * @return ImageView of the city passed.
-</span>19 <span style=''>     */
-</span>20 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
-</span>21 <span style=''>        (
-</span>22 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>23 <span style=''>            structure.position,
-</span>24 <span style=''>            Constants.cityBaseSize,
-</span>25 <span style=''>            Constants.cityHeightSize
-</span>26 <span style=''>        )
-</span>27 <span style=''>
-</span>28 <span style=''>    /***
-</span>29 <span style=''>     * Method used for preparing the ImageView of a missile turret.
-</span>30 <span style=''>     * @param structure Missile turret to be used.
-</span>31 <span style=''>     * @return ImageView of the missile turret passed
-</span>32 <span style=''>     */
-</span>33 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
-</span>34 <span style=''>        (
-</span>35 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>36 <span style=''>            structure.bottomLeft_Position,
-</span>37 <span style=''>            Constants.missileBatteryBaseSize,
-</span>38 <span style=''>            Constants.missileBatteryHeightSize
-</span>39 <span style=''>        )
-</span>40 <span style=''>
-</span>41 <span style=''>    /***
-</span>42 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
-</span>43 <span style=''>     * @param ground Ground to be used.
-</span>44 <span style=''>     * @return List of ImageView of all the structures in the ground.
-</span>45 <span style=''>     */
-</span>46 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
-</span>47 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
-</span>48 <span style=''></span><span style='background: #F0ADAD'>            ++
-</span>49 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
+</span>10 <span style=''>object Visualizer:
+</span>11 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
+</span>12 <span style=''>
+</span>13 <span style=''>    /***
+</span>14 <span style=''>     * Method used for preparing the ImageView of a city.
+</span>15 <span style=''>     * @param structure City to be used.
+</span>16 <span style=''>     * @return ImageView of the city passed.
+</span>17 <span style=''>     */
+</span>18 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
+</span>19 <span style=''>        (
+</span>20 <span style=''>        </span><span style='background: #F0ADAD'>Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\city_&quot; + structure.currentLife + &quot;.png&quot;)</span><span style=''>,
+</span>21 <span style=''>        structure.position,
+</span>22 <span style=''>        Constants.cityBaseSize,
+</span>23 <span style=''>        Constants.cityHeightSize
+</span>24 <span style=''>        )
+</span>25 <span style=''>
+</span>26 <span style=''>    /***
+</span>27 <span style=''>     * Method used for preparing the ImageView of a missile turret.
+</span>28 <span style=''>     * @param structure Missile turret to be used.
+</span>29 <span style=''>     * @return ImageView of the missile turret passed
+</span>30 <span style=''>     */
+</span>31 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
+</span>32 <span style=''>        (
+</span>33 <span style=''>        </span><span style='background: #F0ADAD'>Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)</span><span style=''>,
+</span>34 <span style=''>        structure.bottomLeft_Position,
+</span>35 <span style=''>        Constants.missileBatteryBaseSize,
+</span>36 <span style=''>        Constants.missileBatteryHeightSize
+</span>37 <span style=''>        )
+</span>38 <span style=''>
+</span>39 <span style=''>    /***
+</span>40 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
+</span>41 <span style=''>     * @param ground Ground to be used.
+</span>42 <span style=''>     * @return List of ImageView of all the structures in the ground.
+</span>43 <span style=''>     */
+</span>44 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
+</span>45 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
+</span>46 <span style=''></span><span style='background: #F0ADAD'>            ++
+</span>47 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -85,63 +83,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          12
+          10
         </td>
         <td>
-          938
+          929
         </td>
         <td>
-          354
+          324
           -
-          393
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          toString
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString
-        </td>
-      </tr><tr>
-        <td>
-          12
-        </td>
-        <td>
-          937
-        </td>
-        <td>
-          354
-          -
-          384
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getProperty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          12
-        </td>
-        <td>
-          939
-        </td>
-        <td>
-          354
-          -
-          422
+          392
         </td>
         <td>
           Apply
@@ -157,15 +107,63 @@
         </td>
       </tr><tr>
         <td>
-          19
+          10
         </td>
         <td>
-          945
+          928
         </td>
         <td>
-          590
+          324
           -
-          610
+          363
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          toString
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          System.getProperty(&quot;user.dir&quot;).toString
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          927
+        </td>
+        <td>
+          324
+          -
+          354
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getProperty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          System.getProperty(&quot;user.dir&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          936
+        </td>
+        <td>
+          560
+          -
+          580
         </td>
         <td>
           DefDef
@@ -181,63 +179,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          19
         </td>
         <td>
-          941
+          932
         </td>
         <td>
-          720
+          722
           -
-          752
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          944
-        </td>
-        <td>
-          686
-          -
-          763
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          read
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          940
-        </td>
-        <td>
-          731
-          -
-          752
+          743
         </td>
         <td>
           Select
@@ -253,39 +203,39 @@
         </td>
       </tr><tr>
         <td>
-          21
+          19
         </td>
         <td>
-          943
+          935
         </td>
         <td>
-          699
+          652
           -
-          762
+          753
         </td>
         <td>
           Apply
         </td>
         <td>
-          getResource
+          getImage
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;)
+          Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\city_&quot; + structure.currentLife + &quot;.png&quot;)
         </td>
       </tr><tr>
         <td>
-          21
+          19
         </td>
         <td>
-          942
+          931
         </td>
         <td>
-          720
+          689
           -
-          761
+          719
         </td>
         <td>
           Apply
@@ -297,19 +247,91 @@
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife + &quot;.png&quot;
+          resourceFolderPath + &quot;\\city_&quot;
         </td>
       </tr><tr>
         <td>
-          32
+          19
         </td>
         <td>
-          954
+          934
         </td>
         <td>
-          1075
+          689
           -
-          1105
+          752
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          resourceFolderPath + &quot;\\city_&quot; + structure.currentLife + &quot;.png&quot;
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          930
+        </td>
+        <td>
+          652
+          -
+          679
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getDefaultToolkit
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Toolkit.getDefaultToolkit()
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          933
+        </td>
+        <td>
+          689
+          -
+          743
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          resourceFolderPath + &quot;\\city_&quot; + structure.currentLife
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          946
+        </td>
+        <td>
+          1053
+          -
+          1083
         </td>
         <td>
           DefDef
@@ -325,15 +347,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          32
         </td>
         <td>
-          950
+          941
         </td>
         <td>
-          1225
+          1202
           -
-          1291
+          1266
         </td>
         <td>
           Apply
@@ -345,43 +367,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife
+          resourceFolderPath + &quot;\\Base_&quot; + structure.isReadyForShoot + &quot;_&quot;
         </td>
       </tr><tr>
         <td>
-          34
+          32
         </td>
         <td>
-          953
+          944
         </td>
         <td>
-          1191
+          1202
           -
-          1302
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          read
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          947
-        </td>
-        <td>
-          1225
-          -
-          1261
+          1299
         </td>
         <td>
           Apply
@@ -393,19 +391,139 @@
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot
+          resourceFolderPath + &quot;\\Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;
         </td>
       </tr><tr>
         <td>
-          34
+          32
         </td>
         <td>
-          946
+          938
         </td>
         <td>
-          1236
+          1202
           -
-          1261
+          1232
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          resourceFolderPath + &quot;\\Base_&quot;
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          937
+        </td>
+        <td>
+          1165
+          -
+          1192
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getDefaultToolkit
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Toolkit.getDefaultToolkit()
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          940
+        </td>
+        <td>
+          1202
+          -
+          1260
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          resourceFolderPath + &quot;\\Base_&quot; + structure.isReadyForShoot
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          943
+        </td>
+        <td>
+          1202
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          resourceFolderPath + &quot;\\Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          945
+        </td>
+        <td>
+          1165
+          -
+          1300
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getImage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          939
+        </td>
+        <td>
+          1235
+          -
+          1260
         </td>
         <td>
           Select
@@ -421,15 +539,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          32
         </td>
         <td>
-          949
+          942
         </td>
         <td>
-          1270
+          1269
           -
-          1291
+          1290
         </td>
         <td>
           Select
@@ -445,87 +563,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          43
         </td>
         <td>
           952
         </td>
         <td>
-          1204
+          1640
           -
-          1301
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getResource
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          948
-        </td>
-        <td>
-          1225
-          -
-          1267
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot;
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          951
-        </td>
-        <td>
-          1225
-          -
-          1300
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          960
-        </td>
-        <td>
-          1654
-          -
-          1669
+          1655
         </td>
         <td>
           DefDef
@@ -541,15 +587,63 @@
         </td>
       </tr><tr>
         <td>
-          46
+          44
         </td>
         <td>
-          959
+          947
         </td>
         <td>
-          1736
+          1760
           -
-          1906
+          1787
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          prepareCityImage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          prepareCityImage(structure)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          948
+        </td>
+        <td>
+          1723
+          -
+          1787
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          for structure &lt;- ground.cities yield prepareCityImage(structure)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          951
+        </td>
+        <td>
+          1722
+          -
+          1892
         </td>
         <td>
           Apply
@@ -570,60 +664,12 @@
           46
         </td>
         <td>
-          956
+          950
         </td>
         <td>
-          1737
+          1817
           -
-          1801
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          for structure &lt;- ground.cities yield prepareCityImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          46
-        </td>
-        <td>
-          955
-        </td>
-        <td>
-          1774
-          -
-          1801
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          prepareCityImage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          prepareCityImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          958
-        </td>
-        <td>
-          1831
-          -
-          1906
+          1892
         </td>
         <td>
           Apply
@@ -639,15 +685,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          46
         </td>
         <td>
-          957
+          949
         </td>
         <td>
-          1869
+          1855
           -
-          1906
+          1892
         </td>
         <td>
           Apply

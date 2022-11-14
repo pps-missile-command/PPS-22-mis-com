@@ -33,66 +33,60 @@
 </span>9 <span style=''>import view.gui.UI
 </span>10 <span style=''>import model.elements2d.Point2D
 </span>11 <span style=''>import controller.Event
-</span>12 <span style=''>import view.Main
-</span>13 <span style=''>
-</span>14 <span style=''>import java.awt.event.MouseMotionListener
-</span>15 <span style=''>import java.awt.{BorderLayout, Color, Dimension, FlowLayout, Graphics, event}
-</span>16 <span style=''>import java.awt.event.ActionEvent
-</span>17 <span style=''>import java.awt.event.ActionListener
-</span>18 <span style=''>import javax.swing.*
+</span>12 <span style=''>
+</span>13 <span style=''>import java.awt.event.MouseMotionListener
+</span>14 <span style=''>import java.awt.{BorderLayout, Color, Dimension, Graphics, event, FlowLayout}
+</span>15 <span style=''>import javax.swing.*
+</span>16 <span style=''>
+</span>17 <span style=''>class GUI(width: Int, height: Int) extends UI:
+</span>18 <span style=''>    private val frame = </span><span style='background: #F0ADAD'>JFrame(&quot;Game&quot;)</span><span style=''>
 </span>19 <span style=''>
-</span>20 <span style=''>class GUI(width: Int, height: Int) extends UI:
-</span>21 <span style=''>    private val frame = </span><span style='background: #F0ADAD'>JFrame(&quot;Game&quot;)</span><span style=''>
-</span>22 <span style=''>
-</span>23 <span style=''>    </span><span style='background: #F0ADAD'>frame.setSize(width, height)</span><span style=''>
-</span>24 <span style=''>    </span><span style='background: #F0ADAD'>frame.setVisible(true)</span><span style=''>
-</span>25 <span style=''>    </span><span style='background: #F0ADAD'>frame.setLocationRelativeTo(null)</span><span style=''>
-</span>26 <span style=''>    </span><span style='background: #F0ADAD'>frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)</span><span style=''>
-</span>27 <span style=''>
-</span>28 <span style=''>    </span><span style='background: #F0ADAD'>def render</span><span style=''>(world: World): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
-</span>29 <span style=''></span><span style='background: #F0ADAD'>        SwingUtilities.invokeAndWait { () =&gt;
-</span>30 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
-</span>31 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
-</span>32 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(WorldPane(world, width, height))
-</span>33 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.repaint()
-</span>34 <span style=''></span><span style='background: #F0ADAD'>        }
-</span>35 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
-</span>36 <span style=''>
-</span>37 <span style=''>    </span><span style='background: #F0ADAD'>def customRender</span><span style=''>(world: World) =
-</span>38 <span style=''>        </span><span style='background: #F0ADAD'>SwingUtilities.invokeAndWait { () =&gt;
-</span>39 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
-</span>40 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
-</span>41 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(WorldPane(world, width, height))
-</span>42 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.repaint()
-</span>43 <span style=''></span><span style='background: #F0ADAD'>        }</span><span style=''>
-</span>44 <span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>    </span><span style='background: #F0ADAD'>override def events</span><span style=''>: Observable[Event] = </span><span style='background: #F0ADAD'>frame.getContentPane
-</span>47 <span style=''></span><span style='background: #F0ADAD'>      .mouseObservable()
-</span>48 <span style=''></span><span style='background: #F0ADAD'>      .map((x, y) =&gt; Event.LaunchMissileTo(Point2D(x, y)) )</span><span style=''>
-</span>49 <span style=''>
-</span>50 <span style=''>    </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>: Task[Unit] = </span><span style='background: #F0ADAD'>Task {
-</span>51 <span style=''></span><span style='background: #F0ADAD'>        SwingUtilities.invokeAndWait { () =&gt;
-</span>52 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
-</span>53 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
-</span>54 <span style=''></span><span style='background: #F0ADAD'>            val panel = new JPanel()
-</span>55 <span style=''></span><span style='background: #F0ADAD'>            panel.setSize(width, height)
-</span>56 <span style=''></span><span style='background: #F0ADAD'>            panel.setLayout(new FlowLayout())
-</span>57 <span style=''></span><span style='background: #F0ADAD'>            val button = new JButton(&quot;RIGIOCA&quot;)
-</span>58 <span style=''></span><span style='background: #F0ADAD'>
-</span>59 <span style=''></span><span style='background: #F0ADAD'>            button.addActionListener(new ActionListener() {
-</span>60 <span style=''></span><span style='background: #F0ADAD'>                override def actionPerformed(e: ActionEvent): Unit = {
-</span>61 <span style=''></span><span style='background: #F0ADAD'>                    frame.dispose()
-</span>62 <span style=''></span><span style='background: #F0ADAD'>                    Main.startGame()
-</span>63 <span style=''></span><span style='background: #F0ADAD'>                }
-</span>64 <span style=''></span><span style='background: #F0ADAD'>            })
-</span>65 <span style=''></span><span style='background: #F0ADAD'>            panel.add(button)
-</span>66 <span style=''></span><span style='background: #F0ADAD'>
-</span>67 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(panel)
-</span>68 <span style=''></span><span style='background: #F0ADAD'>            frame.revalidate()
-</span>69 <span style=''></span><span style='background: #F0ADAD'>            frame.repaint()
-</span>70 <span style=''></span><span style='background: #F0ADAD'>        }
-</span>71 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>20 <span style=''>    </span><span style='background: #F0ADAD'>frame.setSize(width, height)</span><span style=''>
+</span>21 <span style=''>    </span><span style='background: #F0ADAD'>frame.setVisible(true)</span><span style=''>
+</span>22 <span style=''>    </span><span style='background: #F0ADAD'>frame.setLocationRelativeTo(null)</span><span style=''>
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>    </span><span style='background: #F0ADAD'>def render</span><span style=''>(world: World): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>26 <span style=''></span><span style='background: #F0ADAD'>        SwingUtilities.invokeAndWait { () =&gt;
+</span>27 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
+</span>28 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
+</span>29 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(WorldPane(world, width, height))
+</span>30 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.repaint()
+</span>31 <span style=''></span><span style='background: #F0ADAD'>        }
+</span>32 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>33 <span style=''>
+</span>34 <span style=''>    </span><span style='background: #F0ADAD'>def customRender</span><span style=''>(world: World) =
+</span>35 <span style=''>        </span><span style='background: #F0ADAD'>SwingUtilities.invokeAndWait { () =&gt;
+</span>36 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
+</span>37 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
+</span>38 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(WorldPane(world, width, height))
+</span>39 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.repaint()
+</span>40 <span style=''></span><span style='background: #F0ADAD'>        }</span><span style=''>
+</span>41 <span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>    </span><span style='background: #F0ADAD'>override def events</span><span style=''>: Observable[Event] = </span><span style='background: #F0ADAD'>frame.getContentPane
+</span>44 <span style=''></span><span style='background: #F0ADAD'>      .mouseObservable()
+</span>45 <span style=''></span><span style='background: #F0ADAD'>      .map((x, y) =&gt; Event.LaunchMissileTo(Point2D(x, y)) )</span><span style=''>
+</span>46 <span style=''>
+</span>47 <span style=''>    </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>: Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>48 <span style=''></span><span style='background: #F0ADAD'>        gameOverRender
+</span>49 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>50 <span style=''>    
+</span>51 <span style=''>    </span><span style='background: #F0ADAD'>def gameOverRender</span><span style=''>: Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>52 <span style=''></span><span style='background: #F0ADAD'>
+</span>53 <span style=''></span><span style='background: #F0ADAD'>        SwingUtilities.invokeAndWait { () =&gt;
+</span>54 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
+</span>55 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
+</span>56 <span style=''></span><span style='background: #F0ADAD'>            val panel = new JPanel()
+</span>57 <span style=''></span><span style='background: #F0ADAD'>            panel.setSize(width, height)
+</span>58 <span style=''></span><span style='background: #F0ADAD'>            panel.setLayout(new FlowLayout())
+</span>59 <span style=''></span><span style='background: #F0ADAD'>            val button = new JButton()
+</span>60 <span style=''></span><span style='background: #F0ADAD'>            button.setText(&quot;RIGIOCA&quot;)
+</span>61 <span style=''></span><span style='background: #F0ADAD'>            panel.add(button)
+</span>62 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(panel)
+</span>63 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.repaint()
+</span>64 <span style=''></span><span style='background: #F0ADAD'>        }
+</span>65 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -107,15 +101,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          17
         </td>
         <td>
-          979
+          971
         </td>
         <td>
-          577
+          489
           -
-          591
+          503
         </td>
         <td>
           Apply
@@ -131,15 +125,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          19
         </td>
         <td>
-          980
+          972
         </td>
         <td>
-          597
+          509
           -
-          625
+          537
         </td>
         <td>
           Apply
@@ -155,15 +149,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          20
         </td>
         <td>
-          981
+          973
         </td>
         <td>
-          630
+          542
           -
-          652
+          564
         </td>
         <td>
           Apply
@@ -179,15 +173,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          21
         </td>
         <td>
-          982
+          974
         </td>
         <td>
-          657
+          569
           -
-          690
+          602
         </td>
         <td>
           Apply
@@ -203,15 +197,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          22
         </td>
         <td>
-          983
+          975
         </td>
         <td>
-          695
+          607
           -
-          756
+          668
         </td>
         <td>
           Apply
@@ -227,15 +221,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          24
         </td>
         <td>
-          985
+          977
         </td>
         <td>
-          762
+          674
           -
-          772
+          684
         </td>
         <td>
           DefDef
@@ -251,15 +245,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          24
         </td>
         <td>
-          984
+          976
         </td>
         <td>
-          801
+          713
           -
-          1089
+          1001
         </td>
         <td>
           Apply
@@ -282,15 +276,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          33
         </td>
         <td>
-          997
+          989
         </td>
         <td>
-          1095
+          1007
           -
-          1111
+          1023
         </td>
         <td>
           DefDef
@@ -306,15 +300,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          34
         </td>
         <td>
-          996
+          988
         </td>
         <td>
-          1136
+          1048
           -
-          1403
+          1315
         </td>
         <td>
           Apply
@@ -335,15 +329,207 @@
         </td>
       </tr><tr>
         <td>
+          35
+        </td>
+        <td>
+          979
+        </td>
+        <td>
+          1101
+          -
+          1139
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getComponentCount
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane.getComponentCount
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          978
+        </td>
+        <td>
+          1101
+          -
+          1121
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getContentPane
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          980
+        </td>
+        <td>
+          1162
+          -
+          1182
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getContentPane
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          982
+        </td>
+        <td>
+          1162
+          -
+          1192
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane.remove(0)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          981
+        </td>
+        <td>
+          1162
+          -
+          1192
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          remove
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane.remove(0)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          983
+        </td>
+        <td>
+          1205
+          -
+          1225
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getContentPane
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          985
+        </td>
+        <td>
+          1205
+          -
+          1262
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          add
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane.add(WorldPane(world, width, height))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          984
+        </td>
+        <td>
+          1230
+          -
+          1261
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          WorldPane(world, width, height)
+        </td>
+      </tr><tr>
+        <td>
           38
         </td>
         <td>
           986
         </td>
         <td>
-          1189
+          1275
           -
-          1209
+          1295
         </td>
         <td>
           Apply
@@ -365,177 +551,9 @@
           987
         </td>
         <td>
-          1189
+          1275
           -
-          1227
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getComponentCount
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          frame.getContentPane.getComponentCount
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          989
-        </td>
-        <td>
-          1250
-          -
-          1280
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          remove
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          frame.getContentPane.remove(0)
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          988
-        </td>
-        <td>
-          1250
-          -
-          1270
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getContentPane
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          frame.getContentPane
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          990
-        </td>
-        <td>
-          1250
-          -
-          1280
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          frame.getContentPane.remove(0)
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          992
-        </td>
-        <td>
-          1318
-          -
-          1349
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          WorldPane(world, width, height)
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          991
-        </td>
-        <td>
-          1293
-          -
-          1313
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getContentPane
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          frame.getContentPane
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          993
-        </td>
-        <td>
-          1293
-          -
-          1350
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          add
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          frame.getContentPane.add(WorldPane(world, width, height))
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          995
-        </td>
-        <td>
-          1363
-          -
-          1393
+          1305
         </td>
         <td>
           Apply
@@ -551,10 +569,34 @@
         </td>
       </tr><tr>
         <td>
-          41
+          42
         </td>
         <td>
-          994
+          996
+        </td>
+        <td>
+          1322
+          -
+          1341
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          events
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def events
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          990
         </td>
         <td>
           1363
@@ -575,63 +617,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          43
         </td>
         <td>
-          1004
+          991
         </td>
         <td>
-          1410
+          1363
           -
-          1429
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          events
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          override def events
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          998
-        </td>
-        <td>
-          1451
-          -
-          1471
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getContentPane
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          frame.getContentPane
-        </td>
-      </tr><tr>
-        <td>
-          46
-        </td>
-        <td>
-          999
-        </td>
-        <td>
-          1451
-          -
-          1496
+          1408
         </td>
         <td>
           Apply
@@ -648,39 +642,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          44
         </td>
         <td>
-          1001
+          992
         </td>
         <td>
-          1551
+          1460
           -
-          1552
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
-          1000
-        </td>
-        <td>
-          1548
-          -
-          1549
+          1461
         </td>
         <td>
           Apply
@@ -696,15 +666,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          44
         </td>
         <td>
-          1003
+          995
         </td>
         <td>
-          1451
+          1363
           -
-          1556
+          1468
         </td>
         <td>
           Apply
@@ -722,15 +692,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          44
         </td>
         <td>
-          1002
+          994
         </td>
         <td>
-          1540
+          1452
           -
-          1553
+          1465
         </td>
         <td>
           Apply
@@ -746,15 +716,39 @@
         </td>
       </tr><tr>
         <td>
-          49
+          44
         </td>
         <td>
-          1006
+          993
         </td>
         <td>
-          1562
+          1463
           -
-          1583
+          1464
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          y
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          998
+        </td>
+        <td>
+          1474
+          -
+          1495
         </td>
         <td>
           DefDef
@@ -770,15 +764,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          46
         </td>
         <td>
-          1005
+          997
         </td>
         <td>
-          1598
+          1510
           -
-          2317
+          1545
         </td>
         <td>
           Apply
@@ -791,25 +785,68 @@
         </td>
         <td style="background: #F0ADAD">
           Task {
+        gameOverRender
+    }
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          1000
+        </td>
+        <td>
+          1555
+          -
+          1573
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          gameOverRender
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def gameOverRender
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          999
+        </td>
+        <td>
+          1588
+          -
+          2082
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Task {
+
         SwingUtilities.invokeAndWait { () =&gt;
             if (frame.getContentPane.getComponentCount != 0)
                 frame.getContentPane.remove(0)
             val panel = new JPanel()
             panel.setSize(width, height)
             panel.setLayout(new FlowLayout())
-            val button = new JButton(&quot;RIGIOCA&quot;)
-
-            button.addActionListener(new ActionListener() {
-                override def actionPerformed(e: ActionEvent): Unit = {
-                    frame.dispose()
-                    Main.startGame()
-                }
-            })
+            val button = new JButton()
+            button.setText(&quot;RIGIOCA&quot;)
             panel.add(button)
-
             frame.getContentPane.add(panel)
-            frame.revalidate()
-            frame.repaint()
+            frame.getContentPane.repaint()
         }
     }
         </td>
