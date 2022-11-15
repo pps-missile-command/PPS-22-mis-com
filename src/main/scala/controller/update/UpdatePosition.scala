@@ -12,6 +12,13 @@ import monix.eval.Task
  * Object that return an update function for the world to update the position its components
  */
 object UpdatePosition:
+
+  extension (collisionable: Collisionable)
+    private def updateMovablePosition(): Collisionable =
+      collisionable match
+        case moveable: Moveable => moveable.move().asInstanceOf[Collisionable]
+        case _ => collisionable
+
   /**
    * Apply function used to update the position of the game components
    *
@@ -19,11 +26,7 @@ object UpdatePosition:
    */
   def apply(): Update = on[TimePassed] { (_: Event, world: World) =>
     Task {
-      def updateMovable(collisionable: Collisionable): Collisionable = collisionable match
-        case moveable: Moveable => moveable.move().asInstanceOf[Collisionable]
-        case _ => collisionable
-
-      val collisionables = world.collisionables.map(updateMovable)
+      val collisionables = world.collisionables.map(_.updateMovablePosition())
       world.copy(collisionables = collisionables)
     }
   }

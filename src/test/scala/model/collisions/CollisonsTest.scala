@@ -11,6 +11,14 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
   info("If the Damageable object is already dead, nothing should happen")
   info("If the Damageable object has not enough life, it should be destroyed")
 
+  def damageableHasExpectedLife(collisionable: Collisionable, expectedLife: Int): Boolean =
+    damageableCheckCondition(collisionable, _.currentLife == expectedLife)
+
+  def damageableCheckCondition(collisionable: Collisionable, check: Damageable => Boolean): Boolean =
+    collisionable match
+      case d: Damageable => check(d)
+      case _ => true
+
   given distance: Distance = 0.1
 
   Feature("Don't inflict damage") {
@@ -20,16 +28,24 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damager = DamagerTest(Point2D(10, 10), Affiliation.Enemy)
       assert(!damageable.isCollidingWith(damager))
+      val expectedCollisions = Set.empty[Collision]
 
-      When("Calculate collision and apply damage")
-      val update = applyDamage(calculateCollisions(List(damageable, damager)))
+      When("Calculate collision")
+      val entities = Set(damageable, damager)
+      val collisions = entities.calculateCollisions
+      Then("The collisions should be empty an empty set")
+      assert(collisions == expectedCollisions)
 
-      Then("The map should have 2 elements both empty")
-      assert(update.size == 2)
+      When("Calculate damage")
+      val (updateEntities, updateCollisions) = entities applyDamagesBasedOn collisions
+      assert(updateCollisions == expectedCollisions)
+
+      Then("the damageable should have the same life as before")
+      assert(updateEntities.size == 2)
       for
-        element <- update
+        element <- updateEntities
       yield
-        assert(element._2.isEmpty)
+        assert(damageableHasExpectedLife(element, initialLife))
     }
 
     Scenario("The object collide but they are of the same type") {
@@ -38,16 +54,24 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val damageable1 = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damageable2 = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Enemy)
       assert(damageable1.isCollidingWith(damageable2))
+      val expectedCollisions = Set(Collision(damageable1, damageable2))
 
-      When("Calculate collision and apply damage")
-      val update = calculateCollisions(List(damageable1, damageable2))
+      When("Calculate collision")
+      val entities = Set[Collisionable](damageable1, damageable2)
+      val collisions = entities.calculateCollisions
+      Then("The collisions of the two objects should be in the set")
+      assert(collisions == expectedCollisions)
 
-      Then("The map should have 2 elements both empty")
-      assert(update.size == 2)
+      When("Calculate damage")
+      val (updateEntities, collisionsUpdate) = entities applyDamagesBasedOn collisions
+      assert(collisionsUpdate.size == 1)
+
+      Then("the damageable should have the same life as before")
+      assert(updateEntities.size == 2)
       for
-        element <- update
+        element <- updateEntities
       yield
-        assert(element._2.isEmpty)
+        assert(damageableHasExpectedLife(element, initialLife))
     }
 
     Scenario("The object collide but they are of the same side") {
@@ -56,42 +80,60 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Friendly)
       assert(damageable.isCollidingWith(damager))
+      val expectedCollisions = Set.empty[Collision]
 
       When("Calculate collision")
-      val update = applyDamage(calculateCollisions(List(damageable, damager)))
+      val entities = Set(damageable, damager)
+      val collisions = entities.calculateCollisions
+      Then("The collisions should be an empty set")
+      assert(collisions == expectedCollisions)
 
-      Then("The map should have 2 elements both empty")
-      assert(update.size == 2)
+      When("Calculate damage")
+      val (updateEntities, collisionsUpdate) = entities applyDamagesBasedOn collisions
+      assert(collisionsUpdate.isEmpty)
+
+      Then("the damageable should have the same life as before")
+      assert(updateEntities.size == 2)
       for
-        element <- update
+        element <- updateEntities
       yield
-        assert(element._2.isEmpty)
+        assert(damageableHasExpectedLife(element, initialLife))
     }
 
     Scenario("There are no objects") {
       Given("No objects")
 
-      val collisionables = List.empty[Collisionable]
+      val entities = Set.empty[Collisionable]
+      val expectedCollisions = Set.empty[Collision]
 
       When("Calculate collision")
-      val update = applyDamage(calculateCollisions(collisionables))
+      val collisions = entities.calculateCollisions
+      Then("The collisions should be an empty set")
+      assert(collisions == expectedCollisions)
 
-      Then("The map should be empty")
-      assert(update.isEmpty)
+      When("Calculate damage")
+      val (updateEntities, collisionsUpdate) = entities applyDamagesBasedOn collisions
+      assert(collisionsUpdate.isEmpty)
+      Then("the set should be empty")
+      assert(updateEntities.isEmpty)
     }
 
     Scenario("The object is null"){
       Given("An object null")
 
-      val collisionables = List[Collisionable](null)
-
+      val entities = Set[Collisionable](null)
+      val expectedCollisions = Set.empty[Collision]
 
       When("Calculate collision")
-      val update = applyDamage(calculateCollisions(collisionables))
+      val collisions = entities.calculateCollisions
+      Then("The collisions should be an empty set")
+      assert(collisions == expectedCollisions)
 
-
-      Then("The map should be empty")
-      assert(update.isEmpty)
+      When("Calculate damage")
+      val (updateEntities, collisionsUpdate) = entities applyDamagesBasedOn collisions
+      assert(collisionsUpdate.isEmpty)
+      Then("the set should be empty")
+      assert(updateEntities.isEmpty)
     }
   }
 
@@ -102,22 +144,25 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Enemy)
       assert(damageable.isCollidingWith(damager))
+      val expectedCollisions = Set(Collision(damageable, damager))
 
-      When("Check collision and apply damages")
-      val update = applyDamage(calculateCollisions(List(damageable, damager)))
+      When("Calculate collision")
+      val entities = Set(damageable, damager)
+      val collisions = entities.calculateCollisions
+      Then("The collisions should set with the collision of the two objects")
+      assert(collisions == expectedCollisions)
 
-      Then("The map should have 2 elements one not empty")
-      assert(update.size == 2)
+      When("Calculate damage")
+      val (updateEntities, collisionsUpdate) = entities applyDamagesBasedOn collisions
+      assert(collisionsUpdate.size == 1)
+
+      Then("the damageable shouldn't have the same life as before")
+      assert(updateEntities.size == 2)
       for
-        element <- update
+        element <- updateEntities
       yield
-        element._1 match
-          case damageable: Damageable =>
-            assert(element._2.size == 1)
-            assert(element._2.contains(damager))
-            assert(!damageable.isDestroyed)
-            assert(damageable.currentLife == initialLife - damager.damageInflicted)
-          case _ => assert(element._2.isEmpty)
+        assert(damageableHasExpectedLife(element, initialLife - damager.damageInflicted))
+        assert(damageableCheckCondition(element, !_.isDestroyed))
     }
 
     Scenario("The objects collide and the damageable should be destroyed") {
@@ -126,22 +171,25 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Enemy)
       assert(damageable.isCollidingWith(damager))
+      val expectedCollisions = Set(Collision(damageable, damager))
 
-      When("Check collision and apply damages")
-      val update = applyDamage(calculateCollisions(List(damageable, damager)))
+      When("Calculate collision")
+      val entities = Set(damageable, damager)
+      val collisions = entities.calculateCollisions
+      Then("The collisions should set with the collision of the two objects")
+      assert(collisions == expectedCollisions)
 
-      Then("The map should have 2 elements, the damageable should be destroyed and the damager should be empty")
-      assert(update.size == 2)
+      When("Calculate damage")
+      val (updateEntities, collisionsUpdate) = entities applyDamagesBasedOn collisions
+      assert(collisionsUpdate.size == 1)
+
+      Then("the damageable shouldn't have the same life as before and should be destroyed")
+      assert(updateEntities.size == 2)
       for
-        element <- update
+        element <- updateEntities
       yield
-        element._1 match
-          case damageable: Damageable =>
-            assert(element._2.size == 1)
-            assert(element._2.contains(damager))
-            assert(damageable.isDestroyed)
-            assert(damageable.currentLife == initialLife - damager.damageInflicted)
-          case _ => assert(element._2.isEmpty)
+        assert(damageableHasExpectedLife(element, initialLife - damager.damageInflicted))
+        assert(damageableCheckCondition(element, _.isDestroyed))
     }
 
     Scenario("The objects collide one is both damageable and damager") {
@@ -151,51 +199,55 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Enemy)
       assert(both.isCollidingWith(damager))
 
-      When("Check collision and apply damages")
-      val update = applyDamage(calculateCollisions(List(both, damager)))
+      val expectedCollisions = Set(Collision(both, damager))
+      When("Calculate collision")
+      val entities = Set(both, damager)
+      val collisions = entities.calculateCollisions
+      Then("The collisions should set with the collision of the two objects")
+      assert(collisions == expectedCollisions)
 
-      Then("The map should have 2 elements, the damageable should have damage and the damager should be empty")
-      assert(update.size == 2)
+      When("Calculate damage")
+      val (updateEntities, collisionsUpdate) = entities applyDamagesBasedOn collisions
+      assert(collisionsUpdate.size == 1)
+
+      Then("the damageable should have the same life as before")
+      assert(updateEntities.size == 2)
       for
-        element <- update
+        element <- updateEntities
       yield
-        element._1 match
-          case damageable: Damageable =>
-            assert(element._2.size == 1)
-            assert(element._2.contains(damager))
-            assert(!damageable.isDestroyed)
-            assert(damageable.currentLife == initialLife - damager.damageInflicted)
-          case _ => assert(element._2.isEmpty)
+        assert(damageableHasExpectedLife(element, initialLife - damager.damageInflicted))
+        assert(damageableCheckCondition(element, !_.isDestroyed))
     }
 
     Scenario("Multiple objects collide") {
       Given("Three objects that collide of different type and side")
-      val initialLife = 3
-      val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Friendly)
-      val both = DamagerDamageableTest(Point2D(0, 0), initialLife, Affiliation.Enemy)
+      val damageableInitialLife = 4
+      val bothInitialLife = 3
+      val expectedLife = 2
+      val damageable = DamageableTest(Point2D(0, 0), damageableInitialLife, Affiliation.Friendly)
+      val both = DamagerDamageableTest(Point2D(0, 0), bothInitialLife, Affiliation.Enemy)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Neutral)
       assert(both.isCollidingWith(damager))
       assert(both.isCollidingWith(damageable))
       assert(damageable.isCollidingWith(damager))
 
-      When("Check collision and apply damages")
-      val update = applyDamage(calculateCollisions(List(both, damager, damageable)))
+      val expectedCollisions = Set(Collision(both, damager), Collision(both, damageable), Collision(damageable, damager))
+      When("Calculate collision")
+      val entities = Set(both, damager, damageable)
+      val collisions = entities.calculateCollisions
+      Then("The collisions should set with the collision of the two objects")
+      assert(collisions == expectedCollisions)
 
-      Then("The damageable objects should be damaged 2 times and the object that is both damageable and damager should be damaged 1 time")
-      assert(update.size == 3)
+      When("Calculate damage")
+      val (updateEntities, collisionsUpdate) = entities applyDamagesBasedOn collisions
+      assert(collisionsUpdate.size == 3)
+
+      Then("the damageable should have the same life as before")
+      assert(updateEntities.size == 3)
       for
-        element <- update
+        element <- updateEntities
       yield
-        element._1 match
-          case damageable: Damageable =>
-            damageable match
-              case damager: Damager =>
-                assert(element._2.size == 1)
-                assert(damageable.currentLife == initialLife - 1)
-              case _ =>
-                assert(element._2.size == 2)
-                assert(damageable.currentLife == initialLife - 2)
-            assert(!damageable.isDestroyed)
-          case _ => assert(element._2.isEmpty)
+        assert(damageableHasExpectedLife(element, expectedLife))
+        assert(damageableCheckCondition(element, !_.isDestroyed))
     }
   }

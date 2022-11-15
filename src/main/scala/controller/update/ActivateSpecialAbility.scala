@@ -14,6 +14,18 @@ import monix.eval.Task
  * Object that return an update function for the world to be update with the special abilities of its components
  */
 object ActivateSpecialAbility:
+
+  extension (collisionable: Collisionable)
+    private def activateSpecialAbility: Collisionable =
+      collisionable match
+        case missile: Missile if missile.destinationReached => missile.explode
+        case _ => collisionable
+
+    private def isExplosionTerminated: Boolean =
+      collisionable match
+        case explosion: Explosion => explosion.terminated
+        case _ => false
+
   /**
    * Apply function used to update the world to be update with the special abilities of its components
    *
@@ -21,16 +33,8 @@ object ActivateSpecialAbility:
    */
   def apply(): Update = on[TimePassed] { (_: Event, world: World) =>
     Task {
-      def activateSpecialAbility(collisionable: Collisionable): Collisionable = collisionable match
-        case missile: Missile if missile.destinationReached => missile.explode
-        case _ => collisionable
-
-      def isTerminated(collisionable: Collisionable): Boolean = collisionable match
-        case explosion: Explosion => explosion.terminated
-        case _ => false
-
       val collisionables = world.collisionables.map(activateSpecialAbility)
-      val remainedCollisionables = collisionables.filterNot(isTerminated)
+      val remainedCollisionables = collisionables.filterNot(isExplosionTerminated)
       val (newMissiles, spawner) = world.spawner.spawn()
       world.copy(collisionables = remainedCollisionables ++ newMissiles, spawner = spawner)
     }
