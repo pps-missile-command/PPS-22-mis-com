@@ -1,6 +1,8 @@
 package model
 
-import model.collisions.Damageable
+import model.collisions.{Collisionable, Damageable}
+import model.collisions.PimpingByCollisionable._
+import model.collisions.PimpingByCollisions._
 
 
 /**
@@ -24,76 +26,68 @@ package object collisions:
    * Alias for the distance between points in the hit box area
    */
   type Distance = Double
+  extension(collisionables: Set[Collisionable])
+    private def totalDamageFor(collisionable: Collisionable): LifePoint =
+      collisionables
+        .filter(_.affiliation != collisionable.affiliation)
+        .toSeq
+        .map(_.damage)
+        .sum
 
-  /**
-   * Apply the damage to the damageable object as key in the map.
-   *
-   * @param collisionResults a map that has as keys the damageable objects and as values a list with the damaeger that collides with them
-   * @return a map that has as keys the damageable objects update with the new damage and as values a list with the damaeger that collides with them
-   */
-  def applyDamage(collisionResults: Map[Collisionable, List[Collisionable]]): Map[Collisionable, List[Collisionable]] =
-    def getDamage(collisionable: Collisionable): LifePoint =
-      collisionable match
-        case damager: Damager => damager.damageInflicted
-        case _ => 0
+    /**
+     * Apply the damage to the damageable object in the set.
+     *
+     * @param collisions a set with all the detected collisions
+     * @return a tuple with the updated collisionables and the collisions
+     */
+    def applyDamagesBasedOn(collisions: Set[Collision]): (Set[Collisionable], Set[Collision]) =
+      val mapping: Map[Collisionable, Collisionable] =
+        (for
+          collisionable <- collisionables
+          allCollidingCollisionables = collisions allCollisionablesThatCollideWith collisionable
+          if allCollidingCollisionables.nonEmpty
+          totalDamage = allCollidingCollisionables totalDamageFor collisionable
+          newCollisionable = collisionable applyDamage totalDamage
+        yield
+          collisionable -> newCollisionable)
+          .toMap
+      val unUpdateCollisionables = collisions.allCollisionablesThatDoesntCollideWith(collisionables, mapping.keySet)
+      (mapping.values.toSet ++ unUpdateCollisionables, collisions updateCollisionablesContained mapping)
 
-    collisionResults.map(
-      (collisionable, damagers) =>
-        collisionable match
-          case damageable: Damageable => (damageable.takeDamage(damagers.map(getDamage _).sum), damagers)
-          case _ => (collisionable, damagers)
-    )
+    /**
+     * Check the collision between the set of collisionables,
+     * return a set that has the collisions of the collisionables.
+     * The methods only check the collision between the collisionables that aren't on the same side .
+     *
+     * @return a set with all the collisions
+     */
+    def calculateCollisions: Set[Collision] =
+      collisionables calculateCollisionsWith collisionables
 
+    /**
+     * Check the collision between the current collisionables and the the set of other collisionables,
+     * return a set that has the collisions of the collisionables.
+     * The methods only check the collision between the collisionables that aren't on the same side .
+     *
+     * @param otherCollisionables the set of collisionable objects to check if collide with the current one set
+     * @tparam CO the type of the other set of collisionables
+     * @return a set with all the collisions between the two sets
+     */
+    def calculateCollisionsWith[CO <: Collisionable](otherCollisionables: Set[CO]): Set[Collision] =
+      given Distance = 5.0
 
-  /**
-   * Check the collision between multiple collidables,
-   * return a map that has as keys the damageable objects and as values list with the damaeger that collides with them.
-   * The methods only check the collision between the damager and damageable that aren' on the same side .
-   *
-   * @param collisionables the collidables to check
-   * @return a map that has as keys the damageable objects and as values a list with the damaeger that collides with them
-   */
-  def calculateCollisions(collisionables: List[Collisionable]): Map[Collisionable, List[Collisionable]] =
-    given Distance = 0.1
+      def areOnTheSameSide(collisionable: Collisionable, otherCollisionable: Collisionable): Boolean =
+        collisionable.affiliation == otherCollisionable.affiliation
 
-    def isDestroyed(collisionable: Collisionable): Boolean =
-      collisionable match
-        case damageable: Damageable => damageable.isDestroyed
-        case _ => false
-
-
-    def areOnTheSameSide(collisionable1: Collisionable, collisionable2: Collisionable): Boolean =
-      collisionable1.affiliation == collisionable2.affiliation
-
-    def isADamager(collisionable: Collisionable): Boolean =
-      collisionable match
-        case _: Damager => true
-        case _ => false
-
-    def isADamageable(collisionable: Collisionable): Boolean =
-      collisionable match
-        case _: Damageable => true
-        case _ => false
-    val notNullCollisionables = collisionables.filterNot(_ == null)
-    val realCollision =
-      (for
-        damager <- notNullCollisionables
-        if !isDestroyed(damager)
-        if isADamager(damager)
-        damageable <- notNullCollisionables
-        if !isDestroyed(damageable)
-        if isADamageable(damageable)
-        if !areOnTheSameSide(damager, damageable)
-        if damager.isCollidingWith(damageable)
+      for
+        collisionable <- collisionables
+        if collisionable != null
+        if collisionable.isNotDestroyed
+        collisionable2 <- otherCollisionables
+        if collisionable2 != null
+        if collisionable != collisionable2
+        if collisionable2.isNotDestroyed
+        if !areOnTheSameSide(collisionable, collisionable2)
+        if collisionable isCollidingWith collisionable2
       yield
-        (damageable, damager))
-        .foldLeft(Map[Collisionable, List[Collisionable]]()
-          .withDefaultValue(List.empty))((res, v) => {
-          val key = v._1
-          res + (key -> (res(key) :+ v._2))
-        })
-    (for
-      collisionable <- notNullCollisionables
-    yield
-      (collisionable, if realCollision.contains(collisionable) then realCollision(collisionable) else List.empty))
-      .toMap
+        Collision(collisionable, collisionable2)
