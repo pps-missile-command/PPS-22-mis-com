@@ -25,56 +25,55 @@
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
 </span>2 <span style=''>
 </span>3 <span style=''>import model.World
-</span>4 <span style=''>import utilities.Constants
-</span>5 <span style=''>import view.{CollisionableVisualizer, Visualizer}
-</span>6 <span style=''>
-</span>7 <span style=''>import java.awt.event.MouseMotionListener
-</span>8 <span style=''>import java.awt.*
-</span>9 <span style=''>import java.awt.geom.AffineTransform
-</span>10 <span style=''>import java.awt.image.{AffineTransformOp, BufferedImage}
-</span>11 <span style=''>import javax.swing.{JButton, JPanel}
-</span>12 <span style=''>import model.elements2d.Angle
-</span>13 <span style=''>
-</span>14 <span style=''>import java.io.File
-</span>15 <span style=''>import javax.imageio.ImageIO
-</span>16 <span style=''>
-</span>17 <span style=''>given </span><span style='background: #F0ADAD'>Conversion[Double, Int]</span><span style=''> with
-</span>18 <span style=''>    </span><span style='background: #F0ADAD'>override def apply</span><span style=''>(x: Double): Int = x.toInt
-</span>19 <span style=''>
-</span>20 <span style=''>private class WorldPane(val world: World, width: Int, height: Int) extends </span><span style='background: #F0ADAD'>JPanel</span><span style=''>:
-</span>21 <span style=''>    </span><span style='background: #F0ADAD'>this.setSize(width, height)</span><span style=''>
-</span>22 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
-</span>23 <span style=''>
-</span>24 <span style=''>    </span><span style='background: #F0ADAD'>override def paintComponent</span><span style=''>(graphics: Graphics): Unit =
-</span>25 <span style=''>        </span><span style='background: #F0ADAD'>super.paintComponent(graphics)</span><span style=''>
-</span>26 <span style=''>        val g2d: Graphics2D = graphics.asInstanceOf[Graphics2D]
-</span>27 <span style=''>        
-</span>28 <span style=''>        </span><span style='background: #F0ADAD'>graphics.clearRect(0, 0, width, height)</span><span style=''>
-</span>29 <span style=''>        </span><span style='background: #F0ADAD'>Visualizer.printGround(world.ground).map(
-</span>30 <span style=''></span><span style='background: #F0ADAD'>            imageData =&gt; graphics.drawImage(imageData._1, imageData._2.x, imageData._2.y,
-</span>31 <span style=''></span><span style='background: #F0ADAD'>                imageData._3,
-</span>32 <span style=''></span><span style='background: #F0ADAD'>                imageData._4, this)
-</span>33 <span style=''></span><span style='background: #F0ADAD'>            )</span><span style=''>
-</span>34 <span style=''>
-</span>35 <span style=''>        </span><span style='background: #F0ADAD'>CollisionableVisualizer.printElements(world.collisionables) foreach { i =&gt;
-</span>36 <span style=''></span><span style='background: #F0ADAD'>            g2d.translate(i.position.x, i.position.y)
-</span>37 <span style=''></span><span style='background: #F0ADAD'>            g2d.rotate(i.angle.radiant - Angle.Degree(90).radiant)
-</span>38 <span style=''></span><span style='background: #F0ADAD'>
-</span>39 <span style=''></span><span style='background: #F0ADAD'>            graphics.drawImage(i.image, 0 - (i.baseWidth / 2), 0 - (i.baseHeight / 2), i.baseWidth, i.baseHeight, null)
-</span>40 <span style=''></span><span style='background: #F0ADAD'>
-</span>41 <span style=''></span><span style='background: #F0ADAD'>            g2d.rotate(-1 * (i.angle.radiant - Angle.Degree(90).radiant))
-</span>42 <span style=''></span><span style='background: #F0ADAD'>            g2d.translate(-i.position.x, -i.position.y)
-</span>43 <span style=''></span><span style='background: #F0ADAD'>        }</span><span style=''>
+</span>4 <span style=''>import view.{CollisionableVisualizer, Visualizer}
+</span>5 <span style=''>
+</span>6 <span style=''>import java.awt.event.MouseMotionListener
+</span>7 <span style=''>import java.awt.*
+</span>8 <span style=''>import java.awt.geom.AffineTransform
+</span>9 <span style=''>import java.awt.image.{AffineTransformOp, BufferedImage}
+</span>10 <span style=''>import javax.swing.{JButton, JPanel}
+</span>11 <span style=''>import model.elements2d.Angle
+</span>12 <span style=''>
+</span>13 <span style=''>import java.io.File
+</span>14 <span style=''>import javax.imageio.ImageIO
+</span>15 <span style=''>
+</span>16 <span style=''>given </span><span style='background: #F0ADAD'>Conversion[Double, Int]</span><span style=''> with
+</span>17 <span style=''>    </span><span style='background: #F0ADAD'>override def apply</span><span style=''>(x: Double): Int = x.toInt
+</span>18 <span style=''>
+</span>19 <span style=''>private class WorldPane(val world: World, width: Int, height: Int) extends </span><span style='background: #F0ADAD'>JPanel</span><span style=''>:
+</span>20 <span style=''>    </span><span style='background: #F0ADAD'>this.setSize(width, height)</span><span style=''>
+</span>21 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
+</span>22 <span style=''>
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>override def paintComponent</span><span style=''>(graphics: Graphics): Unit =
+</span>24 <span style=''>        </span><span style='background: #F0ADAD'>super.paintComponent(graphics)</span><span style=''>
+</span>25 <span style=''>        val g2d: Graphics2D = graphics.asInstanceOf[Graphics2D]
+</span>26 <span style=''>        
+</span>27 <span style=''>        </span><span style='background: #F0ADAD'>graphics.clearRect(0, 0, width, height)</span><span style=''>
+</span>28 <span style=''>        </span><span style='background: #F0ADAD'>Visualizer.printGround(world.ground).map(
+</span>29 <span style=''></span><span style='background: #F0ADAD'>            imageData =&gt; graphics.drawImage(imageData._1, imageData._2.x, imageData._2.y,
+</span>30 <span style=''></span><span style='background: #F0ADAD'>                imageData._3,
+</span>31 <span style=''></span><span style='background: #F0ADAD'>                imageData._4, this)
+</span>32 <span style=''></span><span style='background: #F0ADAD'>            )</span><span style=''>
+</span>33 <span style=''>
+</span>34 <span style=''>        </span><span style='background: #F0ADAD'>CollisionableVisualizer.printElements(world.collisionables) foreach { i =&gt;
+</span>35 <span style=''></span><span style='background: #F0ADAD'>            g2d.translate(i.position.x, i.position.y)
+</span>36 <span style=''></span><span style='background: #F0ADAD'>            g2d.rotate(i.angle.radiant - Angle.Degree(90).radiant)
+</span>37 <span style=''></span><span style='background: #F0ADAD'>
+</span>38 <span style=''></span><span style='background: #F0ADAD'>            graphics.drawImage(i.image, 0 - (i.baseWidth / 2), 0 - (i.baseHeight / 2), i.baseWidth, i.baseHeight, null)
+</span>39 <span style=''></span><span style='background: #F0ADAD'>
+</span>40 <span style=''></span><span style='background: #F0ADAD'>            g2d.rotate(-1 * (i.angle.radiant - Angle.Degree(90).radiant))
+</span>41 <span style=''></span><span style='background: #F0ADAD'>            g2d.translate(-i.position.x, -i.position.y)
+</span>42 <span style=''></span><span style='background: #F0ADAD'>        }</span><span style=''>
+</span>43 <span style=''>
 </span>44 <span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>//        world.all.foreach { entity =&gt;
-</span>47 <span style=''>//            val (x, y) = ((entity.position.x * width).toInt, (entity.position.y * height).toInt)
-</span>48 <span style=''>//            val (widthCircle, heightCircle) = ((entity.diameter * width).toInt, (entity.diameter * height).toInt)
-</span>49 <span style=''>//            graphics.setColor(Color.getHSBColor(entity.size.toFloat, 1, 0.5))
-</span>50 <span style=''>//            graphics.fillOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
-</span>51 <span style=''>//            graphics.setColor(Color.BLACK)
-</span>52 <span style=''>//            graphics.drawOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
-</span>53 <span style=''>//        }
+</span>45 <span style=''>//        world.all.foreach { entity =&gt;
+</span>46 <span style=''>//            val (x, y) = ((entity.position.x * width).toInt, (entity.position.y * height).toInt)
+</span>47 <span style=''>//            val (widthCircle, heightCircle) = ((entity.diameter * width).toInt, (entity.diameter * height).toInt)
+</span>48 <span style=''>//            graphics.setColor(Color.getHSBColor(entity.size.toFloat, 1, 0.5))
+</span>49 <span style=''>//            graphics.fillOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
+</span>50 <span style=''>//            graphics.setColor(Color.BLACK)
+</span>51 <span style=''>//            graphics.drawOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
+</span>52 <span style=''>//        }
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -89,15 +88,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          16
+          15
         </td>
         <td>
-          1059
+          1060
         </td>
         <td>
-          393
+          366
           -
-          416
+          389
         </td>
         <td>
           Apply
@@ -113,15 +112,15 @@
         </td>
       </tr><tr>
         <td>
-          17
+          16
         </td>
         <td>
-          1060
+          1061
         </td>
         <td>
-          426
+          399
           -
-          444
+          417
         </td>
         <td>
           DefDef
@@ -137,15 +136,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          18
         </td>
         <td>
-          1027
+          1028
         </td>
         <td>
-          547
+          520
           -
-          553
+          526
         </td>
         <td>
           Apply
@@ -161,15 +160,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          19
         </td>
         <td>
-          1028
+          1029
         </td>
         <td>
-          559
+          532
           -
-          586
+          559
         </td>
         <td>
           Apply
@@ -185,39 +184,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          20
         </td>
         <td>
           1031
         </td>
         <td>
-          625
+          598
           -
-          693
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1030
-        </td>
-        <td>
-          625
-          -
-          664
+          637
         </td>
         <td>
           Apply
@@ -233,15 +208,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          20
         </td>
         <td>
-          1029
+          1030
         </td>
         <td>
-          625
+          598
           -
-          655
+          628
         </td>
         <td>
           Apply
@@ -257,15 +232,39 @@
         </td>
       </tr><tr>
         <td>
-          23
+          20
         </td>
         <td>
-          1058
+          1032
         </td>
         <td>
-          700
+          598
           -
-          727
+          666
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1059
+        </td>
+        <td>
+          673
+          -
+          700
         </td>
         <td>
           DefDef
@@ -281,15 +280,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          23
         </td>
         <td>
-          1032
+          1033
         </td>
         <td>
-          764
+          737
           -
-          794
+          767
         </td>
         <td>
           Apply
@@ -305,15 +304,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          26
         </td>
         <td>
-          1033
+          1034
         </td>
         <td>
-          876
+          849
           -
-          915
+          888
         </td>
         <td>
           Apply
@@ -329,39 +328,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          27
         </td>
         <td>
-          1034
+          1043
         </td>
         <td>
-          924
+          897
           -
-          960
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          printGround
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Visualizer.printGround(world.ground)
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          1042
-        </td>
-        <td>
-          924
-          -
-          1135
+          1108
         </td>
         <td>
           Apply
@@ -381,63 +356,39 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
+        </td>
+        <td>
+          1035
+        </td>
+        <td>
+          897
+          -
+          933
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          printGround
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Visualizer.printGround(world.ground)
+        </td>
+      </tr><tr>
+        <td>
+          28
         </td>
         <td>
           1037
         </td>
         <td>
-          1024
+          997
           -
-          1038
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          imageData._2.x
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          1040
-        </td>
-        <td>
-          1040
-          -
-          1054
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          imageData._2.y
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          1036
-        </td>
-        <td>
-          1024
-          -
-          1038
+          1011
         </td>
         <td>
           Select
@@ -453,15 +404,15 @@
         </td>
       </tr><tr>
         <td>
-          29
-        </td>
-        <td>
-          1039
+          28
         </td>
         <td>
           1040
+        </td>
+        <td>
+          1013
           -
-          1054
+          1027
         </td>
         <td>
           Select
@@ -477,39 +428,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          28
         </td>
         <td>
-          1038
+          1042
         </td>
         <td>
-          1040
+          964
           -
-          1052
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          _2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          imageData._2
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          1041
-        </td>
-        <td>
-          991
-          -
-          1121
+          1094
         </td>
         <td>
           Apply
@@ -527,15 +454,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          28
         </td>
         <td>
-          1035
-        </td>
-        <td>
-          1024
-          -
           1036
+        </td>
+        <td>
+          997
+          -
+          1009
         </td>
         <td>
           Select
@@ -551,39 +478,87 @@
         </td>
       </tr><tr>
         <td>
-          34
+          28
         </td>
         <td>
-          1043
+          1039
         </td>
         <td>
-          1145
+          1013
           -
-          1204
+          1025
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          printElements
+          _2
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          CollisionableVisualizer.printElements(world.collisionables)
+          imageData._2
         </td>
       </tr><tr>
         <td>
-          34
+          28
         </td>
         <td>
-          1057
+          1038
         </td>
         <td>
-          1145
+          997
           -
-          1602
+          1011
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          imageData._2.x
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          1041
+        </td>
+        <td>
+          1013
+          -
+          1027
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          imageData._2.y
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1058
+        </td>
+        <td>
+          1118
+          -
+          1575
         </td>
         <td>
           Apply
@@ -607,15 +582,87 @@
         </td>
       </tr><tr>
         <td>
-          35
+          33
+        </td>
+        <td>
+          1044
+        </td>
+        <td>
+          1118
+          -
+          1177
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          printElements
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          CollisionableVisualizer.printElements(world.collisionables)
+        </td>
+      </tr><tr>
+        <td>
+          34
         </td>
         <td>
           1046
         </td>
         <td>
-          1232
+          1233
           -
-          1273
+          1245
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          i.position.y
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1045
+        </td>
+        <td>
+          1219
+          -
+          1231
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          i.position.x
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1047
+        </td>
+        <td>
+          1205
+          -
+          1246
         </td>
         <td>
           Apply
@@ -634,60 +681,60 @@
           35
         </td>
         <td>
-          1045
+          1049
         </td>
         <td>
-          1260
+          1288
           -
-          1272
+          1312
         </td>
         <td>
           Select
         </td>
         <td>
-          y
+          radiant
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          i.position.y
+          Angle.Degree(90).radiant
         </td>
       </tr><tr>
         <td>
           35
         </td>
         <td>
-          1044
+          1048
         </td>
         <td>
-          1246
+          1270
           -
-          1258
+          1285
         </td>
         <td>
           Select
         </td>
         <td>
-          x
+          radiant
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          i.position.x
+          i.angle.radiant
         </td>
       </tr><tr>
         <td>
-          36
+          35
         </td>
         <td>
-          1049
+          1050
         </td>
         <td>
-          1286
+          1259
           -
-          1340
+          1313
         </td>
         <td>
           Apply
@@ -703,63 +750,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          37
         </td>
         <td>
-          1048
+          1051
         </td>
         <td>
-          1315
+          1327
           -
-          1339
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          radiant
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Angle.Degree(90).radiant
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          1047
-        </td>
-        <td>
-          1297
-          -
-          1312
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          radiant
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          i.angle.radiant
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          1050
-        </td>
-        <td>
-          1354
-          -
-          1461
+          1434
         </td>
         <td>
           Apply
@@ -775,15 +774,63 @@
         </td>
       </tr><tr>
         <td>
-          40
+          39
         </td>
         <td>
           1052
         </td>
         <td>
-          1510
+          1465
           -
-          1534
+          1480
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          radiant
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          i.angle.radiant
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1054
+        </td>
+        <td>
+          1448
+          -
+          1509
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          rotate
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          g2d.rotate(-1 * (i.angle.radiant - Angle.Degree(90).radiant))
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1053
+        </td>
+        <td>
+          1483
+          -
+          1507
         </td>
         <td>
           Select
@@ -802,84 +849,12 @@
           40
         </td>
         <td>
-          1051
-        </td>
-        <td>
-          1492
-          -
-          1507
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          radiant
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          i.angle.radiant
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          1053
-        </td>
-        <td>
-          1475
-          -
-          1536
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          rotate
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          g2d.rotate(-1 * (i.angle.radiant - Angle.Degree(90).radiant))
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
           1055
         </td>
         <td>
-          1579
+          1537
           -
-          1591
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          i.position.y
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          1054
-        </td>
-        <td>
-          1564
-          -
-          1576
+          1549
         </td>
         <td>
           Select
@@ -895,15 +870,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          40
         </td>
         <td>
-          1056
+          1057
         </td>
         <td>
-          1549
+          1522
           -
-          1592
+          1565
         </td>
         <td>
           Apply
@@ -916,6 +891,30 @@
         </td>
         <td style="background: #F0ADAD">
           g2d.translate(-i.position.x, -i.position.y)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          1056
+        </td>
+        <td>
+          1552
+          -
+          1564
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          i.position.y
         </td>
       </tr>
     </table>

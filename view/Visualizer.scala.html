@@ -29,46 +29,48 @@
 </span>5 <span style=''>import model.elements2d.Point2D
 </span>6 <span style=''>import model.ground.{City, Ground, MissileBattery}
 </span>7 <span style=''>import model.missile.{Missile, hitboxBase, hitboxHeight}
-</span>8 <span style=''>import utilities.Constants
+</span>8 <span style=''>import utilities._
 </span>9 <span style=''>
-</span>10 <span style=''>object Visualizer:
-</span>11 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
-</span>12 <span style=''>
-</span>13 <span style=''>    /***
-</span>14 <span style=''>     * Method used for preparing the ImageView of a city.
-</span>15 <span style=''>     * @param structure City to be used.
-</span>16 <span style=''>     * @return ImageView of the city passed.
-</span>17 <span style=''>     */
-</span>18 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
-</span>19 <span style=''>        (
-</span>20 <span style=''>        </span><span style='background: #F0ADAD'>Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\city_&quot; + structure.currentLife + &quot;.png&quot;)</span><span style=''>,
-</span>21 <span style=''>        structure.position,
-</span>22 <span style=''>        Constants.cityBaseSize,
-</span>23 <span style=''>        Constants.cityHeightSize
-</span>24 <span style=''>        )
-</span>25 <span style=''>
-</span>26 <span style=''>    /***
-</span>27 <span style=''>     * Method used for preparing the ImageView of a missile turret.
-</span>28 <span style=''>     * @param structure Missile turret to be used.
-</span>29 <span style=''>     * @return ImageView of the missile turret passed
-</span>30 <span style=''>     */
-</span>31 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
-</span>32 <span style=''>        (
-</span>33 <span style=''>        </span><span style='background: #F0ADAD'>Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)</span><span style=''>,
-</span>34 <span style=''>        structure.bottomLeft_Position,
-</span>35 <span style=''>        Constants.missileBatteryBaseSize,
-</span>36 <span style=''>        Constants.missileBatteryHeightSize
-</span>37 <span style=''>        )
-</span>38 <span style=''>
-</span>39 <span style=''>    /***
-</span>40 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
-</span>41 <span style=''>     * @param ground Ground to be used.
-</span>42 <span style=''>     * @return List of ImageView of all the structures in the ground.
-</span>43 <span style=''>     */
-</span>44 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
-</span>45 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
-</span>46 <span style=''></span><span style='background: #F0ADAD'>            ++
-</span>47 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
+</span>10 <span style=''>
+</span>11 <span style=''>
+</span>12 <span style=''>object Visualizer:
+</span>13 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
+</span>14 <span style=''>
+</span>15 <span style=''>    /***
+</span>16 <span style=''>     * Method used for preparing the ImageView of a city.
+</span>17 <span style=''>     * @param structure City to be used.
+</span>18 <span style=''>     * @return ImageView of the city passed.
+</span>19 <span style=''>     */
+</span>20 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
+</span>21 <span style=''>        (
+</span>22 <span style=''>        </span><span style='background: #F0ADAD'>Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\city_&quot; + structure.currentLife + &quot;.png&quot;)</span><span style=''>,
+</span>23 <span style=''>        structure.position,
+</span>24 <span style=''>        cityBaseSize,
+</span>25 <span style=''>        cityHeightSize
+</span>26 <span style=''>        )
+</span>27 <span style=''>
+</span>28 <span style=''>    /***
+</span>29 <span style=''>     * Method used for preparing the ImageView of a missile turret.
+</span>30 <span style=''>     * @param structure Missile turret to be used.
+</span>31 <span style=''>     * @return ImageView of the missile turret passed
+</span>32 <span style=''>     */
+</span>33 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
+</span>34 <span style=''>        (
+</span>35 <span style=''>        </span><span style='background: #F0ADAD'>Toolkit.getDefaultToolkit().getImage(resourceFolderPath + &quot;\\Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)</span><span style=''>,
+</span>36 <span style=''>        structure.bottomLeft_Position,
+</span>37 <span style=''>        missileBatteryBaseSize,
+</span>38 <span style=''>        missileBatteryHeightSize
+</span>39 <span style=''>        )
+</span>40 <span style=''>
+</span>41 <span style=''>    /***
+</span>42 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
+</span>43 <span style=''>     * @param ground Ground to be used.
+</span>44 <span style=''>     * @return List of ImageView of all the structures in the ground.
+</span>45 <span style=''>     */
+</span>46 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
+</span>47 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
+</span>48 <span style=''></span><span style='background: #F0ADAD'>            ++
+</span>49 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -83,15 +85,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          10
+          12
         </td>
         <td>
           938
         </td>
         <td>
-          324
+          318
           -
-          392
+          386
         </td>
         <td>
           Apply
@@ -107,15 +109,15 @@
         </td>
       </tr><tr>
         <td>
-          10
+          12
         </td>
         <td>
           937
         </td>
         <td>
-          324
+          318
           -
-          363
+          357
         </td>
         <td>
           Apply
@@ -131,15 +133,15 @@
         </td>
       </tr><tr>
         <td>
-          10
+          12
         </td>
         <td>
           936
         </td>
         <td>
-          324
+          318
           -
-          354
+          348
         </td>
         <td>
           Apply
@@ -155,15 +157,15 @@
         </td>
       </tr><tr>
         <td>
-          17
+          19
         </td>
         <td>
           945
         </td>
         <td>
-          560
+          554
           -
-          580
+          574
         </td>
         <td>
           DefDef
@@ -179,15 +181,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
           941
         </td>
         <td>
-          722
+          716
           -
-          743
+          737
         </td>
         <td>
           Select
@@ -203,15 +205,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
           944
         </td>
         <td>
-          652
+          646
           -
-          753
+          747
         </td>
         <td>
           Apply
@@ -227,15 +229,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
           940
         </td>
         <td>
-          689
+          683
           -
-          719
+          713
         </td>
         <td>
           Apply
@@ -251,15 +253,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
           943
         </td>
         <td>
-          689
+          683
           -
-          752
+          746
         </td>
         <td>
           Apply
@@ -275,15 +277,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
           939
         </td>
         <td>
-          652
+          646
           -
-          679
+          673
         </td>
         <td>
           Apply
@@ -299,15 +301,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
           942
         </td>
         <td>
-          689
+          683
           -
-          743
+          737
         </td>
         <td>
           Apply
@@ -323,15 +325,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          32
         </td>
         <td>
           955
         </td>
         <td>
-          1053
+          1027
           -
-          1083
+          1057
         </td>
         <td>
           DefDef
@@ -347,15 +349,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
           950
         </td>
         <td>
-          1202
+          1176
           -
-          1266
+          1240
         </td>
         <td>
           Apply
@@ -371,15 +373,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
           953
         </td>
         <td>
-          1202
+          1176
           -
-          1299
+          1273
         </td>
         <td>
           Apply
@@ -395,15 +397,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
           947
         </td>
         <td>
-          1202
+          1176
           -
-          1232
+          1206
         </td>
         <td>
           Apply
@@ -419,15 +421,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
           946
         </td>
         <td>
-          1165
+          1139
           -
-          1192
+          1166
         </td>
         <td>
           Apply
@@ -443,15 +445,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
           949
         </td>
         <td>
-          1202
+          1176
           -
-          1260
+          1234
         </td>
         <td>
           Apply
@@ -467,15 +469,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
           952
         </td>
         <td>
-          1202
+          1176
           -
-          1290
+          1264
         </td>
         <td>
           Apply
@@ -491,15 +493,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
           954
         </td>
         <td>
-          1165
+          1139
           -
-          1300
+          1274
         </td>
         <td>
           Apply
@@ -515,15 +517,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
           948
         </td>
         <td>
-          1235
+          1209
           -
-          1260
+          1234
         </td>
         <td>
           Select
@@ -539,15 +541,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          34
         </td>
         <td>
           951
         </td>
         <td>
-          1269
+          1243
           -
-          1290
+          1264
         </td>
         <td>
           Select
@@ -563,15 +565,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          45
         </td>
         <td>
           961
         </td>
         <td>
-          1640
+          1594
           -
-          1655
+          1609
         </td>
         <td>
           DefDef
@@ -587,15 +589,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          46
         </td>
         <td>
           956
         </td>
         <td>
-          1760
+          1714
           -
-          1787
+          1741
         </td>
         <td>
           Apply
@@ -611,15 +613,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          46
         </td>
         <td>
           960
         </td>
         <td>
-          1722
+          1676
           -
-          1892
+          1846
         </td>
         <td>
           Apply
@@ -637,15 +639,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          46
         </td>
         <td>
           957
         </td>
         <td>
-          1723
+          1677
           -
-          1787
+          1741
         </td>
         <td>
           Apply
@@ -661,15 +663,15 @@
         </td>
       </tr><tr>
         <td>
-          46
+          48
         </td>
         <td>
           959
         </td>
         <td>
-          1817
+          1771
           -
-          1892
+          1846
         </td>
         <td>
           Apply
@@ -685,15 +687,15 @@
         </td>
       </tr><tr>
         <td>
-          46
+          48
         </td>
         <td>
           958
         </td>
         <td>
-          1855
+          1809
           -
-          1892
+          1846
         </td>
         <td>
           Apply
