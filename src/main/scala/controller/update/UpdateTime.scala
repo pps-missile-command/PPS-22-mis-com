@@ -14,6 +14,12 @@ import model.ground.Ground
  * Object that return an update function for the world to update the time of its components
  */
 object UpdateTime:
+
+  extension (collisionable: Collisionable)
+    private def updateTimebleTime(elapsedTime: DeltaTime): Collisionable = collisionable match
+      case timeable: Timeable => timeable.timeElapsed(elapsedTime).asInstanceOf[Collisionable]
+      case _ => collisionable
+  
   /**
    * Apply function used to update the time of the game components
    *
@@ -21,11 +27,7 @@ object UpdateTime:
    */
   def apply(): Update = on[TimePassed] { (event: TimePassed, world: World) =>
     Task {
-      def updateTimeble(collisionable: Collisionable): Collisionable = collisionable match
-        case timeable: Timeable => timeable.timeElapsed(event.deltaTime).asInstanceOf[Collisionable]
-        case _ => collisionable
-
-      val collisionables = world.collisionables.map(updateTimeble)
+      val collisionables = world.collisionables.map(_.updateTimebleTime(event.deltaTime))
       val spawner = world.spawner.timeElapsed(event.deltaTime)
       val ground = Ground(world.ground.cities, world.ground.turrets.map(_.timeElapsed(event.deltaTime)))
       world.copy(collisionables = collisionables, spawner = spawner, ground = ground)
