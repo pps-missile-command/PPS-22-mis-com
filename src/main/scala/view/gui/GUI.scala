@@ -1,7 +1,6 @@
 package view.gui
 
-import controller.Event
-import model.World
+import controller.{Event, GameLoop}
 import monix.eval.Task
 import monix.reactive.Observable
 import monix.reactive.subjects.PublishSubject
@@ -9,8 +8,9 @@ import org.w3c.dom.events.MouseEvent
 import view.gui.UI
 import model.elements2d.Point2D
 import controller.Event
+import model.World
 import view.Main
-
+import view.gui.WorldPane
 import java.awt.event.MouseMotionListener
 import java.awt.{BorderLayout, Color, Dimension, FlowLayout, Graphics, event}
 import java.awt.event.ActionEvent
@@ -55,7 +55,7 @@ class GUI(width: Int, height: Int) extends UI:
             panel.setSize(width, height)
             panel.setLayout(new FlowLayout())
             val button = new JButton("RIGIOCA")
-
+            val gui = this
             button.addActionListener(new ActionListener() {
                 override def actionPerformed(e: ActionEvent): Unit = {
                     frame.dispose()
