@@ -59,7 +59,7 @@ class GUI(width: Int, height: Int) extends UI:
             button.addActionListener(new ActionListener() {
                 override def actionPerformed(e: ActionEvent): Unit = {
                     frame.dispose()
-                    Main.startGame()
+                    Main.main(null)
                 }
             })
             panel.add(button)
