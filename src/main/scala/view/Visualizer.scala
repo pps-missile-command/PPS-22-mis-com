@@ -23,8 +23,8 @@ object Visualizer:
         (
             ImageIO.read(getClass.getResource("/city_" + structure.currentLife + ".png")),
             structure.position,
-            Constants.cityBaseSize,
-            Constants.cityHeightSize
+            cityBaseSize,
+            cityHeightSize
         )
 
     /***
@@ -36,8 +36,8 @@ object Visualizer:
         (
             ImageIO.read(getClass.getResource("/Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png")),
             structure.bottomLeft_Position,
-            Constants.missileBatteryBaseSize,
-            Constants.missileBatteryHeightSize
+            missileBatteryBaseSize,
+            missileBatteryHeightSize
         )
 
     /***
