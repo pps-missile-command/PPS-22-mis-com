@@ -1,10 +1,7 @@
-package utilities
-
 import model.collisions.LifePoint
-import model.elements2d.Point2D
 import view.ViewConstants
 
-object Constants:
+package object utilities:
     //missile battery informations
     val missileBatteryBaseSize: Int = 100 //base size
     val missileBatteryHeightSize: Int = (missileBatteryBaseSize/ViewConstants.batteryMissileBaseHeightRatio).toInt //height size
@@ -15,7 +12,6 @@ object Constants:
     val cityHeightSize: Int = (cityBaseSize/ViewConstants.cityBaseHeightRatio).toInt //height size
     val cityInitialLife: LifePoint = 3 //initial life
     //missile informations
-    val missileFriendlySpeed: Double = 5.0 //basic fiendly missile speed
     val missileHealth: LifePoint = 1
     val missileFriendlyDamage: LifePoint = 1
     //Structure spawning parameters
