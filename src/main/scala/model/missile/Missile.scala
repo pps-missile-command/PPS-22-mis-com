@@ -27,6 +27,8 @@ trait Missile extends Damageable, Moveable:
 
   def explode: Explosion
 
+  val moveStrategy: MissileMovement = Missile.BasicMove(this)(_)
+
 trait Scorable(val points: Int) extends Damageable
 
 case class MissileImpl(
@@ -38,8 +40,6 @@ case class MissileImpl(
                         override val damage: LifePoint = damage,
                         override val velocity: Double = velocity
                       ) extends Missile with MissileDamageable(lifePoint, position, destination):
-
-  val moveStrategy: MissileMovement = Missile.BasicMove(this)(_)
   
   override def takeDamage(damageToInflict: LifePoint): Missile = damageToInflict match
     case n if (currentLife - n) <= 0 => newMissile(life = lifePointDeath)

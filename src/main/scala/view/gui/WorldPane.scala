@@ -9,7 +9,6 @@ import java.awt.geom.AffineTransform
 import java.awt.image.{AffineTransformOp, BufferedImage}
 import javax.swing.{JButton, JPanel}
 import model.elements2d.Angle
-import view.CollisionableVisualizer.resourceFolderPath
 
 import java.io.File
 import javax.imageio.ImageIO
@@ -34,11 +33,11 @@ private class WorldPane(val world: World, width: Int, height: Int) extends JPane
 
         CollisionableVisualizer.printElements(world.collisionables) foreach { i =>
             g2d.translate(i.position.x, i.position.y)
-            g2d.rotate(i.angle.radiant + Angle.Degree(90).radiant)
+            g2d.rotate(i.angle.radiant - Angle.Degree(90).radiant)
 
             graphics.drawImage(i.image, 0 - (i.baseWidth / 2), 0 - (i.baseHeight / 2), i.baseWidth, i.baseHeight, null)
 
-            g2d.rotate(Angle.Degree(270).radiant - i.angle.radiant)
+            g2d.rotate(-1 * (i.angle.radiant - Angle.Degree(90).radiant))
             g2d.translate(-i.position.x, -i.position.y)
         }
 
