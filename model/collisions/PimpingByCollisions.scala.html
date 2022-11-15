@@ -1,0 +1,794 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          model/collisions/PimpingByCollisions.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions
+</span>2 <span style=''>
+</span>3 <span style=''>import model.collisions.Collision
+</span>4 <span style=''>import model.collisions.PimpingByCollisionable._
+</span>5 <span style=''>
+</span>6 <span style=''>object PimpingByCollisions:
+</span>7 <span style=''>
+</span>8 <span style=''>  extension (collisions: Set[Collision])
+</span>9 <span style=''>
+</span>10 <span style=''>    </span><span style='background: #AEF1AE'>def allScorableDestroyedThatCollide</span><span style=''>: Set[Collisionable] =
+</span>11 <span style=''>      </span><span style='background: #AEF1AE'>collisions
+</span>12 <span style=''></span><span style='background: #AEF1AE'>        .flatMap(_.involvedCollisionables)
+</span>13 <span style=''></span><span style='background: #AEF1AE'>        .filter(_.isScorable)
+</span>14 <span style=''></span><span style='background: #AEF1AE'>        .filter(_.isDestroyed)</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>    </span><span style='background: #AEF1AE'>def allElementsThatDestroyed</span><span style=''>(scorableDestroyed: Collisionable): Set[Collisionable] =
+</span>17 <span style=''>      </span><span style='background: #AEF1AE'>collisions
+</span>18 <span style=''></span><span style='background: #AEF1AE'>        .flatMap(_.otherElementsOfCollision(scorableDestroyed))
+</span>19 <span style=''></span><span style='background: #AEF1AE'>        .filter(_.isDamager)</span><span style=''>
+</span>20 <span style=''>
+</span>21 <span style=''>    </span><span style='background: #AEF1AE'>def allCollisionsThatInvolves</span><span style=''>(collisionable: Collisionable): Set[Collision] =
+</span>22 <span style=''>      </span><span style='background: #AEF1AE'>collisions
+</span>23 <span style=''></span><span style='background: #AEF1AE'>        .filter(_.contains(collisionable))</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>    </span><span style='background: #AEF1AE'>def allCollisionablesThatCollideWith</span><span style=''>(collisionable: Collisionable): Set[Collisionable] =
+</span>26 <span style=''>      </span><span style='background: #AEF1AE'>collisions
+</span>27 <span style=''></span><span style='background: #AEF1AE'>        .allCollisionsThatInvolves(collisionable)
+</span>28 <span style=''></span><span style='background: #AEF1AE'>        .flatMap(_
+</span>29 <span style=''></span><span style='background: #AEF1AE'>          .otherElementsOfCollision(collisionable)
+</span>30 <span style=''></span><span style='background: #AEF1AE'>        )</span><span style=''>
+</span>31 <span style=''>
+</span>32 <span style=''>    </span><span style='background: #AEF1AE'>def allCollisionablesThatCollideWith</span><span style=''>(collisionables: Set[Collisionable]): Set[Collisionable] =
+</span>33 <span style=''>      </span><span style='background: #AEF1AE'>collisionables
+</span>34 <span style=''></span><span style='background: #AEF1AE'>        .flatMap(collisionable =&gt;
+</span>35 <span style=''></span><span style='background: #AEF1AE'>          collisions
+</span>36 <span style=''></span><span style='background: #AEF1AE'>            .allCollisionablesThatCollideWith(collisionable)
+</span>37 <span style=''></span><span style='background: #AEF1AE'>        )</span><span style=''>
+</span>38 <span style=''>
+</span>39 <span style=''>    </span><span style='background: #AEF1AE'>def allCollisionablesThatDoesntCollideWith</span><span style=''>(all: Set[Collisionable], doesntCollide: Set[Collisionable]): Set[Collisionable] =
+</span>40 <span style=''>      </span><span style='background: #AEF1AE'>all.filter(_ != null) -- collisions.allCollisionablesThatCollideWith(doesntCollide)</span><span style=''>
+</span>41 <span style=''>
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>def updateCollisionablesContained</span><span style=''>(mapping: Map[Collisionable, Collisionable]): Set[Collision] =
+</span>43 <span style=''>      </span><span style='background: #AEF1AE'>collisions
+</span>44 <span style=''></span><span style='background: #AEF1AE'>        .map(collision =&gt;
+</span>45 <span style=''></span><span style='background: #AEF1AE'>          Collision(
+</span>46 <span style=''></span><span style='background: #AEF1AE'>            collision
+</span>47 <span style=''></span><span style='background: #AEF1AE'>              .involvedCollisionables
+</span>48 <span style=''></span><span style='background: #AEF1AE'>              .map(mapping)
+</span>49 <span style=''></span><span style='background: #AEF1AE'>          )
+</span>50 <span style=''></span><span style='background: #AEF1AE'>        )</span><span style=''>
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          252
+        </td>
+        <td>
+          185
+          -
+          220
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          allScorableDestroyedThatCollide
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def allScorableDestroyedThatCollide
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          247
+        </td>
+        <td>
+          249
+          -
+          302
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .flatMap(_.involvedCollisionables)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          249
+        </td>
+        <td>
+          249
+          -
+          332
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .flatMap(_.involvedCollisionables)
+        .filter(_.isScorable)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          248
+        </td>
+        <td>
+          319
+          -
+          331
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isScorable
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.isScorable
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          250
+        </td>
+        <td>
+          349
+          -
+          362
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          251
+        </td>
+        <td>
+          249
+          -
+          363
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .flatMap(_.involvedCollisionables)
+        .filter(_.isScorable)
+        .filter(_.isDestroyed)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          257
+        </td>
+        <td>
+          369
+          -
+          397
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          allElementsThatDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def allElementsThatDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          254
+        </td>
+        <td>
+          460
+          -
+          534
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .flatMap(_.otherElementsOfCollision(scorableDestroyed))
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          253
+        </td>
+        <td>
+          488
+          -
+          533
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          otherElementsOfCollision
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.otherElementsOfCollision(scorableDestroyed)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          256
+        </td>
+        <td>
+          460
+          -
+          563
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .flatMap(_.otherElementsOfCollision(scorableDestroyed))
+        .filter(_.isDamager)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          255
+        </td>
+        <td>
+          551
+          -
+          562
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isDamager
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.isDamager
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          260
+        </td>
+        <td>
+          569
+          -
+          598
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          allCollisionsThatInvolves
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def allCollisionsThatInvolves
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          259
+        </td>
+        <td>
+          653
+          -
+          706
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .filter(_.contains(collisionable))
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          258
+        </td>
+        <td>
+          680
+          -
+          705
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.contains(collisionable)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          264
+        </td>
+        <td>
+          712
+          -
+          748
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          allCollisionablesThatCollideWith
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def allCollisionablesThatCollideWith
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          261
+        </td>
+        <td>
+          807
+          -
+          867
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          allCollisionsThatInvolves
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .allCollisionsThatInvolves(collisionable)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          263
+        </td>
+        <td>
+          807
+          -
+          947
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .allCollisionsThatInvolves(collisionable)
+        .flatMap(_
+          .otherElementsOfCollision(collisionable)
+        )
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          262
+        </td>
+        <td>
+          885
+          -
+          937
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          otherElementsOfCollision
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _
+          .otherElementsOfCollision(collisionable)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          267
+        </td>
+        <td>
+          953
+          -
+          989
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          allCollisionablesThatCollideWith
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def allCollisionablesThatCollideWith
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          266
+        </td>
+        <td>
+          1054
+          -
+          1194
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables
+        .flatMap(collisionable =&gt;
+          collisions
+            .allCollisionablesThatCollideWith(collisionable)
+        )
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          265
+        </td>
+        <td>
+          1113
+          -
+          1184
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          allCollisionablesThatCollideWith
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+            .allCollisionablesThatCollideWith(collisionable)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          271
+        </td>
+        <td>
+          1200
+          -
+          1242
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          allCollisionablesThatDoesntCollideWith
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def allCollisionablesThatDoesntCollideWith
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          268
+        </td>
+        <td>
+          1331
+          -
+          1352
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          all.filter(_ != null)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          270
+        </td>
+        <td>
+          1331
+          -
+          1414
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          all.filter(_ != null) -- collisions.allCollisionablesThatCollideWith(doesntCollide)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          269
+        </td>
+        <td>
+          1356
+          -
+          1414
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          allCollisionablesThatCollideWith
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions.allCollisionablesThatCollideWith(doesntCollide)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          274
+        </td>
+        <td>
+          1420
+          -
+          1453
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateCollisionablesContained
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def updateCollisionablesContained
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          273
+        </td>
+        <td>
+          1522
+          -
+          1689
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .map(collision =&gt;
+          Collision(
+            collision
+              .involvedCollisionables
+              .map(mapping)
+          )
+        )
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          272
+        </td>
+        <td>
+          1592
+          -
+          1667
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collision
+              .involvedCollisionables
+              .map(mapping)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

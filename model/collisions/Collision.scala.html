@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/missile/zigzag/ZigZagMissile.scala.html
+          model/collisions/Collision.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,31 +22,27 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile.zigzag
-</span>2 <span style=''>import model.collisions.Affiliation
-</span>3 <span style=''>import model.elements2d.Point2D
-</span>4 <span style=''>import model.missile.*
-</span>5 <span style=''>
-</span>6 <span style=''>import scala.util.Random
-</span>7 <span style=''>
-</span>8 <span style=''>object ZigZagMissile:
-</span>9 <span style=''>
-</span>10 <span style=''>  trait ZigZagMissile:
-</span>11 <span style=''>    missile: Missile =&gt;
-</span>12 <span style=''>      </span><span style='background: #F0ADAD'>def zigzag</span><span style=''>(): Boolean = true
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions
+</span>2 <span style=''>
+</span>3 <span style=''>import model.collisions
+</span>4 <span style=''>
+</span>5 <span style=''>object Collision:
+</span>6 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(collisionables: Collisionable*): Collision =
+</span>7 <span style=''>    Collision(</span><span style='background: #AEF1AE'>collisionables.toSet</span><span style=''>)
+</span>8 <span style=''>
+</span>9 <span style=''>case class Collision(involvedCollisionables: Set[Collisionable]):
+</span>10 <span style=''>  </span><span style='background: #AEF1AE'>def contains</span><span style=''>(collisionable: Collisionable): Boolean =
+</span>11 <span style=''>    </span><span style='background: #AEF1AE'>involvedCollisionables
+</span>12 <span style=''></span><span style='background: #AEF1AE'>      .contains(collisionable)</span><span style=''>
 </span>13 <span style=''>
-</span>14 <span style=''>    </span><span style='background: #F0ADAD'>override def move</span><span style=''>(): Missile =
-</span>15 <span style=''>      </span><span style='background: #F0ADAD'>println(&quot;OVERRIDE&quot;)</span><span style=''>
-</span>16 <span style=''>      this
+</span>14 <span style=''>  </span><span style='background: #F0ADAD'>def exists</span><span style=''>(p: Collisionable =&gt; Boolean): Boolean =
+</span>15 <span style=''>    </span><span style='background: #F0ADAD'>involvedCollisionables
+</span>16 <span style=''></span><span style='background: #F0ADAD'>      .exists(p)</span><span style=''>
 </span>17 <span style=''>
-</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>() = new </span><span style='background: #F0ADAD'>MissileImpl(5, Point2D(0,0), Point2D(5,5))</span><span style=''> with ZigZagMissile
-</span>19 <span style=''>
-</span>20 <span style=''></span><span style='background: #F0ADAD'>@main def test</span><span style=''>() =
-</span>21 <span style=''>  import ZigZagMissile.*
-</span>22 <span style=''>  given random: </span><span style='background: #F0ADAD'>Random()</span><span style=''>
-</span>23 <span style=''>  val zigzagMissile = </span><span style='background: #F0ADAD'>apply()</span><span style=''>
-</span>24 <span style=''>  </span><span style='background: #F0ADAD'>zigzagMissile.zigzag()</span><span style=''>
-</span>25 <span style=''>  </span><span style='background: #F0ADAD'>zigzagMissile.move()</span><span style=''>
+</span>18 <span style=''>  </span><span style='background: #AEF1AE'>def otherElementsOfCollision</span><span style=''>(collisionable: Collisionable): Set[Collisionable] =
+</span>19 <span style=''>    involvedCollisionables match
+</span>20 <span style=''>      </span><span style='background: #AEF1AE'>case _ if contains(collisionable)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>involvedCollisionables - collisionable</span><span style=''>
+</span>21 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Set.empty</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -61,387 +57,317 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          11
+          5
         </td>
         <td>
-          936
+          159
         </td>
         <td>
-          223
+          71
           -
-          233
+          80
         </td>
         <td>
           DefDef
         </td>
         <td>
-          zigzag
+          apply
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          def zigzag
+        <td style="background: #AEF1AE">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          6
+        </td>
+        <td>
+          158
+        </td>
+        <td>
+          140
+          -
+          160
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toSet
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables.toSet
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          161
+        </td>
+        <td>
+          231
+          -
+          243
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def contains
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          160
+        </td>
+        <td>
+          289
+          -
+          342
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          involvedCollisionables
+      .contains(collisionable)
         </td>
       </tr><tr>
         <td>
           13
         </td>
         <td>
-          938
+          163
         </td>
         <td>
-          257
+          346
           -
-          274
+          356
         </td>
         <td>
           DefDef
         </td>
         <td>
-          move
+          exists
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def move
+          def exists
         </td>
       </tr><tr>
         <td>
-          14
+          15
         </td>
         <td>
-          937
+          162
         </td>
         <td>
-          294
+          401
           -
-          313
+          440
         </td>
         <td>
           Apply
         </td>
         <td>
-          println
+          exists
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          println(&quot;OVERRIDE&quot;)
+          involvedCollisionables
+      .exists(p)
         </td>
       </tr><tr>
         <td>
           17
         </td>
         <td>
-          941
+          170
         </td>
         <td>
-          346
+          444
           -
-          357
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          $lessinit$greater$default$4
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          MissileImpl
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          944
-        </td>
-        <td>
-          346
-          -
-          357
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          $lessinit$greater$default$7
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          MissileImpl
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          946
-        </td>
-        <td>
-          328
-          -
-          337
+          472
         </td>
         <td>
           DefDef
         </td>
         <td>
-          apply
+          otherElementsOfCollision
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          def apply
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          940
-        </td>
-        <td>
-          375
-          -
-          387
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(5,5)
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          943
-        </td>
-        <td>
-          346
-          -
-          357
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          $lessinit$greater$default$6
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          MissileImpl
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          945
-        </td>
-        <td>
-          346
-          -
-          388
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          MissileImpl(5, Point2D(0,0), Point2D(5,5))
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          939
-        </td>
-        <td>
-          361
-          -
-          373
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(0,0)
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          942
-        </td>
-        <td>
-          346
-          -
-          357
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          $lessinit$greater$default$5
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          MissileImpl
+        <td style="background: #AEF1AE">
+          def otherElementsOfCollision
         </td>
       </tr><tr>
         <td>
           19
         </td>
         <td>
-          951
+          164
         </td>
         <td>
-          409
+          601
           -
-          423
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          test
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          @main def test
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          947
-        </td>
-        <td>
-          469
-          -
-          477
+          639
         </td>
         <td>
           Apply
         </td>
         <td>
-          &lt;init&gt;
+          -
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          Random()
+        <td style="background: #AEF1AE">
+          involvedCollisionables - collisionable
         </td>
       </tr><tr>
         <td>
-          22
+          19
         </td>
         <td>
-          948
+          166
         </td>
         <td>
-          500
+          574
           -
-          507
+          597
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          contains
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          apply()
+        <td style="background: #AEF1AE">
+          contains(collisionable)
         </td>
       </tr><tr>
         <td>
-          23
+          19
         </td>
         <td>
-          949
+          165
         </td>
         <td>
-          510
+          564
           -
-          532
+          597
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          zigzag
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          zigzagMissile.zigzag()
+        <td style="background: #AEF1AE">
+          case _ if contains(collisionable)
         </td>
       </tr><tr>
         <td>
-          24
+          20
         </td>
         <td>
-          950
+          167
         </td>
         <td>
-          535
+          656
           -
-          555
+          659
         </td>
         <td>
-          Apply
+          Ident
         </td>
         <td>
-          move
+          Set
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          zigzagMissile.move()
+        <td style="background: #AEF1AE">
+          Set
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          169
+        </td>
+        <td>
+          646
+          -
+          652
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          168
+        </td>
+        <td>
+          656
+          -
+          665
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          empty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set.empty
         </td>
       </tr>
     </table>
