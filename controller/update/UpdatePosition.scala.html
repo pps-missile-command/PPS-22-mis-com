@@ -36,21 +36,24 @@
 </span>12 <span style=''> * Object that return an update function for the world to update the position its components
 </span>13 <span style=''> */
 </span>14 <span style=''>object UpdatePosition:
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * Apply function used to update the position of the game components
-</span>17 <span style=''>   *
-</span>18 <span style=''>   * @return An Update that update the position of the game components
-</span>19 <span style=''>   */
-</span>20 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, world: World) =&gt;
-</span>21 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>22 <span style=''></span><span style='background: #F0ADAD'>      def updateMovable(collisionable: Collisionable): Collisionable = collisionable match
-</span>23 <span style=''></span><span style='background: #F0ADAD'>        case moveable: Moveable =&gt; moveable.move().asInstanceOf[Collisionable]
-</span>24 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; collisionable
-</span>25 <span style=''></span><span style='background: #F0ADAD'>
-</span>26 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables.map(updateMovable)
-</span>27 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = collisionables)
-</span>28 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>29 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>  extension (collisionable: Collisionable)
+</span>17 <span style=''>    </span><span style='background: #F0ADAD'>private def updateMovablePosition</span><span style=''>(): Collisionable =
+</span>18 <span style=''>      collisionable match
+</span>19 <span style=''>        </span><span style='background: #F0ADAD'>case moveable: Moveable</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>moveable.move()</span><span style=''>.asInstanceOf[Collisionable]
+</span>20 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; collisionable
+</span>21 <span style=''>
+</span>22 <span style=''>  /**
+</span>23 <span style=''>   * Apply function used to update the position of the game components
+</span>24 <span style=''>   *
+</span>25 <span style=''>   * @return An Update that update the position of the game components
+</span>26 <span style=''>   */
+</span>27 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, world: World) =&gt;
+</span>28 <span style=''></span><span style='background: #F0ADAD'>    Task {
+</span>29 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables.map(_.updateMovablePosition())
+</span>30 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = collisionables)
+</span>31 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>32 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -65,15 +68,111 @@
         <th>Code</th>
       </tr><tr>
         <td>
+          16
+        </td>
+        <td>
+          140
+        </td>
+        <td>
+          405
+          -
+          438
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateMovablePosition
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          private def updateMovablePosition
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          137
+        </td>
+        <td>
+          519
+          -
+          534
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          move
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          moveable.move()
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          138
+        </td>
+        <td>
+          492
+          -
+          515
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case moveable: Moveable
+        </td>
+      </tr><tr>
+        <td>
           19
         </td>
         <td>
-          76
+          139
         </td>
         <td>
-          518
+          571
           -
-          527
+          577
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          142
+        </td>
+        <td>
+          757
+          -
+          766
         </td>
         <td>
           DefDef
@@ -89,15 +188,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          26
         </td>
         <td>
-          75
+          141
         </td>
         <td>
-          540
+          779
           -
-          925
+          973
         </td>
         <td>
           Apply
@@ -111,11 +210,7 @@
         <td style="background: #F0ADAD">
           on[TimePassed] { (_: Event, world: World) =&gt;
     Task {
-      def updateMovable(collisionable: Collisionable): Collisionable = collisionable match
-        case moveable: Moveable =&gt; moveable.move().asInstanceOf[Collisionable]
-        case _ =&gt; collisionable
-
-      val collisionables = world.collisionables.map(updateMovable)
+      val collisionables = world.collisionables.map(_.updateMovablePosition())
       world.copy(collisionables = collisionables)
     }
   }

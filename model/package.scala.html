@@ -22,41 +22,47 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>import model.collisions.{Affiliation, Collisionable, Damageable}
-</span>2 <span style=''>
-</span>3 <span style=''>package object model:
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>import model.collisions.{Affiliation, Collisionable, Damageable, Damager, Collision}
+</span>2 <span style=''>import model.collisions.PimpingByCollisionable._
+</span>3 <span style=''>import model.collisions.PimpingByCollisions._
 </span>4 <span style=''>
-</span>5 <span style=''>  /**
-</span>6 <span style=''>   * Type alias for the abstraction of virtual time
-</span>7 <span style=''>   */
-</span>8 <span style=''>  type DeltaTime = Double
-</span>9 <span style=''>
-</span>10 <span style=''>  /**
-</span>11 <span style=''>   * Type alias for the point that are given in the game when an object is destroyed.
-</span>12 <span style=''>   */
-</span>13 <span style=''>  type ScorePoint = Int
-</span>14 <span style=''>
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * Trait that represents an object that give points when destroyed.
-</span>17 <span style=''>   */
-</span>18 <span style=''>  trait Scorable(val points: ScorePoint) extends Damageable
-</span>19 <span style=''>
-</span>20 <span style=''>  /**
-</span>21 <span style=''>   * Function that calculate the new score of the player.
-</span>22 <span style=''>   * It only add the points of the destroyed object if the one of the object that inflict damage to the damageable 
-</span>23 <span style=''>   * is owned by the player.
-</span>24 <span style=''>   *
-</span>25 <span style=''>   * @param collisionables a map that has as keys the damageable objects and as values a list with the damaeger that collides with them.
-</span>26 <span style=''>   * @param actualScore    the actual score of the player.
-</span>27 <span style=''>   * @return the new score of the player.
-</span>28 <span style=''>   */
-</span>29 <span style=''>  </span><span style='background: #AEF1AE'>def calculateNewScore</span><span style=''>(collisionables: Map[Collisionable, List[Collisionable]], actualScore: ScorePoint): ScorePoint =
-</span>30 <span style=''>    </span><span style='background: #AEF1AE'>def getScorePoint</span><span style=''>(collisionable: Collisionable, damagers: List[Collisionable]): ScorePoint =
-</span>31 <span style=''>      collisionable match
-</span>32 <span style=''>        </span><span style='background: #AEF1AE'>case scorable: Scorable if scorable.isDestroyed &amp;&amp; damagers.map(_.affiliation).contains(Affiliation.Friendly)</span><span style=''> =&gt; scorable.points
-</span>33 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; 0
-</span>34 <span style=''>
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.map((damageable, damagers) =&gt; getScorePoint(damageable, damagers)).sum</span><span style=''> + actualScore
+</span>5 <span style=''>package object model:
+</span>6 <span style=''>
+</span>7 <span style=''>  /**
+</span>8 <span style=''>   * Type alias for the abstraction of virtual time
+</span>9 <span style=''>   */
+</span>10 <span style=''>  type DeltaTime = Double
+</span>11 <span style=''>
+</span>12 <span style=''>  /**
+</span>13 <span style=''>   * Type alias for the point that are given in the game when an object is destroyed.
+</span>14 <span style=''>   */
+</span>15 <span style=''>  type ScorePoint = Int
+</span>16 <span style=''>
+</span>17 <span style=''>  /**
+</span>18 <span style=''>   * Trait that represents an object that give points when destroyed.
+</span>19 <span style=''>   */
+</span>20 <span style=''>  trait Scorable(val points: ScorePoint) extends Damageable
+</span>21 <span style=''>
+</span>22 <span style=''>
+</span>23 <span style=''>  extension (actualScore: ScorePoint)
+</span>24 <span style=''>
+</span>25 <span style=''>    /**
+</span>26 <span style=''>     * Function that calculate the new score of the player.
+</span>27 <span style=''>     * It only add the points of the destroyed object if the one of the object that inflict damage to the damageable
+</span>28 <span style=''>     * is owned by the player.
+</span>29 <span style=''>     *
+</span>30 <span style=''>     * @param collisions the collisions that have been detected in the game
+</span>31 <span style=''>     * @return the new score of the player.
+</span>32 <span style=''>     */
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>def calculateNewScoreBasedOn</span><span style=''>(collisions: Set[Collision]): ScorePoint =
+</span>34 <span style=''>      </span><span style='background: #AEF1AE'>(for
+</span>35 <span style=''></span><span style='background: #AEF1AE'>        scorableDestroyed &lt;- collisions.allScorableDestroyedThatCollide.toSeq
+</span>36 <span style=''></span><span style='background: #AEF1AE'>        if scorableDestroyed.isNotFriendly
+</span>37 <span style=''></span><span style='background: #AEF1AE'>        otherElement &lt;- collisions.allElementsThatDestroyed(scorableDestroyed)
+</span>38 <span style=''></span><span style='background: #AEF1AE'>        if otherElement.isFriendly
+</span>39 <span style=''></span><span style='background: #AEF1AE'>      yield
+</span>40 <span style=''></span><span style='background: #AEF1AE'>        scorableDestroyed.getScorePoint)
+</span>41 <span style=''></span><span style='background: #AEF1AE'>        .sum</span><span style=''> + actualScore
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -71,231 +77,39 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          28
-        </td>
-        <td>
-          834
-        </td>
-        <td>
-          906
-          -
-          927
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          calculateNewScore
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def calculateNewScore
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          830
-        </td>
-        <td>
-          1028
-          -
-          1045
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          getScorePoint
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def getScorePoint
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          828
-        </td>
-        <td>
-          1206
-          -
-          1264
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damagers.map(_.affiliation).contains(Affiliation.Friendly)
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          824
-        </td>
-        <td>
-          1155
-          -
-          1264
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case scorable: Scorable if scorable.isDestroyed &amp;&amp; damagers.map(_.affiliation).contains(Affiliation.Friendly)
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          827
-        </td>
-        <td>
-          1206
-          -
-          1233
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damagers.map(_.affiliation)
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          826
-        </td>
-        <td>
-          1219
-          -
-          1232
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          affiliation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.affiliation
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          825
-        </td>
-        <td>
-          1182
-          -
-          1202
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isDestroyed
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          scorable.isDestroyed
-        </td>
-      </tr><tr>
-        <td>
           32
         </td>
         <td>
-          829
+          963
         </td>
         <td>
-          1292
+          956
           -
-          1298
+          984
         </td>
         <td>
-          Block
+          DefDef
         </td>
         <td>
-          &lt;none&gt;
+          calculateNewScoreBasedOn
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          case _
+          def calculateNewScoreBasedOn
         </td>
       </tr><tr>
         <td>
-          34
+          33
         </td>
         <td>
-          831
+          962
         </td>
         <td>
-          1354
+          1033
           -
-          1389
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getScorePoint
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          getScorePoint(damageable, damagers)
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          833
-        </td>
-        <td>
-          1309
-          -
-          1394
+          1338
         </td>
         <td>
           Apply
@@ -307,19 +121,202 @@
           
         </td>
         <td style="background: #AEF1AE">
-          collisionables.map((damageable, damagers) =&gt; getScorePoint(damageable, damagers)).sum
+          (for
+        scorableDestroyed &lt;- collisions.allScorableDestroyedThatCollide.toSeq
+        if scorableDestroyed.isNotFriendly
+        otherElement &lt;- collisions.allElementsThatDestroyed(scorableDestroyed)
+        if otherElement.isFriendly
+      yield
+        scorableDestroyed.getScorePoint)
+        .sum
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          961
+        </td>
+        <td>
+          1034
+          -
+          1324
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for
+        scorableDestroyed &lt;- collisions.allScorableDestroyedThatCollide.toSeq
+        if scorableDestroyed.isNotFriendly
+        otherElement &lt;- collisions.allElementsThatDestroyed(scorableDestroyed)
+        if otherElement.isFriendly
+      yield
+        scorableDestroyed.getScorePoint
         </td>
       </tr><tr>
         <td>
           34
         </td>
         <td>
-          832
+          953
         </td>
         <td>
-          1309
+          1067
           -
-          1390
+          1115
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toSeq
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions.allScorableDestroyedThatCollide.toSeq
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          955
+        </td>
+        <td>
+          1046
+          -
+          1158
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          scorableDestroyed &lt;- collisions.allScorableDestroyedThatCollide.toSeq
+        if scorableDestroyed.isNotFriendly
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          952
+        </td>
+        <td>
+          1067
+          -
+          1109
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          allScorableDestroyedThatCollide
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions.allScorableDestroyedThatCollide
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          954
+        </td>
+        <td>
+          1127
+          -
+          1158
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isNotFriendly
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          scorableDestroyed.isNotFriendly
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          956
+        </td>
+        <td>
+          1183
+          -
+          1237
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          allElementsThatDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions.allElementsThatDestroyed(scorableDestroyed)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          958
+        </td>
+        <td>
+          1167
+          -
+          1272
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          otherElement &lt;- collisions.allElementsThatDestroyed(scorableDestroyed)
+        if otherElement.isFriendly
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          960
+        </td>
+        <td>
+          1167
+          -
+          1324
         </td>
         <td>
           Apply
@@ -331,7 +328,58 @@
           
         </td>
         <td style="background: #AEF1AE">
-          collisionables.map((damageable, damagers) =&gt; getScorePoint(damageable, damagers))
+          otherElement &lt;- collisions.allElementsThatDestroyed(scorableDestroyed)
+        if otherElement.isFriendly
+      yield
+        scorableDestroyed.getScorePoint
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          957
+        </td>
+        <td>
+          1249
+          -
+          1272
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isFriendly
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          otherElement.isFriendly
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          959
+        </td>
+        <td>
+          1293
+          -
+          1324
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getScorePoint
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          scorableDestroyed.getScorePoint
         </td>
       </tr>
     </table>
