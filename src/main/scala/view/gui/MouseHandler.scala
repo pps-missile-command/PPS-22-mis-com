@@ -12,7 +12,6 @@ extension (component: Component)
     Observable.create(OverflowStrategy.Unbounded) { subject =>
       component.addMouseListener(new MouseAdapter:
         override def mouseClicked(e: MouseEvent): Unit =
-          println("CLICKED (" + e.getX + ", " + e.getY + ")")
           subject.onNext((e.getX, e.getY))
       )
       SingleAssignCancelable()
