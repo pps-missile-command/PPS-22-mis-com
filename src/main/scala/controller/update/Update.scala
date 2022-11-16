@@ -28,6 +28,7 @@ trait Update extends ((Event, World) => Task[(World, Update)]) :
  * Companion object for [[Update]].
  */
 object Update:
+
   /**
    * Function that allow the instruction to be executed only if the [[Event]] E happened.
    *

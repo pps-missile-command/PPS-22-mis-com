@@ -102,7 +102,6 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
 
     Scenario("There are no objects") {
       Given("No objects")
-
       val entities = Set.empty[Collisionable]
       val expectedCollisions = Set.empty[Collision]
 
@@ -120,7 +119,6 @@ class CollisonsTest extends AnyFeatureSpec with GivenWhenThen :
 
     Scenario("The object is null"){
       Given("An object null")
-
       val entities = Set[Collisionable](null)
       val expectedCollisions = Set.empty[Collision]
 

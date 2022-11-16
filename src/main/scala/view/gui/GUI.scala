@@ -34,7 +34,6 @@ class GUI(width: Int, height: Int) extends UI:
         }
     }
 
-
     override def events: Observable[Event] = frame.getContentPane
       .mouseObservable()
       .map((x, y) => Event.LaunchMissileTo(Point2D(x, y)) )

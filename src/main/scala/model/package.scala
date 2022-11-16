@@ -40,4 +40,3 @@ package object model:
         scorableDestroyed.getScorePoint)
         .sum + actualScore
 
-

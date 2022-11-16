@@ -104,7 +104,6 @@ class ScoreTest extends AnyFeatureSpec with GivenWhenThen :
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Friendly)
       assert(damageable1.isCollidingWith(damager))
       assert(damageable2.isCollidingWith(damager))
-
       val expectedScore = 2
 
       When("Calculate the score")
@@ -124,7 +123,6 @@ class ScoreTest extends AnyFeatureSpec with GivenWhenThen :
       val damageable = DamageableTest(Point2D(0, 0), initialLife, Affiliation.Neutral)
       val damager = DamagerTest(Point2D(0, 0), Affiliation.Friendly)
       assert(damageable.isCollidingWith(damager))
-
       val expectedScore = 4
 
       When("Calculate the score")
