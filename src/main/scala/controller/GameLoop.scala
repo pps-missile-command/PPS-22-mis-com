@@ -23,7 +23,7 @@ object GameLoop:
    * The observable that will be used to schedule time in the game.
    */
   private val time: Observable[Event] = TimeFlow
-    .tickEach(50 milliseconds)
+    .tickEach(100 milliseconds)
     .map(_.toDouble/1000)
     .map(Event.TimePassed.apply)
 

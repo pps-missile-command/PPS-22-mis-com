@@ -28,12 +28,6 @@ trait Update extends ((Event, World) => Task[(World, Update)]) :
  * Companion object for [[Update]].
  */
 object Update:
-  /*extension (function: (Event, World) => (World, Update))
-    def lift: Update =
-      (event: Event, agar: World) => Task(function(event, agar))*/
-
-  /*def same(function: (Event, World) => World): Update = (event: Event, world: World) =>
-    Task(function(event, world), same(function))*/
 
   /**
    * Function that allow the instruction to be executed only if the [[Event]] E happened.
@@ -49,10 +43,6 @@ object Update:
         case event: E => (control(event, world).map(world => (world, result)))
         case _ => Task((world, result))
     result
-
-  /*
-  val empty: Update = (_: Event, world: World) => Task((world, empty))
-  */
 
   /**
    * Function that allow two [[Update]] to be executed in sequence.
