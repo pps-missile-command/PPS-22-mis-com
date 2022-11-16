@@ -45,6 +45,9 @@ object PimpingByCollisions:
           Collision(
             collision
               .involvedCollisionables
-              .map(mapping)
+              .map(collisonable =>
+                mapping
+                  .getOrElse(collisonable, collisonable)
+              )
           )
         )
