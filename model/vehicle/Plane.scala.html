@@ -62,62 +62,63 @@
 </span>38 <span style=''>    </span><span style='background: #AEF1AE'>def moveVehicle</span><span style=''>(vehicle: Plane): Point2D =
 </span>39 <span style=''>        val distanceToMove = </span><span style='background: #AEF1AE'>vehicle.velocity</span><span style=''> * deltaTime
 </span>40 <span style=''>        val distanceToFinalPosition = </span><span style='background: #AEF1AE'>vehicle.position &lt;-&gt; vehicle.destination</span><span style=''>
-</span>41 <span style=''>        if distanceToMove &gt;= distanceToFinalPosition
-</span>42 <span style=''>        then </span><span style='background: #F0ADAD'>vehicle.destination</span><span style=''>
-</span>43 <span style=''>        else </span><span style='background: #AEF1AE'>vehicle.position --&gt; (vehicle.direction * distanceToMove * (-1)</span><span style=''>)
-</span>44 <span style=''>
-</span>45 <span style=''>    /**
-</span>46 <span style=''>     * The current health of the object.
-</span>47 <span style=''>     *
-</span>48 <span style=''>     * @return the current health of the object.
-</span>49 <span style=''>     */
-</span>50 <span style=''>    </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = lifePoint
-</span>51 <span style=''>
-</span>52 <span style=''>    /**
-</span>53 <span style=''>     * The initial health of the object.
-</span>54 <span style=''>     *
-</span>55 <span style=''>     * @return the initial health of the object.
-</span>56 <span style=''>     */
-</span>57 <span style=''>    </span><span style='background: #F0ADAD'>override def initialLife</span><span style=''>: LifePoint = planeInitialLife
-</span>58 <span style=''>
-</span>59 <span style=''>    /**
-</span>60 <span style=''>     * The object takes damage.
-</span>61 <span style=''>     *
-</span>62 <span style=''>     * @param damage the damage that the object received.
-</span>63 <span style=''>     * @return the object with the new health.
-</span>64 <span style=''>     */
-</span>65 <span style=''>    </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: LifePoint): Plane = damage match
-</span>66 <span style=''>        </span><span style='background: #AEF1AE'>case d if(lifePoint - d &gt; 0</span><span style=''>) =&gt; this.copy(lifePoint = lifePoint - d)
-</span>67 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; this.copy(lifePoint = lifePointDeath)
-</span>68 <span style=''>
-</span>69 <span style=''>    /**
-</span>70 <span style=''>     * Return the hit box of the object.
-</span>71 <span style=''>     *
-</span>72 <span style=''>     * @return the hit box of the object.
-</span>73 <span style=''>     */
-</span>74 <span style=''>    </span><span style='background: #F0ADAD'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #F0ADAD'>basicHitBox(position, (destination &lt;--&gt; position).direction)</span><span style=''>
-</span>75 <span style=''>
-</span>76 <span style=''>    /**
-</span>77 <span style=''>     * Return the affiliation of the object.
-</span>78 <span style=''>     *
-</span>79 <span style=''>     * @return the affiliation of the object.
-</span>80 <span style=''>     */
-</span>81 <span style=''>    </span><span style='background: #F0ADAD'>override def affiliation</span><span style=''>: Affiliation = Affiliation.Friendly
-</span>82 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Plane = this.copy(deltaTime = deltaTime + dt)
-</span>83 <span style=''>    </span><span style='background: #F0ADAD'>override def destinationReached</span><span style=''>: Boolean = </span><span style='background: #F0ADAD'>position</span><span style=''> == </span><span style='background: #F0ADAD'>destination</span><span style=''>
-</span>84 <span style=''>    </span><span style='background: #AEF1AE'>override def destination</span><span style=''>: Point2D = finalPosition
-</span>85 <span style=''>
-</span>86 <span style=''>    </span><span style='background: #F0ADAD'>override def toString</span><span style=''>: String = </span><span style='background: #F0ADAD'>&quot;Vehicle: actualPosition: (&quot; + position.x + &quot;,&quot; + position.y + &quot;); &quot; +
-</span>87 <span style=''></span><span style='background: #F0ADAD'>                                    &quot;finalPosition: (&quot; + finalPosition.x + &quot;,&quot; + finalPosition.y + &quot;); &quot; +
-</span>88 <span style=''></span><span style='background: #F0ADAD'>                                    &quot;direction: &quot; + direction.toString + &quot; &quot; +
-</span>89 <span style=''></span><span style='background: #F0ADAD'>                                    &quot;actual life: &quot; + currentLife</span><span style=''>
-</span>90 <span style=''>
-</span>91 <span style=''>object Plane:
-</span>92 <span style=''>    </span><span style='background: #F0ADAD'>def apply</span><span style=''>(actualPosition: Point2D,
-</span>93 <span style=''>              finalPosition: Point2D,
-</span>94 <span style=''>              lifePoint: LifePoint) : Plane = </span><span style='background: #F0ADAD'>PlaneImpl</span><span style=''>(actualPosition, finalPosition, lifePoint)
-</span>95 <span style=''>    </span><span style='background: #AEF1AE'>def apply</span><span style=''>(actualPosition: Point2D,
-</span>96 <span style=''>              finalPosition: Point2D) : Plane = </span><span style='background: #AEF1AE'>PlaneImpl</span><span style=''>(actualPosition, finalPosition)
+</span>41 <span style=''>        if distanceToMove &gt;= distanceToFinalPosition then
+</span>42 <span style=''>            </span><span style='background: #F0ADAD'>vehicle.destination</span><span style=''>
+</span>43 <span style=''>        else
+</span>44 <span style=''>            </span><span style='background: #AEF1AE'>vehicle.position --&gt; (vehicle.direction * distanceToMove * (-1)</span><span style=''>)
+</span>45 <span style=''>
+</span>46 <span style=''>    /**
+</span>47 <span style=''>     * The current health of the object.
+</span>48 <span style=''>     *
+</span>49 <span style=''>     * @return the current health of the object.
+</span>50 <span style=''>     */
+</span>51 <span style=''>    </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = lifePoint
+</span>52 <span style=''>
+</span>53 <span style=''>    /**
+</span>54 <span style=''>     * The initial health of the object.
+</span>55 <span style=''>     *
+</span>56 <span style=''>     * @return the initial health of the object.
+</span>57 <span style=''>     */
+</span>58 <span style=''>    </span><span style='background: #F0ADAD'>override def initialLife</span><span style=''>: LifePoint = planeInitialLife
+</span>59 <span style=''>
+</span>60 <span style=''>    /**
+</span>61 <span style=''>     * The object takes damage.
+</span>62 <span style=''>     *
+</span>63 <span style=''>     * @param damage the damage that the object received.
+</span>64 <span style=''>     * @return the object with the new health.
+</span>65 <span style=''>     */
+</span>66 <span style=''>    </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: LifePoint): Plane = damage match
+</span>67 <span style=''>        </span><span style='background: #AEF1AE'>case d if(lifePoint - d &gt; 0</span><span style=''>) =&gt; this.copy(lifePoint = lifePoint - d)
+</span>68 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; this.copy(lifePoint = lifePointDeath)
+</span>69 <span style=''>
+</span>70 <span style=''>    /**
+</span>71 <span style=''>     * Return the hit box of the object.
+</span>72 <span style=''>     *
+</span>73 <span style=''>     * @return the hit box of the object.
+</span>74 <span style=''>     */
+</span>75 <span style=''>    </span><span style='background: #F0ADAD'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #F0ADAD'>basicHitBox(position, (destination &lt;--&gt; position).direction)</span><span style=''>
+</span>76 <span style=''>
+</span>77 <span style=''>    /**
+</span>78 <span style=''>     * Return the affiliation of the object.
+</span>79 <span style=''>     *
+</span>80 <span style=''>     * @return the affiliation of the object.
+</span>81 <span style=''>     */
+</span>82 <span style=''>    </span><span style='background: #F0ADAD'>override def affiliation</span><span style=''>: Affiliation = Affiliation.Friendly
+</span>83 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Plane = this.copy(deltaTime = deltaTime + dt)
+</span>84 <span style=''>    </span><span style='background: #F0ADAD'>override def destinationReached</span><span style=''>: Boolean = </span><span style='background: #F0ADAD'>position</span><span style=''> == </span><span style='background: #F0ADAD'>destination</span><span style=''>
+</span>85 <span style=''>    </span><span style='background: #AEF1AE'>override def destination</span><span style=''>: Point2D = finalPosition
+</span>86 <span style=''>
+</span>87 <span style=''>    </span><span style='background: #F0ADAD'>override def toString</span><span style=''>: String = </span><span style='background: #F0ADAD'>&quot;Vehicle: actualPosition: (&quot; + position.x + &quot;,&quot; + position.y + &quot;); &quot; +
+</span>88 <span style=''></span><span style='background: #F0ADAD'>                                    &quot;finalPosition: (&quot; + finalPosition.x + &quot;,&quot; + finalPosition.y + &quot;); &quot; +
+</span>89 <span style=''></span><span style='background: #F0ADAD'>                                    &quot;direction: &quot; + direction.toString + &quot; &quot; +
+</span>90 <span style=''></span><span style='background: #F0ADAD'>                                    &quot;actual life: &quot; + currentLife</span><span style=''>
+</span>91 <span style=''>
+</span>92 <span style=''>object Plane:
+</span>93 <span style=''>    </span><span style='background: #F0ADAD'>def apply</span><span style=''>(actualPosition: Point2D,
+</span>94 <span style=''>              finalPosition: Point2D,
+</span>95 <span style=''>              lifePoint: LifePoint) : Plane = </span><span style='background: #F0ADAD'>PlaneImpl</span><span style=''>(actualPosition, finalPosition, lifePoint)
+</span>96 <span style=''>    </span><span style='background: #AEF1AE'>def apply</span><span style=''>(actualPosition: Point2D,
+</span>97 <span style=''>              finalPosition: Point2D) : Plane = </span><span style='background: #AEF1AE'>PlaneImpl</span><span style=''>(actualPosition, finalPosition)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -594,9 +595,9 @@
           893
         </td>
         <td>
-          1777
+          1781
           -
-          1796
+          1800
         </td>
         <td>
           Select
@@ -618,9 +619,9 @@
           894
         </td>
         <td>
-          1777
+          1781
           -
-          1796
+          1800
         </td>
         <td>
           Block
@@ -636,15 +637,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
           899
         </td>
         <td>
-          1810
+          1826
           -
-          1873
+          1889
         </td>
         <td>
           Apply
@@ -660,15 +661,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
           896
         </td>
         <td>
-          1832
+          1848
           -
-          1849
+          1865
         </td>
         <td>
           Select
@@ -684,15 +685,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
           895
         </td>
         <td>
-          1810
-          -
           1826
+          -
+          1842
         </td>
         <td>
           Select
@@ -708,15 +709,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
           898
         </td>
         <td>
-          1832
+          1848
           -
-          1872
+          1888
         </td>
         <td>
           Apply
@@ -732,15 +733,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
           900
         </td>
         <td>
-          1810
+          1826
           -
-          1873
+          1889
         </td>
         <td>
           Block
@@ -756,15 +757,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          43
         </td>
         <td>
           897
         </td>
         <td>
-          1832
+          1848
           -
-          1866
+          1882
         </td>
         <td>
           Apply
@@ -780,15 +781,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          50
         </td>
         <td>
           902
         </td>
         <td>
-          1993
+          2009
           -
-          2017
+          2033
         </td>
         <td>
           DefDef
@@ -804,15 +805,15 @@
         </td>
       </tr><tr>
         <td>
-          56
+          57
         </td>
         <td>
           903
         </td>
         <td>
-          2159
+          2175
           -
-          2183
+          2199
         </td>
         <td>
           DefDef
@@ -828,15 +829,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          65
         </td>
         <td>
           906
         </td>
         <td>
-          2379
+          2395
           -
-          2402
+          2418
         </td>
         <td>
           DefDef
@@ -852,15 +853,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          66
         </td>
         <td>
           904
         </td>
         <td>
-          2452
+          2468
           -
-          2479
+          2495
         </td>
         <td>
           Block
@@ -876,15 +877,15 @@
         </td>
       </tr><tr>
         <td>
-          66
+          67
         </td>
         <td>
           905
         </td>
         <td>
-          2529
+          2545
           -
-          2535
+          2551
         </td>
         <td>
           Block
@@ -900,15 +901,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
           908
         </td>
         <td>
-          2751
+          2767
           -
-          2762
+          2778
         </td>
         <td>
           Select
@@ -924,15 +925,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
           911
         </td>
         <td>
-          2750
+          2766
           -
-          2787
+          2803
         </td>
         <td>
           Select
@@ -948,15 +949,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
           913
         </td>
         <td>
-          2688
+          2704
           -
-          2717
+          2733
         </td>
         <td>
           DefDef
@@ -972,15 +973,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
           907
         </td>
         <td>
-          2740
+          2756
           -
-          2748
+          2764
         </td>
         <td>
           Select
@@ -996,15 +997,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
           910
         </td>
         <td>
-          2751
+          2767
           -
-          2776
+          2792
         </td>
         <td>
           Apply
@@ -1020,15 +1021,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
           909
         </td>
         <td>
-          2768
+          2784
           -
-          2776
+          2792
         </td>
         <td>
           Select
@@ -1044,15 +1045,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          74
         </td>
         <td>
           912
         </td>
         <td>
-          2728
+          2744
           -
-          2788
+          2804
         </td>
         <td>
           Apply
@@ -1068,15 +1069,15 @@
         </td>
       </tr><tr>
         <td>
-          80
+          81
         </td>
         <td>
           914
         </td>
         <td>
-          2908
+          2924
           -
-          2932
+          2948
         </td>
         <td>
           DefDef
@@ -1092,15 +1093,15 @@
         </td>
       </tr><tr>
         <td>
-          81
+          82
         </td>
         <td>
           915
         </td>
         <td>
-          2973
+          2989
           -
-          2997
+          3013
         </td>
         <td>
           DefDef
@@ -1116,15 +1117,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          83
         </td>
         <td>
           917
         </td>
         <td>
-          3119
+          3135
           -
-          3130
+          3146
         </td>
         <td>
           Select
@@ -1140,15 +1141,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          83
         </td>
         <td>
           916
         </td>
         <td>
-          3107
+          3123
           -
-          3115
+          3131
         </td>
         <td>
           Select
@@ -1164,15 +1165,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          83
         </td>
         <td>
           918
         </td>
         <td>
-          3064
+          3080
           -
-          3095
+          3111
         </td>
         <td>
           DefDef
@@ -1188,15 +1189,15 @@
         </td>
       </tr><tr>
         <td>
-          83
+          84
         </td>
         <td>
           919
         </td>
         <td>
-          3135
+          3151
           -
-          3159
+          3175
         </td>
         <td>
           DefDef
@@ -1212,15 +1213,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           941
         </td>
         <td>
-          3222
+          3238
           -
-          3544
+          3560
         </td>
         <td>
           Apply
@@ -1239,15 +1240,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           923
         </td>
         <td>
-          3222
+          3238
           -
-          3269
+          3285
         </td>
         <td>
           Apply
@@ -1263,15 +1264,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           935
         </td>
         <td>
-          3222
+          3238
           -
-          3449
+          3465
         </td>
         <td>
           Apply
@@ -1289,15 +1290,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           926
         </td>
         <td>
-          3222
+          3238
           -
-          3282
+          3298
         </td>
         <td>
           Apply
@@ -1313,15 +1314,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           938
         </td>
         <td>
-          3222
+          3238
           -
-          3476
+          3492
         </td>
         <td>
           Apply
@@ -1339,15 +1340,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           920
         </td>
         <td>
-          3253
+          3269
           -
-          3261
+          3277
         </td>
         <td>
           Select
@@ -1363,15 +1364,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           937
         </td>
         <td>
-          3222
+          3238
           -
-          3470
+          3486
         </td>
         <td>
           Apply
@@ -1389,15 +1390,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           922
         </td>
         <td>
-          3222
+          3238
           -
-          3263
+          3279
         </td>
         <td>
           Apply
@@ -1413,15 +1414,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           931
         </td>
         <td>
-          3222
+          3238
           -
-          3371
+          3387
         </td>
         <td>
           Apply
@@ -1438,15 +1439,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           925
         </td>
         <td>
-          3272
+          3288
           -
-          3282
+          3298
         </td>
         <td>
           Select
@@ -1462,15 +1463,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           934
         </td>
         <td>
-          3222
+          3238
           -
-          3397
+          3413
         </td>
         <td>
           Apply
@@ -1487,15 +1488,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           928
         </td>
         <td>
-          3222
+          3238
           -
-          3347
+          3363
         </td>
         <td>
           Apply
@@ -1512,15 +1513,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           927
         </td>
         <td>
-          3222
+          3238
           -
-          3290
+          3306
         </td>
         <td>
           Apply
@@ -1536,15 +1537,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           939
         </td>
         <td>
-          3222
+          3238
           -
-          3530
+          3546
         </td>
         <td>
           Apply
@@ -1563,15 +1564,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           930
         </td>
         <td>
-          3222
+          3238
           -
-          3365
+          3381
         </td>
         <td>
           Apply
@@ -1588,15 +1589,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           921
         </td>
         <td>
-          3253
+          3269
           -
-          3263
+          3279
         </td>
         <td>
           Select
@@ -1612,15 +1613,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           933
         </td>
         <td>
-          3222
+          3238
           -
-          3389
+          3405
         </td>
         <td>
           Apply
@@ -1637,15 +1638,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           942
         </td>
         <td>
-          3190
+          3206
           -
-          3211
+          3227
         </td>
         <td>
           DefDef
@@ -1661,15 +1662,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          86
         </td>
         <td>
           924
         </td>
         <td>
-          3272
+          3288
           -
-          3280
+          3296
         </td>
         <td>
           Select
@@ -1685,15 +1686,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          87
         </td>
         <td>
           932
         </td>
         <td>
-          3374
+          3390
           -
-          3389
+          3405
         </td>
         <td>
           Select
@@ -1709,15 +1710,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          87
         </td>
         <td>
           929
         </td>
         <td>
-          3350
+          3366
           -
-          3365
+          3381
         </td>
         <td>
           Select
@@ -1733,15 +1734,15 @@
         </td>
       </tr><tr>
         <td>
-          87
+          88
         </td>
         <td>
           936
         </td>
         <td>
-          3452
+          3468
           -
-          3461
+          3477
         </td>
         <td>
           Select
@@ -1757,15 +1758,15 @@
         </td>
       </tr><tr>
         <td>
-          88
+          89
         </td>
         <td>
           940
         </td>
         <td>
-          3533
+          3549
           -
-          3544
+          3560
         </td>
         <td>
           Select
@@ -1781,15 +1782,15 @@
         </td>
       </tr><tr>
         <td>
-          91
+          92
         </td>
         <td>
           946
         </td>
         <td>
-          3564
+          3580
           -
-          3573
+          3589
         </td>
         <td>
           DefDef
@@ -1805,15 +1806,15 @@
         </td>
       </tr><tr>
         <td>
-          93
+          94
         </td>
         <td>
           945
         </td>
         <td>
-          3683
+          3699
           -
-          3692
+          3708
         </td>
         <td>
           Select
@@ -1829,15 +1830,15 @@
         </td>
       </tr><tr>
         <td>
-          94
+          95
         </td>
         <td>
           949
         </td>
         <td>
-          3739
+          3755
           -
-          3748
+          3764
         </td>
         <td>
           DefDef
@@ -1853,15 +1854,15 @@
         </td>
       </tr><tr>
         <td>
-          95
+          96
         </td>
         <td>
           947
         </td>
         <td>
-          3822
+          3838
           -
-          3831
+          3847
         </td>
         <td>
           Select
@@ -1877,15 +1878,15 @@
         </td>
       </tr><tr>
         <td>
-          95
+          96
         </td>
         <td>
           948
         </td>
         <td>
-          3822
+          3838
           -
-          3831
+          3847
         </td>
         <td>
           Select
