@@ -1,0 +1,1336 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          model/vehicle/Vehicle.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.vehicle
+</span>2 <span style=''>
+</span>3 <span style=''>import model.DeltaTime
+</span>4 <span style=''>import model.behavior.Moveable
+</span>5 <span style=''>import model.collisions.{Affiliation, Damageable, HitBox, LifePoint, lifePointDeath}
+</span>6 <span style=''>import model.elements2d.{Point2D, Vector2D}
+</span>7 <span style=''>import model.explosion.{Explosion, standardRadius}
+</span>8 <span style=''>import model.missile.{MissileMovement, basicHitBox, given_Conversion_Point2D_Point2D_Vector2D}
+</span>9 <span style=''>
+</span>10 <span style=''>trait Vehicle extends Moveable, Damageable:
+</span>11 <span style=''>    def position: Point2D
+</span>12 <span style=''>    def velocity: Double
+</span>13 <span style=''>    </span><span style='background: #F0ADAD'>def direction</span><span style=''>: Vector2D = </span><span style='background: #F0ADAD'>(position, destination)</span><span style=''>
+</span>14 <span style=''>    override def move(): Vehicle
+</span>15 <span style=''>    //def explode: Explosion
+</span>16 <span style=''>    //val moveStrategy: MissileMovement = Missile.BasicMove(this)(_)
+</span>17 <span style=''>
+</span>18 <span style=''>case class VehicleImpl(actualPosition: Point2D,
+</span>19 <span style=''>                       finalPosition: Point2D,
+</span>20 <span style=''>                       lifePoint: LifePoint = planeInitialLife,
+</span>21 <span style=''>                       deltaTime: DeltaTime = 0) extends Vehicle:
+</span>22 <span style=''>
+</span>23 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = actualPosition
+</span>24 <span style=''>    </span><span style='background: #F0ADAD'>override def velocity</span><span style=''>: Double = </span><span style='background: #F0ADAD'>planeVelocity</span><span style=''>
+</span>25 <span style=''>    </span><span style='background: #F0ADAD'>override def move</span><span style=''>(): Vehicle = this match
+</span>26 <span style=''>        </span><span style='background: #F0ADAD'>case v if(v.isDestroyed</span><span style=''>) =&gt; this.copy(lifePoint = lifePointDeath)
+</span>27 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; this.copy(actualPosition = </span><span style='background: #F0ADAD'>moveVehicle(this)</span><span style=''>, deltaTime = 0)
+</span>28 <span style=''>//    override def explode: Explosion =
+</span>29 <span style=''>//        given expAffiliation: Affiliation = affiliation
+</span>30 <span style=''>//        Explosion(damage, hitboxRadius = standardRadius, position)
+</span>31 <span style=''>
+</span>32 <span style=''>    /***
+</span>33 <span style=''>     * Calculate the new position of the vehicle
+</span>34 <span style=''>     * @param vehicle Vehicle that have to be moved
+</span>35 <span style=''>     * @return New position after moved time
+</span>36 <span style=''>     */
+</span>37 <span style=''>    </span><span style='background: #F0ADAD'>def moveVehicle</span><span style=''>(vehicle: Vehicle): Point2D =
+</span>38 <span style=''>        val distanceToMove = </span><span style='background: #F0ADAD'>vehicle.velocity</span><span style=''> * deltaTime
+</span>39 <span style=''>        val distanceToFinalPosition = </span><span style='background: #F0ADAD'>vehicle.position &lt;-&gt; vehicle.destination</span><span style=''>
+</span>40 <span style=''>        if distanceToMove &gt;= distanceToFinalPosition
+</span>41 <span style=''>        then </span><span style='background: #F0ADAD'>vehicle.destination</span><span style=''>
+</span>42 <span style=''>        else </span><span style='background: #F0ADAD'>vehicle.position --&gt; (vehicle.direction * distanceToMove * (-1)</span><span style=''>)
+</span>43 <span style=''>
+</span>44 <span style=''>    /**
+</span>45 <span style=''>     * The current health of the object.
+</span>46 <span style=''>     *
+</span>47 <span style=''>     * @return the current health of the object.
+</span>48 <span style=''>     */
+</span>49 <span style=''>    </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = lifePoint
+</span>50 <span style=''>
+</span>51 <span style=''>    /**
+</span>52 <span style=''>     * The initial health of the object.
+</span>53 <span style=''>     *
+</span>54 <span style=''>     * @return the initial health of the object.
+</span>55 <span style=''>     */
+</span>56 <span style=''>    </span><span style='background: #F0ADAD'>override def initialLife</span><span style=''>: LifePoint = planeInitialLife
+</span>57 <span style=''>
+</span>58 <span style=''>    /**
+</span>59 <span style=''>     * The object takes damage.
+</span>60 <span style=''>     *
+</span>61 <span style=''>     * @param damage the damage that the object received.
+</span>62 <span style=''>     * @return the object with the new health.
+</span>63 <span style=''>     */
+</span>64 <span style=''>    </span><span style='background: #F0ADAD'>override def takeDamage</span><span style=''>(damage: LifePoint): Vehicle = damage match
+</span>65 <span style=''>        </span><span style='background: #F0ADAD'>case d if(lifePoint - d &gt; 0</span><span style=''>) =&gt; this.copy(lifePoint = lifePoint - d)
+</span>66 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; this.copy(lifePoint = lifePointDeath)
+</span>67 <span style=''>
+</span>68 <span style=''>
+</span>69 <span style=''>    /**
+</span>70 <span style=''>     * Return the hit box of the object.
+</span>71 <span style=''>     *
+</span>72 <span style=''>     * @return the hit box of the object.
+</span>73 <span style=''>     */
+</span>74 <span style=''>    </span><span style='background: #F0ADAD'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #F0ADAD'>basicHitBox(position, (destination &lt;--&gt; position).direction)</span><span style=''>
+</span>75 <span style=''>
+</span>76 <span style=''>    /**
+</span>77 <span style=''>     * Return the affiliation of the object.
+</span>78 <span style=''>     *
+</span>79 <span style=''>     * @return the affiliation of the object.
+</span>80 <span style=''>     */
+</span>81 <span style=''>    </span><span style='background: #F0ADAD'>override def affiliation</span><span style=''>: Affiliation = Affiliation.Friendly
+</span>82 <span style=''>
+</span>83 <span style=''>    </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Vehicle = this.copy(deltaTime = deltaTime + dt)
+</span>84 <span style=''>
+</span>85 <span style=''>    </span><span style='background: #F0ADAD'>override def destinationReached</span><span style=''>: Boolean = </span><span style='background: #F0ADAD'>position</span><span style=''> == </span><span style='background: #F0ADAD'>destination</span><span style=''>
+</span>86 <span style=''>
+</span>87 <span style=''>    </span><span style='background: #F0ADAD'>override def destination</span><span style=''>: Point2D = finalPosition
+</span>88 <span style=''>
+</span>89 <span style=''>object Vehicle:
+</span>90 <span style=''>    </span><span style='background: #F0ADAD'>def apply</span><span style=''>(actualPosition: Point2D,
+</span>91 <span style=''>              finalPosition: Point2D,
+</span>92 <span style=''>              lifePoint: LifePoint) : Vehicle = </span><span style='background: #F0ADAD'>VehicleImpl</span><span style=''>(actualPosition, finalPosition, lifePoint)
+</span>93 <span style=''>    </span><span style='background: #AEF1AE'>def apply</span><span style=''>(actualPosition: Point2D,
+</span>94 <span style=''>              finalPosition: Point2D) : Vehicle = </span><span style='background: #AEF1AE'>VehicleImpl</span><span style=''>(actualPosition, finalPosition)
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          878
+        </td>
+        <td>
+          489
+          -
+          500
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          destination
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          877
+        </td>
+        <td>
+          479
+          -
+          487
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          position
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          880
+        </td>
+        <td>
+          452
+          -
+          465
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def direction
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          879
+        </td>
+        <td>
+          478
+          -
+          501
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          (position, destination)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          920
+        </td>
+        <td>
+          775
+          -
+          775
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          $lessinit$greater$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          921
+        </td>
+        <td>
+          839
+          -
+          839
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          $lessinit$greater$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          881
+        </td>
+        <td>
+          864
+          -
+          885
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def position
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          882
+        </td>
+        <td>
+          948
+          -
+          961
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          planeVelocity
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          883
+        </td>
+        <td>
+          916
+          -
+          937
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def velocity
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          888
+        </td>
+        <td>
+          966
+          -
+          983
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          move
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def move
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          884
+        </td>
+        <td>
+          1016
+          -
+          1039
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case v if(v.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          885
+        </td>
+        <td>
+          1026
+          -
+          1039
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          v.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          887
+        </td>
+        <td>
+          1090
+          -
+          1096
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          886
+        </td>
+        <td>
+          1127
+          -
+          1144
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          moveVehicle
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          moveVehicle(this)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          901
+        </td>
+        <td>
+          1496
+          -
+          1511
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          moveVehicle
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def moveVehicle
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          889
+        </td>
+        <td>
+          1570
+          -
+          1586
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.velocity
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          891
+        </td>
+        <td>
+          1658
+          -
+          1677
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.destination
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          890
+        </td>
+        <td>
+          1637
+          -
+          1653
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.position
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          892
+        </td>
+        <td>
+          1637
+          -
+          1677
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;-&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.position &lt;-&gt; vehicle.destination
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          893
+        </td>
+        <td>
+          1744
+          -
+          1763
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.destination
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          894
+        </td>
+        <td>
+          1744
+          -
+          1763
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.destination
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          899
+        </td>
+        <td>
+          1777
+          -
+          1840
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.position --&gt; (vehicle.direction * distanceToMove * (-1)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          896
+        </td>
+        <td>
+          1799
+          -
+          1816
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.direction
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          895
+        </td>
+        <td>
+          1777
+          -
+          1793
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.position
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          898
+        </td>
+        <td>
+          1799
+          -
+          1839
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.direction * distanceToMove * (-1
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          900
+        </td>
+        <td>
+          1777
+          -
+          1840
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.position --&gt; (vehicle.direction * distanceToMove * (-1)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          897
+        </td>
+        <td>
+          1799
+          -
+          1833
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          vehicle.direction * distanceToMove
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          902
+        </td>
+        <td>
+          1960
+          -
+          1984
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          currentLife
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def currentLife
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          903
+        </td>
+        <td>
+          2126
+          -
+          2150
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          initialLife
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def initialLife
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          906
+        </td>
+        <td>
+          2346
+          -
+          2369
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          takeDamage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def takeDamage
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          904
+        </td>
+        <td>
+          2421
+          -
+          2448
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case d if(lifePoint - d &gt; 0
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          905
+        </td>
+        <td>
+          2498
+          -
+          2504
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          908
+        </td>
+        <td>
+          2721
+          -
+          2732
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          destination
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          911
+        </td>
+        <td>
+          2720
+          -
+          2757
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          (destination &lt;--&gt; position).direction
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          913
+        </td>
+        <td>
+          2658
+          -
+          2687
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          hitBox
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override protected def hitBox
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          907
+        </td>
+        <td>
+          2710
+          -
+          2718
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          position
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          910
+        </td>
+        <td>
+          2721
+          -
+          2746
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;--&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          destination &lt;--&gt; position
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          909
+        </td>
+        <td>
+          2738
+          -
+          2746
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          position
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          912
+        </td>
+        <td>
+          2698
+          -
+          2758
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          basicHitBox(position, (destination &lt;--&gt; position).direction)
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          914
+        </td>
+        <td>
+          2878
+          -
+          2902
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def affiliation
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          915
+        </td>
+        <td>
+          2944
+          -
+          2968
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def timeElapsed
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          917
+        </td>
+        <td>
+          3093
+          -
+          3104
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          destination
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          916
+        </td>
+        <td>
+          3081
+          -
+          3089
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          position
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          918
+        </td>
+        <td>
+          3038
+          -
+          3069
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          destinationReached
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def destinationReached
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          919
+        </td>
+        <td>
+          3110
+          -
+          3134
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def destination
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          923
+        </td>
+        <td>
+          3181
+          -
+          3190
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          922
+        </td>
+        <td>
+          3302
+          -
+          3313
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          VehicleImpl
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          926
+        </td>
+        <td>
+          3360
+          -
+          3369
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          925
+        </td>
+        <td>
+          3445
+          -
+          3456
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          VehicleImpl
+        </td>
+      </tr><tr>
+        <td>
+          93
+        </td>
+        <td>
+          924
+        </td>
+        <td>
+          3445
+          -
+          3456
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          VehicleImpl
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
