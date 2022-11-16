@@ -31,7 +31,7 @@ private class WorldPane(val world: World, width: Int, height: Int) extends JPane
                 imageData._4, this)
             )
 
-        CollisionableVisualizer.printElements(world.collisionables) foreach { i =>
+        CollisionableVisualizer.printElements(world.collisionables.toList) foreach { i =>
             g2d.translate(i.position.x, i.position.y)
             g2d.rotate(i.angle.radiant - Angle.Degree(90).radiant)
 

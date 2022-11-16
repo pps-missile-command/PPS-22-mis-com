@@ -24,7 +24,7 @@ object World:
    *
    * @return the initial state of the world
    */
-  def initialWorld: World = World(Ground(), Spawner(5, width, height), List.empty[Collisionable], 0)
+  def initialWorld: World = World(Ground(), Spawner(5, width, height), Set.empty[Collisionable], 0)
 
 /**
  * Class that represents the world.
@@ -34,4 +34,4 @@ object World:
  * @param collisionables the collisionables in the world.
  * @param score          the current score of the player.
  */
-case class World(ground: Ground, spawner: Spawner, collisionables: List[Collisionable], score: ScorePoint)
+case class World(ground: Ground, spawner: Spawner, collisionables: Set[Collisionable], score: ScorePoint)
