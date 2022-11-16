@@ -83,10 +83,10 @@ object CollisionsDetection:
   def apply(): Update = on[TimePassed] { (_: Event, world: World) =>
     Task {
       val collisionables = (world.collisionables ++ world.ground.cities ++ world.ground.turrets).toSet
-      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn collisionables.calculateCollisions
+      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith world.collisionables.toSet)
       val newScore = world.score calculateNewScoreBasedOn collisionsUpdate
       val newExplosion = tmpNewCollisionables.explosionsOfDestroyedMissiles
-      val (collisionableAfterSecondCollisions, _) = collisionables applyDamagesBasedOn (tmpNewCollisionables calculateCollisionsWith newExplosion)
+      val (collisionableAfterSecondCollisions, _) = tmpNewCollisionables applyDamagesBasedOn (tmpNewCollisionables calculateCollisionsWith newExplosion)
       val (newGround, newCollisionables) = collisionableAfterSecondCollisions.splitGroundFromOther
       val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed) ++ newExplosion
       world.copy(collisionables = newNotDestroyedCollisionables.toList, score = newScore, ground = newGround)

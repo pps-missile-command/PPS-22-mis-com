@@ -26,7 +26,7 @@ class GUI(width: Int, height: Int) extends UI:
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
 
     def render(world: World): Task[Unit] = Task {
-        SwingUtilities.invokeAndWait { () =>
+        SwingUtilities.invokeLater { () =>
             if (frame.getContentPane.getComponentCount != 0)
                 frame.getContentPane.remove(0)
             frame.getContentPane.add(WorldPane(world, width, height))
@@ -34,28 +34,19 @@ class GUI(width: Int, height: Int) extends UI:
         }
     }
 
-    def customRender(world: World) =
-        SwingUtilities.invokeAndWait { () =>
-            if (frame.getContentPane.getComponentCount != 0)
-                frame.getContentPane.remove(0)
-            frame.getContentPane.add(WorldPane(world, width, height))
-            frame.getContentPane.repaint()
-        }
-
 
     override def events: Observable[Event] = frame.getContentPane
       .mouseObservable()
       .map((x, y) => Event.LaunchMissileTo(Point2D(x, y)) )
 
     override def gameOver: Task[Unit] = Task {
-        SwingUtilities.invokeAndWait { () =>
+        SwingUtilities.invokeLater { () =>
             if (frame.getContentPane.getComponentCount != 0)
                 frame.getContentPane.remove(0)
             val panel = new JPanel()
             panel.setSize(width, height)
             panel.setLayout(new FlowLayout())
             val button = new JButton("RIGIOCA")
-            val gui = this
             button.addActionListener(new ActionListener() {
                 override def actionPerformed(e: ActionEvent): Unit = {
                     frame.dispose()
