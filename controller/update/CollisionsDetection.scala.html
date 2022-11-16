@@ -106,14 +106,14 @@
 </span>82 <span style=''>   */
 </span>83 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, world: World) =&gt;
 </span>84 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>85 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = (world.collisionables ++ world.ground.cities ++ world.ground.turrets).toSet
-</span>86 <span style=''></span><span style='background: #F0ADAD'>      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith world.collisionables.toSet)
+</span>85 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables ++ world.ground.cities ++ world.ground.turrets
+</span>86 <span style=''></span><span style='background: #F0ADAD'>      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith world.collisionables)
 </span>87 <span style=''></span><span style='background: #F0ADAD'>      val newScore = world.score calculateNewScoreBasedOn collisionsUpdate
 </span>88 <span style=''></span><span style='background: #F0ADAD'>      val newExplosion = tmpNewCollisionables.explosionsOfDestroyedMissiles
 </span>89 <span style=''></span><span style='background: #F0ADAD'>      val (collisionableAfterSecondCollisions, _) = tmpNewCollisionables applyDamagesBasedOn (tmpNewCollisionables calculateCollisionsWith newExplosion)
 </span>90 <span style=''></span><span style='background: #F0ADAD'>      val (newGround, newCollisionables) = collisionableAfterSecondCollisions.splitGroundFromOther
 </span>91 <span style=''></span><span style='background: #F0ADAD'>      val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed) ++ newExplosion
-</span>92 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = newNotDestroyedCollisionables.toList, score = newScore, ground = newGround)
+</span>92 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = newNotDestroyedCollisionables, score = newScore, ground = newGround)
 </span>93 <span style=''></span><span style='background: #F0ADAD'>    }
 </span>94 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
@@ -1461,7 +1461,7 @@
         <td>
           2789
           -
-          3725
+          3704
         </td>
         <td>
           Apply
@@ -1475,14 +1475,14 @@
         <td style="background: #F0ADAD">
           on[TimePassed] { (_: Event, world: World) =&gt;
     Task {
-      val collisionables = (world.collisionables ++ world.ground.cities ++ world.ground.turrets).toSet
-      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith world.collisionables.toSet)
+      val collisionables = world.collisionables ++ world.ground.cities ++ world.ground.turrets
+      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith world.collisionables)
       val newScore = world.score calculateNewScoreBasedOn collisionsUpdate
       val newExplosion = tmpNewCollisionables.explosionsOfDestroyedMissiles
       val (collisionableAfterSecondCollisions, _) = tmpNewCollisionables applyDamagesBasedOn (tmpNewCollisionables calculateCollisionsWith newExplosion)
       val (newGround, newCollisionables) = collisionableAfterSecondCollisions.splitGroundFromOther
       val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed) ++ newExplosion
-      world.copy(collisionables = newNotDestroyedCollisionables.toList, score = newScore, ground = newGround)
+      world.copy(collisionables = newNotDestroyedCollisionables, score = newScore, ground = newGround)
     }
   }
         </td>
