@@ -9,11 +9,16 @@ object ZigZagMissile:
 
   trait ZigZagMissile:
     missile: Missile =>
-      def zigzag(): Boolean = true
+
+    def zigzag(): Boolean = true
 
     override def move(): Missile =
       println("OVERRIDE")
       this
+
+    //come basic move ma non usa la destinazione, ma la prossima sotto destinazione
+    //lista di generici, deve essere anche testabile
+    override val moveStrategy = ???
 
   def apply() = new MissileImpl(5, Point2D(0,0), Point2D(5,5)) with ZigZagMissile
 
@@ -23,4 +28,9 @@ object ZigZagMissile:
   val zigzagMissile = apply()
   zigzagMissile.zigzag()
   zigzagMissile.move()
+  move(zigzagMissile)
+
+
+def move(m: Missile) =
+  m.move()
 
