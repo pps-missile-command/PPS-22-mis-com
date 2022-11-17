@@ -2,4 +2,4 @@ package model
 
 package object spawner:
   
-  val threshold: Int = 100
+  val threshold: Int = 50
