@@ -22,7 +22,7 @@ object LaunchNewMissile:
     Task {
       val (ground, missile) = world.ground.shootMissile(event.position)
       missile match
-        case Some(missile) => world.copy(collisionables = world.collisionables :+ missile, ground = ground)
+        case Some(missile) => world.copy(collisionables = world.collisionables + missile, ground = ground)
         case None => world.copy(collisionables = world.collisionables, ground = ground)
     }
   }

@@ -1,4 +1,6 @@
-import model.collisions.{Affiliation, Collisionable, Damageable}
+import model.collisions.{Affiliation, Collisionable, Damageable, Damager, Collision}
+import model.collisions.PimpingByCollisionable._
+import model.collisions.PimpingByCollisions._
 
 package object model:
 
@@ -17,19 +19,24 @@ package object model:
    */
   trait Scorable(val points: ScorePoint) extends Damageable
 
-  /**
-   * Function that calculate the new score of the player.
-   * It only add the points of the destroyed object if the one of the object that inflict damage to the damageable 
-   * is owned by the player.
-   *
-   * @param collisionables a map that has as keys the damageable objects and as values a list with the damaeger that collides with them.
-   * @param actualScore    the actual score of the player.
-   * @return the new score of the player.
-   */
-  def calculateNewScore(collisionables: Map[Collisionable, List[Collisionable]], actualScore: ScorePoint): ScorePoint =
-    def getScorePoint(collisionable: Collisionable, damagers: List[Collisionable]): ScorePoint =
-      collisionable match
-        case scorable: Scorable if scorable.isDestroyed && damagers.map(_.affiliation).contains(Affiliation.Friendly) => scorable.points
-        case _ => 0
 
-    collisionables.map((damageable, damagers) => getScorePoint(damageable, damagers)).sum + actualScore
+  extension (actualScore: ScorePoint)
+
+    /**
+     * Function that calculate the new score of the player.
+     * It only add the points of the destroyed object if the one of the object that inflict damage to the damageable
+     * is owned by the player.
+     *
+     * @param collisions the collisions that have been detected in the game
+     * @return the new score of the player.
+     */
+    def calculateNewScoreBasedOn(collisions: Set[Collision]): ScorePoint =
+      (for
+        scorableDestroyed <- collisions.allScorableDestroyedThatCollide.toSeq
+        if scorableDestroyed.isNotFriendly
+        otherElement <- collisions.allElementsThatDestroyed(scorableDestroyed)
+        if otherElement.isFriendly
+      yield
+        scorableDestroyed.getScorePoint)
+        .sum + actualScore
+

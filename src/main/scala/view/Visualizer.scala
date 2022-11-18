@@ -9,6 +9,8 @@ import utilities._
 
 
 
+import javax.imageio.ImageIO
+
 object Visualizer:
     val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
 
@@ -19,10 +21,10 @@ object Visualizer:
      */
     def prepareCityImage(structure: City): Tuple4[Image, Point2D, Int, Int] =
         (
-        Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\city_" + structure.currentLife + ".png"),
-        structure.position,
-        cityBaseSize,
-        cityHeightSize
+            ImageIO.read(getClass.getResource("/city_" + structure.currentLife + ".png")),
+            structure.position,
+            cityBaseSize,
+            cityHeightSize
         )
 
     /***
@@ -32,10 +34,10 @@ object Visualizer:
      */
     def prepareBatteryMissileImage(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
         (
-        Toolkit.getDefaultToolkit().getImage(resourceFolderPath + "\\Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png"),
-        structure.bottomLeft_Position,
-        missileBatteryBaseSize,
-        missileBatteryHeightSize
+            ImageIO.read(getClass.getResource("/Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png")),
+            structure.bottomLeft_Position,
+            missileBatteryBaseSize,
+            missileBatteryHeightSize
         )
 
     /***
