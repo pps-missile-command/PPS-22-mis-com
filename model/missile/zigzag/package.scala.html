@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/Visualizer.scala.html
+          model/missile/zigzag/package.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,57 +22,37 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile
 </span>2 <span style=''>
-</span>3 <span style=''>import java.awt.{Image, Toolkit}
-</span>4 <span style=''>import model.collisions.{Collisionable, Damageable}
-</span>5 <span style=''>import model.elements2d.Point2D
-</span>6 <span style=''>import model.ground.{City, Ground, MissileBattery}
-</span>7 <span style=''>import model.missile.{Missile, hitboxBase, hitboxHeight}
-</span>8 <span style=''>import utilities._
+</span>3 <span style=''>import model.elements2d.{Angle, Point2D, Vector2D}
+</span>4 <span style=''>import model.missile.zigzag.Direction
+</span>5 <span style=''>
+</span>6 <span style=''>import scala.util.Random
+</span>7 <span style=''>
+</span>8 <span style=''>package object zigzag:
 </span>9 <span style=''>
-</span>10 <span style=''>
-</span>11 <span style=''>
-</span>12 <span style=''>import javax.imageio.ImageIO
-</span>13 <span style=''>
-</span>14 <span style=''>object Visualizer:
-</span>15 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
+</span>10 <span style=''>  sealed class Direction
+</span>11 <span style=''>  case object Right extends </span><span style='background: #F0ADAD'>Direction</span><span style=''>
+</span>12 <span style=''>  case object Left extends </span><span style='background: #F0ADAD'>Direction</span><span style=''>
+</span>13 <span style=''>  case class Rand(rand: Random) extends </span><span style='background: #F0ADAD'>Direction</span><span style=''>
+</span>14 <span style=''>
+</span>15 <span style=''>  val signThreshold = 0.5
 </span>16 <span style=''>
-</span>17 <span style=''>    /***
-</span>18 <span style=''>     * Method used for preparing the ImageView of a city.
-</span>19 <span style=''>     * @param structure City to be used.
-</span>20 <span style=''>     * @return ImageView of the city passed.
-</span>21 <span style=''>     */
-</span>22 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
-</span>23 <span style=''>        (
-</span>24 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>25 <span style=''>            structure.position,
-</span>26 <span style=''>            cityBaseSize,
-</span>27 <span style=''>            cityHeightSize
-</span>28 <span style=''>        )
+</span>17 <span style=''>  extension(n: Double)
+</span>18 <span style=''>    </span><span style='background: #F0ADAD'>def mapToSign</span><span style=''> = n match
+</span>19 <span style=''>      </span><span style='background: #F0ADAD'>case v if v &gt; signThreshold</span><span style=''> =&gt; 1
+</span>20 <span style=''>      </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; -1
+</span>21 <span style=''>
+</span>22 <span style=''>  extension(v: Vector2D)
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>def -|-</span><span style=''>(d: Direction): Vector2D = d match
+</span>24 <span style=''>      </span><span style='background: #F0ADAD'>case Right</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>Vector2D(30, Angle.Degree(v.direction.get.degree + 90))</span><span style=''>
+</span>25 <span style=''>      </span><span style='background: #F0ADAD'>case Left</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>Vector2D(30, Angle.Degree(v.direction.get.degree - 90))</span><span style=''>
+</span>26 <span style=''>      </span><span style='background: #F0ADAD'>case Rand(rand)</span><span style=''> =&gt;
+</span>27 <span style=''>        val value = </span><span style='background: #F0ADAD'>rand.nextDouble()</span><span style=''>
+</span>28 <span style=''>        </span><span style='background: #F0ADAD'>Vector2D(1, Angle.Degree(v.direction.get.degree + 90 * value.mapToSign))</span><span style=''>
 </span>29 <span style=''>
-</span>30 <span style=''>    /***
-</span>31 <span style=''>     * Method used for preparing the ImageView of a missile turret.
-</span>32 <span style=''>     * @param structure Missile turret to be used.
-</span>33 <span style=''>     * @return ImageView of the missile turret passed
-</span>34 <span style=''>     */
-</span>35 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
-</span>36 <span style=''>        (
-</span>37 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>38 <span style=''>            structure.bottomLeft_Position,
-</span>39 <span style=''>            missileBatteryBaseSize,
-</span>40 <span style=''>            missileBatteryHeightSize
-</span>41 <span style=''>        )
-</span>42 <span style=''>
-</span>43 <span style=''>    /***
-</span>44 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
-</span>45 <span style=''>     * @param ground Ground to be used.
-</span>46 <span style=''>     * @return List of ImageView of all the structures in the ground.
-</span>47 <span style=''>     */
-</span>48 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
-</span>49 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
-</span>50 <span style=''></span><span style='background: #F0ADAD'>            ++
-</span>51 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
+</span>30 <span style=''>  extension[A](list: LazyList[A])
+</span>31 <span style=''>    </span><span style='background: #F0ADAD'>def pop</span><span style=''>(): (A, LazyList[A]) = (</span><span style='background: #F0ADAD'>list.take(1).head</span><span style=''>, </span><span style='background: #F0ADAD'>list.tail</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -87,581 +67,675 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          14
+          10
         </td>
         <td>
-          1285
+          1064
         </td>
         <td>
-          348
+          216
           -
-          378
+          225
         </td>
         <td>
           Apply
         </td>
         <td>
-          getProperty
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;)
+          Direction
         </td>
       </tr><tr>
         <td>
-          14
+          11
         </td>
         <td>
-          1287
+          1065
         </td>
         <td>
-          348
+          253
           -
-          416
+          262
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
+          Direction
         </td>
       </tr><tr>
         <td>
-          14
+          12
         </td>
         <td>
-          1286
+          1066
         </td>
         <td>
-          348
+          303
           -
-          387
+          312
         </td>
         <td>
           Apply
         </td>
         <td>
-          toString
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString
+          Direction
         </td>
       </tr><tr>
         <td>
-          21
+          17
         </td>
         <td>
-          1293
+          1069
         </td>
         <td>
-          584
+          368
           -
-          604
+          381
         </td>
         <td>
           DefDef
         </td>
         <td>
-          prepareCityImage
+          mapToSign
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def prepareCityImage
+          def mapToSign
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1067
+        </td>
+        <td>
+          398
+          -
+          425
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case v if v &gt; signThreshold
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1068
+        </td>
+        <td>
+          437
+          -
+          443
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1087
+        </td>
+        <td>
+          480
+          -
+          487
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          -|-
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def -|-
         </td>
       </tr><tr>
         <td>
           23
         </td>
         <td>
-          1291
+          1070
         </td>
         <td>
-          693
+          568
           -
-          756
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getResource
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          1288
-        </td>
-        <td>
-          725
-          -
-          746
+          579
         </td>
         <td>
           Select
         </td>
         <td>
-          currentLife
+          direction
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          structure.currentLife
+          v.direction
         </td>
       </tr><tr>
         <td>
           23
         </td>
         <td>
-          1290
+          1073
         </td>
         <td>
-          714
+          542
           -
-          755
+          597
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife + &quot;.png&quot;
+          Vector2D(30, Angle.Degree(v.direction.get.degree + 90))
         </td>
       </tr><tr>
         <td>
           23
         </td>
         <td>
-          1292
+          1072
         </td>
         <td>
-          680
+          568
           -
-          757
+          590
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          read
+          degree
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))
+          v.direction.get.degree
         </td>
       </tr><tr>
         <td>
           23
         </td>
         <td>
-          1289
+          1074
         </td>
         <td>
-          714
+          528
           -
-          746
+          538
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          +
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife
+          case Right
         </td>
       </tr><tr>
         <td>
-          34
+          23
         </td>
         <td>
-          1302
+          1071
         </td>
         <td>
-          1049
+          568
           -
+          583
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          v.direction.get
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
           1079
         </td>
         <td>
-          DefDef
+          604
+          -
+          613
         </td>
         <td>
-          prepareBatteryMissileImage
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def prepareBatteryMissileImage
+          case Left
         </td>
       </tr><tr>
         <td>
-          36
+          24
         </td>
         <td>
-          1297
+          1076
         </td>
         <td>
-          1244
+          643
           -
-          1265
+          658
         </td>
         <td>
           Select
         </td>
         <td>
-          currentLife
+          get
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          structure.currentLife
+          v.direction.get
         </td>
       </tr><tr>
         <td>
-          36
+          24
         </td>
         <td>
-          1300
+          1075
         </td>
         <td>
-          1178
+          643
           -
-          1275
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getResource
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          1294
-        </td>
-        <td>
-          1210
-          -
-          1235
+          654
         </td>
         <td>
           Select
         </td>
         <td>
-          isReadyForShoot
+          direction
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          structure.isReadyForShoot
+          v.direction
         </td>
       </tr><tr>
         <td>
-          36
+          24
         </td>
         <td>
-          1296
+          1078
         </td>
         <td>
-          1199
+          617
           -
-          1241
+          672
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot;
+          Vector2D(30, Angle.Degree(v.direction.get.degree - 90))
         </td>
       </tr><tr>
         <td>
-          36
+          24
         </td>
         <td>
-          1299
+          1077
         </td>
         <td>
-          1199
+          643
           -
-          1274
+          665
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          degree
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          v.direction.get.degree
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1086
+        </td>
+        <td>
+          679
+          -
+          694
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case Rand(rand)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1080
+        </td>
+        <td>
+          718
+          -
+          735
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          nextDouble
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;
+          rand.nextDouble()
         </td>
       </tr><tr>
         <td>
-          36
+          27
         </td>
         <td>
-          1301
+          1082
         </td>
         <td>
-          1165
+          769
           -
-          1276
+          784
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          v.direction.get
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1085
+        </td>
+        <td>
+          744
+          -
+          816
         </td>
         <td>
           Apply
         </td>
         <td>
-          read
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))
+          Vector2D(1, Angle.Degree(v.direction.get.degree + 90 * value.mapToSign))
         </td>
       </tr><tr>
         <td>
-          36
+          27
         </td>
         <td>
-          1295
+          1084
         </td>
         <td>
-          1199
+          799
           -
-          1235
+          814
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          mapToSign
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot
+          value.mapToSign
         </td>
       </tr><tr>
         <td>
-          36
+          27
         </td>
         <td>
-          1298
+          1081
         </td>
         <td>
-          1199
+          769
           -
-          1265
+          780
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          v.direction
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1083
+        </td>
+        <td>
+          769
+          -
+          791
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          degree
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          v.direction.get.degree
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1088
+        </td>
+        <td>
+          887
+          -
+          899
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          take
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife
+          list.take(1)
         </td>
       </tr><tr>
         <td>
-          47
+          30
         </td>
         <td>
-          1308
+          1091
         </td>
         <td>
-          1608
+          856
           -
-          1623
+          863
         </td>
         <td>
           DefDef
         </td>
         <td>
-          printGround
+          pop
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def printGround
+          def pop
         </td>
       </tr><tr>
         <td>
-          48
+          30
         </td>
         <td>
-          1303
+          1090
         </td>
         <td>
-          1728
+          906
           -
-          1755
+          915
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          prepareCityImage
+          tail
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          prepareCityImage(structure)
+          list.tail
         </td>
       </tr><tr>
         <td>
-          48
+          30
         </td>
         <td>
-          1304
+          1089
         </td>
         <td>
-          1691
+          887
           -
-          1755
+          904
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          map
+          head
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          for structure &lt;- ground.cities yield prepareCityImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          1307
-        </td>
-        <td>
-          1690
-          -
-          1860
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          ++
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          (for structure &lt;- ground.cities yield prepareCityImage(structure))
-            ++
-            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          1306
-        </td>
-        <td>
-          1785
-          -
-          1860
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          1305
-        </td>
-        <td>
-          1823
-          -
-          1860
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          prepareBatteryMissileImage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          prepareBatteryMissileImage(structure)
+          list.take(1).head
         </td>
       </tr>
     </table>

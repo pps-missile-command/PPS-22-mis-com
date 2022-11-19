@@ -23,30 +23,36 @@
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile.zigzag
-</span>2 <span style=''>import model.collisions.Affiliation
-</span>3 <span style=''>import model.elements2d.Point2D
-</span>4 <span style=''>import model.missile.*
-</span>5 <span style=''>
-</span>6 <span style=''>import scala.util.Random
-</span>7 <span style=''>
-</span>8 <span style=''>object ZigZagMissile:
-</span>9 <span style=''>
-</span>10 <span style=''>  trait ZigZagMissile:
-</span>11 <span style=''>    missile: Missile =&gt;
-</span>12 <span style=''>      </span><span style='background: #F0ADAD'>def zigzag</span><span style=''>(): Boolean = true
-</span>13 <span style=''>
-</span>14 <span style=''>    </span><span style='background: #F0ADAD'>override def move</span><span style=''>(): Missile =
-</span>15 <span style=''>      </span><span style='background: #F0ADAD'>println(&quot;OVERRIDE&quot;)</span><span style=''>
-</span>16 <span style=''>      this
+</span>2 <span style=''>import model.DeltaTime
+</span>3 <span style=''>import model.behavior.Moveable
+</span>4 <span style=''>import model.collisions.{Affiliation, Collisionable, LifePoint, lifePointDeath}
+</span>5 <span style=''>import model.elements2d.{Point2D, Vector2D}
+</span>6 <span style=''>import model.missile.*
+</span>7 <span style=''>import model.missile.given_Conversion_Point2D_Point2D_Vector2D
+</span>8 <span style=''>
+</span>9 <span style=''>import scala.util.Random
+</span>10 <span style=''>
+</span>11 <span style=''>object ZigZagMissile:
+</span>12 <span style=''>
+</span>13 <span style=''>  trait ZigZagMissile(step: Int = 5, positions: LazyList[Point2D], to: Point2D):
+</span>14 <span style=''>    missile: MissileImpl =&gt;
+</span>15 <span style=''>
+</span>16 <span style=''>    </span><span style='background: #F0ADAD'>def subDestinationReached</span><span style=''>: Boolean = position == destination
 </span>17 <span style=''>
-</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>() = new </span><span style='background: #F0ADAD'>MissileImpl(5, Point2D(0,0), Point2D(5,5))</span><span style=''> with ZigZagMissile
+</span>18 <span style=''>    </span><span style='background: #F0ADAD'>override def destinationReached</span><span style=''>: Boolean = position == to
 </span>19 <span style=''>
-</span>20 <span style=''></span><span style='background: #F0ADAD'>@main def test</span><span style=''>() =
-</span>21 <span style=''>  import ZigZagMissile.*
-</span>22 <span style=''>  given random: </span><span style='background: #F0ADAD'>Random()</span><span style=''>
-</span>23 <span style=''>  val zigzagMissile = </span><span style='background: #F0ADAD'>apply()</span><span style=''>
-</span>24 <span style=''>  </span><span style='background: #F0ADAD'>zigzagMissile.zigzag()</span><span style=''>
-</span>25 <span style=''>  </span><span style='background: #F0ADAD'>zigzagMissile.move()</span><span style=''>
+</span>20 <span style=''>    </span><span style='background: #F0ADAD'>override def newMissile</span><span style=''>(life: LifePoint = missile.lifePoint, pos: Point2D = missile.position, _dt: DeltaTime = missile.dt): MissileImpl &amp; ZigZagMissile &amp; Scorable =
+</span>21 <span style=''>      </span><span style='background: #F0ADAD'>subDestinationReached</span><span style=''> match
+</span>22 <span style=''>        </span><span style='background: #F0ADAD'>case true</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(missile, pos, step, positions.pop()._2, _dt, to)</span><span style=''>
+</span>23 <span style=''>        </span><span style='background: #F0ADAD'>case false</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(missile, pos, step, positions, _dt, to)</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(from: Point2D, to: Point2D, step: Int)(using Random): ZigZagMissile &amp; Scorable &amp; MissileImpl =
+</span>26 <span style=''>    val list = </span><span style='background: #F0ADAD'>DirectionList(from, to, step)</span><span style=''>
+</span>27 <span style=''>    new </span><span style='background: #F0ADAD'>MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy)</span><span style=''> with </span><span style='background: #F0ADAD'>Scorable(1)</span><span style=''> with </span><span style='background: #F0ADAD'>ZigZagMissile(step, list, to)</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>  </span><span style='background: #F0ADAD'>private def apply</span><span style=''>(missile: Missile, newPosition: Point2D, step: Int, positions: LazyList[Point2D], deltaTime: DeltaTime, to: Point2D): ZigZagMissile &amp; Scorable &amp; MissileImpl = </span><span style='background: #F0ADAD'>positions.size</span><span style=''> match
+</span>30 <span style=''>    </span><span style='background: #F0ADAD'>case 0</span><span style=''> =&gt; new </span><span style='background: #F0ADAD'>MissileImpl(missile.initialLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)</span><span style=''> with </span><span style='background: #F0ADAD'>Scorable(1)</span><span style=''> with </span><span style='background: #F0ADAD'>ZigZagMissile(step, positions, to)</span><span style=''>
+</span>31 <span style=''>    </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; new </span><span style='background: #F0ADAD'>MissileImpl(missile.initialLife, newPosition, positions.head, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)</span><span style=''> with </span><span style='background: #F0ADAD'>Scorable(1)</span><span style=''> with </span><span style='background: #F0ADAD'>ZigZagMissile(step, positions, to)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -61,135 +67,207 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          11
+          12
         </td>
         <td>
-          935
+          1036
         </td>
         <td>
-          223
+          377
           -
-          233
+          377
         </td>
         <td>
           DefDef
         </td>
         <td>
-          zigzag
+          $lessinit$greater$default$1
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def zigzag
+          
         </td>
       </tr><tr>
         <td>
-          13
+          15
         </td>
         <td>
-          937
+          1023
         </td>
         <td>
-          257
+          457
           -
-          274
+          482
         </td>
         <td>
           DefDef
         </td>
         <td>
-          move
+          subDestinationReached
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def move
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          936
-        </td>
-        <td>
-          294
-          -
-          313
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(&quot;OVERRIDE&quot;)
+          def subDestinationReached
         </td>
       </tr><tr>
         <td>
           17
         </td>
         <td>
-          941
+          1024
         </td>
         <td>
-          346
+          523
           -
-          357
+          554
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          destinationReached
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def destinationReached
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1034
+        </td>
+        <td>
+          662
+          -
+          662
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          newMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1033
+        </td>
+        <td>
+          628
+          -
+          628
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          newMissile$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1032
+        </td>
+        <td>
+          586
+          -
+          609
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          newMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def newMissile
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1035
+        </td>
+        <td>
+          697
+          -
+          697
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          newMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1025
+        </td>
+        <td>
+          757
+          -
+          778
         </td>
         <td>
           Select
         </td>
         <td>
-          $lessinit$greater$default$5
+          subDestinationReached
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          MissileImpl
+          subDestinationReached
         </td>
       </tr><tr>
         <td>
-          17
+          21
         </td>
         <td>
-          944
+          1028
         </td>
         <td>
-          346
+          806
           -
-          388
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          MissileImpl(5, Point2D(0,0), Point2D(5,5))
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          938
-        </td>
-        <td>
-          361
-          -
-          373
+          860
         </td>
         <td>
           Apply
@@ -201,67 +279,139 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Point2D(0,0)
+          apply(missile, pos, step, positions.pop()._2, _dt, to)
         </td>
       </tr><tr>
         <td>
-          17
+          21
         </td>
         <td>
-          940
+          1027
         </td>
         <td>
-          346
+          832
           -
-          357
+          850
         </td>
         <td>
           Select
         </td>
         <td>
-          $lessinit$greater$default$4
+          _2
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          MissileImpl
+          positions.pop()._2
         </td>
       </tr><tr>
         <td>
-          17
+          21
         </td>
         <td>
-          943
+          1029
         </td>
         <td>
-          346
+          793
           -
-          357
+          802
         </td>
         <td>
-          Select
+          Block
         </td>
         <td>
-          $lessinit$greater$default$7
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          MissileImpl
+          case true
         </td>
       </tr><tr>
         <td>
-          17
+          21
         </td>
         <td>
-          945
+          1026
         </td>
         <td>
-          328
+          832
           -
-          337
+          847
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          pop
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          positions.pop()
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1031
+        </td>
+        <td>
+          869
+          -
+          879
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case false
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1030
+        </td>
+        <td>
+          883
+          -
+          928
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          apply(missile, pos, step, positions, _dt, to)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1046
+        </td>
+        <td>
+          932
+          -
+          941
         </td>
         <td>
           DefDef
@@ -277,15 +427,15 @@
         </td>
       </tr><tr>
         <td>
-          17
+          25
         </td>
         <td>
-          939
+          1037
         </td>
         <td>
-          375
+          1052
           -
-          387
+          1081
         </td>
         <td>
           Apply
@@ -297,19 +447,163 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Point2D(5,5)
+          DirectionList(from, to, step)
         </td>
       </tr><tr>
         <td>
-          17
+          26
         </td>
         <td>
-          942
+          1043
         </td>
         <td>
-          346
+          1090
           -
-          357
+          1176
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1040
+        </td>
+        <td>
+          1090
+          -
+          1101
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          MissileImpl
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1042
+        </td>
+        <td>
+          1090
+          -
+          1101
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$7
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          MissileImpl
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1045
+        </td>
+        <td>
+          1199
+          -
+          1228
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZigZagMissile(step, list, to)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1039
+        </td>
+        <td>
+          1090
+          -
+          1101
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          $lessinit$greater$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          MissileImpl
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1038
+        </td>
+        <td>
+          1133
+          -
+          1142
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          head
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          list.head
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1041
+        </td>
+        <td>
+          1090
+          -
+          1101
         </td>
         <td>
           Select
@@ -325,39 +619,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          26
         </td>
         <td>
-          950
+          1044
         </td>
         <td>
-          409
+          1182
           -
-          423
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          test
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          @main def test
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          946
-        </td>
-        <td>
-          469
-          -
-          477
+          1193
         </td>
         <td>
           Apply
@@ -369,22 +639,22 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Random()
+          Scorable(1)
         </td>
       </tr><tr>
         <td>
-          22
+          28
         </td>
         <td>
-          947
+          1063
         </td>
         <td>
-          500
+          1232
           -
-          507
+          1249
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
           apply
@@ -393,55 +663,391 @@
           
         </td>
         <td style="background: #F0ADAD">
-          apply()
+          private def apply
         </td>
       </tr><tr>
         <td>
-          23
+          28
         </td>
         <td>
-          948
+          1047
         </td>
         <td>
-          510
+          1408
           -
-          532
+          1422
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          zigzag
+          size
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          zigzagMissile.zigzag()
+          positions.size
         </td>
       </tr><tr>
         <td>
-          24
+          29
         </td>
         <td>
-          949
+          1052
         </td>
         <td>
-          535
+          1566
           -
-          555
+          1577
         </td>
         <td>
           Apply
         </td>
         <td>
-          move
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          zigzagMissile.move()
+          Scorable(1)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1049
+        </td>
+        <td>
+          1527
+          -
+          1541
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          damage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.damage
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1051
+        </td>
+        <td>
+          1447
+          -
+          1560
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          MissileImpl(missile.initialLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1054
+        </td>
+        <td>
+          1433
+          -
+          1439
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case 0
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1048
+        </td>
+        <td>
+          1459
+          -
+          1478
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          initialLife
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.initialLife
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1050
+        </td>
+        <td>
+          1543
+          -
+          1559
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.velocity
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          1053
+        </td>
+        <td>
+          1583
+          -
+          1617
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZigZagMissile(step, positions, to)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1061
+        </td>
+        <td>
+          1784
+          -
+          1818
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZigZagMissile(step, positions, to)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1055
+        </td>
+        <td>
+          1648
+          -
+          1667
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          initialLife
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.initialLife
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1058
+        </td>
+        <td>
+          1744
+          -
+          1760
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.velocity
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1057
+        </td>
+        <td>
+          1728
+          -
+          1742
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          damage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.damage
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1060
+        </td>
+        <td>
+          1767
+          -
+          1778
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Scorable(1)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1056
+        </td>
+        <td>
+          1682
+          -
+          1696
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          head
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          positions.head
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1059
+        </td>
+        <td>
+          1636
+          -
+          1761
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          MissileImpl(missile.initialLife, newPosition, positions.head, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1062
+        </td>
+        <td>
+          1622
+          -
+          1628
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
         </td>
       </tr>
     </table>

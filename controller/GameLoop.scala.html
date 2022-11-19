@@ -72,7 +72,7 @@
 </span>48 <span style=''>
 </span>49 <span style=''>    val init = </span><span style='background: #F0ADAD'>Task((world, controls))</span><span style=''>
 </span>50 <span style=''>    val events =
-</span>51 <span style=''>      </span><span style='background: #F0ADAD'>Observable(time, ui.events).merge</span><span style=''>
+</span>51 <span style=''>      </span><span style='background: #F0ADAD'>Observable(time, ui.events.throttleLast(50 milliseconds)).merge</span><span style=''>
 </span>52 <span style=''>    </span><span style='background: #F0ADAD'>events
 </span>53 <span style=''></span><span style='background: #F0ADAD'>      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
 </span>54 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (world, _) =&gt; ui.render(world) }
@@ -198,7 +198,7 @@
           35
         </td>
         <td>
-          28
+          30
         </td>
         <td>
           919
@@ -444,24 +444,48 @@
           50
         </td>
         <td>
-          14
+          17
         </td>
         <td>
           1291
           -
-          1318
+          1354
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          merge
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Observable(time, ui.events)
+          Observable(time, ui.events.throttleLast(50 milliseconds)).merge
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          1331
+          -
+          1346
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          milliseconds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          50 milliseconds
         </td>
       </tr><tr>
         <td>
@@ -492,36 +516,85 @@
           50
         </td>
         <td>
-          15
+          16
         </td>
         <td>
           1291
           -
-          1324
+          1348
         </td>
         <td>
           Apply
         </td>
         <td>
-          merge
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Observable(time, ui.events).merge
+          Observable(time, ui.events.throttleLast(50 milliseconds))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          1308
+          -
+          1347
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          throttleLast
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ui.events.throttleLast(50 milliseconds)
         </td>
       </tr><tr>
         <td>
           52
         </td>
         <td>
-          17
+          20
         </td>
         <td>
-          1360
+          1359
           -
-          1391
+          1449
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scanEval
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          events
+      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          1390
+          -
+          1421
         </td>
         <td>
           Block
@@ -540,12 +613,12 @@
           52
         </td>
         <td>
-          16
+          18
         </td>
         <td>
-          1395
+          1425
           -
-          1417
+          1447
         </td>
         <td>
           Apply
@@ -561,88 +634,15 @@
         </td>
       </tr><tr>
         <td>
-          52
-        </td>
-        <td>
-          18
-        </td>
-        <td>
-          1329
-          -
-          1419
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scanEval
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          events
-      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
-        </td>
-      </tr><tr>
-        <td>
           53
         </td>
         <td>
-          20
+          23
         </td>
         <td>
-          1438
+          1359
           -
-          1453
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case (world, _)
-        </td>
-      </tr><tr>
-        <td>
-          53
-        </td>
-        <td>
-          19
-        </td>
-        <td>
-          1457
-          -
-          1473
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          render
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ui.render(world)
-        </td>
-      </tr><tr>
-        <td>
-          53
-        </td>
-        <td>
-          21
-        </td>
-        <td>
-          1329
-          -
-          1475
+          1505
         </td>
         <td>
           Apply
@@ -660,15 +660,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          53
         </td>
         <td>
-          23
+          22
         </td>
         <td>
-          1495
+          1468
           -
-          1510
+          1483
         </td>
         <td>
           Block
@@ -684,39 +684,39 @@
         </td>
       </tr><tr>
         <td>
-          54
+          53
         </td>
         <td>
-          22
+          21
         </td>
         <td>
-          1514
+          1487
           -
-          1537
+          1503
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          stillAlive
+          render
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          world.ground.stillAlive
+          ui.render(world)
         </td>
       </tr><tr>
         <td>
           54
         </td>
         <td>
-          24
+          26
         </td>
         <td>
-          1329
+          1359
           -
-          1539
+          1569
         </td>
         <td>
           Apply
@@ -735,15 +735,63 @@
         </td>
       </tr><tr>
         <td>
-          55
+          54
         </td>
         <td>
           25
         </td>
         <td>
-          1329
+          1525
           -
-          1557
+          1540
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case (world, _)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          24
+        </td>
+        <td>
+          1544
+          -
+          1567
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          stillAlive
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          world.ground.stillAlive
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          27
+        </td>
+        <td>
+          1359
+          -
+          1587
         </td>
         <td>
           Select
@@ -766,36 +814,12 @@
           56
         </td>
         <td>
-          26
+          29
         </td>
         <td>
-          1581
+          1359
           -
-          1592
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          gameOver
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ui.gameOver
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          27
-        </td>
-        <td>
-          1329
-          -
-          1593
+          1623
         </td>
         <td>
           Apply
@@ -813,6 +837,30 @@
       .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
       .completedL
       .doOnFinish(_ =&gt; ui.gameOver)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          28
+        </td>
+        <td>
+          1611
+          -
+          1622
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          gameOver
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ui.gameOver
         </td>
       </tr>
     </table>

@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          controller/update/UpdatePosition.scala.html
+          model/spawner/SpawnerAggregator.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,38 +22,17 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller.update
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.spawner
 </span>2 <span style=''>
-</span>3 <span style=''>import controller.Event
-</span>4 <span style=''>import controller.Event.TimePassed
-</span>5 <span style=''>import controller.update.Update.on
-</span>6 <span style=''>import model.World
-</span>7 <span style=''>import model.behavior.Moveable
-</span>8 <span style=''>import model.collisions.Collisionable
-</span>9 <span style=''>import monix.eval.Task
+</span>3 <span style=''>import model.DeltaTime
+</span>4 <span style=''>import model.behavior.Timeable
+</span>5 <span style=''>import model.collisions.Collisionable
+</span>6 <span style=''>
+</span>7 <span style=''>case class SpawnerAggregator(genericSpawners: GenericSpawner[Collisionable]*):
+</span>8 <span style=''>
+</span>9 <span style=''>  </span><span style='background: #F0ADAD'>def spawn</span><span style=''>(): Set[Collisionable] = </span><span style='background: #F0ADAD'>(genericSpawners flatMap { i =&gt; i.spawn()._1 }).toSet</span><span style=''>
 </span>10 <span style=''>
-</span>11 <span style=''>/**
-</span>12 <span style=''> * Object that return an update function for the world to update the position its components
-</span>13 <span style=''> */
-</span>14 <span style=''>object UpdatePosition:
-</span>15 <span style=''>
-</span>16 <span style=''>  extension (collisionable: Collisionable)
-</span>17 <span style=''>    </span><span style='background: #F0ADAD'>private def updateMovablePosition</span><span style=''>(): Collisionable =
-</span>18 <span style=''>      collisionable match
-</span>19 <span style=''>        </span><span style='background: #F0ADAD'>case moveable: Moveable</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>moveable.move()</span><span style=''>.asInstanceOf[Collisionable]
-</span>20 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; collisionable
-</span>21 <span style=''>
-</span>22 <span style=''>  /**
-</span>23 <span style=''>   * Apply function used to update the position of the game components
-</span>24 <span style=''>   *
-</span>25 <span style=''>   * @return An Update that update the position of the game components
-</span>26 <span style=''>   */
-</span>27 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, world: World) =&gt;
-</span>28 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>29 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables.map(_.updateMovablePosition())
-</span>30 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = collisionables)
-</span>31 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>32 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>11 <span style=''>  </span><span style='background: #F0ADAD'>def updateTime</span><span style=''>(dt: DeltaTime): Unit = </span><span style='background: #F0ADAD'>genericSpawners map { i =&gt; i.timeElapsed(dt) }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -68,152 +47,195 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          16
+          8
         </td>
         <td>
-          140
+          1189
         </td>
         <td>
-          405
+          264
           -
-          438
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          updateMovablePosition
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          private def updateMovablePosition
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          137
-        </td>
-        <td>
-          519
-          -
-          534
+          273
         </td>
         <td>
           Apply
         </td>
         <td>
-          move
+          spawn
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          moveable.move()
+          i.spawn()
         </td>
       </tr><tr>
         <td>
-          18
+          8
         </td>
         <td>
-          138
+          1192
         </td>
         <td>
-          492
+          232
           -
-          515
+          285
         </td>
         <td>
-          Block
+          Select
         </td>
         <td>
-          &lt;none&gt;
+          toSet
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          case moveable: Moveable
+          (genericSpawners flatMap { i =&gt; i.spawn()._1 }).toSet
         </td>
       </tr><tr>
         <td>
-          19
+          8
         </td>
         <td>
-          139
+          1191
         </td>
         <td>
-          571
+          233
           -
-          577
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          142
-        </td>
-        <td>
-          757
-          -
-          766
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def apply
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          141
-        </td>
-        <td>
-          779
-          -
-          973
+          278
         </td>
         <td>
           Apply
         </td>
         <td>
-          on
+          flatMap
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          on[TimePassed] { (_: Event, world: World) =&gt;
-    Task {
-      val collisionables = world.collisionables.map(_.updateMovablePosition())
-      world.copy(collisionables = collisionables)
-    }
-  }
+          genericSpawners flatMap { i =&gt; i.spawn()._1 }
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1190
+        </td>
+        <td>
+          264
+          -
+          276
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          i.spawn()._1
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1193
+        </td>
+        <td>
+          198
+          -
+          207
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          spawn
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def spawn
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          1196
+        </td>
+        <td>
+          289
+          -
+          303
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateTime
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def updateTime
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          1195
+        </td>
+        <td>
+          327
+          -
+          373
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          genericSpawners map { i =&gt; i.timeElapsed(dt) }
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          1194
+        </td>
+        <td>
+          354
+          -
+          371
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          i.timeElapsed(dt)
         </td>
       </tr>
     </table>

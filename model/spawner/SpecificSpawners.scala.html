@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/collisions/hitbox/HitBoxUnion.scala.html
+          model/spawner/SpecificSpawners.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,45 +22,34 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions.hitbox
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.spawner
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.HitBox
-</span>4 <span style=''>import model.elements2d.Point2D
-</span>5 <span style=''>import model.collisions.hitbox.*
-</span>6 <span style=''>import model.collisions.*
-</span>7 <span style=''>import org.scalactic.Equality
+</span>3 <span style=''>import model.elements2d.Point2D
+</span>4 <span style=''>import model.missile
+</span>5 <span style=''>import model.missile.Missile
+</span>6 <span style=''>import model.missile.zigzag.ZigZagMissile.ZigZagMissile
+</span>7 <span style=''>import model.spawner.LazySpawner.Spawnable
 </span>8 <span style=''>
-</span>9 <span style=''>/**
-</span>10 <span style=''> * Factory for hit box that is the union of other hit boxes.
-</span>11 <span style=''> */
-</span>12 <span style=''>object HitBoxUnion:
-</span>13 <span style=''>
-</span>14 <span style=''>  /**
-</span>15 <span style=''>   * Creates a hit box that is the union of the given hit boxes.
-</span>16 <span style=''>   *
-</span>17 <span style=''>   * @param hitBoxes the hit boxes to be united.
-</span>18 <span style=''>   * @return the hit box that is the union of the given hit boxes.
-</span>19 <span style=''>   */
-</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(hitBoxes: HitBox*): HitBox = hitBoxes match
-</span>21 <span style=''>    </span><span style='background: #AEF1AE'>case Seq()</span><span style=''> =&gt; HitBoxEmpty
-</span>22 <span style=''>    </span><span style='background: #AEF1AE'>case Seq(hitBox)</span><span style=''> =&gt; hitBox
-</span>23 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; HitBoxUnion(hitBoxes)
-</span>24 <span style=''>
-</span>25 <span style=''>  private case class HitBoxUnion(hitBoxes: Seq[HitBox]) extends HitBoxAggregation :
-</span>26 <span style=''>    </span><span style='background: #AEF1AE'>protected def optionalConfront</span><span style=''>(l: Option[Double], r: Option[Double])(confrontFunction: (Double, Double) =&gt; Double): Option[Double] =
-</span>27 <span style=''>      (l, r) match
-</span>28 <span style=''>        </span><span style='background: #AEF1AE'>case (Some(l), Some(r))</span><span style=''> =&gt; Some(</span><span style='background: #AEF1AE'>confrontFunction(l, r)</span><span style=''>)
-</span>29 <span style=''>        </span><span style='background: #F0ADAD'>case (Some(l), None)</span><span style=''> =&gt; Some(l)
-</span>30 <span style=''>        </span><span style='background: #AEF1AE'>case (None, Some(r))</span><span style=''> =&gt; Some(r)
-</span>31 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; None
-</span>32 <span style=''>
-</span>33 <span style=''>    protected val functionForMax: (Double, Double) =&gt; Double = </span><span style='background: #AEF1AE'>math.max</span><span style=''>
-</span>34 <span style=''>
-</span>35 <span style=''>    protected val functionForMin: (Double, Double) =&gt; Double = </span><span style='background: #AEF1AE'>math.min</span><span style=''>
-</span>36 <span style=''>
-</span>37 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean = </span><span style='background: #AEF1AE'>hitBoxes.exists(_.contains(point))</span><span style=''>
-</span>38 <span style=''>
-</span>39 <span style=''>    </span><span style='background: #AEF1AE'>override def area</span><span style=''>(using step: Distance): Iterator[Point2D] = </span><span style='background: #AEF1AE'>hitBoxes.flatMap(_.area).distinct.iterator</span><span style=''>
+</span>9 <span style=''>import scala.util.Random
+</span>10 <span style=''>
+</span>11 <span style=''>extension(r: Random)
+</span>12 <span style=''>  </span><span style='background: #F0ADAD'>def randomPosition</span><span style=''>(maxWidth: Double, maxHeight: Double): Point2D = </span><span style='background: #F0ADAD'>Point2D(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight)</span><span style=''>
+</span>13 <span style=''>  </span><span style='background: #AEF1AE'>def randomX</span><span style=''>(maxWidth: Double, y: Double): Point2D = </span><span style='background: #AEF1AE'>Point2D(r.nextDouble() * maxWidth, y)</span><span style=''>
+</span>14 <span style=''>  </span><span style='background: #F0ADAD'>def randomY</span><span style=''>(maxHeight: Double, x: Double): Point2D = </span><span style='background: #F0ADAD'>Point2D(x, r.nextDouble() * maxHeight)</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>/**
+</span>17 <span style=''> * Specific spawners strategies to spawn objects
+</span>18 <span style=''> * missili, plane
+</span>19 <span style=''> * plane spawnabile in un range witdh1 e width2
+</span>20 <span style=''> */
+</span>21 <span style=''>object SpecificSpawners:
+</span>22 <span style=''>
+</span>23 <span style=''>  </span><span style='background: #AEF1AE'>def MissileStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
+</span>24 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Missile.enemyMissile(position = r.randomX(maxWidth, 0), finalPosition = r.randomX(maxWidth, maxHeight))</span><span style=''>
+</span>25 <span style=''>
+</span>26 <span style=''>  </span><span style='background: #F0ADAD'>def ZigZagStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
+</span>27 <span style=''>    () =&gt; </span><span style='background: #F0ADAD'>missile.zigzag.ZigZagMissile(r.randomX(maxWidth, 0), r.randomX(maxWidth, maxHeight), 5)</span><span style=''>
+</span>28 <span style=''>    
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -75,18 +64,114 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          19
+          11
         </td>
         <td>
-          445
+          1210
         </td>
         <td>
-          476
+          356
           -
-          485
+          370
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          r.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1209
+        </td>
+        <td>
+          329
+          -
+          343
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          r.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1212
+        </td>
+        <td>
+          254
+          -
+          272
         </td>
         <td>
           DefDef
+        </td>
+        <td>
+          randomPosition
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def randomPosition
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1211
+        </td>
+        <td>
+          321
+          -
+          383
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1214
+        </td>
+        <td>
+          438
+          -
+          475
+        </td>
+        <td>
+          Apply
         </td>
         <td>
           apply
@@ -95,137 +180,161 @@
           
         </td>
         <td style="background: #AEF1AE">
-          def apply
+          Point2D(r.nextDouble() * maxWidth, y)
         </td>
       </tr><tr>
         <td>
-          20
+          12
         </td>
         <td>
-          442
+          1213
         </td>
         <td>
-          534
+          446
           -
-          544
+          460
         </td>
         <td>
-          Block
+          Apply
         </td>
         <td>
-          &lt;none&gt;
+          nextDouble
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          case Seq()
+          r.nextDouble()
         </td>
       </tr><tr>
         <td>
-          21
+          12
         </td>
         <td>
-          443
+          1215
         </td>
         <td>
-          564
+          386
           -
-          580
+          397
         </td>
         <td>
-          Block
+          DefDef
         </td>
         <td>
-          &lt;none&gt;
+          randomX
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          case Seq(hitBox)
+          def randomX
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1216
+        </td>
+        <td>
+          542
+          -
+          556
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          r.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1218
+        </td>
+        <td>
+          478
+          -
+          489
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          randomY
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def randomY
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1217
+        </td>
+        <td>
+          531
+          -
+          569
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D(x, r.nextDouble() * maxHeight)
         </td>
       </tr><tr>
         <td>
           22
         </td>
         <td>
-          444
+          1204
         </td>
         <td>
-          595
+          722
           -
-          601
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          25
-        </td>
-        <td>
-          451
-        </td>
-        <td>
-          716
-          -
-          746
+          741
         </td>
         <td>
           DefDef
         </td>
         <td>
-          optionalConfront
+          MissileStrategy
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          protected def optionalConfront
+          def MissileStrategy
         </td>
       </tr><tr>
         <td>
-          27
+          23
         </td>
         <td>
-          447
+          1198
         </td>
         <td>
-          876
-          -
-          899
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case (Some(l), Some(r))
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          446
-        </td>
-        <td>
-          908
+          900
           -
           930
         </td>
@@ -233,325 +342,253 @@
           Apply
         </td>
         <td>
-          apply
+          randomX
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          confrontFunction(l, r)
+          r.randomX(maxWidth, maxHeight)
         </td>
       </tr><tr>
         <td>
-          28
+          23
         </td>
         <td>
-          448
+          1201
         </td>
         <td>
-          940
+          828
           -
-          960
+          848
         </td>
         <td>
-          Block
+          Select
         </td>
         <td>
-          &lt;none&gt;
+          enemyMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1200
+        </td>
+        <td>
+          828
+          -
+          848
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1203
+        </td>
+        <td>
+          828
+          -
+          931
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          enemyMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile(position = r.randomX(maxWidth, 0), finalPosition = r.randomX(maxWidth, maxHeight))
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1197
+        </td>
+        <td>
+          860
+          -
+          882
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          randomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.randomX(maxWidth, 0)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1199
+        </td>
+        <td>
+          828
+          -
+          848
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1202
+        </td>
+        <td>
+          828
+          -
+          848
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$6
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1208
+        </td>
+        <td>
+          935
+          -
+          953
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          ZigZagStrategy
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          case (Some(l), None)
+          def ZigZagStrategy
         </td>
       </tr><tr>
         <td>
-          29
+          26
         </td>
         <td>
-          449
+          1205
         </td>
         <td>
-          980
+          1069
           -
-          1000
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case (None, Some(r))
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          450
-        </td>
-        <td>
-          1020
-          -
-          1026
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          452
-        </td>
-        <td>
-          1099
-          -
-          1107
+          1091
         </td>
         <td>
           Apply
         </td>
         <td>
-          max
+          randomX
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          math.max
+        <td style="background: #F0ADAD">
+          r.randomX(maxWidth, 0)
         </td>
       </tr><tr>
         <td>
-          34
+          26
         </td>
         <td>
-          453
-        </td>
-        <td>
-          1172
-          -
-          1180
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          min
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          math.min
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          454
-        </td>
-        <td>
-          1285
-          -
-          1302
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.contains(point)
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          456
-        </td>
-        <td>
-          1186
-          -
           1207
         </td>
         <td>
-          DefDef
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def contains
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          455
-        </td>
-        <td>
-          1269
+          1040
           -
-          1303
+          1127
         </td>
         <td>
           Apply
         </td>
         <td>
-          exists
+          apply
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.exists(_.contains(point))
+        <td style="background: #F0ADAD">
+          missile.zigzag.ZigZagMissile(r.randomX(maxWidth, 0), r.randomX(maxWidth, maxHeight), 5)
         </td>
       </tr><tr>
         <td>
-          38
+          26
         </td>
         <td>
-          460
+          1206
         </td>
         <td>
-          1370
+          1093
           -
-          1412
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          iterator
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.flatMap(_.area).distinct.iterator
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          457
-        </td>
-        <td>
-          1387
-          -
-          1393
+          1123
         </td>
         <td>
           Apply
         </td>
         <td>
-          area
+          randomX
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          _.area
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          459
-        </td>
-        <td>
-          1370
-          -
-          1403
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          distinct
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.flatMap(_.area).distinct
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          461
-        </td>
-        <td>
-          1309
-          -
-          1326
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          area
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def area
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          458
-        </td>
-        <td>
-          1370
-          -
-          1394
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          flatMap
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.flatMap(_.area)
+        <td style="background: #F0ADAD">
+          r.randomX(maxWidth, maxHeight)
         </td>
       </tr>
     </table>
