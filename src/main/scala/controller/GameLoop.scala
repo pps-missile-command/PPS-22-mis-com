@@ -48,7 +48,7 @@ object GameLoop:
 
     val init = Task((world, controls))
     val events =
-      Observable(time, ui.events.throttleLast(50 milliseconds)).merge
+      Observable(time, ui.events).merge
     events
       .scanEval(init) { case ((world, controls), event) => controls(event, world) }
       .doOnNext { case (world, _) => ui.render(world) }
