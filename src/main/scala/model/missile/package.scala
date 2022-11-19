@@ -2,7 +2,7 @@ package model
 
 import collisions.{Affiliation, HitBox, LifePoint, hitbox}
 import model.collisions.hitbox.HitBoxRectangular
-import model.elements2d.{Angle, Point2D}
+import model.elements2d.{Angle, Point2D, Vector2D}
 import model.missile.Missile
 import model.collisions.Affiliation.*
 import model.behavior.*
@@ -27,23 +27,14 @@ package object missile:
   
   val basicHitBox: (Point2D, Option[Angle]) => HitBox = (point_, angle_) => HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))
 
-  type MissileMovement = (DeltaTime) => Point2D
+  given Conversion[(Point2D, Point2D), Vector2D] with
+    override def apply(x: (Point2D, Point2D)): Vector2D = (x._2 <--> x._1).normalize
 
-  given affiliation: Affiliation = Affiliation.Enemy
-  //generating a random positioned missile of type T
-  def GenerateRandomMissile(missileType: MissileType, finalDestination: Point2D)(using random: Random): Option[Missile] = missileType match
-    case BasicMissile(affiliation) =>
-      for
-        x <- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
-        y <- Option.apply(maxHeight) //height del campo
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), finalDestination)
+  type MissileMovement = (DeltaTime, Point2D) => Point2D
 
-    case RandomMissile =>
-      for
-        vel <- Option.apply(Random.nextDouble() * velocity)
-        x <- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
-        y <- Option.apply(maxHeight)
-        damage <- Option.apply(damage)
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))
-
-    case _ => Option(Missile(initialLife, damage, velocity, Point2D(0, 0), finalDestination))
+  def BasicMove(missile: Missile)(dt: DeltaTime): Point2D =
+    val distanceToMove = missile.velocity * dt
+    val distanceToFinalPosition = missile.position <-> missile.destination
+    if distanceToMove >= distanceToFinalPosition
+    then missile.destination
+    else missile.position --> (missile.direction * distanceToMove * (-1))

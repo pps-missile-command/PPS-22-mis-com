@@ -10,9 +10,6 @@ import scala.util.Random
 
 given maxTime: MaxTime = 8
 
-given Conversion[(Point2D, Point2D), Vector2D] with
-  override def apply(x: (Point2D, Point2D)): Vector2D = (x._2 <--> x._1).normalize
-
 trait Missile extends Damageable, Moveable:
 
   def damage: LifePoint
@@ -25,14 +22,16 @@ trait Missile extends Damageable, Moveable:
 
   override def move(): Missile
 
+  override def destinationReached: Boolean
+
   def explode: Explosion
 
-  val moveStrategy: MissileMovement = Missile.BasicMove(this)(_)
+  def newMissile(lifePoint: LifePoint, point: Point2D, dt: DeltaTime): Missile
 
 trait Scorable(val points: Int) extends Damageable
 
 case class MissileImpl(
-                        lifePoint: LifePoint,
+                        lifePoint: LifePoint = initialLife,
                         override val position: Point2D,
                         override val destination: Point2D,
                         dt: DeltaTime = 0,
@@ -48,7 +47,7 @@ case class MissileImpl(
 
   override def move(): Missile = this match
     case m if m.isDestroyed => newMissile(life = lifePointDeath)
-    case _ => newMissile(pos = moveStrategy(dt), _dt = 0)
+    case _ => newMissile(pos = BasicMove(this)(dt), _dt = 0)
 
   override def timeElapsed(dt: DeltaTime): Missile = newMissile(_dt = dt + this.dt)
 
@@ -58,7 +57,7 @@ case class MissileImpl(
     given expAffiliation: Affiliation = affiliation
     Explosion(damage, hitboxRadius = standardRadius, position)
 
-  private def newMissile(
+  override def newMissile(
                           life: LifePoint = lifePoint,
                           pos: Point2D = position,
                           _dt: DeltaTime = dt
@@ -77,13 +76,6 @@ object Missile:
                    position: Point2D,
                    finalPosition: Point2D,
                    score: Int = 1): Missile = new MissileImpl(lifePoint, position, finalPosition, 0, affiliation = Affiliation.Enemy, damage = _damage, velocity = _velocity) with Scorable(1)
-
-  def BasicMove(missile: Missile)(dt: DeltaTime): Point2D =
-    val distanceToMove = missile.velocity * dt
-    val distanceToFinalPosition = missile.position <-> missile.destination
-    if distanceToMove >= distanceToFinalPosition
-    then missile.destination
-    else missile.position --> (missile.direction * distanceToMove * (-1))
 
   def apply(lifePoint: LifePoint = initialLife,
             _damage: LifePoint = damage,
