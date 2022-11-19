@@ -1,36 +1,31 @@
 package model.missile.zigzag
-import model.collisions.Affiliation
-import model.elements2d.Point2D
+import model.DeltaTime
+import model.behavior.Moveable
+import model.collisions.{Affiliation, Collisionable, LifePoint, lifePointDeath}
+import model.elements2d.{Point2D, Vector2D}
 import model.missile.*
+import model.missile.given_Conversion_Point2D_Point2D_Vector2D
 
 import scala.util.Random
 
 object ZigZagMissile:
 
-  trait ZigZagMissile:
-    missile: Missile =>
+  trait ZigZagMissile(step: Int = 5, positions: LazyList[Point2D], to: Point2D):
+    missile: MissileImpl =>
 
-    def zigzag(): Boolean = true
+    def subDestinationReached: Boolean = position == destination
 
-    override def move(): Missile =
-      println("OVERRIDE")
-      this
+    override def destinationReached: Boolean = position == to
 
-    //come basic move ma non usa la destinazione, ma la prossima sotto destinazione
-    //lista di generici, deve essere anche testabile
-    override val moveStrategy = ???
+    override def newMissile(life: LifePoint = missile.lifePoint, pos: Point2D = missile.position, _dt: DeltaTime = missile.dt): MissileImpl & ZigZagMissile & Scorable =
+      subDestinationReached match
+        case true => apply(missile, pos, step, positions.pop()._2, _dt, to)
+        case false => apply(missile, pos, step, positions, _dt, to)
 
-  def apply() = new MissileImpl(5, Point2D(0,0), Point2D(5,5)) with ZigZagMissile
+  def apply(from: Point2D, to: Point2D, step: Int)(using Random): ZigZagMissile & Scorable & MissileImpl =
+    val list = DirectionList(from, to, step)
+    new MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy) with Scorable(1) with ZigZagMissile(step, list, to)
 
-@main def test() =
-  import ZigZagMissile.*
-  given random: Random()
-  val zigzagMissile = apply()
-  zigzagMissile.zigzag()
-  zigzagMissile.move()
-  move(zigzagMissile)
-
-
-def move(m: Missile) =
-  m.move()
-
+  private def apply(missile: Missile, newPosition: Point2D, step: Int, positions: LazyList[Point2D], deltaTime: DeltaTime, to: Point2D): ZigZagMissile & Scorable & MissileImpl = positions.size match
+    case 0 => new MissileImpl(missile.initialLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity) with Scorable(1) with ZigZagMissile(step, positions, to)
+    case _ => new MissileImpl(missile.initialLife, newPosition, positions.head, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity) with Scorable(1) with ZigZagMissile(step, positions, to)
