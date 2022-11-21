@@ -1,11 +1,16 @@
 package model.spawner
 
 import model.DeltaTime
+import model.collisions.Affiliation
 import model.missile.Missile
+import model.missile.zigzag.ZigZagMissile
+import model.missile.zigzag.ZigZagMissile.ZigZagMissile
 import model.spawner.GenericSpawner
 import org.scalatest.events.TestFailed
 import org.scalatest.funspec.AnyFunSpec
-import org.scalatest.matchers.should.Matchers
+import org.scalatest.matchers.must.Matchers.mustBe
+import org.scalatest.matchers.should.Matchers.*
+import org.scalatest.matchers.should.Matchers.shouldBe
 
 import scala.util.Random
 
@@ -28,7 +33,7 @@ class GenericSpawnerTest extends AnyFunSpec :
           val spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
           val newSpawner = spawner.timeElapsed(timePassed)
           val (missiles, _) = newSpawner.spawn()
-          missiles(0) match
+          missiles.toList(0) match
             case m: Missile => assertResult(timePassed)(missiles.size)
             case _ => throw IllegalStateException()
         }
@@ -47,6 +52,53 @@ class GenericSpawnerTest extends AnyFunSpec :
           val size = newSpawner.spawn()._1.size
           assert(size equals step)
         }
+      }
+    }
+  }
+  describe("A spawner of enemy missiles") {
+    describe("with an interval of a missile per second") {
+      it("should generate enemy missiles") {
+        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val spawner = old_spawner.timeElapsed(1)
+        val missiles = spawner.spawn()._1
+        if(!missiles.isEmpty)
+          assert(missiles.toList(0).affiliation == Affiliation.Enemy)
+      }
+      it("should generate zigzag missiles") {
+        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.ZigZagStrategy(maxWidth, maxHeight))
+        val spawner = old_spawner.timeElapsed(1)
+        val missiles = spawner.spawn()._1
+        if(!missiles.isEmpty)
+          missiles.toList(0) shouldBe a[ZigZagMissile]
+      }
+      it("should generate empty list if no enough time is passed") {
+        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val spawner = old_spawner.timeElapsed(0.33)
+        val missiles = spawner.spawn()._1
+        assert(missiles.size == 0)
+      }
+      it("should generate a missile after 1 second of virtual time") {
+        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val spawner = old_spawner.timeElapsed(1)
+        val missiles = spawner.spawn()._1
+        assert(missiles.size == 1)
+        assert(missiles.toList(0).affiliation == Affiliation.Enemy)
+      }
+      it("should generate n missiles after n seconds of virtual time") {
+        val timePassed = 10
+        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val spawner = old_spawner.timeElapsed(timePassed)
+        val missiles = spawner.spawn()._1
+        assert(missiles.size == timePassed)
+      }
+    }
+    describe("with an interval of a missile every 0.33 second") {
+      it("should generate  missiles after 1 second of virtual time") {
+        val timePassed = 1
+        val old_spawner = GenericSpawner[Missile](0.33, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val spawner = old_spawner.timeElapsed(timePassed)
+        val missiles = spawner.spawn()._1
+        assert(missiles.size == 3)
       }
     }
   }
