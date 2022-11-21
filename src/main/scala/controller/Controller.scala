@@ -23,8 +23,8 @@ object GameLoop:
    * The observable that will be used to schedule time in the game.
    */
   private val time: Observable[Event] = TimeFlow
-    .tickEach(100 milliseconds)
-    .map(_.toDouble/1000)
+    .tickEach(50 milliseconds)
+    .map(_.toDouble / 1000)
     .map(Event.TimePassed.apply)
 
   /**
@@ -53,5 +53,6 @@ object GameLoop:
       .scanEval(init) { case ((world, controls), event) => controls(event, world) }
       .doOnNext { case (world, _) => ui.render(world) }
       .takeWhile { case (world, _) => world.ground.stillAlive }
+      .last
+      .doOnNext { case (world, _) => ui.gameOver(world) }
       .completedL
-      .doOnFinish(_ => ui.gameOver)
