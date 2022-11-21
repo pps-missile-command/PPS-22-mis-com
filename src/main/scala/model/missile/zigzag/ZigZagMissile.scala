@@ -1,5 +1,5 @@
 package model.missile.zigzag
-import model.DeltaTime
+import model.{DeltaTime, Scorable}
 import model.behavior.Moveable
 import model.collisions.{Affiliation, Collisionable, LifePoint, lifePointDeath}
 import model.elements2d.{Point2D, Vector2D}
