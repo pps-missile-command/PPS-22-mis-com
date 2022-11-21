@@ -27,7 +27,7 @@
 </span>3 <span style=''>import controller.Event
 </span>4 <span style=''>import controller.Event.LaunchMissileTo
 </span>5 <span style=''>import controller.update.Update.on
-</span>6 <span style=''>import model.World
+</span>6 <span style=''>import model.{World, Game}
 </span>7 <span style=''>import model.behavior.Moveable
 </span>8 <span style=''>import model.collisions.Collisionable
 </span>9 <span style=''>import monix.eval.Task
@@ -42,14 +42,16 @@
 </span>18 <span style=''>   *
 </span>19 <span style=''>   * @return an update function for the world to be updated when the user launch a missile.
 </span>20 <span style=''>   */
-</span>21 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =&gt;
+</span>21 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[LaunchMissileTo] { (event: LaunchMissileTo, game: Game) =&gt;
 </span>22 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>23 <span style=''></span><span style='background: #F0ADAD'>      val (ground, missile) = world.ground.shootMissile(event.position)
-</span>24 <span style=''></span><span style='background: #F0ADAD'>      missile match
-</span>25 <span style=''></span><span style='background: #F0ADAD'>        case Some(missile) =&gt; world.copy(collisionables = world.collisionables + missile, ground = ground)
-</span>26 <span style=''></span><span style='background: #F0ADAD'>        case None =&gt; world.copy(collisionables = world.collisionables, ground = ground)
-</span>27 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>28 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>23 <span style=''></span><span style='background: #F0ADAD'>      val (ground, missile) = game.world.ground.shootMissile(event.position)
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      val newCollisionable =
+</span>25 <span style=''></span><span style='background: #F0ADAD'>        missile match
+</span>26 <span style=''></span><span style='background: #F0ADAD'>          case Some(missile) =&gt; game.world.collisionables + missile
+</span>27 <span style=''></span><span style='background: #F0ADAD'>          case None =&gt; game.world.collisionables
+</span>28 <span style=''></span><span style='background: #F0ADAD'>      game.copy(world = game.world.copy(collisionables = newCollisionable, ground = ground))
+</span>29 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>30 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -67,12 +69,45 @@
           20
         </td>
         <td>
-          107
+          104
         </td>
         <td>
-          575
+          605
           -
-          584
+          1025
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          on
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          on[LaunchMissileTo] { (event: LaunchMissileTo, game: Game) =&gt;
+    Task {
+      val (ground, missile) = game.world.ground.shootMissile(event.position)
+      val newCollisionable =
+        missile match
+          case Some(missile) =&gt; game.world.collisionables + missile
+          case None =&gt; game.world.collisionables
+      game.copy(world = game.world.copy(collisionables = newCollisionable, ground = ground))
+    }
+  }
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          105
+        </td>
+        <td>
+          583
+          -
+          592
         </td>
         <td>
           DefDef
@@ -85,37 +120,6 @@
         </td>
         <td style="background: #F0ADAD">
           def apply
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          106
-        </td>
-        <td>
-          597
-          -
-          968
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          on
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          on[LaunchMissileTo] { (event: LaunchMissileTo, world: World) =&gt;
-    Task {
-      val (ground, missile) = world.ground.shootMissile(event.position)
-      missile match
-        case Some(missile) =&gt; world.copy(collisionables = world.collisionables + missile, ground = ground)
-        case None =&gt; world.copy(collisionables = world.collisionables, ground = ground)
-    }
-  }
         </td>
       </tr>
     </table>

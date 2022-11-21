@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/Timer.scala.html
+          model/Player.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -24,13 +24,28 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model
 </span>2 <span style=''>
-</span>3 <span style=''>import model.behavior.Timeable
+</span>3 <span style=''>import model.Timer.Timer
 </span>4 <span style=''>
-</span>5 <span style=''>object Timer:
-</span>6 <span style=''>
-</span>7 <span style=''>  case class Timer(time: DeltaTime) extends Timeable:
-</span>8 <span style=''>
-</span>9 <span style=''>    </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Timer = this.copy(time + dt)
+</span>5 <span style=''>/**
+</span>6 <span style=''> * Class that represents a player in the game.
+</span>7 <span style=''> *
+</span>8 <span style=''> * @param score the score of the player
+</span>9 <span style=''> * @param timer the surviving timer of the player
+</span>10 <span style=''> */
+</span>11 <span style=''>case class Player(score: ScorePoint, timer: Timer)
+</span>12 <span style=''>
+</span>13 <span style=''>/**
+</span>14 <span style=''> * Companion object of the Player class.
+</span>15 <span style=''> */
+</span>16 <span style=''>object Player:
+</span>17 <span style=''>
+</span>18 <span style=''>  /**
+</span>19 <span style=''>   * The initial player.
+</span>20 <span style=''>   *
+</span>21 <span style=''>   * @return the initial player
+</span>22 <span style=''>   */
+</span>23 <span style=''>  </span><span style='background: #F0ADAD'>def initialPlayer</span><span style=''>(): Player =
+</span>24 <span style=''>    Player(0, Timer(0))
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -45,27 +60,27 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          8
+          22
         </td>
         <td>
-          155
+          154
         </td>
         <td>
-          121
+          382
           -
-          145
+          399
         </td>
         <td>
           DefDef
         </td>
         <td>
-          timeElapsed
+          initialPlayer
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def timeElapsed
+          def initialPlayer
         </td>
       </tr>
     </table>

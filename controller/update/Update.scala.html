@@ -30,23 +30,23 @@
 </span>6 <span style=''>import scala.annotation.tailrec
 </span>7 <span style=''>import scala.reflect.ClassTag
 </span>8 <span style=''>import controller.Event
-</span>9 <span style=''>import model.World
+</span>9 <span style=''>import model.Game
 </span>10 <span style=''>
 </span>11 <span style=''>/**
-</span>12 <span style=''> * A trait for function from pair (Event, World) to [[Task]] World, Update.
+</span>12 <span style=''> * A trait for function from pair (Event, World) to [[Game]] World, Update.
 </span>13 <span style=''> * Used to update the world.
 </span>14 <span style=''> */
-</span>15 <span style=''>trait Update extends ((Event, World) =&gt; Task[(World, Update)]) :
+</span>15 <span style=''>trait Update extends ((Event, Game) =&gt; Task[(Game, Update)]) :
 </span>16 <span style=''>  /**
 </span>17 <span style=''>   * Allows to update the world to be computed after this one.
 </span>18 <span style=''>   *
 </span>19 <span style=''>   * @param control the update to be computed after this one.
 </span>20 <span style=''>   * @return a new update with the world and the sequence of the two update.
 </span>21 <span style=''>   */
-</span>22 <span style=''>  </span><span style='background: #F0ADAD'>def andThen</span><span style=''>(control: Update): Update = (event: Event, world: World) =&gt;
-</span>23 <span style=''>    </span><span style='background: #F0ADAD'>this (event, world)
-</span>24 <span style=''></span><span style='background: #F0ADAD'>      .flatMap { case (world, left) =&gt; control(event, world).map { case (world, right) =&gt; (left, right, world) } }
-</span>25 <span style=''></span><span style='background: #F0ADAD'>      .map { case (left, right, world) =&gt; (world, Update.combineTwo(left, right)) }</span><span style=''>
+</span>22 <span style=''>  </span><span style='background: #F0ADAD'>def andThen</span><span style=''>(control: Update): Update = (event: Event, game: Game) =&gt;
+</span>23 <span style=''>    </span><span style='background: #F0ADAD'>this (event, game)
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      .flatMap { case (game, left) =&gt; control(event, game).map { case (game, right) =&gt; (left, right, game) } }
+</span>25 <span style=''></span><span style='background: #F0ADAD'>      .map { case (left, right, game) =&gt; (game, Update.combineTwo(left, right)) }</span><span style=''>
 </span>26 <span style=''>
 </span>27 <span style=''>/**
 </span>28 <span style=''> * Companion object for [[Update]].
@@ -61,11 +61,11 @@
 </span>37 <span style=''>   * @tparam E the type of the [[Event]].
 </span>38 <span style=''>   * @return the update that will be executed only if the [[Event]] E happened.
 </span>39 <span style=''>   */
-</span>40 <span style=''>  </span><span style='background: #F0ADAD'>def on</span><span style=''>[E &lt;: Event](control: (E, World) =&gt; Task[World])(using ev: ClassTag[E]): Update =
-</span>41 <span style=''>    lazy val result: Update = (event: Event, world: World) =&gt;
+</span>40 <span style=''>  </span><span style='background: #F0ADAD'>def on</span><span style=''>[E &lt;: Event](control: (E, Game) =&gt; Task[Game])(using ev: ClassTag[E]): Update =
+</span>41 <span style=''>    lazy val result: Update = (event: Event, game: Game) =&gt;
 </span>42 <span style=''>      event match
-</span>43 <span style=''>        </span><span style='background: #F0ADAD'>case event: </span><span style=''>E =&gt; (</span><span style='background: #F0ADAD'>control(event, world).map(world =&gt; (world, result))</span><span style=''>)
-</span>44 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>Task((world, result))</span><span style=''>
+</span>43 <span style=''>        </span><span style='background: #F0ADAD'>case event: </span><span style=''>E =&gt; (</span><span style='background: #F0ADAD'>control(event, game).map(game =&gt; (game, result))</span><span style=''>)
+</span>44 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>Task((game, result))</span><span style=''>
 </span>45 <span style=''>    result
 </span>46 <span style=''>
 </span>47 <span style=''>  /**
@@ -75,13 +75,13 @@
 </span>51 <span style=''>   * @param engineB the second [[Update]] to be executed.
 </span>52 <span style=''>   * @return The [[Update]] that will execute the two [[Update]] in sequence.
 </span>53 <span style=''>   */
-</span>54 <span style=''>  </span><span style='background: #F0ADAD'>def combineTwo</span><span style=''>(engineA: Update, engineB: Update): Update = (event: Event, world: World) =&gt;
+</span>54 <span style=''>  </span><span style='background: #F0ADAD'>def combineTwo</span><span style=''>(engineA: Update, engineB: Update): Update = (event: Event, game: Game) =&gt;
 </span>55 <span style=''>    </span><span style='background: #F0ADAD'>for
-</span>56 <span style=''></span><span style='background: #F0ADAD'>      updateA &lt;- engineA.apply(event, world)
-</span>57 <span style=''></span><span style='background: #F0ADAD'>      (newWorld, newEngineA) = updateA
-</span>58 <span style=''></span><span style='background: #F0ADAD'>      updateB &lt;- engineB(event, newWorld)
-</span>59 <span style=''></span><span style='background: #F0ADAD'>      (lastWorld, newEngineB) = updateB
-</span>60 <span style=''></span><span style='background: #F0ADAD'>    yield (lastWorld, combineTwo(newEngineA, newEngineB))</span><span style=''>
+</span>56 <span style=''></span><span style='background: #F0ADAD'>      updateA &lt;- engineA.apply(event, game)
+</span>57 <span style=''></span><span style='background: #F0ADAD'>      ( newGame, newEngineA) = updateA
+</span>58 <span style=''></span><span style='background: #F0ADAD'>      updateB &lt;- engineB(event, newGame)
+</span>59 <span style=''></span><span style='background: #F0ADAD'>      (lastGame, newEngineB) = updateB
+</span>60 <span style=''></span><span style='background: #F0ADAD'>    yield (lastGame, combineTwo(newEngineA, newEngineB))</span><span style=''>
 </span>61 <span style=''>
 </span>62 <span style=''>  /**
 </span>63 <span style=''>   * Function that allow a sequence of [[Update]] to be executed in sequence.
@@ -106,12 +106,12 @@
           21
         </td>
         <td>
-          117
+          115
         </td>
         <td>
-          589
+          586
           -
-          600
+          597
         </td>
         <td>
           DefDef
@@ -130,12 +130,12 @@
           22
         </td>
         <td>
-          108
+          106
         </td>
         <td>
-          664
+          659
           -
-          683
+          677
         </td>
         <td>
           Apply
@@ -147,7 +147,7 @@
           
         </td>
         <td style="background: #F0ADAD">
-          this (event, world)
+          this (event, game)
         </td>
       </tr><tr>
         <td>
@@ -157,9 +157,9 @@
           110
         </td>
         <td>
-          751
+          695
           -
-          770
+          712
         </td>
         <td>
           Block
@@ -171,19 +171,91 @@
           
         </td>
         <td style="background: #F0ADAD">
-          case (world, right)
+          case (game, left)
         </td>
       </tr><tr>
         <td>
           23
         </td>
         <td>
-          113
+          107
         </td>
         <td>
-          664
+          716
           -
-          798
+          736
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          control(event, game)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          109
+        </td>
+        <td>
+          716
+          -
+          786
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          control(event, game).map { case (game, right) =&gt; (left, right, game) }
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          108
+        </td>
+        <td>
+          743
+          -
+          761
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case (game, right)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          111
+        </td>
+        <td>
+          659
+          -
+          788
         </td>
         <td>
           Apply
@@ -195,142 +267,44 @@
           
         </td>
         <td style="background: #F0ADAD">
-          this (event, world)
-      .flatMap { case (world, left) =&gt; control(event, world).map { case (world, right) =&gt; (left, right, world) } }
+          this (event, game)
+      .flatMap { case (game, left) =&gt; control(event, game).map { case (game, right) =&gt; (left, right, game) } }
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
-          109
+          113
         </td>
         <td>
-          723
+          802
           -
-          744
+          826
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          apply
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          control(event, world)
+          case (left, right, game)
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
           112
         </td>
         <td>
-          701
-          -
-          719
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case (world, left)
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          111
-        </td>
-        <td>
-          723
-          -
-          796
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          control(event, world).map { case (world, right) =&gt; (left, right, world) }
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          116
-        </td>
-        <td>
-          664
-          -
-          882
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          this (event, world)
-      .flatMap { case (world, left) =&gt; control(event, world).map { case (world, right) =&gt; (left, right, world) } }
-      .map { case (left, right, world) =&gt; (world, Update.combineTwo(left, right)) }
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          115
-        </td>
-        <td>
-          812
-          -
           837
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case (left, right, world)
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          114
-        </td>
-        <td>
-          849
           -
-          879
+          867
         </td>
         <td>
           Apply
@@ -346,15 +320,41 @@
         </td>
       </tr><tr>
         <td>
+          24
+        </td>
+        <td>
+          114
+        </td>
+        <td>
+          659
+          -
+          870
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this (event, game)
+      .flatMap { case (game, left) =&gt; control(event, game).map { case (game, right) =&gt; (left, right, game) } }
+      .map { case (left, right, game) =&gt; (game, Update.combineTwo(left, right)) }
+        </td>
+      </tr><tr>
+        <td>
           39
         </td>
         <td>
-          123
+          121
         </td>
         <td>
-          1274
+          1262
           -
-          1280
+          1268
         </td>
         <td>
           DefDef
@@ -373,36 +373,12 @@
           42
         </td>
         <td>
-          119
+          116
         </td>
         <td>
-          1468
+          1452
           -
-          1519
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          control(event, world).map(world =&gt; (world, result))
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          118
-        </td>
-        <td>
-          1468
-          -
-          1489
+          1472
         </td>
         <td>
           Apply
@@ -414,19 +390,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          control(event, world)
+          control(event, game)
         </td>
       </tr><tr>
         <td>
           42
         </td>
         <td>
-          120
+          118
         </td>
         <td>
-          1450
+          1434
           -
-          1462
+          1446
         </td>
         <td>
           Block
@@ -442,15 +418,63 @@
         </td>
       </tr><tr>
         <td>
+          42
+        </td>
+        <td>
+          117
+        </td>
+        <td>
+          1452
+          -
+          1500
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          control(event, game).map(game =&gt; (game, result))
+        </td>
+      </tr><tr>
+        <td>
           43
         </td>
         <td>
-          122
+          119
         </td>
         <td>
-          1529
+          1520
           -
-          1535
+          1540
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Task((game, result))
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          120
+        </td>
+        <td>
+          1510
+          -
+          1516
         </td>
         <td>
           Block
@@ -466,39 +490,15 @@
         </td>
       </tr><tr>
         <td>
-          43
-        </td>
-        <td>
-          121
-        </td>
-        <td>
-          1539
-          -
-          1560
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Task((world, result))
-        </td>
-      </tr><tr>
-        <td>
           53
         </td>
         <td>
-          135
+          133
         </td>
         <td>
-          1853
+          1833
           -
-          1867
+          1847
         </td>
         <td>
           DefDef
@@ -517,12 +517,12 @@
           54
         </td>
         <td>
-          134
+          132
         </td>
         <td>
-          1948
+          1926
           -
-          2175
+          2149
         </td>
         <td>
           Apply
@@ -535,47 +535,23 @@
         </td>
         <td style="background: #F0ADAD">
           for
-      updateA &lt;- engineA.apply(event, world)
-      (newWorld, newEngineA) = updateA
-      updateB &lt;- engineB(event, newWorld)
-      (lastWorld, newEngineB) = updateB
-    yield (lastWorld, combineTwo(newEngineA, newEngineB))
+      updateA &lt;- engineA.apply(event, game)
+      ( newGame, newEngineA) = updateA
+      updateB &lt;- engineB(event, newGame)
+      (lastGame, newEngineB) = updateB
+    yield (lastGame, combineTwo(newEngineA, newEngineB))
         </td>
       </tr><tr>
         <td>
           55
         </td>
         <td>
-          124
+          131
         </td>
         <td>
-          1969
+          1936
           -
-          1996
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          engineA.apply(event, world)
-        </td>
-      </tr><tr>
-        <td>
-          55
-        </td>
-        <td>
-          133
-        </td>
-        <td>
-          1958
-          -
-          2025
+          2002
         </td>
         <td>
           Block
@@ -587,20 +563,44 @@
           
         </td>
         <td style="background: #F0ADAD">
-          updateA &lt;- engineA.apply(event, world)
-      (newWorld, newEngineA)
+          updateA &lt;- engineA.apply(event, game)
+      ( newGame, newEngineA)
         </td>
       </tr><tr>
         <td>
           55
         </td>
         <td>
-          126
+          122
         </td>
         <td>
-          1958
+          1947
           -
-          2025
+          1973
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          engineA.apply(event, game)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          124
+        </td>
+        <td>
+          1936
+          -
+          2002
         </td>
         <td>
           Apply
@@ -612,20 +612,20 @@
           
         </td>
         <td style="background: #F0ADAD">
-          updateA &lt;- engineA.apply(event, world)
-      (newWorld, newEngineA)
+          updateA &lt;- engineA.apply(event, game)
+      ( newGame, newEngineA)
         </td>
       </tr><tr>
         <td>
           56
         </td>
         <td>
-          125
+          123
         </td>
         <td>
-          2003
+          1980
           -
-          2025
+          2002
         </td>
         <td>
           Apply
@@ -637,19 +637,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          (newWorld, newEngineA)
+          ( newGame, newEngineA)
         </td>
       </tr><tr>
         <td>
           57
         </td>
         <td>
-          131
+          125
         </td>
         <td>
-          2042
+          2030
           -
-          2107
+          2053
         </td>
         <td>
           Apply
@@ -661,8 +661,7 @@
           
         </td>
         <td style="background: #F0ADAD">
-          updateB &lt;- engineB(event, newWorld)
-      (lastWorld, newEngineB)
+          engineB(event, newGame)
         </td>
       </tr><tr>
         <td>
@@ -672,21 +671,48 @@
           127
         </td>
         <td>
-          2053
+          2019
           -
-          2077
+          2082
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          map
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          engineB(event, newWorld)
+          updateB &lt;- engineB(event, newGame)
+      (lastGame, newEngineB)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          130
+        </td>
+        <td>
+          2019
+          -
+          2149
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          updateB &lt;- engineB(event, newGame)
+      (lastGame, newEngineB) = updateB
+    yield (lastGame, combineTwo(newEngineA, newEngineB))
         </td>
       </tr><tr>
         <td>
@@ -696,60 +722,9 @@
           129
         </td>
         <td>
-          2042
+          2019
           -
-          2107
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          updateB &lt;- engineB(event, newWorld)
-      (lastWorld, newEngineB)
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          132
-        </td>
-        <td>
-          2042
-          -
-          2175
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          updateB &lt;- engineB(event, newWorld)
-      (lastWorld, newEngineB) = updateB
-    yield (lastWorld, combineTwo(newEngineA, newEngineB))
-        </td>
-      </tr><tr>
-        <td>
-          58
-        </td>
-        <td>
-          128
-        </td>
-        <td>
-          2084
-          -
-          2107
+          2082
         </td>
         <td>
           Apply
@@ -761,19 +736,44 @@
           
         </td>
         <td style="background: #F0ADAD">
-          (lastWorld, newEngineB)
+          updateB &lt;- engineB(event, newGame)
+      (lastGame, newEngineB)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          126
+        </td>
+        <td>
+          2060
+          -
+          2082
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          (lastGame, newEngineB)
         </td>
       </tr><tr>
         <td>
           59
         </td>
         <td>
-          130
+          128
         </td>
         <td>
-          2140
+          2114
           -
-          2174
+          2148
         </td>
         <td>
           Apply
@@ -792,36 +792,12 @@
           66
         </td>
         <td>
-          137
+          134
         </td>
         <td>
-          2458
+          2447
           -
-          2486
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          reduce
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          engines.reduce(_.andThen(_))
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          136
-        </td>
-        <td>
-          2473
-          -
-          2485
+          2459
         </td>
         <td>
           Apply
@@ -840,12 +816,12 @@
           66
         </td>
         <td>
-          138
+          136
         </td>
         <td>
-          2418
+          2392
           -
-          2429
+          2403
         </td>
         <td>
           DefDef
@@ -858,6 +834,30 @@
         </td>
         <td style="background: #F0ADAD">
           def combine
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          135
+        </td>
+        <td>
+          2432
+          -
+          2460
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          reduce
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          engines.reduce(_.andThen(_))
         </td>
       </tr>
     </table>

@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          controller/TimeFlow.scala.html
+          model/Game.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,26 +22,33 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model
 </span>2 <span style=''>
-</span>3 <span style=''>import monix.reactive.Observable
-</span>4 <span style=''>import scala.concurrent.duration.FiniteDuration
-</span>5 <span style=''>
-</span>6 <span style=''>/**
-</span>7 <span style=''> * A object that con be used to create a [[monix.reactive.Observable]] that emits a value every time a given time interval has passed.
-</span>8 <span style=''> */
-</span>9 <span style=''>object TimeFlow:
-</span>10 <span style=''>  /**
-</span>11 <span style=''>   * Creates a [[monix.reactive.Observable]] that emits a value every time a given time interval has passed.
-</span>12 <span style=''>   *
-</span>13 <span style=''>   * @param duration the time interval between two consecutive values
-</span>14 <span style=''>   * @return an [[monix.reactive.Observable]] that emits a value every time a given time interval has passed
-</span>15 <span style=''>   */
-</span>16 <span style=''>  </span><span style='background: #F0ADAD'>def tickEach</span><span style=''>(duration: FiniteDuration): Observable[Long] =
-</span>17 <span style=''>    </span><span style='background: #F0ADAD'>Observable
-</span>18 <span style=''></span><span style='background: #F0ADAD'>      .fromIterable(LazyList.continually(duration))
-</span>19 <span style=''></span><span style='background: #F0ADAD'>      .delayOnNext(duration)
-</span>20 <span style=''></span><span style='background: #F0ADAD'>      .map(_.toMillis)</span><span style=''>
+</span>3 <span style=''>import model.World.{height, width}
+</span>4 <span style=''>import model.spawner.GenericSpawner
+</span>5 <span style=''>import model.missile.Missile
+</span>6 <span style=''>import scala.util.Random
+</span>7 <span style=''>
+</span>8 <span style=''>/**
+</span>9 <span style=''> * Class representing the game
+</span>10 <span style=''> *
+</span>11 <span style=''> * @param player  the player of the game
+</span>12 <span style=''> * @param spawner the spawner in the game
+</span>13 <span style=''> * @param world   the world of the game
+</span>14 <span style=''> */
+</span>15 <span style=''>case class Game(player: Player, spawner: GenericSpawner[Missile], world: World)
+</span>16 <span style=''>
+</span>17 <span style=''>/**
+</span>18 <span style=''> * Companion object of the game
+</span>19 <span style=''> */
+</span>20 <span style=''>object Game:
+</span>21 <span style=''>  /**
+</span>22 <span style=''>   * The initial state of the game
+</span>23 <span style=''>   *
+</span>24 <span style=''>   * @return the initial state of the game
+</span>25 <span style=''>   */
+</span>26 <span style=''>  </span><span style='background: #F0ADAD'>def initialGame</span><span style=''>(): Game =
+</span>27 <span style=''>    Game(</span><span style='background: #F0ADAD'>Player.initialPlayer()</span><span style=''>, </span><span style='background: #F0ADAD'>model.spawner.standardSpawner(using Random())</span><span style=''>, </span><span style='background: #F0ADAD'>World.initialWorld</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -56,177 +63,123 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          15
+          25
         </td>
         <td>
-          37
+          153
         </td>
         <td>
-          569
+          537
           -
-          581
+          552
         </td>
         <td>
           DefDef
         </td>
         <td>
-          tickEach
+          initialGame
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def tickEach
+          def initialGame
         </td>
       </tr><tr>
         <td>
-          17
+          26
         </td>
         <td>
-          32
+          149
         </td>
         <td>
-          663
+          572
           -
-          693
+          594
         </td>
         <td>
           Apply
         </td>
         <td>
-          continually
+          initialPlayer
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          LazyList.continually(duration)
+          Player.initialPlayer()
         </td>
       </tr><tr>
         <td>
-          17
+          26
         </td>
         <td>
-          31
+          151
         </td>
         <td>
-          663
+          596
           -
-          671
+          641
         </td>
         <td>
-          Ident
+          Apply
         </td>
         <td>
-          LazyList
+          standardSpawner
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          LazyList
+          model.spawner.standardSpawner(using Random())
         </td>
       </tr><tr>
         <td>
-          17
+          26
         </td>
         <td>
-          33
+          150
         </td>
         <td>
           632
           -
-          694
+          640
         </td>
         <td>
           Apply
         </td>
         <td>
-          fromIterable
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Observable
-      .fromIterable(LazyList.continually(duration))
+          Random()
         </td>
       </tr><tr>
         <td>
-          18
+          26
         </td>
         <td>
-          34
+          152
         </td>
         <td>
-          632
+          643
           -
-          723
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          delayOnNext
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable
-      .fromIterable(LazyList.continually(duration))
-      .delayOnNext(duration)
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          35
-        </td>
-        <td>
-          735
-          -
-          745
+          661
         </td>
         <td>
           Select
         </td>
         <td>
-          toMillis
+          initialWorld
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          _.toMillis
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          36
-        </td>
-        <td>
-          632
-          -
-          746
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable
-      .fromIterable(LazyList.continually(duration))
-      .delayOnNext(duration)
-      .map(_.toMillis)
+          World.initialWorld
         </td>
       </tr>
     </table>

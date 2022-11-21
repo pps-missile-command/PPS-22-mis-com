@@ -27,7 +27,7 @@
 </span>3 <span style=''>import controller.Event
 </span>4 <span style=''>import controller.Event.TimePassed
 </span>5 <span style=''>import controller.update.Update.on
-</span>6 <span style=''>import model.World
+</span>6 <span style=''>import model.Game
 </span>7 <span style=''>import model.explosion.Explosion
 </span>8 <span style=''>import model.behavior.Moveable
 </span>9 <span style=''>import model.collisions.Collisionable
@@ -55,14 +55,17 @@
 </span>31 <span style=''>   *
 </span>32 <span style=''>   * @return An Update that update the world to be update with the special abilities of its components
 </span>33 <span style=''>   */
-</span>34 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, world: World) =&gt;
+</span>34 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, game: Game) =&gt;
 </span>35 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>36 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables.map(activateSpecialAbility)
+</span>36 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = game.world.collisionables.map(activateSpecialAbility)
 </span>37 <span style=''></span><span style='background: #F0ADAD'>      val remainedCollisionables = collisionables.filterNot(isExplosionTerminated)
-</span>38 <span style=''></span><span style='background: #F0ADAD'>      val (newMissiles, spawner) = world.spawner.spawn()
-</span>39 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = remainedCollisionables ++ newMissiles, spawner = spawner)
-</span>40 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>41 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>38 <span style=''></span><span style='background: #F0ADAD'>      val (newMissiles, spawner) = game.spawner.spawn()
+</span>39 <span style=''></span><span style='background: #F0ADAD'>      game.copy(
+</span>40 <span style=''></span><span style='background: #F0ADAD'>        world = game.world.copy(collisionables = remainedCollisionables ++ newMissiles),
+</span>41 <span style=''></span><span style='background: #F0ADAD'>        spawner = spawner
+</span>42 <span style=''></span><span style='background: #F0ADAD'>      )
+</span>43 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>44 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -80,12 +83,12 @@
           18
         </td>
         <td>
-          44
+          42
         </td>
         <td>
-          495
+          494
           -
-          529
+          528
         </td>
         <td>
           DefDef
@@ -104,36 +107,12 @@
           20
         </td>
         <td>
-          41
+          38
         </td>
         <td>
-          581
+          635
           -
-          632
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case missile: Missile if missile.destinationReached
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          40
-        </td>
-        <td>
-          636
-          -
-          651
+          650
         </td>
         <td>
           Select
@@ -152,12 +131,12 @@
           20
         </td>
         <td>
-          42
+          40
         </td>
         <td>
-          606
+          605
           -
-          632
+          631
         </td>
         <td>
           Select
@@ -173,15 +152,39 @@
         </td>
       </tr><tr>
         <td>
+          20
+        </td>
+        <td>
+          39
+        </td>
+        <td>
+          580
+          -
+          631
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case missile: Missile if missile.destinationReached
+        </td>
+      </tr><tr>
+        <td>
           21
         </td>
         <td>
-          43
+          41
         </td>
         <td>
-          660
+          659
           -
-          666
+          665
         </td>
         <td>
           Block
@@ -200,12 +203,12 @@
           23
         </td>
         <td>
-          48
+          46
         </td>
         <td>
-          689
+          688
           -
-          722
+          721
         </td>
         <td>
           DefDef
@@ -224,12 +227,12 @@
           25
         </td>
         <td>
-          46
+          44
         </td>
         <td>
-          768
+          767
           -
-          793
+          792
         </td>
         <td>
           Block
@@ -248,12 +251,12 @@
           25
         </td>
         <td>
-          45
+          43
         </td>
         <td>
-          797
+          796
           -
-          817
+          816
         </td>
         <td>
           Select
@@ -272,12 +275,12 @@
           26
         </td>
         <td>
-          47
+          45
         </td>
         <td>
-          826
+          825
           -
-          832
+          831
         </td>
         <td>
           Block
@@ -296,12 +299,46 @@
           33
         </td>
         <td>
-          50
+          47
         </td>
         <td>
-          1068
+          1089
           -
-          1077
+          1512
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          on
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          on[TimePassed] { (_: Event, game: Game) =&gt;
+    Task {
+      val collisionables = game.world.collisionables.map(activateSpecialAbility)
+      val remainedCollisionables = collisionables.filterNot(isExplosionTerminated)
+      val (newMissiles, spawner) = game.spawner.spawn()
+      game.copy(
+        world = game.world.copy(collisionables = remainedCollisionables ++ newMissiles),
+        spawner = spawner
+      )
+    }
+  }
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          48
+        </td>
+        <td>
+          1067
+          -
+          1076
         </td>
         <td>
           DefDef
@@ -314,37 +351,6 @@
         </td>
         <td style="background: #F0ADAD">
           def apply
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          49
-        </td>
-        <td>
-          1090
-          -
-          1463
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          on
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          on[TimePassed] { (_: Event, world: World) =&gt;
-    Task {
-      val collisionables = world.collisionables.map(activateSpecialAbility)
-      val remainedCollisionables = collisionables.filterNot(isExplosionTerminated)
-      val (newMissiles, spawner) = world.spawner.spawn()
-      world.copy(collisionables = remainedCollisionables ++ newMissiles, spawner = spawner)
-    }
-  }
         </td>
       </tr>
     </table>

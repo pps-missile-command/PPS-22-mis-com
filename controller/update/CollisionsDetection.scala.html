@@ -27,7 +27,7 @@
 </span>3 <span style=''>import controller.Event
 </span>4 <span style=''>import controller.Event.TimePassed
 </span>5 <span style=''>import controller.update.Update.on
-</span>6 <span style=''>import model.{World, calculateNewScoreBasedOn}
+</span>6 <span style=''>import model.{Game, World, Player, calculateNewScoreBasedOn}
 </span>7 <span style=''>import model.collisions.{Collisionable, Damageable, applyDamagesBasedOn, calculateCollisions, calculateCollisionsWith}
 </span>8 <span style=''>import model.explosion.Explosion
 </span>9 <span style=''>import model.ground.{City, Ground, MissileBattery}
@@ -104,18 +104,19 @@
 </span>80 <span style=''>   *
 </span>81 <span style=''>   * @return An Update that update the world to be update with the aftermath of its components collisions
 </span>82 <span style=''>   */
-</span>83 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, world: World) =&gt;
+</span>83 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, game: Game) =&gt;
 </span>84 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>85 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables ++ world.ground.cities ++ world.ground.turrets
-</span>86 <span style=''></span><span style='background: #F0ADAD'>      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith world.collisionables)
-</span>87 <span style=''></span><span style='background: #F0ADAD'>      val newScore = world.score calculateNewScoreBasedOn collisionsUpdate
+</span>85 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = game.world.collisionables ++ game.world.ground.cities ++ game.world.ground.turrets
+</span>86 <span style=''></span><span style='background: #F0ADAD'>      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith game.world.collisionables)
+</span>87 <span style=''></span><span style='background: #F0ADAD'>      val newScore = game.player.score calculateNewScoreBasedOn collisionsUpdate
 </span>88 <span style=''></span><span style='background: #F0ADAD'>      val newExplosion = tmpNewCollisionables.explosionsOfDestroyedMissiles
 </span>89 <span style=''></span><span style='background: #F0ADAD'>      val (collisionableAfterSecondCollisions, _) = tmpNewCollisionables applyDamagesBasedOn (tmpNewCollisionables calculateCollisionsWith newExplosion)
 </span>90 <span style=''></span><span style='background: #F0ADAD'>      val (newGround, newCollisionables) = collisionableAfterSecondCollisions.splitGroundFromOther
 </span>91 <span style=''></span><span style='background: #F0ADAD'>      val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed) ++ newExplosion
-</span>92 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = newNotDestroyedCollisionables, score = newScore, ground = newGround)
-</span>93 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>94 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>92 <span style=''></span><span style='background: #F0ADAD'>      val newWorld = World(newGround, newNotDestroyedCollisionables)
+</span>93 <span style=''></span><span style='background: #F0ADAD'>      game.copy(world = newWorld, player = game.player.copy(score = newScore))
+</span>94 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>95 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -133,12 +134,12 @@
           18
         </td>
         <td>
-          54
+          52
         </td>
         <td>
-          624
+          638
           -
-          647
+          661
         </td>
         <td>
           DefDef
@@ -157,12 +158,12 @@
           19
         </td>
         <td>
-          52
+          50
         </td>
         <td>
-          685
+          699
           -
-          712
+          726
         </td>
         <td>
           Block
@@ -181,12 +182,12 @@
           19
         </td>
         <td>
-          51
+          49
         </td>
         <td>
-          716
+          730
           -
-          738
+          752
         </td>
         <td>
           Select
@@ -205,12 +206,12 @@
           20
         </td>
         <td>
-          53
+          51
         </td>
         <td>
-          745
+          759
           -
-          751
+          765
         </td>
         <td>
           Block
@@ -229,12 +230,12 @@
           23
         </td>
         <td>
-          61
+          59
         </td>
         <td>
-          771
+          785
           -
-          797
+          811
         </td>
         <td>
           DefDef
@@ -253,36 +254,12 @@
           24
         </td>
         <td>
-          56
+          53
         </td>
         <td>
-          893
+          914
           -
-          916
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Option(missile.explode)
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          55
-        </td>
-        <td>
-          900
-          -
-          915
+          929
         </td>
         <td>
           Select
@@ -301,12 +278,12 @@
           24
         </td>
         <td>
-          58
+          56
         </td>
         <td>
-          870
+          884
           -
-          889
+          903
         </td>
         <td>
           Select
@@ -325,12 +302,12 @@
           24
         </td>
         <td>
-          57
+          55
         </td>
         <td>
-          845
+          859
           -
-          889
+          903
         </td>
         <td>
           Block
@@ -346,39 +323,39 @@
         </td>
       </tr><tr>
         <td>
-          25
+          24
         </td>
         <td>
-          59
+          54
         </td>
         <td>
-          933
+          907
           -
-          945
+          930
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          empty
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Option.empty
+          Option(missile.explode)
         </td>
       </tr><tr>
         <td>
           25
         </td>
         <td>
-          60
+          58
         </td>
         <td>
-          923
+          937
           -
-          929
+          943
         </td>
         <td>
           Block
@@ -394,15 +371,39 @@
         </td>
       </tr><tr>
         <td>
+          25
+        </td>
+        <td>
+          57
+        </td>
+        <td>
+          947
+          -
+          959
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          empty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Option.empty
+        </td>
+      </tr><tr>
+        <td>
           29
         </td>
         <td>
-          68
+          66
         </td>
         <td>
-          1001
+          1015
           -
-          1042
+          1056
         </td>
         <td>
           DefDef
@@ -421,36 +422,12 @@
           31
         </td>
         <td>
-          62
+          61
         </td>
         <td>
-          1095
+          1081
           -
-          1109
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          explodeMissile
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          explodeMissile
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          63
-        </td>
-        <td>
-          1067
-          -
-          1110
+          1124
         </td>
         <td>
           Apply
@@ -467,15 +444,63 @@
         </td>
       </tr><tr>
         <td>
+          31
+        </td>
+        <td>
+          60
+        </td>
+        <td>
+          1109
+          -
+          1123
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          explodeMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          explodeMissile
+        </td>
+      </tr><tr>
+        <td>
           32
         </td>
         <td>
-          65
+          62
         </td>
         <td>
-          1067
+          1141
           -
-          1139
+          1152
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDefined
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          _.isDefined
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          63
+        </td>
+        <td>
+          1081
+          -
+          1153
         </td>
         <td>
           Apply
@@ -493,39 +518,15 @@
         </td>
       </tr><tr>
         <td>
-          32
-        </td>
-        <td>
-          64
-        </td>
-        <td>
-          1127
-          -
-          1138
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isDefined
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          _.isDefined
-        </td>
-      </tr><tr>
-        <td>
           33
         </td>
         <td>
-          67
+          65
         </td>
         <td>
-          1067
+          1081
           -
-          1159
+          1173
         </td>
         <td>
           Apply
@@ -547,12 +548,12 @@
           33
         </td>
         <td>
-          66
+          64
         </td>
         <td>
-          1153
+          1167
           -
-          1158
+          1172
         </td>
         <td>
           Select
@@ -571,12 +572,12 @@
           35
         </td>
         <td>
-          79
+          77
         </td>
         <td>
-          1165
+          1179
           -
-          1186
+          1200
         </td>
         <td>
           DefDef
@@ -595,12 +596,12 @@
           36
         </td>
         <td>
-          71
+          69
         </td>
         <td>
-          1207
+          1221
           -
-          1217
+          1231
         </td>
         <td>
           DefDef
@@ -619,12 +620,12 @@
           37
         </td>
         <td>
-          69
+          67
         </td>
         <td>
-          1287
+          1301
           -
-          1299
+          1313
         </td>
         <td>
           Block
@@ -643,12 +644,12 @@
           38
         </td>
         <td>
-          70
+          68
         </td>
         <td>
-          1316
+          1330
           -
-          1322
+          1336
         </td>
         <td>
           Block
@@ -667,12 +668,12 @@
           40
         </td>
         <td>
-          73
+          71
         </td>
         <td>
-          1339
+          1353
           -
-          1349
+          1363
         </td>
         <td>
           DefDef
@@ -691,12 +692,12 @@
           41
         </td>
         <td>
-          72
+          70
         </td>
         <td>
-          1416
+          1430
           -
-          1431
+          1445
         </td>
         <td>
           Block
@@ -715,36 +716,12 @@
           44
         </td>
         <td>
-          74
+          73
         </td>
         <td>
-          1478
+          1461
           -
-          1484
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          isCity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          isCity
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          75
-        </td>
-        <td>
-          1447
-          -
-          1485
+          1499
         </td>
         <td>
           Apply
@@ -761,15 +738,63 @@
         </td>
       </tr><tr>
         <td>
+          44
+        </td>
+        <td>
+          72
+        </td>
+        <td>
+          1492
+          -
+          1498
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isCity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          isCity
+        </td>
+      </tr><tr>
+        <td>
           45
         </td>
         <td>
-          77
+          74
         </td>
         <td>
-          1447
+          1513
           -
-          1506
+          1519
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          toCity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          toCity
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          75
+        </td>
+        <td>
+          1461
+          -
+          1520
         </td>
         <td>
           Apply
@@ -787,39 +812,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          46
         </td>
         <td>
           76
         </td>
         <td>
-          1499
+          1461
           -
-          1505
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          toCity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          toCity
-        </td>
-      </tr><tr>
-        <td>
-          46
-        </td>
-        <td>
-          78
-        </td>
-        <td>
-          1447
-          -
-          1522
+          1536
         </td>
         <td>
           Select
@@ -841,12 +842,12 @@
           48
         </td>
         <td>
-          90
+          88
         </td>
         <td>
-          1528
+          1542
           -
-          1557
+          1571
         </td>
         <td>
           DefDef
@@ -865,12 +866,12 @@
           49
         </td>
         <td>
-          82
+          80
         </td>
         <td>
-          1588
+          1602
           -
-          1608
+          1622
         </td>
         <td>
           DefDef
@@ -889,12 +890,12 @@
           50
         </td>
         <td>
-          80
+          78
         </td>
         <td>
-          1678
+          1692
           -
-          1700
+          1714
         </td>
         <td>
           Block
@@ -913,12 +914,12 @@
           51
         </td>
         <td>
-          81
+          79
         </td>
         <td>
-          1717
+          1731
           -
-          1723
+          1737
         </td>
         <td>
           Block
@@ -937,12 +938,12 @@
           53
         </td>
         <td>
-          84
+          82
         </td>
         <td>
-          1740
+          1754
           -
-          1760
+          1774
         </td>
         <td>
           DefDef
@@ -961,12 +962,12 @@
           54
         </td>
         <td>
-          83
+          81
         </td>
         <td>
-          1837
+          1851
           -
-          1872
+          1886
         </td>
         <td>
           Block
@@ -985,12 +986,36 @@
           57
         </td>
         <td>
-          86
+          83
         </td>
         <td>
-          1898
+          1943
           -
-          1946
+          1959
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isMissileBattery
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          isMissileBattery
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          84
+        </td>
+        <td>
+          1912
+          -
+          1960
         </td>
         <td>
           Apply
@@ -1007,39 +1032,15 @@
         </td>
       </tr><tr>
         <td>
-          57
-        </td>
-        <td>
-          85
-        </td>
-        <td>
-          1929
-          -
-          1945
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          isMissileBattery
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          isMissileBattery
-        </td>
-      </tr><tr>
-        <td>
           58
         </td>
         <td>
-          88
+          86
         </td>
         <td>
-          1898
+          1912
           -
-          1977
+          1991
         </td>
         <td>
           Apply
@@ -1060,12 +1061,12 @@
           58
         </td>
         <td>
-          87
+          85
         </td>
         <td>
-          1960
+          1974
           -
-          1976
+          1990
         </td>
         <td>
           Apply
@@ -1084,12 +1085,12 @@
           59
         </td>
         <td>
-          89
+          87
         </td>
         <td>
-          1898
+          1912
           -
-          1993
+          2007
         </td>
         <td>
           Select
@@ -1111,12 +1112,12 @@
           61
         </td>
         <td>
-          103
+          101
         </td>
         <td>
-          1999
+          2013
           -
-          2031
+          2045
         </td>
         <td>
           DefDef
@@ -1135,12 +1136,12 @@
           62
         </td>
         <td>
-          95
+          93
         </td>
         <td>
-          2074
+          2088
           -
-          2102
+          2116
         </td>
         <td>
           Apply
@@ -1159,12 +1160,12 @@
           64
         </td>
         <td>
-          94
+          92
         </td>
         <td>
-          2113
+          2127
           -
-          2273
+          2287
         </td>
         <td>
           Apply
@@ -1188,12 +1189,12 @@
           65
         </td>
         <td>
-          91
+          89
         </td>
         <td>
-          2169
+          2183
           -
-          2191
+          2205
         </td>
         <td>
           Block
@@ -1212,12 +1213,12 @@
           66
         </td>
         <td>
-          92
+          90
         </td>
         <td>
-          2213
+          2227
           -
-          2225
+          2239
         </td>
         <td>
           Block
@@ -1236,12 +1237,12 @@
           67
         </td>
         <td>
-          93
+          91
         </td>
         <td>
-          2247
+          2261
           -
-          2253
+          2267
         </td>
         <td>
           Block
@@ -1260,12 +1261,12 @@
           69
         </td>
         <td>
-          99
+          97
         </td>
         <td>
-          2284
+          2298
           -
-          2310
+          2324
         </td>
         <td>
           Apply
@@ -1284,12 +1285,12 @@
           71
         </td>
         <td>
-          98
+          96
         </td>
         <td>
-          2321
+          2335
           -
-          2453
+          2467
         </td>
         <td>
           Apply
@@ -1312,12 +1313,12 @@
           72
         </td>
         <td>
-          96
+          94
         </td>
         <td>
-          2377
+          2391
           -
-          2399
+          2413
         </td>
         <td>
           Block
@@ -1336,12 +1337,12 @@
           73
         </td>
         <td>
-          97
+          95
         </td>
         <td>
-          2420
+          2434
           -
-          2432
+          2446
         </td>
         <td>
           Block
@@ -1360,36 +1361,12 @@
           75
         </td>
         <td>
-          101
+          98
         </td>
         <td>
-          2486
+          2482
           -
-          2520
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getMissileBattery
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missileBatteries.getMissileBattery
-        </td>
-      </tr><tr>
-        <td>
-          75
-        </td>
-        <td>
-          100
-        </td>
-        <td>
-          2468
-          -
-          2484
+          2498
         </td>
         <td>
           Apply
@@ -1408,12 +1385,12 @@
           75
         </td>
         <td>
-          102
+          100
         </td>
         <td>
-          2461
+          2475
           -
-          2521
+          2535
         </td>
         <td>
           Apply
@@ -1429,50 +1406,39 @@
         </td>
       </tr><tr>
         <td>
-          82
+          75
         </td>
         <td>
-          104
+          99
         </td>
         <td>
-          2789
+          2500
           -
-          3704
+          2534
         </td>
         <td>
           Apply
         </td>
         <td>
-          on
+          getMissileBattery
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          on[TimePassed] { (_: Event, world: World) =&gt;
-    Task {
-      val collisionables = world.collisionables ++ world.ground.cities ++ world.ground.turrets
-      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith world.collisionables)
-      val newScore = world.score calculateNewScoreBasedOn collisionsUpdate
-      val newExplosion = tmpNewCollisionables.explosionsOfDestroyedMissiles
-      val (collisionableAfterSecondCollisions, _) = tmpNewCollisionables applyDamagesBasedOn (tmpNewCollisionables calculateCollisionsWith newExplosion)
-      val (newGround, newCollisionables) = collisionableAfterSecondCollisions.splitGroundFromOther
-      val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed) ++ newExplosion
-      world.copy(collisionables = newNotDestroyedCollisionables, score = newScore, ground = newGround)
-    }
-  }
+          missileBatteries.getMissileBattery
         </td>
       </tr><tr>
         <td>
           82
         </td>
         <td>
-          105
+          103
         </td>
         <td>
-          2767
+          2781
           -
-          2776
+          2790
         </td>
         <td>
           DefDef
@@ -1485,6 +1451,42 @@
         </td>
         <td style="background: #F0ADAD">
           def apply
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          102
+        </td>
+        <td>
+          2803
+          -
+          3787
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          on
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          on[TimePassed] { (_: Event, game: Game) =&gt;
+    Task {
+      val collisionables = game.world.collisionables ++ game.world.ground.cities ++ game.world.ground.turrets
+      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith game.world.collisionables)
+      val newScore = game.player.score calculateNewScoreBasedOn collisionsUpdate
+      val newExplosion = tmpNewCollisionables.explosionsOfDestroyedMissiles
+      val (collisionableAfterSecondCollisions, _) = tmpNewCollisionables applyDamagesBasedOn (tmpNewCollisionables calculateCollisionsWith newExplosion)
+      val (newGround, newCollisionables) = collisionableAfterSecondCollisions.splitGroundFromOther
+      val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed) ++ newExplosion
+      val newWorld = World(newGround, newNotDestroyedCollisionables)
+      game.copy(world = newWorld, player = game.player.copy(score = newScore))
+    }
+  }
         </td>
       </tr>
     </table>

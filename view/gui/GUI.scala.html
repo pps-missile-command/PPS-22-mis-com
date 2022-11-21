@@ -24,7 +24,7 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
 </span>2 <span style=''>
-</span>3 <span style=''>import controller.{Event, GameLoop}
+</span>3 <span style=''>import controller.{Event, Controller}
 </span>4 <span style=''>import monix.eval.Task
 </span>5 <span style=''>import monix.reactive.Observable
 </span>6 <span style=''>import monix.reactive.subjects.PublishSubject
@@ -32,7 +32,7 @@
 </span>8 <span style=''>import view.gui.UI
 </span>9 <span style=''>import model.elements2d.Point2D
 </span>10 <span style=''>import controller.Event
-</span>11 <span style=''>import model.World
+</span>11 <span style=''>import model.{Game, World}
 </span>12 <span style=''>import view.Main
 </span>13 <span style=''>import view.gui.WorldPane
 </span>14 <span style=''>import java.awt.event.MouseMotionListener
@@ -49,11 +49,11 @@
 </span>25 <span style=''>    </span><span style='background: #F0ADAD'>frame.setLocationRelativeTo(null)</span><span style=''>
 </span>26 <span style=''>    </span><span style='background: #F0ADAD'>frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)</span><span style=''>
 </span>27 <span style=''>
-</span>28 <span style=''>    </span><span style='background: #F0ADAD'>def render</span><span style=''>(world: World): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>28 <span style=''>    </span><span style='background: #F0ADAD'>def render</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
 </span>29 <span style=''></span><span style='background: #F0ADAD'>        SwingUtilities.invokeLater { () =&gt;
 </span>30 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
 </span>31 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
-</span>32 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(WorldPane(world, width, height))
+</span>32 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(WorldPane(game, width, height))
 </span>33 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.repaint()
 </span>34 <span style=''></span><span style='background: #F0ADAD'>        }
 </span>35 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
@@ -62,7 +62,7 @@
 </span>38 <span style=''></span><span style='background: #F0ADAD'>      .mouseObservable()
 </span>39 <span style=''></span><span style='background: #F0ADAD'>      .map((x, y) =&gt; Event.LaunchMissileTo(Point2D((x * World.width) / width, (y * World.height) / height )) )</span><span style=''>
 </span>40 <span style=''>
-</span>41 <span style=''>    </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>(world: World): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>41 <span style=''>    </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
 </span>42 <span style=''></span><span style='background: #F0ADAD'>        SwingUtilities.invokeLater { () =&gt;
 </span>43 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
 </span>44 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
@@ -70,8 +70,8 @@
 </span>46 <span style=''></span><span style='background: #F0ADAD'>            panel.setSize(width, height)
 </span>47 <span style=''></span><span style='background: #F0ADAD'>            panel.setLayout(new FlowLayout())
 </span>48 <span style=''></span><span style='background: #F0ADAD'>            val button = new JButton(&quot;RIGIOCA&quot;)
-</span>49 <span style=''></span><span style='background: #F0ADAD'>            val score = new JLabel(s&quot;SCORE FINALE: ${world.score}&quot;)
-</span>50 <span style=''></span><span style='background: #F0ADAD'>            val time = new JLabel(s&quot;TEMPO DI GIOCO: ${world.timer.time}&quot;)
+</span>49 <span style=''></span><span style='background: #F0ADAD'>            val score = new JLabel(s&quot;SCORE FINALE: ${game.player.score}&quot;)
+</span>50 <span style=''></span><span style='background: #F0ADAD'>            val time = new JLabel(s&quot;TEMPO DI GIOCO: ${game.player.timer.time}&quot;)
 </span>51 <span style=''></span><span style='background: #F0ADAD'>            button.addActionListener(new ActionListener() {
 </span>52 <span style=''></span><span style='background: #F0ADAD'>                override def actionPerformed(e: ActionEvent): Unit = {
 </span>53 <span style=''></span><span style='background: #F0ADAD'>                    frame.dispose()
@@ -81,7 +81,7 @@
 </span>57 <span style=''></span><span style='background: #F0ADAD'>            panel.add(button)
 </span>58 <span style=''></span><span style='background: #F0ADAD'>            panel.add(score)
 </span>59 <span style=''></span><span style='background: #F0ADAD'>            panel.add(time)
-</span>60 <span style=''></span><span style='background: #F0ADAD'>  
+</span>60 <span style=''></span><span style='background: #F0ADAD'>
 </span>61 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(panel)
 </span>62 <span style=''></span><span style='background: #F0ADAD'>            frame.revalidate()
 </span>63 <span style=''></span><span style='background: #F0ADAD'>            frame.repaint()
@@ -104,12 +104,12 @@
           20
         </td>
         <td>
-          1351
+          1313
         </td>
         <td>
-          614
+          624
           -
-          628
+          638
         </td>
         <td>
           Apply
@@ -128,12 +128,12 @@
           22
         </td>
         <td>
-          1352
+          1314
         </td>
         <td>
-          634
+          644
           -
-          662
+          672
         </td>
         <td>
           Apply
@@ -152,12 +152,12 @@
           23
         </td>
         <td>
-          1353
+          1315
         </td>
         <td>
-          667
+          677
           -
-          689
+          699
         </td>
         <td>
           Apply
@@ -176,12 +176,12 @@
           24
         </td>
         <td>
-          1354
+          1316
         </td>
         <td>
-          694
+          704
           -
-          727
+          737
         </td>
         <td>
           Apply
@@ -200,12 +200,12 @@
           25
         </td>
         <td>
-          1355
+          1317
         </td>
         <td>
-          732
+          742
           -
-          793
+          803
         </td>
         <td>
           Apply
@@ -224,36 +224,12 @@
           27
         </td>
         <td>
-          1357
+          1318
         </td>
         <td>
-          799
+          846
           -
-          809
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          render
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def render
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          1356
-        </td>
-        <td>
-          838
-          -
-          1124
+          1131
         </td>
         <td>
           Apply
@@ -269,46 +245,46 @@
         SwingUtilities.invokeLater { () =&gt;
             if (frame.getContentPane.getComponentCount != 0)
                 frame.getContentPane.remove(0)
-            frame.getContentPane.add(WorldPane(world, width, height))
+            frame.getContentPane.add(WorldPane(game, width, height))
             frame.getContentPane.repaint()
         }
     }
         </td>
       </tr><tr>
         <td>
-          36
+          27
         </td>
         <td>
-          1364
+          1319
         </td>
         <td>
-          1130
+          809
           -
-          1149
+          819
         </td>
         <td>
           DefDef
         </td>
         <td>
-          events
+          render
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def events
+          def render
         </td>
       </tr><tr>
         <td>
           36
         </td>
         <td>
-          1358
+          1320
         </td>
         <td>
-          1171
+          1178
           -
-          1191
+          1198
         </td>
         <td>
           Apply
@@ -324,15 +300,39 @@
         </td>
       </tr><tr>
         <td>
+          36
+        </td>
+        <td>
+          1326
+        </td>
+        <td>
+          1137
+          -
+          1156
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          events
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def events
+        </td>
+      </tr><tr>
+        <td>
           37
         </td>
         <td>
-          1359
+          1321
         </td>
         <td>
-          1171
+          1178
           -
-          1216
+          1223
         </td>
         <td>
           Apply
@@ -352,62 +352,12 @@
           38
         </td>
         <td>
-          1360
-        </td>
-        <td>
-          1268
-          -
-          1293
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          (x * World.width) / width
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          1363
-        </td>
-        <td>
-          1171
-          -
-          1327
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          frame.getContentPane
-      .mouseObservable()
-      .map((x, y) =&gt; Event.LaunchMissileTo(Point2D((x * World.width) / width, (y * World.height) / height )) )
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          1362
-        </td>
-        <td>
-          1260
-          -
           1324
+        </td>
+        <td>
+          1267
+          -
+          1331
         </td>
         <td>
           Apply
@@ -426,12 +376,12 @@
           38
         </td>
         <td>
-          1361
+          1323
         </td>
         <td>
-          1295
+          1302
           -
-          1322
+          1329
         </td>
         <td>
           Apply
@@ -447,39 +397,65 @@
         </td>
       </tr><tr>
         <td>
-          40
+          38
         </td>
         <td>
-          1366
+          1322
         </td>
         <td>
-          1333
+          1275
           -
-          1354
+          1300
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          gameOver
+          int2double
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def gameOver
+          (x * World.width) / width
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          1325
+        </td>
+        <td>
+          1178
+          -
+          1334
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          frame.getContentPane
+      .mouseObservable()
+      .map((x, y) =&gt; Event.LaunchMissileTo(Point2D((x * World.width) / width, (y * World.height) / height )) )
         </td>
       </tr><tr>
         <td>
           40
         </td>
         <td>
-          1365
+          1327
         </td>
         <td>
-          1383
+          1388
           -
-          2299
+          2314
         </td>
         <td>
           Apply
@@ -499,8 +475,8 @@
             panel.setSize(width, height)
             panel.setLayout(new FlowLayout())
             val button = new JButton(&quot;RIGIOCA&quot;)
-            val score = new JLabel(s&quot;SCORE FINALE: ${world.score}&quot;)
-            val time = new JLabel(s&quot;TEMPO DI GIOCO: ${world.timer.time}&quot;)
+            val score = new JLabel(s&quot;SCORE FINALE: ${game.player.score}&quot;)
+            val time = new JLabel(s&quot;TEMPO DI GIOCO: ${game.player.timer.time}&quot;)
             button.addActionListener(new ActionListener() {
                 override def actionPerformed(e: ActionEvent): Unit = {
                     frame.dispose()
@@ -510,12 +486,36 @@
             panel.add(button)
             panel.add(score)
             panel.add(time)
-  
+
             frame.getContentPane.add(panel)
             frame.revalidate()
             frame.repaint()
         }
     }
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          1328
+        </td>
+        <td>
+          1340
+          -
+          1361
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          gameOver
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def gameOver
         </td>
       </tr>
     </table>
