@@ -1,6 +1,6 @@
 package view.gui
 
-import controller.{Event, GameLoop}
+import controller.{Event, Controller}
 import monix.eval.Task
 import monix.reactive.Observable
 import monix.reactive.subjects.PublishSubject
@@ -8,7 +8,7 @@ import org.w3c.dom.events.MouseEvent
 import view.gui.UI
 import model.elements2d.Point2D
 import controller.Event
-import model.World
+import model.{Game, World}
 import view.Main
 import view.gui.WorldPane
 import java.awt.event.MouseMotionListener
@@ -25,11 +25,11 @@ class GUI(width: Int, height: Int) extends UI:
     frame.setLocationRelativeTo(null)
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
 
-    def render(world: World): Task[Unit] = Task {
+    def render(game: Game): Task[Unit] = Task {
         SwingUtilities.invokeLater { () =>
             if (frame.getContentPane.getComponentCount != 0)
                 frame.getContentPane.remove(0)
-            frame.getContentPane.add(WorldPane(world, width, height))
+            frame.getContentPane.add(WorldPane(game, width, height))
             frame.getContentPane.repaint()
         }
     }
@@ -38,7 +38,7 @@ class GUI(width: Int, height: Int) extends UI:
       .mouseObservable()
       .map((x, y) => Event.LaunchMissileTo(Point2D((x * World.width) / width, (y * World.height) / height )) )
 
-    override def gameOver(world: World): Task[Unit] = Task {
+    override def gameOver(game: Game): Task[Unit] = Task {
         SwingUtilities.invokeLater { () =>
             if (frame.getContentPane.getComponentCount != 0)
                 frame.getContentPane.remove(0)
@@ -46,8 +46,8 @@ class GUI(width: Int, height: Int) extends UI:
             panel.setSize(width, height)
             panel.setLayout(new FlowLayout())
             val button = new JButton("RIGIOCA")
-            val score = new JLabel(s"SCORE FINALE: ${world.score}")
-            val time = new JLabel(s"TEMPO DI GIOCO: ${world.timer.time}")
+            val score = new JLabel(s"SCORE FINALE: ${game.player.score}")
+            val time = new JLabel(s"TEMPO DI GIOCO: ${game.player.timer.time}")
             button.addActionListener(new ActionListener() {
                 override def actionPerformed(e: ActionEvent): Unit = {
                     frame.dispose()
@@ -57,7 +57,7 @@ class GUI(width: Int, height: Int) extends UI:
             panel.add(button)
             panel.add(score)
             panel.add(time)
-  
+
             frame.getContentPane.add(panel)
             frame.revalidate()
             frame.repaint()

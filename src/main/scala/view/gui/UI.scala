@@ -1,7 +1,7 @@
 package view.gui
 
 import controller.Event
-import model.World
+import model.Game
 import monix.eval.Task
 import monix.reactive.Observable
 
@@ -19,15 +19,15 @@ trait UI:
     /**
      * Render the world representation.
      *
-     * @param world the world to render
+     * @param game the game to render
      * @return a task that will render the world
      */
-    def render(world: World): Task[Unit]
+    def render(game: Game): Task[Unit]
 
     /**
      * Render the end of the game.
      *
+     * @param game the game to render at the end
      * @return a task that will render the end of the game
      */
-    def gameOver(world: World): Task[Unit]
-
+    def gameOver(game: Game): Task[Unit]
