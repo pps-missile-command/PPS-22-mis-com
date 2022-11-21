@@ -10,9 +10,6 @@ import view.ViewConstants
 
 import scala.util.Random
 
-extension(v: Double)
-  def map(f: Double => Double) = f(v)
-
 trait Spawner(using Random) extends Timeable:
 
   def spawn(): (List[Missile], Spawner)

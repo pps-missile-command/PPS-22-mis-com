@@ -9,20 +9,9 @@ import model.spawner.LazySpawner.*
 
 import scala.util.Random
 
-extension[A](list: LazyList[A])
-  def popN(n: Int): (List[A], LazyList[A]) = (list.take(n).toList, list.drop(n))
+trait GenericSpawner[A](using Random) extends Timeable:
 
-extension(time: DeltaTime)
-
-  def ~(interval: DeltaTime, timePassed: DeltaTime) : DeltaTime = time - interval * (1 / ( 1 + Math.exp((-interval / 4) * timePassed)) - interval / 2)
-
-  def mapIf(condition: () => Boolean)(mapper: (DeltaTime) => DeltaTime): DeltaTime = condition match
-    case _ if condition() => mapper(time)
-    case _ => time
-
-trait GenericSpawner[+A](using Random) extends Timeable:
-
-  def spawn(): (List[A], GenericSpawner[A])
+  def spawn(): (Set[A], GenericSpawner[A])
 
   override def timeElapsed(dt: DeltaTime): GenericSpawner[A]
 
@@ -35,16 +24,16 @@ object GenericSpawner:
 
     val stream: LazyList[R] = streamOpt.getOrElse(LazySpawner(spawnable))
 
-    override def spawn(): (List[R], GenericSpawner[R]) = dt match
+    override def spawn(): (Set[R], GenericSpawner[R]) = dt match
       case n if n >= currentInterval =>
         val step: Int = (n / currentInterval).toInt
         val (elements, newStream) = stream.popN(step)
-        (elements.toList, copy(newDt = 0, Option(newStream)))
-      case _ => (List(), this)
+        (elements.toSet, copy(newDt = 0, Option(newStream)))
+      case _ => (Set(), this)
 
-    private def currentInterval = (interval mapIf isThresholdExceeded) {
-      i => i ~ (i, timeFromStart + dt)
-    }
+    private def currentInterval = (interval mapIf isThresholdExceeded) (
+      _ ~ (timeFromStart + dt)
+    )
 
     private val isThresholdExceeded: () => Boolean = () => (timeFromStart + dt) >= threshold
 
