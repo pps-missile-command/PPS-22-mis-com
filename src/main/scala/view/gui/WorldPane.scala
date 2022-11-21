@@ -23,15 +23,16 @@ private class WorldPane(val world: World, width: Int, height: Int) extends JPane
     override def paintComponent(graphics: Graphics): Unit =
         super.paintComponent(graphics)
         val g2d: Graphics2D = graphics.asInstanceOf[Graphics2D]
-        
         graphics.clearRect(0, 0, width, height)
+        graphics.drawString("SCORE: " + world.score, 10, 10)
+        graphics.drawString("TIME: " + BigDecimal(world.timer.time).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble, 10, 20)
         Visualizer.printGround(world.ground).map(
             imageData => graphics.drawImage(imageData._1, imageData._2.x, imageData._2.y,
                 imageData._3,
                 imageData._4, this)
             )
 
-        CollisionableVisualizer.printElements(world.collisionables.toList) foreach { i =>
+        CollisionableVisualizer.printElements(world.collisionables.toSet) foreach { i =>
             g2d.translate(i.position.x, i.position.y)
             g2d.rotate(i.angle.radiant - Angle.Degree(90).radiant)
 

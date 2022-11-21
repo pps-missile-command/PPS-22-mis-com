@@ -29,4 +29,5 @@ trait UI:
      *
      * @return a task that will render the end of the game
      */
-    def gameOver: Task[Unit]
+    def gameOver(world: World): Task[Unit]
+

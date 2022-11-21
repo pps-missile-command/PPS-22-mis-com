@@ -36,9 +36,9 @@ class GUI(width: Int, height: Int) extends UI:
 
     override def events: Observable[Event] = frame.getContentPane
       .mouseObservable()
-      .map((x, y) => Event.LaunchMissileTo(Point2D(x, y)) )
+      .map((x, y) => Event.LaunchMissileTo(Point2D((x * World.width) / width, (y * World.height) / height )) )
 
-    override def gameOver: Task[Unit] = Task {
+    override def gameOver(world: World): Task[Unit] = Task {
         SwingUtilities.invokeLater { () =>
             if (frame.getContentPane.getComponentCount != 0)
                 frame.getContentPane.remove(0)
@@ -46,6 +46,8 @@ class GUI(width: Int, height: Int) extends UI:
             panel.setSize(width, height)
             panel.setLayout(new FlowLayout())
             val button = new JButton("RIGIOCA")
+            val score = new JLabel(s"SCORE FINALE: ${world.score}")
+            val time = new JLabel(s"TEMPO DI GIOCO: ${world.timer.time}")
             button.addActionListener(new ActionListener() {
                 override def actionPerformed(e: ActionEvent): Unit = {
                     frame.dispose()
@@ -53,7 +55,9 @@ class GUI(width: Int, height: Int) extends UI:
                 }
             })
             panel.add(button)
-
+            panel.add(score)
+            panel.add(time)
+  
             frame.getContentPane.add(panel)
             frame.revalidate()
             frame.repaint()
