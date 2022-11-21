@@ -1,8 +1,13 @@
 package model
 
+import model.Timer.Timer
 import model.collisions.Collisionable
 import model.ground.Ground
-import model.spawner.Spawner
+import model.missile.Missile
+import model.spawner.{GenericSpawner, Spawner, SpecificSpawners}
+import view.ViewConstants
+
+import scala.util.Random
 
 /**
  * Object with the values of the world and its initial state.
@@ -24,7 +29,8 @@ object World:
    *
    * @return the initial state of the world
    */
-  def initialWorld: World = World(Ground(), Spawner(5, width, height), Set.empty[Collisionable], 0)
+  given Random()
+  def initialWorld: World = World(Ground(), model.spawner.standardSpawner, Set.empty[Collisionable], 0, Timer(0))
 
 /**
  * Class that represents the world.
@@ -34,4 +40,4 @@ object World:
  * @param collisionables the collisionables in the world.
  * @param score          the current score of the player.
  */
-case class World(ground: Ground, spawner: Spawner, collisionables: Set[Collisionable], score: ScorePoint)
+case class World(ground: Ground, spawner: GenericSpawner[Missile], collisionables: Set[Collisionable], score: ScorePoint, timer: Timer)
