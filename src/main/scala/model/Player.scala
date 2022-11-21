@@ -20,5 +20,5 @@ object Player:
    *
    * @return the initial player
    */
-  def initialPlayer(): Player =
+  def initialPlayer: Player =
     Player(0, Timer(0))

@@ -23,5 +23,5 @@ object Game:
    *
    * @return the initial state of the game
    */
-  def initialGame(): Game =
-    Game(Player.initialPlayer(), model.spawner.standardSpawner(using Random()), World.initialWorld)
+  def initialGame: Game =
+    Game(Player.initialPlayer, model.spawner.standardSpawner(using Random()), World.initialWorld)

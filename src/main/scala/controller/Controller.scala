@@ -37,7 +37,7 @@ object Controller:
 
     given OverflowStrategy[Event] = OverflowStrategy.Default
 
-    val game = Game.initialGame()
+    val game = Game.initialGame
     val controls: Update = Update.combine(
       UpdateTime(),
       UpdatePosition(),
