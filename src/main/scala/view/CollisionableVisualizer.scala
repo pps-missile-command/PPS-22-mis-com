@@ -22,7 +22,7 @@ object CollisionableVisualizer:
 
   private val convertPosition: (Point2D) => Point2D = (p) => Point2D((p.x * ViewConstants.GUI_width) / World.width, (p.y * ViewConstants.GUI_height) / World.height)
 
-  def printElements(collisionables: List[Collisionable])(using conversion: Conversion[Double, Int]): List[CollisionableElement] =
+  def printElements(collisionables: Set[Collisionable])(using conversion: Conversion[Double, Int]): Set[CollisionableElement] =
 
     val conversion: Collisionable => CollisionableElement = (c: Collisionable) => c match
       case m: Missile with MissileDamageable =>
