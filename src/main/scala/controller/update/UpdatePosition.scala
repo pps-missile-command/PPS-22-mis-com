@@ -3,7 +3,7 @@ package controller.update
 import controller.Event
 import controller.Event.TimePassed
 import controller.update.Update.on
-import model.World
+import model.Game
 import model.behavior.Moveable
 import model.collisions.Collisionable
 import monix.eval.Task
@@ -24,9 +24,9 @@ object UpdatePosition:
    *
    * @return An Update that update the position of the game components
    */
-  def apply(): Update = on[TimePassed] { (_: Event, world: World) =>
+  def apply(): Update = on[TimePassed] { (_: Event, game: Game) =>
     Task {
-      val collisionables = world.collisionables.map(_.updateMovablePosition())
-      world.copy(collisionables = collisionables)
+      val collisionables = game.world.collisionables.map(_.updateMovablePosition())
+      game.copy(world = game.world.copy(collisionables = collisionables))
     }
   }

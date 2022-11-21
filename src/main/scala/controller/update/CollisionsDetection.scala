@@ -3,7 +3,7 @@ package controller.update
 import controller.Event
 import controller.Event.TimePassed
 import controller.update.Update.on
-import model.{World, calculateNewScoreBasedOn}
+import model.{Game, World, Player, calculateNewScoreBasedOn}
 import model.collisions.{Collisionable, Damageable, applyDamagesBasedOn, calculateCollisions, calculateCollisionsWith}
 import model.explosion.Explosion
 import model.ground.{City, Ground, MissileBattery}
@@ -80,15 +80,16 @@ object CollisionsDetection:
    *
    * @return An Update that update the world to be update with the aftermath of its components collisions
    */
-  def apply(): Update = on[TimePassed] { (_: Event, world: World) =>
+  def apply(): Update = on[TimePassed] { (_: Event, game: Game) =>
     Task {
-      val collisionables = world.collisionables ++ world.ground.cities ++ world.ground.turrets
-      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith world.collisionables)
-      val newScore = world.score calculateNewScoreBasedOn collisionsUpdate
+      val collisionables = game.world.collisionables ++ game.world.ground.cities ++ game.world.ground.turrets
+      val (tmpNewCollisionables, collisionsUpdate) = collisionables applyDamagesBasedOn (collisionables calculateCollisionsWith game.world.collisionables)
+      val newScore = game.player.score calculateNewScoreBasedOn collisionsUpdate
       val newExplosion = tmpNewCollisionables.explosionsOfDestroyedMissiles
       val (collisionableAfterSecondCollisions, _) = tmpNewCollisionables applyDamagesBasedOn (tmpNewCollisionables calculateCollisionsWith newExplosion)
       val (newGround, newCollisionables) = collisionableAfterSecondCollisions.splitGroundFromOther
       val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed) ++ newExplosion
-      world.copy(collisionables = newNotDestroyedCollisionables, score = newScore, ground = newGround)
+      val newWorld = World(newGround, newNotDestroyedCollisionables)
+      game.copy(world = newWorld, player = game.player.copy(score = newScore))
     }
   }

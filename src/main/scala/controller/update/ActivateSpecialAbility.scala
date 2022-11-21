@@ -3,7 +3,7 @@ package controller.update
 import controller.Event
 import controller.Event.TimePassed
 import controller.update.Update.on
-import model.World
+import model.Game
 import model.explosion.Explosion
 import model.behavior.Moveable
 import model.collisions.Collisionable
@@ -31,11 +31,14 @@ object ActivateSpecialAbility:
    *
    * @return An Update that update the world to be update with the special abilities of its components
    */
-  def apply(): Update = on[TimePassed] { (_: Event, world: World) =>
+  def apply(): Update = on[TimePassed] { (_: Event, game: Game) =>
     Task {
-      val collisionables = world.collisionables.map(activateSpecialAbility)
+      val collisionables = game.world.collisionables.map(activateSpecialAbility)
       val remainedCollisionables = collisionables.filterNot(isExplosionTerminated)
-      val (newMissiles, spawner) = world.spawner.spawn()
-      world.copy(collisionables = remainedCollisionables ++ newMissiles, spawner = spawner)
+      val (newMissiles, spawner) = game.spawner.spawn()
+      game.copy(
+        world = game.world.copy(collisionables = remainedCollisionables ++ newMissiles),
+        spawner = spawner
+      )
     }
   }
