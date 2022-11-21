@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/spawner/LazySpawner.scala.html
+          model/Timer.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,18 +22,15 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.spawner
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model
 </span>2 <span style=''>
-</span>3 <span style=''>import model.elements2d.Point2D
+</span>3 <span style=''>import model.behavior.Timeable
 </span>4 <span style=''>
-</span>5 <span style=''>import scala.util.Random
+</span>5 <span style=''>object Timer:
 </span>6 <span style=''>
-</span>7 <span style=''>object LazySpawner:
+</span>7 <span style=''>  case class Timer(time: DeltaTime) extends Timeable:
 </span>8 <span style=''>
-</span>9 <span style=''>  trait Spawnable[+A]:
-</span>10 <span style=''>    def generate(): A
-</span>11 <span style=''>  
-</span>12 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[A](spawnable: Spawnable[A]): LazyList[A] = </span><span style='background: #AEF1AE'>LazyList.continually(spawnable.generate())</span><span style=''>
+</span>9 <span style=''>    </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Timer = this.copy(time + dt)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -48,51 +45,27 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          11
+          8
         </td>
         <td>
-          1135
+          151
         </td>
         <td>
-          153
+          121
           -
-          162
+          145
         </td>
         <td>
           DefDef
         </td>
         <td>
-          apply
+          timeElapsed
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          def apply
-        </td>
-      </tr><tr>
-        <td>
-          11
-        </td>
-        <td>
-          1134
-        </td>
-        <td>
-          206
-          -
-          248
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          continually
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          LazyList.continually(spawnable.generate())
+        <td style="background: #F0ADAD">
+          override def timeElapsed
         </td>
       </tr>
     </table>

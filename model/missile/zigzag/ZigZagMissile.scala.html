@@ -23,7 +23,7 @@
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile.zigzag
-</span>2 <span style=''>import model.DeltaTime
+</span>2 <span style=''>import model.{DeltaTime, Scorable}
 </span>3 <span style=''>import model.behavior.Moveable
 </span>4 <span style=''>import model.collisions.{Affiliation, Collisionable, LifePoint, lifePointDeath}
 </span>5 <span style=''>import model.elements2d.{Point2D, Vector2D}
@@ -46,9 +46,9 @@
 </span>22 <span style=''>        </span><span style='background: #F0ADAD'>case true</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(missile, pos, step, positions.pop()._2, _dt, to)</span><span style=''>
 </span>23 <span style=''>        </span><span style='background: #F0ADAD'>case false</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>apply(missile, pos, step, positions, _dt, to)</span><span style=''>
 </span>24 <span style=''>
-</span>25 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(from: Point2D, to: Point2D, step: Int)(using Random): ZigZagMissile &amp; Scorable &amp; MissileImpl =
-</span>26 <span style=''>    val list = </span><span style='background: #F0ADAD'>DirectionList(from, to, step)</span><span style=''>
-</span>27 <span style=''>    new </span><span style='background: #F0ADAD'>MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy)</span><span style=''> with </span><span style='background: #F0ADAD'>Scorable(1)</span><span style=''> with </span><span style='background: #F0ADAD'>ZigZagMissile(step, list, to)</span><span style=''>
+</span>25 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(from: Point2D, to: Point2D, step: Int)(using Random): ZigZagMissile &amp; Scorable &amp; MissileImpl =
+</span>26 <span style=''>    val list = </span><span style='background: #AEF1AE'>DirectionList(from, to, step)</span><span style=''>
+</span>27 <span style=''>    new </span><span style='background: #AEF1AE'>MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy)</span><span style=''> with </span><span style='background: #AEF1AE'>Scorable(1)</span><span style=''> with </span><span style='background: #AEF1AE'>ZigZagMissile(step, list, to)</span><span style=''>
 </span>28 <span style=''>
 </span>29 <span style=''>  </span><span style='background: #F0ADAD'>private def apply</span><span style=''>(missile: Missile, newPosition: Point2D, step: Int, positions: LazyList[Point2D], deltaTime: DeltaTime, to: Point2D): ZigZagMissile &amp; Scorable &amp; MissileImpl = </span><span style='background: #F0ADAD'>positions.size</span><span style=''> match
 </span>30 <span style=''>    </span><span style='background: #F0ADAD'>case 0</span><span style=''> =&gt; new </span><span style='background: #F0ADAD'>MissileImpl(missile.initialLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)</span><span style=''> with </span><span style='background: #F0ADAD'>Scorable(1)</span><span style=''> with </span><span style='background: #F0ADAD'>ZigZagMissile(step, positions, to)</span><span style=''>
@@ -73,9 +73,9 @@
           1036
         </td>
         <td>
-          377
+          389
           -
-          377
+          389
         </td>
         <td>
           DefDef
@@ -97,9 +97,9 @@
           1023
         </td>
         <td>
-          457
+          469
           -
-          482
+          494
         </td>
         <td>
           DefDef
@@ -121,9 +121,9 @@
           1024
         </td>
         <td>
-          523
+          535
           -
-          554
+          566
         </td>
         <td>
           DefDef
@@ -145,9 +145,9 @@
           1034
         </td>
         <td>
-          662
+          674
           -
-          662
+          674
         </td>
         <td>
           DefDef
@@ -169,9 +169,9 @@
           1033
         </td>
         <td>
-          628
+          640
           -
-          628
+          640
         </td>
         <td>
           DefDef
@@ -193,9 +193,9 @@
           1032
         </td>
         <td>
-          586
+          598
           -
-          609
+          621
         </td>
         <td>
           DefDef
@@ -217,9 +217,9 @@
           1035
         </td>
         <td>
-          697
+          709
           -
-          697
+          709
         </td>
         <td>
           DefDef
@@ -241,9 +241,9 @@
           1025
         </td>
         <td>
-          757
+          769
           -
-          778
+          790
         </td>
         <td>
           Select
@@ -265,9 +265,9 @@
           1028
         </td>
         <td>
-          806
+          818
           -
-          860
+          872
         </td>
         <td>
           Apply
@@ -289,9 +289,9 @@
           1027
         </td>
         <td>
-          832
+          844
           -
-          850
+          862
         </td>
         <td>
           Select
@@ -313,9 +313,9 @@
           1029
         </td>
         <td>
-          793
+          805
           -
-          802
+          814
         </td>
         <td>
           Block
@@ -337,9 +337,9 @@
           1026
         </td>
         <td>
-          832
+          844
           -
-          847
+          859
         </td>
         <td>
           Apply
@@ -361,9 +361,9 @@
           1031
         </td>
         <td>
-          869
+          881
           -
-          879
+          891
         </td>
         <td>
           Block
@@ -385,9 +385,9 @@
           1030
         </td>
         <td>
-          883
+          895
           -
-          928
+          940
         </td>
         <td>
           Apply
@@ -409,9 +409,9 @@
           1046
         </td>
         <td>
-          932
+          944
           -
-          941
+          953
         </td>
         <td>
           DefDef
@@ -422,7 +422,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           def apply
         </td>
       </tr><tr>
@@ -433,9 +433,9 @@
           1037
         </td>
         <td>
-          1052
+          1064
           -
-          1081
+          1093
         </td>
         <td>
           Apply
@@ -446,7 +446,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           DirectionList(from, to, step)
         </td>
       </tr><tr>
@@ -457,9 +457,9 @@
           1043
         </td>
         <td>
-          1090
+          1102
           -
-          1176
+          1188
         </td>
         <td>
           Apply
@@ -470,7 +470,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy)
         </td>
       </tr><tr>
@@ -481,9 +481,9 @@
           1040
         </td>
         <td>
-          1090
+          1102
           -
-          1101
+          1113
         </td>
         <td>
           Select
@@ -494,7 +494,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           MissileImpl
         </td>
       </tr><tr>
@@ -505,9 +505,9 @@
           1042
         </td>
         <td>
-          1090
+          1102
           -
-          1101
+          1113
         </td>
         <td>
           Select
@@ -518,7 +518,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           MissileImpl
         </td>
       </tr><tr>
@@ -529,9 +529,9 @@
           1045
         </td>
         <td>
-          1199
+          1211
           -
-          1228
+          1240
         </td>
         <td>
           Apply
@@ -542,7 +542,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           ZigZagMissile(step, list, to)
         </td>
       </tr><tr>
@@ -553,9 +553,9 @@
           1039
         </td>
         <td>
-          1090
+          1102
           -
-          1101
+          1113
         </td>
         <td>
           Select
@@ -566,7 +566,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           MissileImpl
         </td>
       </tr><tr>
@@ -577,9 +577,9 @@
           1038
         </td>
         <td>
-          1133
+          1145
           -
-          1142
+          1154
         </td>
         <td>
           Select
@@ -590,7 +590,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           list.head
         </td>
       </tr><tr>
@@ -601,9 +601,9 @@
           1041
         </td>
         <td>
-          1090
+          1102
           -
-          1101
+          1113
         </td>
         <td>
           Select
@@ -614,7 +614,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           MissileImpl
         </td>
       </tr><tr>
@@ -625,9 +625,9 @@
           1044
         </td>
         <td>
-          1182
+          1194
           -
-          1193
+          1205
         </td>
         <td>
           Apply
@@ -638,7 +638,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           Scorable(1)
         </td>
       </tr><tr>
@@ -649,9 +649,9 @@
           1063
         </td>
         <td>
-          1232
+          1244
           -
-          1249
+          1261
         </td>
         <td>
           DefDef
@@ -673,9 +673,9 @@
           1047
         </td>
         <td>
-          1408
+          1420
           -
-          1422
+          1434
         </td>
         <td>
           Select
@@ -697,9 +697,9 @@
           1052
         </td>
         <td>
-          1566
+          1578
           -
-          1577
+          1589
         </td>
         <td>
           Apply
@@ -721,9 +721,9 @@
           1049
         </td>
         <td>
-          1527
+          1539
           -
-          1541
+          1553
         </td>
         <td>
           Select
@@ -745,9 +745,9 @@
           1051
         </td>
         <td>
-          1447
+          1459
           -
-          1560
+          1572
         </td>
         <td>
           Apply
@@ -769,9 +769,9 @@
           1054
         </td>
         <td>
-          1433
+          1445
           -
-          1439
+          1451
         </td>
         <td>
           Block
@@ -793,9 +793,9 @@
           1048
         </td>
         <td>
-          1459
+          1471
           -
-          1478
+          1490
         </td>
         <td>
           Select
@@ -817,9 +817,9 @@
           1050
         </td>
         <td>
-          1543
+          1555
           -
-          1559
+          1571
         </td>
         <td>
           Select
@@ -841,9 +841,9 @@
           1053
         </td>
         <td>
-          1583
+          1595
           -
-          1617
+          1629
         </td>
         <td>
           Apply
@@ -865,9 +865,9 @@
           1061
         </td>
         <td>
-          1784
+          1796
           -
-          1818
+          1830
         </td>
         <td>
           Apply
@@ -889,9 +889,9 @@
           1055
         </td>
         <td>
-          1648
+          1660
           -
-          1667
+          1679
         </td>
         <td>
           Select
@@ -913,9 +913,9 @@
           1058
         </td>
         <td>
-          1744
+          1756
           -
-          1760
+          1772
         </td>
         <td>
           Select
@@ -937,9 +937,9 @@
           1057
         </td>
         <td>
-          1728
+          1740
           -
-          1742
+          1754
         </td>
         <td>
           Select
@@ -961,9 +961,9 @@
           1060
         </td>
         <td>
-          1767
+          1779
           -
-          1778
+          1790
         </td>
         <td>
           Apply
@@ -985,9 +985,9 @@
           1056
         </td>
         <td>
-          1682
+          1694
           -
-          1696
+          1708
         </td>
         <td>
           Select
@@ -1009,9 +1009,9 @@
           1059
         </td>
         <td>
-          1636
+          1648
           -
-          1761
+          1773
         </td>
         <td>
           Apply
@@ -1033,9 +1033,9 @@
           1062
         </td>
         <td>
-          1622
+          1634
           -
-          1628
+          1640
         </td>
         <td>
           Block

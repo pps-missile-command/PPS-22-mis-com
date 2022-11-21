@@ -60,9 +60,9 @@
 </span>36 <span style=''>
 </span>37 <span style=''>    </span><span style='background: #F0ADAD'>override def events</span><span style=''>: Observable[Event] = </span><span style='background: #F0ADAD'>frame.getContentPane
 </span>38 <span style=''></span><span style='background: #F0ADAD'>      .mouseObservable()
-</span>39 <span style=''></span><span style='background: #F0ADAD'>      .map((x, y) =&gt; Event.LaunchMissileTo(Point2D(x, y)) )</span><span style=''>
+</span>39 <span style=''></span><span style='background: #F0ADAD'>      .map((x, y) =&gt; Event.LaunchMissileTo(Point2D((x * World.width) / width, (y * World.height) / height )) )</span><span style=''>
 </span>40 <span style=''>
-</span>41 <span style=''>    </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>: Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>41 <span style=''>    </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>(world: World): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
 </span>42 <span style=''></span><span style='background: #F0ADAD'>        SwingUtilities.invokeLater { () =&gt;
 </span>43 <span style=''></span><span style='background: #F0ADAD'>            if (frame.getContentPane.getComponentCount != 0)
 </span>44 <span style=''></span><span style='background: #F0ADAD'>                frame.getContentPane.remove(0)
@@ -70,19 +70,23 @@
 </span>46 <span style=''></span><span style='background: #F0ADAD'>            panel.setSize(width, height)
 </span>47 <span style=''></span><span style='background: #F0ADAD'>            panel.setLayout(new FlowLayout())
 </span>48 <span style=''></span><span style='background: #F0ADAD'>            val button = new JButton(&quot;RIGIOCA&quot;)
-</span>49 <span style=''></span><span style='background: #F0ADAD'>            button.addActionListener(new ActionListener() {
-</span>50 <span style=''></span><span style='background: #F0ADAD'>                override def actionPerformed(e: ActionEvent): Unit = {
-</span>51 <span style=''></span><span style='background: #F0ADAD'>                    frame.dispose()
-</span>52 <span style=''></span><span style='background: #F0ADAD'>                    Main.main(null)
-</span>53 <span style=''></span><span style='background: #F0ADAD'>                }
-</span>54 <span style=''></span><span style='background: #F0ADAD'>            })
-</span>55 <span style=''></span><span style='background: #F0ADAD'>            panel.add(button)
-</span>56 <span style=''></span><span style='background: #F0ADAD'>
-</span>57 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(panel)
-</span>58 <span style=''></span><span style='background: #F0ADAD'>            frame.revalidate()
-</span>59 <span style=''></span><span style='background: #F0ADAD'>            frame.repaint()
-</span>60 <span style=''></span><span style='background: #F0ADAD'>        }
-</span>61 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>49 <span style=''></span><span style='background: #F0ADAD'>            val score = new JLabel(s&quot;SCORE FINALE: ${world.score}&quot;)
+</span>50 <span style=''></span><span style='background: #F0ADAD'>            val time = new JLabel(s&quot;TEMPO DI GIOCO: ${world.timer.time}&quot;)
+</span>51 <span style=''></span><span style='background: #F0ADAD'>            button.addActionListener(new ActionListener() {
+</span>52 <span style=''></span><span style='background: #F0ADAD'>                override def actionPerformed(e: ActionEvent): Unit = {
+</span>53 <span style=''></span><span style='background: #F0ADAD'>                    frame.dispose()
+</span>54 <span style=''></span><span style='background: #F0ADAD'>                    Main.main(null)
+</span>55 <span style=''></span><span style='background: #F0ADAD'>                }
+</span>56 <span style=''></span><span style='background: #F0ADAD'>            })
+</span>57 <span style=''></span><span style='background: #F0ADAD'>            panel.add(button)
+</span>58 <span style=''></span><span style='background: #F0ADAD'>            panel.add(score)
+</span>59 <span style=''></span><span style='background: #F0ADAD'>            panel.add(time)
+</span>60 <span style=''></span><span style='background: #F0ADAD'>  
+</span>61 <span style=''></span><span style='background: #F0ADAD'>            frame.getContentPane.add(panel)
+</span>62 <span style=''></span><span style='background: #F0ADAD'>            frame.revalidate()
+</span>63 <span style=''></span><span style='background: #F0ADAD'>            frame.repaint()
+</span>64 <span style=''></span><span style='background: #F0ADAD'>        }
+</span>65 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -100,7 +104,7 @@
           20
         </td>
         <td>
-          1330
+          1351
         </td>
         <td>
           614
@@ -124,7 +128,7 @@
           22
         </td>
         <td>
-          1331
+          1352
         </td>
         <td>
           634
@@ -148,7 +152,7 @@
           23
         </td>
         <td>
-          1332
+          1353
         </td>
         <td>
           667
@@ -172,7 +176,7 @@
           24
         </td>
         <td>
-          1333
+          1354
         </td>
         <td>
           694
@@ -196,7 +200,7 @@
           25
         </td>
         <td>
-          1334
+          1355
         </td>
         <td>
           732
@@ -220,7 +224,7 @@
           27
         </td>
         <td>
-          1336
+          1357
         </td>
         <td>
           799
@@ -244,7 +248,7 @@
           27
         </td>
         <td>
-          1335
+          1356
         </td>
         <td>
           838
@@ -275,7 +279,7 @@
           36
         </td>
         <td>
-          1343
+          1364
         </td>
         <td>
           1130
@@ -299,7 +303,7 @@
           36
         </td>
         <td>
-          1337
+          1358
         </td>
         <td>
           1171
@@ -323,7 +327,7 @@
           37
         </td>
         <td>
-          1338
+          1359
         </td>
         <td>
           1171
@@ -348,12 +352,36 @@
           38
         </td>
         <td>
-          1342
+          1360
+        </td>
+        <td>
+          1268
+          -
+          1293
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          (x * World.width) / width
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          1363
         </td>
         <td>
           1171
           -
-          1276
+          1327
         </td>
         <td>
           Apply
@@ -367,43 +395,19 @@
         <td style="background: #F0ADAD">
           frame.getContentPane
       .mouseObservable()
-      .map((x, y) =&gt; Event.LaunchMissileTo(Point2D(x, y)) )
+      .map((x, y) =&gt; Event.LaunchMissileTo(Point2D((x * World.width) / width, (y * World.height) / height )) )
         </td>
       </tr><tr>
         <td>
           38
         </td>
         <td>
-          1339
-        </td>
-        <td>
-          1268
-          -
-          1269
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          1341
+          1362
         </td>
         <td>
           1260
           -
-          1273
+          1324
         </td>
         <td>
           Apply
@@ -415,19 +419,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Point2D(x, y)
+          Point2D((x * World.width) / width, (y * World.height) / height )
         </td>
       </tr><tr>
         <td>
           38
         </td>
         <td>
-          1340
+          1361
         </td>
         <td>
-          1271
+          1295
           -
-          1272
+          1322
         </td>
         <td>
           Apply
@@ -439,19 +443,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          y
+          (y * World.height) / height
         </td>
       </tr><tr>
         <td>
           40
         </td>
         <td>
-          1345
+          1366
         </td>
         <td>
-          1282
+          1333
           -
-          1303
+          1354
         </td>
         <td>
           DefDef
@@ -470,12 +474,12 @@
           40
         </td>
         <td>
-          1344
+          1365
         </td>
         <td>
-          1318
+          1383
           -
-          2033
+          2299
         </td>
         <td>
           Apply
@@ -495,6 +499,8 @@
             panel.setSize(width, height)
             panel.setLayout(new FlowLayout())
             val button = new JButton(&quot;RIGIOCA&quot;)
+            val score = new JLabel(s&quot;SCORE FINALE: ${world.score}&quot;)
+            val time = new JLabel(s&quot;TEMPO DI GIOCO: ${world.timer.time}&quot;)
             button.addActionListener(new ActionListener() {
                 override def actionPerformed(e: ActionEvent): Unit = {
                     frame.dispose()
@@ -502,7 +508,9 @@
                 }
             })
             panel.add(button)
-
+            panel.add(score)
+            panel.add(time)
+  
             frame.getContentPane.add(panel)
             frame.revalidate()
             frame.repaint()
