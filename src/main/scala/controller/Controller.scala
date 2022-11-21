@@ -56,4 +56,3 @@ object GameLoop:
       .last
       .doOnNext { case (world, _) => ui.gameOver(world) }
       .completedL
-      .doOnFinish(_ => ui.gameOver)
