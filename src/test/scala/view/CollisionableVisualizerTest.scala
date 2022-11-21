@@ -1,6 +1,6 @@
 package view
 
-import model.spawner.{GenericSpawner, Spawner, SpecificSpawners}
+import model.spawner.{GenericSpawner, SpecificSpawners}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
