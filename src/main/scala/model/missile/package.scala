@@ -30,8 +30,6 @@ package object missile:
   given Conversion[(Point2D, Point2D), Vector2D] with
     override def apply(x: (Point2D, Point2D)): Vector2D = (x._2 <--> x._1).normalize
 
-  type MissileMovement = (DeltaTime, Point2D) => Point2D
-
   def BasicMove(missile: Missile)(dt: DeltaTime): Point2D =
     val distanceToMove = missile.velocity * dt
     val distanceToFinalPosition = missile.position <-> missile.destination

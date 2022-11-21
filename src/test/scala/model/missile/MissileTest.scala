@@ -1,4 +1,5 @@
 package model.missile
+import model.Scorable
 import model.collisions.Affiliation
 import model.elements2d.Point2D
 import org.scalatest.funspec.AnyFunSpec

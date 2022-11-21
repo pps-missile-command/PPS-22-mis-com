@@ -4,7 +4,7 @@ import model.behavior.*
 import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoint, lifePointDeath}
 import model.elements2d.{Angle, Point2D, Vector2D}
 import model.explosion.{Explosion, MaxTime, standardRadius}
-import model.DeltaTime
+import model.{DeltaTime, Scorable}
 
 import scala.util.Random
 
@@ -27,8 +27,6 @@ trait Missile extends Damageable, Moveable:
   def explode: Explosion
 
   def newMissile(lifePoint: LifePoint, point: Point2D, dt: DeltaTime): Missile
-
-trait Scorable(val points: Int) extends Damageable
 
 case class MissileImpl(
                         lifePoint: LifePoint = initialLife,
