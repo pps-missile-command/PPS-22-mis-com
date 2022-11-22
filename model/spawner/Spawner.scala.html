@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/collisions/hitbox/HitBoxIntersection.scala.html
+          model/spawner/Spawner.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,57 +22,53 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions.hitbox
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.spawner
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.HitBox
-</span>4 <span style=''>import model.elements2d.Point2D
-</span>5 <span style=''>import model.collisions.hitbox.*
-</span>6 <span style=''>import model.collisions.*
-</span>7 <span style=''>import org.scalactic.Equality
-</span>8 <span style=''>
-</span>9 <span style=''>/**
-</span>10 <span style=''> * Factory for hit box that is the intersection of other hit boxes.
-</span>11 <span style=''> */
-</span>12 <span style=''>object HitBoxIntersection:
-</span>13 <span style=''>
-</span>14 <span style=''>  /**
-</span>15 <span style=''>   * Returns the intersection of the given hit boxes, if there isn't an intersection return the hit box empty.
-</span>16 <span style=''>   *
-</span>17 <span style=''>   * @param hitBoxes the hit boxes to intersect
-</span>18 <span style=''>   * @return the intersection of the given hit boxes
-</span>19 <span style=''>   */
-</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(hitBoxes: HitBox*)(using Distance): HitBox =
-</span>21 <span style=''>    val intersection = hitBoxes match
-</span>22 <span style=''>      </span><span style='background: #AEF1AE'>case Seq()</span><span style=''> =&gt; HitBoxEmpty
-</span>23 <span style=''>      </span><span style='background: #AEF1AE'>case Seq(hitBox)</span><span style=''> =&gt; hitBox
-</span>24 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; HitBoxIntersection(hitBoxes)
-</span>25 <span style=''>    intersection match
-</span>26 <span style=''>      </span><span style='background: #AEF1AE'>case HitBoxEmpty</span><span style=''> =&gt; HitBoxEmpty
-</span>27 <span style=''>      </span><span style='background: #AEF1AE'>case _ if intersection.xMax.isEmpty || intersection.yMax.isEmpty || intersection.xMin.isEmpty || intersection.yMin.isEmpty</span><span style=''> =&gt; HitBoxEmpty
-</span>28 <span style=''>      </span><span style='background: #AEF1AE'>case _ if intersection.xMax.get &lt; intersection.xMin.get</span><span style=''> =&gt; HitBoxEmpty
-</span>29 <span style=''>      </span><span style='background: #AEF1AE'>case _ if intersection.yMax.get &lt; intersection.yMin.get</span><span style=''> =&gt; HitBoxEmpty
-</span>30 <span style=''>      </span><span style='background: #AEF1AE'>case _ if intersection.area.isEmpty</span><span style=''> =&gt; HitBoxEmpty
-</span>31 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; intersection
-</span>32 <span style=''>
-</span>33 <span style=''>  private case class HitBoxIntersection(hitBoxes: Seq[HitBox]) extends HitBoxAggregation :
-</span>34 <span style=''>
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>protected def optionalConfront</span><span style=''>(l: Option[Double], r: Option[Double])(confrontFunction: (Double, Double) =&gt; Double): Option[Double] =
-</span>36 <span style=''>      (l, r) match
-</span>37 <span style=''>        </span><span style='background: #AEF1AE'>case (Some(valueL), Some(valueR))</span><span style=''> =&gt; Some(</span><span style='background: #AEF1AE'>confrontFunction(valueL, valueR)</span><span style=''>)
-</span>38 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; None
-</span>39 <span style=''>
-</span>40 <span style=''>    protected val functionForMax: (Double, Double) =&gt; Double = </span><span style='background: #AEF1AE'>math.min</span><span style=''>
-</span>41 <span style=''>    protected val functionForMin: (Double, Double) =&gt; Double = </span><span style='background: #AEF1AE'>math.max</span><span style=''>
-</span>42 <span style=''>
-</span>43 <span style=''>    /*override val xMax: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.xMax)((xMax, hitBox) =&gt; optionalConfront(xMax, hitBox.xMax)(_.min(_)))
-</span>44 <span style=''>
-</span>45 <span style=''>    override val yMax: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.yMax)((yMax, hitBox) =&gt; optionalConfront(yMax, hitBox.yMax)(_.min(_)))
+</span>3 <span style=''>import model.behavior.*
+</span>4 <span style=''>import model.collisions.Affiliation
+</span>5 <span style=''>import model.elements2d.Point2D
+</span>6 <span style=''>import model.missile.{Missile, damage, initialLife, velocity}
+</span>7 <span style=''>import model.missile.Missile
+</span>8 <span style=''>import model.{DeltaTime, World}
+</span>9 <span style=''>import view.ViewConstants
+</span>10 <span style=''>
+</span>11 <span style=''>import scala.util.Random
+</span>12 <span style=''>
+</span>13 <span style=''>extension(v: Double)
+</span>14 <span style=''>  </span><span style='background: #F0ADAD'>def map</span><span style=''>(f: Double =&gt; Double) = </span><span style='background: #F0ADAD'>f(v)</span><span style=''>
+</span>15 <span style=''>
+</span>16 <span style=''>trait Spawner(using Random) extends Timeable:
+</span>17 <span style=''>
+</span>18 <span style=''>  def spawn(): (List[Missile], Spawner)
+</span>19 <span style=''>
+</span>20 <span style=''>  override def timeElapsed(dt: DeltaTime): Spawner
+</span>21 <span style=''>
+</span>22 <span style=''>object Spawner:
+</span>23 <span style=''>
+</span>24 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(interval: DeltaTime, maxWidth: Double, maxHeight: Double, timeFromStart: DeltaTime = 0, dt: DeltaTime = 0): Spawner = new </span><span style='background: #AEF1AE'>Spawner(using Random)</span><span style=''> {
+</span>25 <span style=''>    
+</span>26 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): (List[Missile], Spawner) =
+</span>27 <span style=''>      dt match
+</span>28 <span style=''>        </span><span style='background: #AEF1AE'>case n if n &gt;= interval</span><span style=''> =&gt;
+</span>29 <span style=''>          val step: Int = (n / interval).toInt
+</span>30 <span style=''>          val randomX_start = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, (Random.nextDouble() * maxWidth * (ViewConstants.GUI_width / World.width))) }).toList</span><span style=''>
+</span>31 <span style=''>          val randomX_end = </span><span style='background: #AEF1AE'>(0 until step map { i =&gt; (i, (Random.nextDouble() * maxWidth * (ViewConstants.GUI_width / World.width))) }).toList</span><span style=''>
+</span>32 <span style=''>          val generator: List[Missile] =
+</span>33 <span style=''>            </span><span style='background: #AEF1AE'>for
+</span>34 <span style=''></span><span style='background: #AEF1AE'>              (i, x_start) &lt;- randomX_start
+</span>35 <span style=''></span><span style='background: #AEF1AE'>              (j, x_end) &lt;- randomX_end
+</span>36 <span style=''></span><span style='background: #AEF1AE'>              if i == j
+</span>37 <span style=''></span><span style='background: #AEF1AE'>            yield Missile.enemyMissile(initialLife, damage, _velocity = velocity, Point2D(x_start, 0),
+</span>38 <span style=''></span><span style='background: #AEF1AE'>                Point2D(x_end, ViewConstants.GUI_height))</span><span style=''> //TODO coordinate campo
+</span>39 <span style=''>          (generator, </span><span style='background: #AEF1AE'>Spawner(interval, maxWidth, maxHeight, timeFromStart)</span><span style=''>)
+</span>40 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; (</span><span style='background: #AEF1AE'>List()</span><span style=''>, this)
+</span>41 <span style=''>
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Spawner = (timeFromStart + dt) match
+</span>43 <span style=''>      </span><span style='background: #AEF1AE'>case v if v &lt; threshold</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Spawner.apply(interval, maxWidth, maxHeight, v, dt + _dt)</span><span style=''>
+</span>44 <span style=''>      </span><span style='background: #F0ADAD'>case v if v &gt;= threshold</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>Spawner.apply(interval, maxWidth, maxHeight, v, dt + _dt)</span><span style=''>
+</span>45 <span style=''>      
 </span>46 <span style=''>
-</span>47 <span style=''>    override val xMin: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.xMin)((xMin, hitBox) =&gt; optionalConfront(xMin, hitBox.xMin)(_.max(_)))
-</span>48 <span style=''>
-</span>49 <span style=''>    override val yMin: Option[Double] = hitBoxes.foldLeft(hitBoxes.head.yMin)((yMin, hitBox) =&gt; optionalConfront(yMin, hitBox.yMin)(_.max(_)))*/
-</span>50 <span style=''>
-</span>51 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean = </span><span style='background: #AEF1AE'>hitBoxes.forall(_.contains(point))</span><span style=''>
+</span>47 <span style=''>  }
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -87,15 +83,87 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          19
+          13
         </td>
         <td>
-          206
+          875
         </td>
         <td>
-          521
+          345
           -
-          530
+          349
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          f(v)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          876
+        </td>
+        <td>
+          314
+          -
+          321
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def map
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          873
+        </td>
+        <td>
+          605
+          -
+          605
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          872
+        </td>
+        <td>
+          510
+          -
+          519
         </td>
         <td>
           DefDef
@@ -111,87 +179,87 @@
         </td>
       </tr><tr>
         <td>
-          21
+          23
         </td>
         <td>
-          179
+          835
         </td>
         <td>
-          620
+          642
           -
-          630
+          663
         </td>
         <td>
-          Block
+          Apply
         </td>
         <td>
-          &lt;none&gt;
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          case Seq()
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          180
-        </td>
-        <td>
-          652
-          -
-          668
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case Seq(hitBox)
+          Spawner(using Random)
         </td>
       </tr><tr>
         <td>
           23
         </td>
         <td>
-          181
+          874
         </td>
         <td>
-          685
+          624
           -
-          691
+          624
         </td>
         <td>
-          Block
+          DefDef
         </td>
         <td>
-          &lt;none&gt;
+          apply$default$5
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          case _
+          
         </td>
       </tr><tr>
         <td>
           25
         </td>
         <td>
-          182
+          866
         </td>
         <td>
-          753
+          675
           -
-          769
+          693
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          spawn
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def spawn
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          863
+        </td>
+        <td>
+          747
+          -
+          770
         </td>
         <td>
           Block
@@ -203,547 +271,336 @@
           
         </td>
         <td style="background: #AEF1AE">
-          case HitBoxEmpty
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          191
-        </td>
-        <td>
-          888
-          -
-          913
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMin.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          185
-        </td>
-        <td>
-          801
-          -
-          826
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMax.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          184
-        </td>
-        <td>
-          801
-          -
-          818
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMax
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          187
-        </td>
-        <td>
-          830
-          -
-          855
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMax.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          190
-        </td>
-        <td>
-          888
-          -
-          905
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMin
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          189
-        </td>
-        <td>
-          859
-          -
-          884
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMin.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          183
-        </td>
-        <td>
-          791
-          -
-          913
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _ if intersection.xMax.isEmpty || intersection.yMax.isEmpty || intersection.xMin.isEmpty || intersection.yMin.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          186
-        </td>
-        <td>
-          830
-          -
-          847
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMax
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          188
-        </td>
-        <td>
-          859
-          -
-          876
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMin
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          194
-        </td>
-        <td>
-          945
-          -
-          966
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMax.get
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          193
-        </td>
-        <td>
-          945
-          -
-          962
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMax
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          196
-        </td>
-        <td>
-          969
-          -
-          990
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMin.get
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          192
-        </td>
-        <td>
-          935
-          -
-          990
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _ if intersection.xMax.get &lt; intersection.xMin.get
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          195
-        </td>
-        <td>
-          969
-          -
-          986
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          xMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.xMin
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          200
-        </td>
-        <td>
-          1046
-          -
-          1063
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMin
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMin
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          199
-        </td>
-        <td>
-          1022
-          -
-          1043
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMax.get
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          198
-        </td>
-        <td>
-          1022
-          -
-          1039
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          yMax
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMax
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          201
-        </td>
-        <td>
-          1046
-          -
-          1067
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          get
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.yMin.get
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          197
-        </td>
-        <td>
-          1012
-          -
-          1067
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _ if intersection.yMax.get &lt; intersection.yMin.get
+          case n if n &gt;= interval
         </td>
       </tr><tr>
         <td>
           29
         </td>
         <td>
-          202
+          837
         </td>
         <td>
-          1089
+          852
           -
-          1124
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _ if intersection.area.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          204
-        </td>
-        <td>
-          1099
-          -
-          1124
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          intersection.area.isEmpty
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          203
-        </td>
-        <td>
-          1099
-          -
-          1116
+          864
         </td>
         <td>
           Apply
         </td>
         <td>
-          area
+          until
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          intersection.area
+          0 until step
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          839
+        </td>
+        <td>
+          852
+          -
+          957
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0 until step map { i =&gt; (i, (Random.nextDouble() * maxWidth * (ViewConstants.GUI_width / World.width))) }
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          836
+        </td>
+        <td>
+          852
+          -
+          853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          intWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          838
+        </td>
+        <td>
+          881
+          -
+          900
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Random.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          840
+        </td>
+        <td>
+          851
+          -
+          965
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toList
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (0 until step map { i =&gt; (i, (Random.nextDouble() * maxWidth * (ViewConstants.GUI_width / World.width))) }).toList
         </td>
       </tr><tr>
         <td>
           30
         </td>
         <td>
-          205
+          842
         </td>
         <td>
-          1146
+          995
           -
-          1152
+          1007
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          until
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0 until step
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          845
+        </td>
+        <td>
+          994
+          -
+          1108
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toList
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (0 until step map { i =&gt; (i, (Random.nextDouble() * maxWidth * (ViewConstants.GUI_width / World.width))) }).toList
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          844
+        </td>
+        <td>
+          995
+          -
+          1100
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0 until step map { i =&gt; (i, (Random.nextDouble() * maxWidth * (ViewConstants.GUI_width / World.width))) }
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          841
+        </td>
+        <td>
+          995
+          -
+          996
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          intWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          0
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          843
+        </td>
+        <td>
+          1024
+          -
+          1043
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Random.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          860
+        </td>
+        <td>
+          1162
+          -
+          1434
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for
+              (i, x_start) &lt;- randomX_start
+              (j, x_end) &lt;- randomX_end
+              if i == j
+            yield Missile.enemyMissile(initialLife, damage, _velocity = velocity, Point2D(x_start, 0),
+                Point2D(x_end, ViewConstants.GUI_height))
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          846
+        </td>
+        <td>
+          1180
+          -
+          1192
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (i, x_start)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          847
+        </td>
+        <td>
+          1180
+          -
+          1209
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (i, x_start) &lt;- randomX_start
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          859
+        </td>
+        <td>
+          1180
+          -
+          1192
         </td>
         <td>
           Block
@@ -755,43 +612,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          case _
+          (i, x_start)
         </td>
       </tr><tr>
         <td>
           34
         </td>
         <td>
-          210
+          857
         </td>
         <td>
-          1266
+          1224
           -
-          1296
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          optionalConfront
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def optionalConfront
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          208
-        </td>
-        <td>
-          1426
-          -
-          1459
+          1234
         </td>
         <td>
           Block
@@ -803,19 +636,192 @@
           
         </td>
         <td style="background: #AEF1AE">
-          case (Some(valueL), Some(valueR))
+          (j, x_end)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          848
+        </td>
+        <td>
+          1224
+          -
+          1234
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (j, x_end)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          851
+        </td>
+        <td>
+          1224
+          -
+          1273
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (j, x_end) &lt;- randomX_end
+              if i == j
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          850
+        </td>
+        <td>
+          1224
+          -
+          1234
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ==
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (j, x_end)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          858
+        </td>
+        <td>
+          1224
+          -
+          1434
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (j, x_end) &lt;- randomX_end
+              if i == j
+            yield Missile.enemyMissile(initialLife, damage, _velocity = velocity, Point2D(x_start, 0),
+                Point2D(x_end, ViewConstants.GUI_height))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          849
+        </td>
+        <td>
+          1224
+          -
+          1249
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (j, x_end) &lt;- randomX_end
         </td>
       </tr><tr>
         <td>
           36
         </td>
         <td>
-          207
+          855
         </td>
         <td>
-          1468
+          1292
           -
-          1500
+          1312
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$6
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          856
+        </td>
+        <td>
+          1292
+          -
+          1434
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          enemyMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile(initialLife, damage, _velocity = velocity, Point2D(x_start, 0),
+                Point2D(x_end, ViewConstants.GUI_height))
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          852
+        </td>
+        <td>
+          1356
+          -
+          1375
         </td>
         <td>
           Apply
@@ -827,19 +833,139 @@
           
         </td>
         <td style="background: #AEF1AE">
-          confrontFunction(valueL, valueR)
+          Point2D(x_start, 0)
         </td>
       </tr><tr>
         <td>
           37
         </td>
         <td>
-          209
+          854
         </td>
         <td>
-          1510
+          1393
           -
-          1516
+          1433
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Point2D(x_end, ViewConstants.GUI_height)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          853
+        </td>
+        <td>
+          1408
+          -
+          1432
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ViewConstants.GUI_height
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          862
+        </td>
+        <td>
+          1481
+          -
+          1534
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Spawner(interval, maxWidth, maxHeight, timeFromStart)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          861
+        </td>
+        <td>
+          1481
+          -
+          1488
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$5
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Spawner
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          864
+        </td>
+        <td>
+          1555
+          -
+          1561
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          List()
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          865
+        </td>
+        <td>
+          1544
+          -
+          1550
         </td>
         <td>
           Block
@@ -855,123 +981,123 @@
         </td>
       </tr><tr>
         <td>
-          39
+          41
         </td>
         <td>
-          211
+          871
         </td>
         <td>
-          1589
+          1574
           -
-          1597
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          min
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          math.min
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          212
-        </td>
-        <td>
-          1661
-          -
-          1669
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          max
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          math.max
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          214
-        </td>
-        <td>
-          2338
-          -
-          2372
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          forall
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.forall(_.contains(point))
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          213
-        </td>
-        <td>
-          2354
-          -
-          2371
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.contains(point)
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          215
-        </td>
-        <td>
-          2255
-          -
-          2276
+          1598
         </td>
         <td>
           DefDef
         </td>
         <td>
-          contains
+          timeElapsed
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          override def contains
+          override def timeElapsed
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          868
+        </td>
+        <td>
+          1659
+          -
+          1682
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case v if v &lt; threshold
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          867
+        </td>
+        <td>
+          1686
+          -
+          1743
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Spawner.apply(interval, maxWidth, maxHeight, v, dt + _dt)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          869
+        </td>
+        <td>
+          1778
+          -
+          1835
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Spawner.apply(interval, maxWidth, maxHeight, v, dt + _dt)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          870
+        </td>
+        <td>
+          1750
+          -
+          1774
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case v if v &gt;= threshold
         </td>
       </tr>
     </table>

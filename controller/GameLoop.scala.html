@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          controller/Controller.scala.html
+          controller/GameLoop.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -31,7 +31,7 @@
 </span>7 <span style=''>import monix.reactive.{Observable, Observer, OverflowStrategy}
 </span>8 <span style=''>import org.reactivestreams.Subscriber
 </span>9 <span style=''>import view.gui.UI
-</span>10 <span style=''>import model.Game
+</span>10 <span style=''>import model.World
 </span>11 <span style=''>import controller.update._
 </span>12 <span style=''>
 </span>13 <span style=''>import scala.concurrent.Future
@@ -42,13 +42,13 @@
 </span>18 <span style=''>/**
 </span>19 <span style=''> * Object that represents the controller of the game.
 </span>20 <span style=''> */
-</span>21 <span style=''>object Controller:
+</span>21 <span style=''>object GameLoop:
 </span>22 <span style=''>  /**
 </span>23 <span style=''>   * The observable that will be used to schedule time in the game.
 </span>24 <span style=''>   */
 </span>25 <span style=''>  private val time: Observable[Event] = </span><span style='background: #F0ADAD'>TimeFlow
 </span>26 <span style=''></span><span style='background: #F0ADAD'>    .tickEach(50 milliseconds)
-</span>27 <span style=''></span><span style='background: #F0ADAD'>    .map(_.toDouble / 1000)
+</span>27 <span style=''></span><span style='background: #F0ADAD'>    .map(_.toDouble/1000)
 </span>28 <span style=''></span><span style='background: #F0ADAD'>    .map(Event.TimePassed.apply)</span><span style=''>
 </span>29 <span style=''>
 </span>30 <span style=''>  /**
@@ -61,7 +61,7 @@
 </span>37 <span style=''>
 </span>38 <span style=''>    given OverflowStrategy[Event] = </span><span style='background: #F0ADAD'>OverflowStrategy.Default</span><span style=''>
 </span>39 <span style=''>
-</span>40 <span style=''>    val game = </span><span style='background: #F0ADAD'>Game.initialGame</span><span style=''>
+</span>40 <span style=''>    val world = </span><span style='background: #F0ADAD'>World.initialWorld</span><span style=''>
 </span>41 <span style=''>    val controls: Update = </span><span style='background: #F0ADAD'>Update.combine(
 </span>42 <span style=''></span><span style='background: #F0ADAD'>      UpdateTime(),
 </span>43 <span style=''></span><span style='background: #F0ADAD'>      UpdatePosition(),
@@ -70,16 +70,15 @@
 </span>46 <span style=''></span><span style='background: #F0ADAD'>      LaunchNewMissile()
 </span>47 <span style=''></span><span style='background: #F0ADAD'>    )</span><span style=''>
 </span>48 <span style=''>
-</span>49 <span style=''>    val init = </span><span style='background: #F0ADAD'>Task((game, controls))</span><span style=''>
+</span>49 <span style=''>    val init = </span><span style='background: #F0ADAD'>Task((world, controls))</span><span style=''>
 </span>50 <span style=''>    val events =
-</span>51 <span style=''>      </span><span style='background: #F0ADAD'>Observable(time, ui.events).merge</span><span style=''>
+</span>51 <span style=''>      </span><span style='background: #F0ADAD'>Observable(time, ui.events.throttleLast(50 milliseconds)).merge</span><span style=''>
 </span>52 <span style=''>    </span><span style='background: #F0ADAD'>events
-</span>53 <span style=''></span><span style='background: #F0ADAD'>      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-</span>54 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (game, _) =&gt; ui.render(game) }
-</span>55 <span style=''></span><span style='background: #F0ADAD'>      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
-</span>56 <span style=''></span><span style='background: #F0ADAD'>      .last
-</span>57 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (game, _) =&gt; ui.gameOver(game) }
-</span>58 <span style=''></span><span style='background: #F0ADAD'>      .completedL</span><span style=''>
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
+</span>54 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (world, _) =&gt; ui.render(world) }
+</span>55 <span style=''></span><span style='background: #F0ADAD'>      .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
+</span>56 <span style=''></span><span style='background: #F0ADAD'>      .completedL
+</span>57 <span style=''></span><span style='background: #F0ADAD'>      .doOnFinish(_ =&gt; ui.gameOver)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -100,9 +99,9 @@
           1
         </td>
         <td>
-          668
+          667
           -
-          707
+          706
         </td>
         <td>
           Apply
@@ -125,9 +124,9 @@
           0
         </td>
         <td>
-          691
+          690
           -
-          706
+          705
         </td>
         <td>
           Select
@@ -149,9 +148,9 @@
           2
         </td>
         <td>
-          668
+          667
           -
-          735
+          732
         </td>
         <td>
           Apply
@@ -165,7 +164,7 @@
         <td style="background: #F0ADAD">
           TimeFlow
     .tickEach(50 milliseconds)
-    .map(_.toDouble / 1000)
+    .map(_.toDouble/1000)
         </td>
       </tr><tr>
         <td>
@@ -175,9 +174,9 @@
           3
         </td>
         <td>
-          668
+          667
           -
-          768
+          765
         </td>
         <td>
           Apply
@@ -191,7 +190,7 @@
         <td style="background: #F0ADAD">
           TimeFlow
     .tickEach(50 milliseconds)
-    .map(_.toDouble / 1000)
+    .map(_.toDouble/1000)
     .map(Event.TimePassed.apply)
         </td>
       </tr><tr>
@@ -202,9 +201,9 @@
           30
         </td>
         <td>
-          921
+          918
           -
-          930
+          927
         </td>
         <td>
           DefDef
@@ -226,9 +225,9 @@
           4
         </td>
         <td>
-          990
+          987
           -
-          1014
+          1011
         </td>
         <td>
           Select
@@ -250,7 +249,7 @@
           5
         </td>
         <td>
-          1031
+          1029
           -
           1047
         </td>
@@ -258,13 +257,13 @@
           Select
         </td>
         <td>
-          initialGame
+          initialWorld
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Game.initialGame
+          World.initialWorld
         </td>
       </tr><tr>
         <td>
@@ -426,7 +425,7 @@
         <td>
           1243
           -
-          1265
+          1266
         </td>
         <td>
           Apply
@@ -438,7 +437,31 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Task((game, controls))
+          Task((world, controls))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          17
+        </td>
+        <td>
+          1290
+          -
+          1353
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          merge
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Observable(time, ui.events.throttleLast(50 milliseconds)).merge
         </td>
       </tr><tr>
         <td>
@@ -448,21 +471,21 @@
           14
         </td>
         <td>
-          1289
+          1330
           -
-          1316
+          1345
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          apply
+          milliseconds
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Observable(time, ui.events)
+          50 milliseconds
         </td>
       </tr><tr>
         <td>
@@ -472,9 +495,9 @@
           13
         </td>
         <td>
-          1306
+          1307
           -
-          1315
+          1316
         </td>
         <td>
           Select
@@ -493,60 +516,12 @@
           50
         </td>
         <td>
-          15
-        </td>
-        <td>
-          1289
-          -
-          1322
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          merge
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable(time, ui.events).merge
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          17
-        </td>
-        <td>
-          1358
-          -
-          1388
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case ((game, controls), event)
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
           16
         </td>
         <td>
-          1392
+          1290
           -
-          1413
+          1347
         </td>
         <td>
           Apply
@@ -558,19 +533,43 @@
           
         </td>
         <td style="background: #F0ADAD">
-          controls(event, game)
+          Observable(time, ui.events.throttleLast(50 milliseconds))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          1307
+          -
+          1346
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          throttleLast
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ui.events.throttleLast(50 milliseconds)
         </td>
       </tr><tr>
         <td>
           52
         </td>
         <td>
-          18
+          20
         </td>
         <td>
-          1327
+          1358
           -
-          1415
+          1448
         </td>
         <td>
           Apply
@@ -583,19 +582,19 @@
         </td>
         <td style="background: #F0ADAD">
           events
-      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
+      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
         </td>
       </tr><tr>
         <td>
-          53
+          52
         </td>
         <td>
-          20
+          19
         </td>
         <td>
-          1434
+          1389
           -
-          1448
+          1420
         </td>
         <td>
           Block
@@ -607,43 +606,43 @@
           
         </td>
         <td style="background: #F0ADAD">
-          case (game, _)
+          case ((world, controls), event)
         </td>
       </tr><tr>
         <td>
-          53
+          52
         </td>
         <td>
-          19
+          18
         </td>
         <td>
-          1452
+          1424
           -
-          1467
+          1446
         </td>
         <td>
           Apply
         </td>
         <td>
-          render
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          ui.render(game)
+          controls(event, world)
         </td>
       </tr><tr>
         <td>
           53
         </td>
         <td>
-          21
+          23
         </td>
         <td>
-          1327
+          1358
           -
-          1469
+          1504
         </td>
         <td>
           Apply
@@ -656,20 +655,20 @@
         </td>
         <td style="background: #F0ADAD">
           events
-      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
+      .doOnNext { case (world, _) =&gt; ui.render(world) }
         </td>
       </tr><tr>
         <td>
-          54
+          53
         </td>
         <td>
-          23
+          22
         </td>
         <td>
-          1489
+          1467
           -
-          1503
+          1482
         </td>
         <td>
           Block
@@ -681,43 +680,43 @@
           
         </td>
         <td style="background: #F0ADAD">
-          case (game, _)
+          case (world, _)
         </td>
       </tr><tr>
         <td>
-          54
+          53
         </td>
         <td>
-          22
+          21
         </td>
         <td>
-          1507
+          1486
           -
-          1535
+          1502
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          stillAlive
+          render
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          game.world.ground.stillAlive
+          ui.render(world)
         </td>
       </tr><tr>
         <td>
           54
         </td>
         <td>
-          24
+          26
         </td>
         <td>
-          1327
+          1358
           -
-          1537
+          1568
         </td>
         <td>
           Apply
@@ -730,102 +729,21 @@
         </td>
         <td style="background: #F0ADAD">
           events
-      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
-      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
+      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
+      .doOnNext { case (world, _) =&gt; ui.render(world) }
+      .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
         </td>
       </tr><tr>
         <td>
-          55
+          54
         </td>
         <td>
           25
         </td>
         <td>
-          1327
+          1524
           -
-          1549
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          last
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          events
-      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
-      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
-      .last
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          26
-        </td>
-        <td>
-          1586
-          -
-          1603
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          gameOver
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ui.gameOver(game)
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          28
-        </td>
-        <td>
-          1327
-          -
-          1605
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          doOnNext
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          events
-      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
-      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
-      .last
-      .doOnNext { case (game, _) =&gt; ui.gameOver(game) }
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          27
-        </td>
-        <td>
-          1568
-          -
-          1582
+          1539
         </td>
         <td>
           Block
@@ -837,19 +755,43 @@
           
         </td>
         <td style="background: #F0ADAD">
-          case (game, _)
+          case (world, _)
         </td>
       </tr><tr>
         <td>
-          57
+          54
         </td>
         <td>
-          29
+          24
         </td>
         <td>
-          1327
+          1543
           -
-          1623
+          1566
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          stillAlive
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          world.ground.stillAlive
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          27
+        </td>
+        <td>
+          1358
+          -
+          1586
         </td>
         <td>
           Select
@@ -862,12 +804,63 @@
         </td>
         <td style="background: #F0ADAD">
           events
-      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
-      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
-      .last
-      .doOnNext { case (game, _) =&gt; ui.gameOver(game) }
+      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
+      .doOnNext { case (world, _) =&gt; ui.render(world) }
+      .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
       .completedL
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          29
+        </td>
+        <td>
+          1358
+          -
+          1622
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          doOnFinish
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          events
+      .scanEval(init) { case ((world, controls), event) =&gt; controls(event, world) }
+      .doOnNext { case (world, _) =&gt; ui.render(world) }
+      .takeWhile { case (world, _) =&gt; world.ground.stillAlive }
+      .completedL
+      .doOnFinish(_ =&gt; ui.gameOver)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          28
+        </td>
+        <td>
+          1610
+          -
+          1621
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          gameOver
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ui.gameOver
         </td>
       </tr>
     </table>
