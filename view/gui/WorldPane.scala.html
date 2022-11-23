@@ -33,48 +33,36 @@
 </span>9 <span style=''>import java.awt.image.{AffineTransformOp, BufferedImage}
 </span>10 <span style=''>import javax.swing.{JButton, JPanel}
 </span>11 <span style=''>import model.elements2d.Angle
-</span>12 <span style=''>
-</span>13 <span style=''>import java.io.File
-</span>14 <span style=''>import javax.imageio.ImageIO
-</span>15 <span style=''>
-</span>16 <span style=''>given </span><span style='background: #F0ADAD'>Conversion[Double, Int]</span><span style=''> with
-</span>17 <span style=''>    </span><span style='background: #F0ADAD'>override def apply</span><span style=''>(x: Double): Int = x.toInt
-</span>18 <span style=''>
-</span>19 <span style=''>private class WorldPane(val game: Game, width: Int, height: Int) extends </span><span style='background: #F0ADAD'>JPanel</span><span style=''>:
-</span>20 <span style=''>    </span><span style='background: #F0ADAD'>this.setSize(width, height)</span><span style=''>
-</span>21 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
-</span>22 <span style=''>
-</span>23 <span style=''>    </span><span style='background: #F0ADAD'>override def paintComponent</span><span style=''>(graphics: Graphics): Unit =
-</span>24 <span style=''>        </span><span style='background: #F0ADAD'>super.paintComponent(graphics)</span><span style=''>
-</span>25 <span style=''>        val g2d: Graphics2D = graphics.asInstanceOf[Graphics2D]
-</span>26 <span style=''>        </span><span style='background: #F0ADAD'>graphics.clearRect(0, 0, width, height)</span><span style=''>
-</span>27 <span style=''>        </span><span style='background: #F0ADAD'>graphics.drawString(&quot;SCORE: &quot; + game.player.score, 10, 10)</span><span style=''>
-</span>28 <span style=''>        </span><span style='background: #F0ADAD'>graphics.drawString(&quot;TIME: &quot; + BigDecimal(game.player.timer.time).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble, 10, 20)</span><span style=''>
-</span>29 <span style=''>        </span><span style='background: #F0ADAD'>Visualizer.printGround(game.world.ground).map(
-</span>30 <span style=''></span><span style='background: #F0ADAD'>            imageData =&gt; graphics.drawImage(imageData._1, imageData._2.x, imageData._2.y,
-</span>31 <span style=''></span><span style='background: #F0ADAD'>                imageData._3,
-</span>32 <span style=''></span><span style='background: #F0ADAD'>                imageData._4, this)
-</span>33 <span style=''></span><span style='background: #F0ADAD'>            )</span><span style=''>
-</span>34 <span style=''>
-</span>35 <span style=''>        </span><span style='background: #F0ADAD'>CollisionableVisualizer.printElements(game.world.collisionables.toSet) foreach { i =&gt;
-</span>36 <span style=''></span><span style='background: #F0ADAD'>            g2d.translate(i.position.x, i.position.y)
-</span>37 <span style=''></span><span style='background: #F0ADAD'>            g2d.rotate(i.angle.radiant - Angle.Degree(90).radiant)
+</span>12 <span style=''>import view.given_Conversion_Double_Int
+</span>13 <span style=''>
+</span>14 <span style=''>import java.io.File
+</span>15 <span style=''>import javax.imageio.ImageIO
+</span>16 <span style=''>
+</span>17 <span style=''>private class WorldPane(val game: Game, width: Int, height: Int) extends </span><span style='background: #F0ADAD'>JPanel</span><span style=''>:
+</span>18 <span style=''>    </span><span style='background: #F0ADAD'>this.setSize(width, height)</span><span style=''>
+</span>19 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
+</span>20 <span style=''>
+</span>21 <span style=''>    </span><span style='background: #F0ADAD'>override def paintComponent</span><span style=''>(graphics: Graphics): Unit =
+</span>22 <span style=''>        </span><span style='background: #F0ADAD'>super.paintComponent(graphics)</span><span style=''>
+</span>23 <span style=''>        val g2d: Graphics2D = graphics.asInstanceOf[Graphics2D]
+</span>24 <span style=''>        </span><span style='background: #F0ADAD'>graphics.clearRect(0, 0, width, height)</span><span style=''>
+</span>25 <span style=''>        </span><span style='background: #F0ADAD'>graphics.drawString(&quot;SCORE: &quot; + game.player.score, 10, 10)</span><span style=''>
+</span>26 <span style=''>        </span><span style='background: #F0ADAD'>graphics.drawString(&quot;TIME: &quot; + BigDecimal(game.player.timer.time).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble, 10, 20)</span><span style=''>
+</span>27 <span style=''>        </span><span style='background: #F0ADAD'>Visualizer.printGround(game.world.ground).map(
+</span>28 <span style=''></span><span style='background: #F0ADAD'>            imageData =&gt; graphics.drawImage(imageData._1, imageData._2.x, imageData._2.y,
+</span>29 <span style=''></span><span style='background: #F0ADAD'>                imageData._3,
+</span>30 <span style=''></span><span style='background: #F0ADAD'>                imageData._4, this)
+</span>31 <span style=''></span><span style='background: #F0ADAD'>            )</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>        </span><span style='background: #F0ADAD'>CollisionableVisualizer.printElements(game.world.collisionables.toSet) foreach { i =&gt;
+</span>34 <span style=''></span><span style='background: #F0ADAD'>            g2d.translate(i.position.x, i.position.y)
+</span>35 <span style=''></span><span style='background: #F0ADAD'>            g2d.rotate(i.angle.radiant - Angle.Degree(90).radiant)
+</span>36 <span style=''></span><span style='background: #F0ADAD'>
+</span>37 <span style=''></span><span style='background: #F0ADAD'>            graphics.drawImage(i.image, 0 - (i.baseWidth / 2), 0 - (i.baseHeight / 2), i.baseWidth, i.baseHeight, null)
 </span>38 <span style=''></span><span style='background: #F0ADAD'>
-</span>39 <span style=''></span><span style='background: #F0ADAD'>            graphics.drawImage(i.image, 0 - (i.baseWidth / 2), 0 - (i.baseHeight / 2), i.baseWidth, i.baseHeight, null)
-</span>40 <span style=''></span><span style='background: #F0ADAD'>
-</span>41 <span style=''></span><span style='background: #F0ADAD'>            g2d.rotate(-1 * (i.angle.radiant - Angle.Degree(90).radiant))
-</span>42 <span style=''></span><span style='background: #F0ADAD'>            g2d.translate(-i.position.x, -i.position.y)
-</span>43 <span style=''></span><span style='background: #F0ADAD'>        }</span><span style=''>
-</span>44 <span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>//        world.all.foreach { entity =&gt;
-</span>47 <span style=''>//            val (x, y) = ((entity.position.x * width).toInt, (entity.position.y * height).toInt)
-</span>48 <span style=''>//            val (widthCircle, heightCircle) = ((entity.diameter * width).toInt, (entity.diameter * height).toInt)
-</span>49 <span style=''>//            graphics.setColor(Color.getHSBColor(entity.size.toFloat, 1, 0.5))
-</span>50 <span style=''>//            graphics.fillOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
-</span>51 <span style=''>//            graphics.setColor(Color.BLACK)
-</span>52 <span style=''>//            graphics.drawOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
-</span>53 <span style=''>//        }
+</span>39 <span style=''></span><span style='background: #F0ADAD'>            g2d.rotate(-1 * (i.angle.radiant - Angle.Degree(90).radiant))
+</span>40 <span style=''></span><span style='background: #F0ADAD'>            g2d.translate(-i.position.x, -i.position.y)
+</span>41 <span style=''></span><span style='background: #F0ADAD'>        }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -89,63 +77,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          15
-        </td>
-        <td>
-          1484
-        </td>
-        <td>
-          365
-          -
-          388
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Conversion[Double, Int]
-        </td>
-      </tr><tr>
-        <td>
           16
-        </td>
-        <td>
-          1485
-        </td>
-        <td>
-          398
-          -
-          416
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          override def apply
-        </td>
-      </tr><tr>
-        <td>
-          18
         </td>
         <td>
           1441
         </td>
         <td>
-          517
+          472
           -
-          523
+          478
         </td>
         <td>
           Apply
@@ -161,15 +101,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          17
         </td>
         <td>
           1442
         </td>
         <td>
-          529
+          484
           -
-          556
+          511
         </td>
         <td>
           Apply
@@ -185,15 +125,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          18
         </td>
         <td>
           1443
         </td>
         <td>
-          595
+          550
           -
-          625
+          580
         </td>
         <td>
           Apply
@@ -209,15 +149,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          18
         </td>
         <td>
           1445
         </td>
         <td>
-          595
+          550
           -
-          663
+          618
         </td>
         <td>
           Apply
@@ -233,15 +173,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          18
         </td>
         <td>
           1444
         </td>
         <td>
-          595
+          550
           -
-          634
+          589
         </td>
         <td>
           Apply
@@ -257,15 +197,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          20
         </td>
         <td>
           1483
         </td>
         <td>
-          670
+          625
           -
-          697
+          652
         </td>
         <td>
           DefDef
@@ -281,15 +221,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          21
         </td>
         <td>
           1446
         </td>
         <td>
-          734
+          689
           -
-          764
+          719
         </td>
         <td>
           Apply
@@ -305,15 +245,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          23
         </td>
         <td>
           1447
         </td>
         <td>
-          837
+          792
           -
-          876
+          831
         </td>
         <td>
           Apply
@@ -329,15 +269,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          24
         </td>
         <td>
           1449
         </td>
         <td>
-          885
+          840
           -
-          943
+          898
         </td>
         <td>
           Apply
@@ -353,15 +293,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          24
         </td>
         <td>
           1448
         </td>
         <td>
-          905
+          860
           -
-          934
+          889
         </td>
         <td>
           Apply
@@ -377,15 +317,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
           1456
         </td>
         <td>
-          972
+          927
           -
-          1071
+          1026
         </td>
         <td>
           Apply
@@ -401,15 +341,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
           1450
         </td>
         <td>
-          983
+          938
           -
-          993
+          948
         </td>
         <td>
           Ident
@@ -425,15 +365,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
           1452
         </td>
         <td>
-          1030
+          985
           -
-          1040
+          995
         </td>
         <td>
           Ident
@@ -449,15 +389,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
           1455
         </td>
         <td>
-          983
+          938
           -
-          1071
+          1026
         </td>
         <td>
           Select
@@ -473,15 +413,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
           1454
         </td>
         <td>
-          983
+          938
           -
-          1062
+          1017
         </td>
         <td>
           Apply
@@ -497,15 +437,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
           1457
         </td>
         <td>
-          952
+          907
           -
-          1080
+          1035
         </td>
         <td>
           Apply
@@ -521,15 +461,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
           1451
         </td>
         <td>
-          983
+          938
           -
-          1017
+          972
         </td>
         <td>
           Apply
@@ -545,15 +485,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
           1453
         </td>
         <td>
-          1030
+          985
           -
-          1061
+          1016
         </td>
         <td>
           Select
@@ -569,15 +509,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          26
         </td>
         <td>
           1458
         </td>
         <td>
-          1089
+          1044
           -
-          1130
+          1085
         </td>
         <td>
           Apply
@@ -593,15 +533,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          26
         </td>
         <td>
           1466
         </td>
         <td>
-          1089
+          1044
           -
-          1305
+          1260
         </td>
         <td>
           Apply
@@ -621,15 +561,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
           1465
         </td>
         <td>
-          1161
+          1116
           -
-          1291
+          1246
         </td>
         <td>
           Apply
@@ -647,15 +587,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
           1459
         </td>
         <td>
-          1194
+          1149
           -
-          1206
+          1161
         </td>
         <td>
           Select
@@ -671,15 +611,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
           1461
         </td>
         <td>
-          1194
+          1149
           -
-          1208
+          1163
         </td>
         <td>
           Apply
@@ -695,15 +635,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
           1464
         </td>
         <td>
-          1210
+          1165
           -
-          1224
+          1179
         </td>
         <td>
           Apply
@@ -719,15 +659,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
           1463
         </td>
         <td>
-          1210
+          1165
           -
-          1224
+          1179
         </td>
         <td>
           Select
@@ -743,15 +683,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
           1460
         </td>
         <td>
-          1194
+          1149
           -
-          1208
+          1163
         </td>
         <td>
           Select
@@ -767,15 +707,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          27
         </td>
         <td>
           1462
         </td>
         <td>
-          1210
+          1165
           -
-          1222
+          1177
         </td>
         <td>
           Select
@@ -791,15 +731,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          32
         </td>
         <td>
           1468
         </td>
         <td>
-          1315
+          1270
           -
-          1385
+          1340
         </td>
         <td>
           Apply
@@ -815,15 +755,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          32
         </td>
         <td>
           1467
         </td>
         <td>
-          1353
+          1308
           -
-          1384
+          1339
         </td>
         <td>
           Select
@@ -839,15 +779,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          32
         </td>
         <td>
           1482
         </td>
         <td>
-          1315
+          1270
           -
-          1783
+          1738
         </td>
         <td>
           Apply
@@ -871,15 +811,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          33
         </td>
         <td>
           1470
         </td>
         <td>
-          1441
+          1396
           -
-          1453
+          1408
         </td>
         <td>
           Select
@@ -895,15 +835,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          33
         </td>
         <td>
           1469
         </td>
         <td>
-          1427
+          1382
           -
-          1439
+          1394
         </td>
         <td>
           Select
@@ -919,15 +859,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          33
         </td>
         <td>
           1471
         </td>
         <td>
-          1413
+          1368
           -
-          1454
+          1409
         </td>
         <td>
           Apply
@@ -943,15 +883,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          34
         </td>
         <td>
           1474
         </td>
         <td>
-          1467
+          1422
           -
-          1521
+          1476
         </td>
         <td>
           Apply
@@ -967,15 +907,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          34
         </td>
         <td>
           1473
         </td>
         <td>
-          1496
+          1451
           -
-          1520
+          1475
         </td>
         <td>
           Select
@@ -991,15 +931,63 @@
         </td>
       </tr><tr>
         <td>
-          36
+          34
         </td>
         <td>
           1472
         </td>
         <td>
-          1478
+          1433
           -
-          1493
+          1448
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          radiant
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          i.angle.radiant
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          1475
+        </td>
+        <td>
+          1490
+          -
+          1597
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          drawImage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          graphics.drawImage(i.image, 0 - (i.baseWidth / 2), 0 - (i.baseHeight / 2), i.baseWidth, i.baseHeight, null)
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          1476
+        </td>
+        <td>
+          1628
+          -
+          1643
         </td>
         <td>
           Select
@@ -1018,60 +1006,12 @@
           38
         </td>
         <td>
-          1475
-        </td>
-        <td>
-          1535
-          -
-          1642
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          drawImage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          graphics.drawImage(i.image, 0 - (i.baseWidth / 2), 0 - (i.baseHeight / 2), i.baseWidth, i.baseHeight, null)
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          1476
-        </td>
-        <td>
-          1673
-          -
-          1688
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          radiant
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          i.angle.radiant
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
           1478
         </td>
         <td>
-          1656
+          1611
           -
-          1717
+          1672
         </td>
         <td>
           Apply
@@ -1087,15 +1027,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          38
         </td>
         <td>
           1477
         </td>
         <td>
-          1691
+          1646
           -
-          1715
+          1670
         </td>
         <td>
           Select
@@ -1111,15 +1051,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
           1479
         </td>
         <td>
-          1745
+          1700
           -
-          1757
+          1712
         </td>
         <td>
           Select
@@ -1135,15 +1075,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
           1481
         </td>
         <td>
-          1730
+          1685
           -
-          1773
+          1728
         </td>
         <td>
           Apply
@@ -1159,15 +1099,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
           1480
         </td>
         <td>
-          1760
+          1715
           -
-          1772
+          1727
         </td>
         <td>
           Select
