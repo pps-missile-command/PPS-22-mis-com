@@ -12,7 +12,7 @@ import model.spawner.{GenericSpawner, SpecificSpawners}
 import scala.util.Random
 
 
-trait Plane extends Moveable, Damageable:
+trait Plane extends Moveable, Damageable, GenericSpawner[Missile]:
     def position: Point2D
     def velocity: Double
     def direction: Vector2D = (position, destination)
@@ -24,13 +24,16 @@ case class PlaneImpl(actualPosition: Point2D,
                      lifePoint: LifePoint = planeInitialLife,
                      deltaTime: DeltaTime = 0,
                      missileSpawner: GenericSpawner[Missile] =
-                     GenericSpawner[Missile](1, spawnable = SpecificSpawners.MissileStrategy(width, height)(using Random))) extends Plane:
+                     GenericSpawner[Missile](1, spawnable = SpecificSpawners.MissileStrategy(width, height)(using Random)))(using Random)
+                    extends Plane:
 
     override def position: Point2D = actualPosition
     override def velocity: Double = planeVelocity
     override def move(): Plane = this match
         case v if(v.isDestroyed) => this.copy(lifePoint = lifePointDeath)
         case _ => this.copy(actualPosition = moveVehicle(this), deltaTime = 0)
+
+
 
     /***
      * Calculate the new position of the vehicle
@@ -49,7 +52,7 @@ case class PlaneImpl(actualPosition: Point2D,
      * Method used for launch a missile from the plane
      * @return Tuple containing a set with missiles and the new plane
      */
-    def launchMissile: Tuple2[Set[Missile], Plane] =
+    override def spawn(): Tuple2[Set[Missile], Plane] =
         val spawnerInfos = missileSpawner.spawn()
         Tuple2(
             spawnerInfos._1,
@@ -105,11 +108,11 @@ case class PlaneImpl(actualPosition: Point2D,
 object Plane:
     def apply(actualPosition: Point2D,
               finalPosition: Point2D,
-              lifePoint: LifePoint) : Plane = PlaneImpl(actualPosition, finalPosition, lifePoint)
+              lifePoint: LifePoint)(using Random) : Plane = PlaneImpl(actualPosition, finalPosition, lifePoint)
     def apply(actualPosition: Point2D,
-              finalPosition: Point2D) : Plane = PlaneImpl(actualPosition, finalPosition)
+              finalPosition: Point2D)(using Random) : Plane = PlaneImpl(actualPosition, finalPosition)
 
 object LinearPlane:
-    def apply(direction: vehicleTypes, height: Double) : Plane = direction match
+    def apply(direction: vehicleTypes, height: Double)(using Random) : Plane = direction match
         case vehicleTypes.Left_To_Right => PlaneImpl(Point2D(0, height), Point2D(World.width, height))
         case vehicleTypes.Right_To_Left => PlaneImpl(Point2D(World.width, height), Point2D(0, height))

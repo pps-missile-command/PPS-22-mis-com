@@ -4,11 +4,14 @@ import model.World
 import model.elements2d.{Point2D, Vector2D}
 import org.scalatest.funspec.AnyFunSpec
 
+import scala.util.Random
+
 class PlaneTest extends AnyFunSpec:
     val leftX = 0
     val rightX = 300
     val pointRight = Point2D(rightX, 0)
     val pointLeft = Point2D(leftX, 0)
+    given Random()
     describe("A vehicle") {
         it("should create a new vehicle in the gived starting position and certain HP") {
             val vehicle = Plane(pointRight, pointLeft)

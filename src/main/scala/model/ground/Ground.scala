@@ -22,8 +22,8 @@ object Ground:
                         World.height - cityHeightSize))
         val turrets =
             for x <- List.range(0, 3)
-                yield MissileBattery(Point2D(turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
-                    ,World.height - missileBatteryHeightSize))
+                yield MissileBattery(Point2D(turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x,
+                    World.height - missileBatteryHeightSize))
         Ground(cities, turrets)
 
 case class Ground(cities: List[City], turrets: List[MissileBattery]):
