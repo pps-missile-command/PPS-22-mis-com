@@ -51,29 +51,15 @@
 </span>27 <span style=''>  
 </span>28 <span style=''>  val basicHitBox: (Point2D, Option[Angle]) =&gt; HitBox = (point_, angle_) =&gt; </span><span style='background: #F0ADAD'>HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))</span><span style=''>
 </span>29 <span style=''>
-</span>30 <span style=''>  type MissileMovement = (DeltaTime) =&gt; Point2D
-</span>31 <span style=''>
-</span>32 <span style=''>  given affiliation: Affiliation = Affiliation.Enemy
-</span>33 <span style=''>  //generating a random positioned missile of type T
-</span>34 <span style=''>  </span><span style='background: #AEF1AE'>def GenerateRandomMissile</span><span style=''>(missileType: MissileType, finalDestination: Point2D)(using random: Random): Option[Missile] = missileType match
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>case BasicMissile(affiliation)</span><span style=''> =&gt;
-</span>36 <span style=''>      </span><span style='background: #AEF1AE'>for
-</span>37 <span style=''></span><span style='background: #AEF1AE'>        x &lt;- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
-</span>38 <span style=''></span><span style='background: #AEF1AE'>        y &lt;- Option.apply(maxHeight) //height del campo
-</span>39 <span style=''></span><span style='background: #AEF1AE'>      yield Missile(initialLife, damage, velocity, Point2D(x, y), finalDestination)</span><span style=''>
-</span>40 <span style=''>
-</span>41 <span style=''>    </span><span style='background: #F0ADAD'>case RandomMissile</span><span style=''> =&gt;
-</span>42 <span style=''>      </span><span style='background: #F0ADAD'>for
-</span>43 <span style=''></span><span style='background: #F0ADAD'>        vel &lt;- Option.apply(Random.nextDouble() * velocity)
-</span>44 <span style=''></span><span style='background: #F0ADAD'>        x &lt;- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
-</span>45 <span style=''></span><span style='background: #F0ADAD'>        y &lt;- Option.apply(maxHeight)
-</span>46 <span style=''></span><span style='background: #F0ADAD'>        damage &lt;- Option.apply(damage)
-</span>47 <span style=''></span><span style='background: #F0ADAD'>      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))</span><span style=''>
-</span>48 <span style=''>
-</span>49 <span style=''>    </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>Option(Missile(initialLife, damage, velocity, Point2D(0, 0), finalDestination))</span><span style=''>
-</span>50 <span style=''>
-</span>51 <span style=''>  given </span><span style='background: #AEF1AE'>Conversion[(Point2D, Point2D), Vector2D]</span><span style=''> with
-</span>52 <span style=''>    </span><span style='background: #AEF1AE'>override def apply</span><span style=''>(x: (Point2D, Point2D)): Vector2D = </span><span style='background: #AEF1AE'>(x._2 &lt;--&gt; x._1).normalize</span><span style=''>
+</span>30 <span style=''>  given </span><span style='background: #AEF1AE'>Conversion[(Point2D, Point2D), Vector2D]</span><span style=''> with
+</span>31 <span style=''>    </span><span style='background: #AEF1AE'>override def apply</span><span style=''>(x: (Point2D, Point2D)): Vector2D = </span><span style='background: #AEF1AE'>(x._2 &lt;--&gt; x._1).normalize</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>  </span><span style='background: #AEF1AE'>def BasicMove</span><span style=''>(missile: Missile)(dt: DeltaTime): Point2D =
+</span>34 <span style=''>    val distanceToMove = </span><span style='background: #AEF1AE'>missile.velocity</span><span style=''> * dt
+</span>35 <span style=''>    val distanceToFinalPosition = </span><span style='background: #AEF1AE'>missile.position &lt;-&gt; missile.destination</span><span style=''>
+</span>36 <span style=''>    if distanceToMove &gt;= distanceToFinalPosition
+</span>37 <span style=''>    then </span><span style='background: #F0ADAD'>missile.destination</span><span style=''>
+</span>38 <span style=''>    else </span><span style='background: #AEF1AE'>missile.position --&gt; (missile.direction * distanceToMove * (-1)</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -91,31 +77,7 @@
           27
         </td>
         <td>
-          770
-        </td>
-        <td>
-          832
-          -
-          908
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          769
+          887
         </td>
         <td>
           884
@@ -136,336 +98,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          27
         </td>
         <td>
-          801
+          888
         </td>
         <td>
-          1067
+          832
           -
-          1092
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          GenerateRandomMissile
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def GenerateRandomMissile
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          780
-        </td>
-        <td>
-          1209
-          -
-          1239
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case BasicMissile(affiliation)
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          779
-        </td>
-        <td>
-          1249
-          -
-          1479
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          flatMap
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          for
-        x &lt;- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
-        y &lt;- Option.apply(maxHeight) //height del campo
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), finalDestination)
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          771
-        </td>
-        <td>
-          1279
-          -
-          1303
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextInt
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Random.nextInt(maxWidth)
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          772
-        </td>
-        <td>
-          1266
-          -
-          1304
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Option.apply(Random.nextInt(maxWidth))
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          773
-        </td>
-        <td>
-          1353
-          -
-          1376
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Option.apply(maxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          778
-        </td>
-        <td>
-          1348
-          -
-          1479
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y &lt;- Option.apply(maxHeight) //height del campo
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), finalDestination)
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          774
-        </td>
-        <td>
-          1455
-          -
-          1456
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          777
-        </td>
-        <td>
-          1408
-          -
-          1479
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile(initialLife, damage, velocity, Point2D(x, y), finalDestination)
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          776
-        </td>
-        <td>
-          1447
-          -
-          1460
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Point2D(x, y)
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          775
-        </td>
-        <td>
-          1458
-          -
-          1459
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          796
-        </td>
-        <td>
-          1485
-          -
-          1503
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case RandomMissile
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          795
-        </td>
-        <td>
-          1513
-          -
-          1821
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          flatMap
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          for
-        vel &lt;- Option.apply(Random.nextDouble() * velocity)
-        x &lt;- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
-        y &lt;- Option.apply(maxHeight)
-        damage &lt;- Option.apply(damage)
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          782
-        </td>
-        <td>
-          1532
-          -
-          1576
+          908
         </td>
         <td>
           Apply
@@ -477,433 +118,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Option.apply(Random.nextDouble() * velocity)
+          HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))
         </td>
       </tr><tr>
         <td>
-          42
+          29
         </td>
         <td>
-          781
+          889
         </td>
         <td>
-          1545
+          918
           -
-          1564
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Random.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          783
-        </td>
-        <td>
-          1603
-          -
-          1627
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextInt
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Random.nextInt(maxWidth)
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          794
-        </td>
-        <td>
-          1585
-          -
-          1821
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          flatMap
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          x &lt;- Option.apply(Random.nextInt(maxWidth)) //length del campo (vedere monadi)
-        y &lt;- Option.apply(maxHeight)
-        damage &lt;- Option.apply(damage)
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          784
-        </td>
-        <td>
-          1590
-          -
-          1628
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Option.apply(Random.nextInt(maxWidth))
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          785
-        </td>
-        <td>
-          1677
-          -
-          1700
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Option.apply(maxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          793
-        </td>
-        <td>
-          1672
-          -
-          1821
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          flatMap
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          y &lt;- Option.apply(maxHeight)
-        damage &lt;- Option.apply(damage)
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          792
-        </td>
-        <td>
-          1709
-          -
-          1821
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          damage &lt;- Option.apply(damage)
-      yield Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          786
-        </td>
-        <td>
-          1719
-          -
-          1739
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Option.apply(damage)
-        </td>
-      </tr><tr>
-        <td>
-          46
-        </td>
-        <td>
-          788
-        </td>
-        <td>
-          1802
-          -
-          1803
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          y
-        </td>
-      </tr><tr>
-        <td>
-          46
-        </td>
-        <td>
-          791
-        </td>
-        <td>
-          1752
-          -
-          1821
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Missile(initialLife, damage, velocity, Point2D(x, y), Point2D(10,10))
-        </td>
-      </tr><tr>
-        <td>
-          46
-        </td>
-        <td>
-          787
-        </td>
-        <td>
-          1799
-          -
-          1800
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          x
-        </td>
-      </tr><tr>
-        <td>
-          46
-        </td>
-        <td>
-          790
-        </td>
-        <td>
-          1806
-          -
-          1820
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(10,10)
-        </td>
-      </tr><tr>
-        <td>
-          46
-        </td>
-        <td>
-          789
-        </td>
-        <td>
-          1791
-          -
-          1804
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(x, y)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          797
-        </td>
-        <td>
-          1883
-          -
-          1896
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(0, 0)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          800
-        </td>
-        <td>
-          1827
-          -
-          1833
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          799
-        </td>
-        <td>
-          1837
-          -
-          1916
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Option(Missile(initialLife, damage, velocity, Point2D(0, 0), finalDestination))
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          798
-        </td>
-        <td>
-          1844
-          -
-          1915
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Missile(initialLife, damage, velocity, Point2D(0, 0), finalDestination)
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          802
-        </td>
-        <td>
-          1926
-          -
-          1966
+          958
         </td>
         <td>
           Apply
@@ -919,15 +146,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          30
         </td>
         <td>
-          804
+          891
         </td>
         <td>
-          2041
+          1033
           -
-          2045
+          1037
         </td>
         <td>
           Select
@@ -943,15 +170,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          30
         </td>
         <td>
-          803
+          890
         </td>
         <td>
-          2031
+          1023
           -
-          2035
+          1027
         </td>
         <td>
           Select
@@ -967,15 +194,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          30
         </td>
         <td>
-          806
+          893
         </td>
         <td>
-          2030
+          1022
           -
-          2056
+          1048
         </td>
         <td>
           Select
@@ -991,15 +218,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          30
         </td>
         <td>
-          805
+          892
         </td>
         <td>
-          2031
+          1023
           -
-          2045
+          1037
         </td>
         <td>
           Apply
@@ -1015,15 +242,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          30
         </td>
         <td>
-          807
+          894
         </td>
         <td>
-          1976
+          968
           -
-          1994
+          986
         </td>
         <td>
           DefDef
@@ -1036,6 +263,318 @@
         </td>
         <td style="background: #AEF1AE">
           override def apply
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          907
+        </td>
+        <td>
+          1052
+          -
+          1065
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          BasicMove
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def BasicMove
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          895
+        </td>
+        <td>
+          1135
+          -
+          1151
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          velocity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.velocity
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          896
+        </td>
+        <td>
+          1191
+          -
+          1207
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          898
+        </td>
+        <td>
+          1191
+          -
+          1231
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;-&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position &lt;-&gt; missile.destination
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          897
+        </td>
+        <td>
+          1212
+          -
+          1231
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.destination
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          899
+        </td>
+        <td>
+          1290
+          -
+          1309
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destination
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.destination
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          900
+        </td>
+        <td>
+          1290
+          -
+          1309
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.destination
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          902
+        </td>
+        <td>
+          1341
+          -
+          1358
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.direction
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          905
+        </td>
+        <td>
+          1319
+          -
+          1382
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position --&gt; (missile.direction * distanceToMove * (-1)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          904
+        </td>
+        <td>
+          1341
+          -
+          1381
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.direction * distanceToMove * (-1
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          901
+        </td>
+        <td>
+          1319
+          -
+          1335
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          903
+        </td>
+        <td>
+          1341
+          -
+          1375
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.direction * distanceToMove
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          906
+        </td>
+        <td>
+          1319
+          -
+          1382
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position --&gt; (missile.direction * distanceToMove * (-1)
         </td>
       </tr>
     </table>

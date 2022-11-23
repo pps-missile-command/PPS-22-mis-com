@@ -24,51 +24,49 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view
 </span>2 <span style=''>
-</span>3 <span style=''>import java.awt.{Color, Image, Toolkit}
-</span>4 <span style=''>import model.collisions.{Affiliation, Collisionable}
-</span>5 <span style=''>import model.elements2d.{Angle, Point2D}
-</span>6 <span style=''>import model.explosion.Explosion
-</span>7 <span style=''>import model.missile.{Missile, MissileDamageable, MissileImpl, hitboxBase, hitboxHeight}
-</span>8 <span style=''>import model.vehicle.Plane
-</span>9 <span style=''>
-</span>10 <span style=''>import java.awt.image.BufferedImage
-</span>11 <span style=''>import javax.imageio.ImageIO
-</span>12 <span style=''>import java.io.File
-</span>13 <span style=''>
-</span>14 <span style=''>case class CollisionableElement(image: BufferedImage, baseWidth: Int, baseHeight: Int,
-</span>15 <span style=''>                                position: Point2D, angle: Angle = Angle.Degree(0))
-</span>16 <span style=''>
-</span>17 <span style=''>object CollisionableVisualizer:
-</span>18 <span style=''>
-</span>19 <span style=''>  </span><span style='background: #AEF1AE'>def printElements</span><span style=''>(collisionables: List[Collisionable])(using conversion: Conversion[Double, Int]): List[CollisionableElement] =
+</span>3 <span style=''>import model.World
+</span>4 <span style=''>
+</span>5 <span style=''>import java.awt.{Color, Image, Toolkit}
+</span>6 <span style=''>import model.collisions.{Affiliation, Collisionable}
+</span>7 <span style=''>import model.elements2d.{Angle, Point2D}
+</span>8 <span style=''>import model.explosion.Explosion
+</span>9 <span style=''>import model.missile.{Missile, MissileDamageable, MissileImpl, hitboxBase, hitboxHeight}
+</span>10 <span style=''>
+</span>11 <span style=''>import java.awt.image.BufferedImage
+</span>12 <span style=''>import javax.imageio.ImageIO
+</span>13 <span style=''>import java.io.File
+</span>14 <span style=''>
+</span>15 <span style=''>extension(p: Point2D)
+</span>16 <span style=''>  </span><span style='background: #AEF1AE'>def map</span><span style=''>(f: (Point2D) =&gt; Point2D) = </span><span style='background: #AEF1AE'>f(p)</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>case class CollisionableElement(image: BufferedImage, baseWidth: Int, baseHeight: Int,
+</span>19 <span style=''>                                position: Point2D, angle: Angle = Angle.Degree(0))
 </span>20 <span style=''>
-</span>21 <span style=''>    val conversion: Collisionable =&gt; CollisionableElement = (c: Collisionable) =&gt; c match
-</span>22 <span style=''>      </span><span style='background: #AEF1AE'>case m: Missile with MissileDamageable</span><span style=''> =&gt;
-</span>23 <span style=''>        var optImage:  Option[BufferedImage] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
-</span>24 <span style=''>        try </span><span style='background: #AEF1AE'>{
-</span>25 <span style=''></span><span style='background: #AEF1AE'>          m.affiliation match
-</span>26 <span style=''></span><span style='background: #AEF1AE'>            case Affiliation.Enemy =&gt; optImage = Option(ImageIO.read(getClass.getResource(&quot;/enemy_missile.png&quot;)))
-</span>27 <span style=''></span><span style='background: #AEF1AE'>            </span><span style='background: #F0ADAD'>case _</span><span style='background: #AEF1AE'> =&gt; optImage = </span><span style='background: #F0ADAD'>Option(ImageIO.read(getClass.getResource(&quot;/friendly_missile.png&quot;)))</span><span style='background: #AEF1AE'>
-</span>28 <span style=''></span><span style='background: #AEF1AE'>        }</span><span style=''>
-</span>29 <span style=''>        CollisionableElement(</span><span style='background: #AEF1AE'>optImage.getOrElse(null)</span><span style=''>, </span><span style='background: #AEF1AE'>hitboxBase</span><span style=''>, </span><span style='background: #AEF1AE'>hitboxHeight</span><span style=''>, </span><span style='background: #AEF1AE'>m.position</span><span style=''>, </span><span style='background: #AEF1AE'>m.angle.getOrElse(Angle.Degree(0))</span><span style=''>)
-</span>30 <span style=''>      </span><span style='background: #F0ADAD'>case e: Explosion</span><span style=''> =&gt;
-</span>31 <span style=''>        val diameter = </span><span style='background: #F0ADAD'>e.radius</span><span style=''> * 2
-</span>32 <span style=''>        val bi = </span><span style='background: #F0ADAD'>new BufferedImage(diameter,diameter, BufferedImage.TYPE_INT_ARGB)</span><span style=''>
-</span>33 <span style=''>        val g2d = </span><span style='background: #F0ADAD'>bi.createGraphics()</span><span style=''>
-</span>34 <span style=''>        </span><span style='background: #F0ADAD'>g2d.setColor(Color.RED)</span><span style=''>
-</span>35 <span style=''>        </span><span style='background: #F0ADAD'>g2d.drawOval(0, 0, diameter, diameter)</span><span style=''>
-</span>36 <span style=''>        </span><span style='background: #F0ADAD'>g2d.dispose()</span><span style=''>
-</span>37 <span style=''>        </span><span style='background: #F0ADAD'>CollisionableElement</span><span style=''>(bi, </span><span style='background: #F0ADAD'>diameter</span><span style=''>, </span><span style='background: #F0ADAD'>diameter</span><span style=''>, </span><span style='background: #F0ADAD'>e.position</span><span style=''>)
-</span>38 <span style=''>      </span><span style='background: #F0ADAD'>case d: Plane</span><span style=''> =&gt;
-</span>39 <span style=''>        val diameter = 5 //TODO basic implementation. da cambiare
-</span>40 <span style=''>        val bi = </span><span style='background: #F0ADAD'>new BufferedImage(diameter,diameter, BufferedImage.TYPE_INT_ARGB)</span><span style=''>
-</span>41 <span style=''>        val g2d = </span><span style='background: #F0ADAD'>bi.createGraphics()</span><span style=''>
-</span>42 <span style=''>        </span><span style='background: #F0ADAD'>g2d.setColor(Color.BLACK)</span><span style=''>
-</span>43 <span style=''>        </span><span style='background: #F0ADAD'>g2d.drawOval(0, 0, diameter, diameter)</span><span style=''>
-</span>44 <span style=''>        </span><span style='background: #F0ADAD'>g2d.dispose()</span><span style=''>
-</span>45 <span style=''>        </span><span style='background: #F0ADAD'>CollisionableElement</span><span style=''>(bi, diameter, diameter, </span><span style='background: #F0ADAD'>d.position</span><span style=''>)
-</span>46 <span style=''>
-</span>47 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.map(conversion)</span><span style=''>
+</span>21 <span style=''>object CollisionableVisualizer:
+</span>22 <span style=''>
+</span>23 <span style=''>  private val convertPosition: (Point2D) =&gt; Point2D = (p) =&gt; </span><span style='background: #AEF1AE'>Point2D((p.x * ViewConstants.GUI_width) / World.width, (p.y * ViewConstants.GUI_height) / World.height)</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>  </span><span style='background: #AEF1AE'>def printElements</span><span style=''>(collisionables: Set[Collisionable])(using conversion: Conversion[Double, Int]): Set[CollisionableElement] =
+</span>26 <span style=''>
+</span>27 <span style=''>    val conversion: Collisionable =&gt; CollisionableElement = (c: Collisionable) =&gt; c match
+</span>28 <span style=''>      </span><span style='background: #AEF1AE'>case m: Missile with MissileDamageable</span><span style=''> =&gt;
+</span>29 <span style=''>        var optImage:  Option[BufferedImage] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
+</span>30 <span style=''>        try </span><span style='background: #AEF1AE'>{
+</span>31 <span style=''></span><span style='background: #AEF1AE'>          m.affiliation match
+</span>32 <span style=''></span><span style='background: #AEF1AE'>            case Affiliation.Enemy =&gt; optImage = Option(ImageIO.read(getClass.getResource(&quot;/enemy_missile.png&quot;)))
+</span>33 <span style=''></span><span style='background: #AEF1AE'>            </span><span style='background: #F0ADAD'>case _</span><span style='background: #AEF1AE'> =&gt; optImage = </span><span style='background: #F0ADAD'>Option(ImageIO.read(getClass.getResource(&quot;/friendly_missile.png&quot;)))</span><span style='background: #AEF1AE'>
+</span>34 <span style=''></span><span style='background: #AEF1AE'>        }</span><span style=''>
+</span>35 <span style=''>        CollisionableElement(</span><span style='background: #AEF1AE'>optImage.getOrElse(null)</span><span style=''>, </span><span style='background: #AEF1AE'>hitboxBase</span><span style=''>, </span><span style='background: #AEF1AE'>hitboxHeight</span><span style=''>, </span><span style='background: #AEF1AE'>m.position map convertPosition</span><span style=''>, </span><span style='background: #AEF1AE'>m.angle.getOrElse(Angle.Degree(0))</span><span style=''>)
+</span>36 <span style=''>      </span><span style='background: #F0ADAD'>case e: Explosion</span><span style=''> =&gt;
+</span>37 <span style=''>        val diameter = </span><span style='background: #F0ADAD'>e.radius</span><span style=''> * 2
+</span>38 <span style=''>        val bi = </span><span style='background: #F0ADAD'>new BufferedImage(diameter,diameter, BufferedImage.TYPE_INT_ARGB)</span><span style=''>
+</span>39 <span style=''>        val g2d = </span><span style='background: #F0ADAD'>bi.createGraphics()</span><span style=''>
+</span>40 <span style=''>        </span><span style='background: #F0ADAD'>g2d.setColor(Color.RED)</span><span style=''>
+</span>41 <span style=''>        </span><span style='background: #F0ADAD'>g2d.drawOval(0, 0, diameter, diameter)</span><span style=''>
+</span>42 <span style=''>        </span><span style='background: #F0ADAD'>g2d.dispose()</span><span style=''>
+</span>43 <span style=''>        </span><span style='background: #F0ADAD'>CollisionableElement</span><span style=''>(bi, </span><span style='background: #F0ADAD'>diameter</span><span style=''>, </span><span style='background: #F0ADAD'>diameter</span><span style=''>, </span><span style='background: #F0ADAD'>e.position map convertPosition</span><span style=''>)
+</span>44 <span style=''>
+</span>45 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.map(conversion)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -83,15 +81,63 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          14
+          15
         </td>
         <td>
-          982
+          1366
         </td>
         <td>
-          537
+          401
           -
-          537
+          408
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def map
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1365
+        </td>
+        <td>
+          436
+          -
+          440
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          f(p)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1324
+        </td>
+        <td>
+          595
+          -
+          595
         </td>
         <td>
           DefDef
@@ -107,15 +153,87 @@
         </td>
       </tr><tr>
         <td>
-          18
+          22
         </td>
         <td>
-          1025
+          1327
         </td>
         <td>
-          590
+          707
           -
-          607
+          810
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Point2D((p.x * ViewConstants.GUI_width) / World.width, (p.y * ViewConstants.GUI_height) / World.height)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1326
+        </td>
+        <td>
+          763
+          -
+          766
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p.y
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1325
+        </td>
+        <td>
+          716
+          -
+          719
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p.x
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1364
+        </td>
+        <td>
+          814
+          -
+          831
         </td>
         <td>
           DefDef
@@ -131,15 +249,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          27
         </td>
         <td>
-          1000
+          1346
         </td>
         <td>
-          815
+          1037
           -
-          853
+          1075
         </td>
         <td>
           Block
@@ -155,15 +273,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          28
         </td>
         <td>
-          983
+          1328
         </td>
         <td>
-          904
+          1126
           -
-          916
+          1138
         </td>
         <td>
           Select
@@ -179,15 +297,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          29
         </td>
         <td>
-          993
+          1338
         </td>
         <td>
-          929
+          1151
           -
-          1185
+          1407
         </td>
         <td>
           Block
@@ -207,15 +325,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          30
         </td>
         <td>
-          984
+          1329
         </td>
         <td>
-          941
+          1163
           -
-          954
+          1176
         </td>
         <td>
           Select
@@ -231,63 +349,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          31
         </td>
         <td>
-          986
+          1333
         </td>
         <td>
-          1017
+          1195
           -
-          1073
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          read
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          ImageIO.read(getClass.getResource(&quot;/enemy_missile.png&quot;))
-        </td>
-      </tr><tr>
-        <td>
-          25
-        </td>
-        <td>
-          985
-        </td>
-        <td>
-          1030
-          -
-          1072
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getResource
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          getClass.getResource(&quot;/enemy_missile.png&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          25
-        </td>
-        <td>
-          988
-        </td>
-        <td>
-          973
-          -
-          995
+          1217
         </td>
         <td>
           Block
@@ -303,15 +373,39 @@
         </td>
       </tr><tr>
         <td>
-          25
+          31
         </td>
         <td>
-          987
+          1330
         </td>
         <td>
-          1010
+          1252
           -
-          1074
+          1294
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getResource
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          getClass.getResource(&quot;/enemy_missile.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          1332
+        </td>
+        <td>
+          1232
+          -
+          1296
         </td>
         <td>
           Apply
@@ -327,63 +421,39 @@
         </td>
       </tr><tr>
         <td>
-          26
+          31
         </td>
         <td>
-          992
+          1331
         </td>
         <td>
-          1087
+          1239
           -
-          1093
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          989
-        </td>
-        <td>
-          1128
-          -
-          1173
+          1295
         </td>
         <td>
           Apply
         </td>
         <td>
-          getResource
+          read
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/friendly_missile.png&quot;)
+        <td style="background: #AEF1AE">
+          ImageIO.read(getClass.getResource(&quot;/enemy_missile.png&quot;))
         </td>
       </tr><tr>
         <td>
-          26
+          32
         </td>
         <td>
-          991
+          1336
         </td>
         <td>
-          1108
+          1330
           -
-          1175
+          1397
         </td>
         <td>
           Apply
@@ -399,15 +469,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          32
         </td>
         <td>
-          990
+          1335
         </td>
         <td>
-          1115
+          1337
           -
-          1174
+          1396
         </td>
         <td>
           Apply
@@ -423,63 +493,63 @@
         </td>
       </tr><tr>
         <td>
-          28
+          32
         </td>
         <td>
-          995
+          1334
         </td>
         <td>
-          1241
+          1350
           -
-          1251
+          1395
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          getResource
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          hitboxBase
+        <td style="background: #F0ADAD">
+          getClass.getResource(&quot;/friendly_missile.png&quot;)
         </td>
       </tr><tr>
         <td>
-          28
+          32
         </td>
         <td>
-          998
+          1337
         </td>
         <td>
-          1279
+          1309
           -
-          1286
+          1315
         </td>
         <td>
-          Select
+          Block
         </td>
         <td>
-          angle
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          m.angle
+        <td style="background: #F0ADAD">
+          case _
         </td>
       </tr><tr>
         <td>
-          28
+          34
         </td>
         <td>
-          997
+          1342
         </td>
         <td>
-          1267
+          1489
           -
-          1277
+          1499
         </td>
         <td>
           Select
@@ -495,63 +565,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          34
         </td>
         <td>
-          994
+          1345
         </td>
         <td>
-          1215
+          1521
           -
-          1239
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getOrElse
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          optImage.getOrElse(null)
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          996
-        </td>
-        <td>
-          1253
-          -
-          1265
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitboxHeight
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          999
-        </td>
-        <td>
-          1279
-          -
-          1313
+          1555
         </td>
         <td>
           Apply
@@ -567,15 +589,135 @@
         </td>
       </tr><tr>
         <td>
-          29
+          34
         </td>
         <td>
-          1015
+          1339
         </td>
         <td>
-          1321
+          1437
           -
-          1338
+          1461
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getOrElse
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          optImage.getOrElse(null)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1341
+        </td>
+        <td>
+          1475
+          -
+          1487
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitboxHeight
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1344
+        </td>
+        <td>
+          1521
+          -
+          1528
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          angle
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          m.angle
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1343
+        </td>
+        <td>
+          1489
+          -
+          1519
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          m.position map convertPosition
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          1340
+        </td>
+        <td>
+          1463
+          -
+          1473
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          hitboxBase
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          1362
+        </td>
+        <td>
+          1563
+          -
+          1580
         </td>
         <td>
           Block
@@ -591,15 +733,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          36
         </td>
         <td>
-          1001
+          1347
         </td>
         <td>
-          1365
+          1607
           -
-          1373
+          1615
         </td>
         <td>
           Select
@@ -615,303 +757,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          37
         </td>
         <td>
-          1004
+          1348
         </td>
         <td>
-          1395
-          -
-          1460
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          new BufferedImage(diameter,diameter, BufferedImage.TYPE_INT_ARGB)
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          1003
-        </td>
-        <td>
-          1422
-          -
-          1430
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          diameter
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          1002
-        </td>
-        <td>
-          1413
-          -
-          1421
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          diameter
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          1005
-        </td>
-        <td>
-          1479
-          -
-          1498
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          createGraphics
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          bi.createGraphics()
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          1006
-        </td>
-        <td>
-          1507
-          -
-          1530
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          setColor
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          g2d.setColor(Color.RED)
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          1007
-        </td>
-        <td>
-          1558
-          -
-          1566
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          diameter
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          1009
-        </td>
-        <td>
-          1539
-          -
-          1577
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          drawOval
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          g2d.drawOval(0, 0, diameter, diameter)
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          1008
-        </td>
-        <td>
-          1568
-          -
-          1576
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          diameter
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          1010
-        </td>
-        <td>
-          1586
-          -
-          1599
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          dispose
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          g2d.dispose()
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          1013
-        </td>
-        <td>
-          1653
+          1655
           -
           1663
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          position
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          e.position
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          1012
-        </td>
-        <td>
-          1643
-          -
-          1651
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          diameter
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          1014
-        </td>
-        <td>
-          1608
-          -
-          1628
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          $lessinit$greater$default$5
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          CollisionableElement
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          1011
-        </td>
-        <td>
-          1633
-          -
-          1641
         </td>
         <td>
           Apply
@@ -930,36 +784,12 @@
           37
         </td>
         <td>
-          1023
+          1350
         </td>
         <td>
-          1671
+          1637
           -
-          1684
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case d: Plane
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          1016
-        </td>
-        <td>
-          1771
-          -
-          1836
+          1702
         </td>
         <td>
           Apply
@@ -975,15 +805,39 @@
         </td>
       </tr><tr>
         <td>
-          40
+          37
         </td>
         <td>
-          1017
+          1349
         </td>
         <td>
-          1855
+          1664
           -
-          1874
+          1672
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          diameter
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          1351
+        </td>
+        <td>
+          1721
+          -
+          1740
         </td>
         <td>
           Apply
@@ -999,15 +853,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          39
         </td>
         <td>
-          1018
+          1352
         </td>
         <td>
-          1883
+          1749
           -
-          1908
+          1772
         </td>
         <td>
           Apply
@@ -1019,19 +873,67 @@
           
         </td>
         <td style="background: #F0ADAD">
-          g2d.setColor(Color.BLACK)
+          g2d.setColor(Color.RED)
         </td>
       </tr><tr>
         <td>
-          42
+          40
         </td>
         <td>
-          1019
+          1354
         </td>
         <td>
-          1917
+          1810
           -
-          1955
+          1818
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          diameter
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          1353
+        </td>
+        <td>
+          1800
+          -
+          1808
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          diameter
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          1355
+        </td>
+        <td>
+          1781
+          -
+          1819
         </td>
         <td>
           Apply
@@ -1047,15 +949,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          41
         </td>
         <td>
-          1020
+          1356
         </td>
         <td>
-          1964
+          1828
           -
-          1977
+          1841
         </td>
         <td>
           Apply
@@ -1071,15 +973,87 @@
         </td>
       </tr><tr>
         <td>
-          44
+          42
         </td>
         <td>
-          1022
+          1357
         </td>
         <td>
-          1986
+          1875
           -
-          2006
+          1883
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          diameter
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          1360
+        </td>
+        <td>
+          1895
+          -
+          1925
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.position map convertPosition
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          1359
+        </td>
+        <td>
+          1895
+          -
+          1905
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.position
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          1361
+        </td>
+        <td>
+          1850
+          -
+          1870
         </td>
         <td>
           Select
@@ -1095,39 +1069,39 @@
         </td>
       </tr><tr>
         <td>
-          44
+          42
         </td>
         <td>
-          1021
+          1358
         </td>
         <td>
-          2031
+          1885
           -
-          2041
+          1893
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          position
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          d.position
+          diameter
         </td>
       </tr><tr>
         <td>
-          46
+          44
         </td>
         <td>
-          1024
+          1363
         </td>
         <td>
-          2048
+          1932
           -
-          2078
+          1962
         </td>
         <td>
           Apply

@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/explosion/Explosion.scala.html
+          model/spawner/package.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,65 +22,34 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.explosion
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model
 </span>2 <span style=''>
-</span>3 <span style=''>import model.DeltaTime
-</span>4 <span style=''>import model.behavior.Timeable
-</span>5 <span style=''>import model.collisions.hitbox.HitBoxCircular
-</span>6 <span style=''>import model.collisions.{Affiliation, Collisionable, Damager, HitBox, LifePoint}
-</span>7 <span style=''>import model.elements2d.Point2D
-</span>8 <span style=''>
-</span>9 <span style=''>trait Explosion extends Damager, Timeable:
-</span>10 <span style=''>
-</span>11 <span style=''>  def position: Point2D
-</span>12 <span style=''>
-</span>13 <span style=''>  def radius: Double
-</span>14 <span style=''>
-</span>15 <span style=''>  def terminated: Boolean
-</span>16 <span style=''>
-</span>17 <span style=''>  override def timeElapsed(dt: DeltaTime): Explosion
+</span>3 <span style=''>import model.World.{height, width}
+</span>4 <span style=''>import view.ViewConstants
+</span>5 <span style=''>
+</span>6 <span style=''>import scala.util.Random
+</span>7 <span style=''>
+</span>8 <span style=''>package object spawner:
+</span>9 <span style=''>  
+</span>10 <span style=''>  val threshold: Int = 50
+</span>11 <span style=''>
+</span>12 <span style=''>  </span><span style='background: #AEF1AE'>def standardSpawner</span><span style=''>(using Random) = SpawnerAggregatorImpl(
+</span>13 <span style=''>    </span><span style='background: #AEF1AE'>List(
+</span>14 <span style=''></span><span style='background: #AEF1AE'>      GenericSpawner(7, spawnable = SpecificSpawners.MissileStrategy(width, height)),
+</span>15 <span style=''></span><span style='background: #AEF1AE'>      GenericSpawner(1, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
+</span>16 <span style=''></span><span style='background: #AEF1AE'>    )</span><span style=''>:_*
+</span>17 <span style=''>  )
 </span>18 <span style=''>
-</span>19 <span style=''>object Explosion:
-</span>20 <span style=''>
-</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(damageToInflict: LifePoint, hitboxRadius: Double, myPosition: Point2D, dt: DeltaTime = 0)(using maxTime: MaxTime, parentAffiliation: Affiliation): Explosion = new Explosion {
-</span>22 <span style=''>
-</span>23 <span style=''>    (damageToInflict, hitboxRadius) match
-</span>24 <span style=''>      </span><span style='background: #AEF1AE'>case (n, m) if n == 0 || m == 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>throw new IllegalArgumentException()</span><span style=''>
-</span>25 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; ()
-</span>26 <span style=''>
-</span>27 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = myPosition
-</span>28 <span style=''>
-</span>29 <span style=''>    </span><span style='background: #AEF1AE'>override def radius</span><span style=''>: Double = hitboxRadius match
-</span>30 <span style=''>      </span><span style='background: #F0ADAD'>case n if n &gt;= 0</span><span style=''> =&gt; hitboxRadius
-</span>31 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(hitboxRadius)</span><span style=''>
-</span>32 <span style=''>
-</span>33 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Explosion = </span><span style='background: #AEF1AE'>apply(damageToInflict, hitboxRadius, myPosition, dt + _dt)</span><span style=''>
-</span>34 <span style=''>
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>override def terminated</span><span style=''>: Boolean = dt &gt;= maxTime
-</span>36 <span style=''>
-</span>37 <span style=''>    /**
-</span>38 <span style=''>     * The damage inflicted by this object.
-</span>39 <span style=''>     *
-</span>40 <span style=''>     * @return the damage inflicted by this object.
-</span>41 <span style=''>     */
-</span>42 <span style=''>    </span><span style='background: #AEF1AE'>override def damageInflicted</span><span style=''>: LifePoint = damageToInflict match
-</span>43 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &gt; 0</span><span style=''> =&gt; damageToInflict
-</span>44 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(damageToInflict)</span><span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>    /**
-</span>47 <span style=''>     * Return the hit box of the object.
-</span>48 <span style=''>     *
-</span>49 <span style=''>     * @return the hit box of the object.
-</span>50 <span style=''>     */
-</span>51 <span style=''>    </span><span style='background: #AEF1AE'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #AEF1AE'>HitBoxCircular(position, hitboxRadius)</span><span style=''>
-</span>52 <span style=''>
-</span>53 <span style=''>    /**
-</span>54 <span style=''>     * Return the affiliation of the object.
-</span>55 <span style=''>     *
-</span>56 <span style=''>     * @return the affiliation of the object.
-</span>57 <span style=''>     */
-</span>58 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = parentAffiliation
-</span>59 <span style=''>  }
+</span>19 <span style=''>  extension[A](list: LazyList[A])
+</span>20 <span style=''>    </span><span style='background: #AEF1AE'>def popN</span><span style=''>(n: Int): (Set[A], LazyList[A]) = (</span><span style='background: #AEF1AE'>list.take(n).toSet</span><span style=''>, </span><span style='background: #AEF1AE'>list.drop(n)</span><span style=''>)
+</span>21 <span style=''>  
+</span>22 <span style=''>  extension(interval: DeltaTime)
+</span>23 <span style=''>  
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>def ~</span><span style=''>(timePassed: DeltaTime) : DeltaTime = interval - interval * (1 / ( 1 + </span><span style='background: #AEF1AE'>Math.exp((-interval / 4) * timePassed)</span><span style=''>) - interval / 2)
+</span>25 <span style=''>  
+</span>26 <span style=''>    </span><span style='background: #AEF1AE'>def mapIf</span><span style=''>(condition: () =&gt; Boolean)(mapper: (DeltaTime) =&gt; DeltaTime): DeltaTime = condition match
+</span>27 <span style=''>      </span><span style='background: #AEF1AE'>case _ if condition()</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>mapper(interval)</span><span style=''>
+</span>28 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; interval
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -95,18 +64,42 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          11
         </td>
         <td>
-          672
+          1190
         </td>
         <td>
-          432
+          159
           -
-          441
+          178
         </td>
         <td>
           DefDef
+        </td>
+        <td>
+          standardSpawner
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def standardSpawner
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1189
+        </td>
+        <td>
+          222
+          -
+          403
+        </td>
+        <td>
+          Apply
         </td>
         <td>
           apply
@@ -115,43 +108,526 @@
           
         </td>
         <td style="background: #AEF1AE">
-          def apply
+          List(
+      GenericSpawner(7, spawnable = SpecificSpawners.MissileStrategy(width, height)),
+      GenericSpawner(1, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
+    )
         </td>
       </tr><tr>
         <td>
-          20
+          13
         </td>
         <td>
-          673
+          1178
         </td>
         <td>
-          529
+          234
           -
-          529
+          248
         </td>
         <td>
-          DefDef
+          Select
         </td>
         <td>
-          apply$default$4
+          apply$default$2
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
+          GenericSpawner
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1177
+        </td>
+        <td>
+          264
+          -
+          311
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          MissileStrategy
+        </td>
+        <td>
           
+        </td>
+        <td style="background: #AEF1AE">
+          SpecificSpawners.MissileStrategy(width, height)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1180
+        </td>
+        <td>
+          234
+          -
+          248
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$5
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1176
+        </td>
+        <td>
+          304
+          -
+          310
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          height
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1179
+        </td>
+        <td>
+          234
+          -
+          248
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1181
+        </td>
+        <td>
+          234
+          -
+          312
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner(7, spawnable = SpecificSpawners.MissileStrategy(width, height))
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1175
+        </td>
+        <td>
+          297
+          -
+          302
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          width
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1187
+        </td>
+        <td>
+          320
+          -
+          334
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$5
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1186
+        </td>
+        <td>
+          320
+          -
+          334
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1183
+        </td>
+        <td>
+          389
+          -
+          395
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          height
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1185
+        </td>
+        <td>
+          320
+          -
+          334
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1188
+        </td>
+        <td>
+          320
+          -
+          397
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner(1, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1182
+        </td>
+        <td>
+          382
+          -
+          387
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          width
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1184
+        </td>
+        <td>
+          350
+          -
+          396
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ZigZagStrategy
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          SpecificSpawners.ZigZagStrategy(width, height)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1192
+        </td>
+        <td>
+          493
+          -
+          511
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toSet
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          list.take(n).toSet
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1194
+        </td>
+        <td>
+          450
+          -
+          458
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          popN
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def popN
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1191
+        </td>
+        <td>
+          493
+          -
+          505
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          take
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          list.take(n)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1193
+        </td>
+        <td>
+          513
+          -
+          525
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          drop
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          list.drop(n)
         </td>
       </tr><tr>
         <td>
           23
         </td>
         <td>
-          654
+          1196
         </td>
         <td>
-          666
+          570
           -
-          697
+          575
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          ~
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def ~
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1195
+        </td>
+        <td>
+          646
+          -
+          684
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          exp
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.exp((-interval / 4) * timePassed)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1201
+        </td>
+        <td>
+          709
+          -
+          718
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          mapIf
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def mapIf
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1198
+        </td>
+        <td>
+          814
+          -
+          835
         </td>
         <td>
           Block
@@ -163,67 +639,67 @@
           
         </td>
         <td style="background: #AEF1AE">
-          case (n, m) if n == 0 || m == 0
+          case _ if condition()
         </td>
       </tr><tr>
         <td>
-          23
+          26
         </td>
         <td>
-          653
+          1197
         </td>
         <td>
-          701
+          839
           -
-          737
+          855
         </td>
         <td>
           Apply
         </td>
         <td>
-          throw
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          throw new IllegalArgumentException()
+          mapper(interval)
         </td>
       </tr><tr>
         <td>
-          23
+          26
         </td>
         <td>
-          652
+          1199
         </td>
         <td>
-          707
+          824
           -
-          737
+          835
         </td>
         <td>
           Apply
         </td>
         <td>
-          &lt;init&gt;
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          new IllegalArgumentException()
+          condition()
         </td>
       </tr><tr>
         <td>
-          24
+          27
         </td>
         <td>
-          655
+          1200
         </td>
         <td>
-          744
+          862
           -
-          750
+          868
         </td>
         <td>
           Block
@@ -236,390 +712,6 @@
         </td>
         <td style="background: #AEF1AE">
           case _
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          656
-        </td>
-        <td>
-          762
-          -
-          783
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          position
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def position
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          660
-        </td>
-        <td>
-          811
-          -
-          830
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          radius
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def radius
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          657
-        </td>
-        <td>
-          866
-          -
-          882
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case n if n &gt;= 0
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          659
-        </td>
-        <td>
-          905
-          -
-          920
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case n if n &lt; 0
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          658
-        </td>
-        <td>
-          924
-          -
-          946
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          abs
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Math.abs(hitboxRadius)
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          662
-        </td>
-        <td>
-          952
-          -
-          976
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          timeElapsed
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def timeElapsed
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          661
-        </td>
-        <td>
-          1006
-          -
-          1064
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          apply(damageToInflict, hitboxRadius, myPosition, dt + _dt)
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          663
-        </td>
-        <td>
-          1070
-          -
-          1093
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          terminated
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def terminated
-        </td>
-      </tr><tr>
-        <td>
-          41
-        </td>
-        <td>
-          667
-        </td>
-        <td>
-          1243
-          -
-          1271
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          damageInflicted
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def damageInflicted
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          664
-        </td>
-        <td>
-          1313
-          -
-          1328
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case n if n &gt; 0
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          666
-        </td>
-        <td>
-          1354
-          -
-          1369
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case n if n &lt; 0
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          665
-        </td>
-        <td>
-          1373
-          -
-          1398
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          abs
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Math.abs(damageToInflict)
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          669
-        </td>
-        <td>
-          1550
-          -
-          1588
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          HitBoxCircular(position, hitboxRadius)
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          668
-        </td>
-        <td>
-          1565
-          -
-          1573
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          position
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          position
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          670
-        </td>
-        <td>
-          1510
-          -
-          1539
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          hitBox
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override protected def hitBox
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          671
-        </td>
-        <td>
-          1708
-          -
-          1732
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          affiliation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def affiliation
         </td>
       </tr>
     </table>

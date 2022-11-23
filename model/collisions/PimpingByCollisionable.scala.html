@@ -1,0 +1,806 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          model/collisions/PimpingByCollisionable.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions
+</span>2 <span style=''>
+</span>3 <span style=''>import model.{Scorable, ScorePoint}
+</span>4 <span style=''>
+</span>5 <span style=''>object PimpingByCollisionable:
+</span>6 <span style=''>
+</span>7 <span style=''>  extension (collisionable: Collisionable)
+</span>8 <span style=''>
+</span>9 <span style=''>    /**
+</span>10 <span style=''>     * Apply the damage to the collisionable, if possible.
+</span>11 <span style=''>     *
+</span>12 <span style=''>     * @param damage the damage to apply
+</span>13 <span style=''>     * @return a new collisionable with the damage applied or the same collisionable if the damage can't be applied
+</span>14 <span style=''>     */
+</span>15 <span style=''>    </span><span style='background: #AEF1AE'>def applyDamage</span><span style=''>(damage: LifePoint): Collisionable =
+</span>16 <span style=''>      collisionable match
+</span>17 <span style=''>        </span><span style='background: #AEF1AE'>case damageable: Damageable if damage &gt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>damageable.takeDamage(damage)</span><span style=''>
+</span>18 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; collisionable
+</span>19 <span style=''>
+</span>20 <span style=''>    /**
+</span>21 <span style=''>     * Get the damage that the collisionable can do to the other collisionable
+</span>22 <span style=''>     *
+</span>23 <span style=''>     * @return the damage that the collisionable can do to the other collisionable
+</span>24 <span style=''>     */
+</span>25 <span style=''>    </span><span style='background: #AEF1AE'>def damage</span><span style=''>: LifePoint =
+</span>26 <span style=''>      collisionable match
+</span>27 <span style=''>        </span><span style='background: #AEF1AE'>case damager: Damager</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>damager.damageInflicted</span><span style=''>
+</span>28 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; 0
+</span>29 <span style=''>
+</span>30 <span style=''>    /**
+</span>31 <span style=''>     * Check if the collisionable is destroyed.
+</span>32 <span style=''>     *
+</span>33 <span style=''>     * @return true if the collisionable is destroyed, false otherwise
+</span>34 <span style=''>     */
+</span>35 <span style=''>
+</span>36 <span style=''>    </span><span style='background: #AEF1AE'>def isDestroyed</span><span style=''>: Boolean =
+</span>37 <span style=''>      collisionable match
+</span>38 <span style=''>        </span><span style='background: #AEF1AE'>case damageable: Damageable</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>damageable.isDestroyed</span><span style=''>
+</span>39 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
+</span>40 <span style=''>
+</span>41 <span style=''>    /**
+</span>42 <span style=''>     * Check if the collisionable is not destroyed.
+</span>43 <span style=''>     *
+</span>44 <span style=''>     * @return false if the collisionable is destroyed, true otherwise
+</span>45 <span style=''>     */
+</span>46 <span style=''>    </span><span style='background: #AEF1AE'>def isNotDestroyed</span><span style=''>: Boolean = !</span><span style='background: #AEF1AE'>isDestroyed</span><span style=''>
+</span>47 <span style=''>
+</span>48 <span style=''>
+</span>49 <span style=''>    /**
+</span>50 <span style=''>     * Check if the collisionable is a damager.
+</span>51 <span style=''>     *
+</span>52 <span style=''>     * @return true if the collisionable is a damager, false otherwise
+</span>53 <span style=''>     */
+</span>54 <span style=''>    </span><span style='background: #AEF1AE'>def isDamager</span><span style=''>: Boolean =
+</span>55 <span style=''>      collisionable match
+</span>56 <span style=''>        </span><span style='background: #AEF1AE'>case _: Damager</span><span style=''> =&gt; true
+</span>57 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; false
+</span>58 <span style=''>
+</span>59 <span style=''>    /**
+</span>60 <span style=''>     * Check if the collisionable is a scorable.
+</span>61 <span style=''>     *
+</span>62 <span style=''>     * @return true if the collisionable is a scorable, false otherwise
+</span>63 <span style=''>     */
+</span>64 <span style=''>    </span><span style='background: #AEF1AE'>def isScorable</span><span style=''>: Boolean =
+</span>65 <span style=''>      collisionable match
+</span>66 <span style=''>        </span><span style='background: #AEF1AE'>case _: Scorable</span><span style=''> =&gt; true
+</span>67 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
+</span>68 <span style=''>
+</span>69 <span style=''>    /**
+</span>70 <span style=''>     * Check if the collisionable has affiliation friendly
+</span>71 <span style=''>     *
+</span>72 <span style=''>     * @return true if the collisionable has affiliation friendly, false otherwise
+</span>73 <span style=''>     */
+</span>74 <span style=''>    </span><span style='background: #AEF1AE'>def isFriendly</span><span style=''>: Boolean =
+</span>75 <span style=''>      </span><span style='background: #AEF1AE'>collisionable.affiliation</span><span style=''> == Affiliation.Friendly
+</span>76 <span style=''>
+</span>77 <span style=''>    /**
+</span>78 <span style=''>     * Check if the collisionable hasn't affiliation friendly
+</span>79 <span style=''>     *
+</span>80 <span style=''>     * @return true if the collisionable hasn't affiliation friendly, false otherwise
+</span>81 <span style=''>     */
+</span>82 <span style=''>    </span><span style='background: #AEF1AE'>def isNotFriendly</span><span style=''>: Boolean = !</span><span style='background: #AEF1AE'>isFriendly</span><span style=''>
+</span>83 <span style=''>
+</span>84 <span style=''>    /**
+</span>85 <span style=''>     * Get the score gained with the destruction of the collisionable, if possible.
+</span>86 <span style=''>     *
+</span>87 <span style=''>     * @return the score gained with the destruction of the collisionable, if possible, otherwise 0.
+</span>88 <span style=''>     */
+</span>89 <span style=''>    </span><span style='background: #AEF1AE'>def getScorePoint</span><span style=''>: ScorePoint =
+</span>90 <span style=''>      collisionable match
+</span>91 <span style=''>        </span><span style='background: #AEF1AE'>case scorable: Scorable if scorable.isDestroyed</span><span style=''> =&gt; scorable.points
+</span>92 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; 0
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          224
+        </td>
+        <td>
+          382
+          -
+          397
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          applyDamage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def applyDamage
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          222
+        </td>
+        <td>
+          468
+          -
+          509
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case damageable: Damageable if damage &gt; 0
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          221
+        </td>
+        <td>
+          513
+          -
+          542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          takeDamage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damageable.takeDamage(damage)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          223
+        </td>
+        <td>
+          551
+          -
+          557
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          228
+        </td>
+        <td>
+          765
+          -
+          775
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          damage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def damage
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          226
+        </td>
+        <td>
+          823
+          -
+          844
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case damager: Damager
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          225
+        </td>
+        <td>
+          848
+          -
+          871
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          damageInflicted
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damager.damageInflicted
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          227
+        </td>
+        <td>
+          880
+          -
+          886
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          232
+        </td>
+        <td>
+          1040
+          -
+          1055
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          229
+        </td>
+        <td>
+          1132
+          -
+          1154
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damageable.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          230
+        </td>
+        <td>
+          1101
+          -
+          1128
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case damageable: Damageable
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          231
+        </td>
+        <td>
+          1163
+          -
+          1169
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          234
+        </td>
+        <td>
+          1330
+          -
+          1348
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isNotDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isNotDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          233
+        </td>
+        <td>
+          1361
+          -
+          1372
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          237
+        </td>
+        <td>
+          1521
+          -
+          1534
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isDamager
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isDamager
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          235
+        </td>
+        <td>
+          1580
+          -
+          1595
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _: Damager
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          236
+        </td>
+        <td>
+          1612
+          -
+          1618
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          240
+        </td>
+        <td>
+          1777
+          -
+          1791
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isScorable
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isScorable
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          238
+        </td>
+        <td>
+          1837
+          -
+          1853
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _: Scorable
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          239
+        </td>
+        <td>
+          1870
+          -
+          1876
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          242
+        </td>
+        <td>
+          2056
+          -
+          2070
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isFriendly
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isFriendly
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          241
+        </td>
+        <td>
+          2088
+          -
+          2113
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionable.affiliation
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          244
+        </td>
+        <td>
+          2314
+          -
+          2331
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isNotFriendly
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isNotFriendly
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          243
+        </td>
+        <td>
+          2344
+          -
+          2354
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isFriendly
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          isFriendly
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          248
+        </td>
+        <td>
+          2568
+          -
+          2585
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          getScorePoint
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def getScorePoint
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          245
+        </td>
+        <td>
+          2634
+          -
+          2681
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case scorable: Scorable if scorable.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          246
+        </td>
+        <td>
+          2661
+          -
+          2681
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          scorable.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          247
+        </td>
+        <td>
+          2709
+          -
+          2715
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

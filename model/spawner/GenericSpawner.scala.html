@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/elements2d/Angle.scala.html
+          model/spawner/GenericSpawner.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,73 +22,50 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.elements2d
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.spawner
 </span>2 <span style=''>
-</span>3 <span style=''>
-</span>4 <span style=''>object Angle:
-</span>5 <span style=''>  private val straightAngleRadiant = </span><span style='background: #AEF1AE'>math.Pi</span><span style=''>
-</span>6 <span style=''>  private val straightAngleDegree = 180
-</span>7 <span style=''>
-</span>8 <span style=''>  </span><span style='background: #AEF1AE'>private def identity</span><span style=''>(value: Double): Double = value
+</span>3 <span style=''>import model.DeltaTime
+</span>4 <span style=''>import model.behavior.Timeable
+</span>5 <span style=''>import model.collisions.Collisionable
+</span>6 <span style=''>import model.ground.*
+</span>7 <span style=''>import model.elements2d.Point2D
+</span>8 <span style=''>import model.spawner.LazySpawner.*
 </span>9 <span style=''>
-</span>10 <span style=''>  </span><span style='background: #AEF1AE'>private def periodicWithNegative</span><span style=''>(value: Double, straightAngle: Double): Double = -straightAngle + </span><span style='background: #AEF1AE'>math.abs(value % straightAngle)</span><span style=''>
+</span>10 <span style=''>import scala.util.Random
 </span>11 <span style=''>
-</span>12 <span style=''>  </span><span style='background: #AEF1AE'>private def periodicCircular</span><span style=''>(value: Double, completeAngle: Double): Double = value % completeAngle
+</span>12 <span style=''>trait GenericSpawner[A](using Random) extends Timeable:
 </span>13 <span style=''>
-</span>14 <span style=''>/**
-</span>15 <span style=''> * Represents an angle that could be measured in either degree or radiant.
-</span>16 <span style=''> *
-</span>17 <span style=''> */
-</span>18 <span style=''>enum Angle:
+</span>14 <span style=''>  def spawn(): (Set[A], GenericSpawner[A])
+</span>15 <span style=''>
+</span>16 <span style=''>  override def timeElapsed(dt: DeltaTime): GenericSpawner[A]
+</span>17 <span style=''>
+</span>18 <span style=''>object GenericSpawner:
 </span>19 <span style=''>
-</span>20 <span style=''>  import Angle._
-</span>21 <span style=''>
-</span>22 <span style=''>  /**
-</span>23 <span style=''>   * Creates an angle from a given value in degree.
-</span>24 <span style=''>   *
-</span>25 <span style=''>   * @param value the value of the angle in degree
-</span>26 <span style=''>   */
-</span>27 <span style=''>  case Degree(value: Double)
-</span>28 <span style=''>
-</span>29 <span style=''>  /**
-</span>30 <span style=''>   * Creates an angle from a given value in radiant.
-</span>31 <span style=''>   *
-</span>32 <span style=''>   * @param value the value of the angle in radiant
-</span>33 <span style=''>   */
-</span>34 <span style=''>  case Radian(value: Double)
-</span>35 <span style=''>
-</span>36 <span style=''>  /**
-</span>37 <span style=''>   * Returns the value of the angle in radiant.
-</span>38 <span style=''>   *
-</span>39 <span style=''>   * @return the value of the angle in radiant
-</span>40 <span style=''>   */
-</span>41 <span style=''>  </span><span style='background: #AEF1AE'>def radiant</span><span style=''>: Double =
-</span>42 <span style=''>    </span><span style='background: #AEF1AE'>def degreeToRadian</span><span style=''>(value: Double): Double = value * straightAngleRadiant / straightAngleDegree
-</span>43 <span style=''>
-</span>44 <span style=''>    </span><span style='background: #AEF1AE'>conversion(straightAngleRadiant)(degreeToRadian)(identity)</span><span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>  /**
-</span>47 <span style=''>   * Returns the value of the angle in degree.
-</span>48 <span style=''>   *
-</span>49 <span style=''>   * @return the value of the angle in degree
-</span>50 <span style=''>   */
-</span>51 <span style=''>  </span><span style='background: #AEF1AE'>def degree</span><span style=''>: Double =
-</span>52 <span style=''>    </span><span style='background: #AEF1AE'>def radiantToDegree</span><span style=''>(value: Double): Double = value * straightAngleDegree / straightAngleRadiant
-</span>53 <span style=''>
-</span>54 <span style=''>    </span><span style='background: #AEF1AE'>conversion(straightAngleDegree)(identity)(radiantToDegree)</span><span style=''>
-</span>55 <span style=''>
-</span>56 <span style=''>  </span><span style='background: #AEF1AE'>private def conversion</span><span style=''>(straightAngleOfConversion: Double)(fromDegree: Double =&gt; Double)(fromRadian: Double =&gt; Double): Double =
-</span>57 <span style=''>    </span><span style='background: #AEF1AE'>def conversionPeriodicWithNegative</span><span style=''>(value: Double)(straightAngleOfConverted: Double)(conversionFunction: Double =&gt; Double): Double =
-</span>58 <span style=''>      val completeAngleOfConverted = 2 * straightAngleOfConverted
-</span>59 <span style=''>      val valuePeriodicCircular = </span><span style='background: #AEF1AE'>periodicCircular(value, completeAngleOfConverted)</span><span style=''>
-</span>60 <span style=''>      value match
-</span>61 <span style=''>        </span><span style='background: #AEF1AE'>case _ if valuePeriodicCircular == -straightAngleOfConverted</span><span style=''> =&gt; straightAngleOfConversion
-</span>62 <span style=''>        </span><span style='background: #AEF1AE'>case _ if valuePeriodicCircular &gt; straightAngleOfConverted || valuePeriodicCircular &lt; -straightAngleOfConverted</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>periodicWithNegative(conversionFunction(value), straightAngleOfConversion)</span><span style=''>
-</span>63 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>conversionFunction(valuePeriodicCircular)</span><span style=''>
-</span>64 <span style=''>
-</span>65 <span style=''>    this match
-</span>66 <span style=''>      </span><span style='background: #AEF1AE'>case Degree(value)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>conversionPeriodicWithNegative(value)(straightAngleDegree)(fromDegree)</span><span style=''>
-</span>67 <span style=''>      </span><span style='background: #AEF1AE'>case Radian(value)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>conversionPeriodicWithNegative(value)(straightAngleRadiant)(fromRadian)</span><span style=''>
+</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[R &lt;: Collisionable](interval: DeltaTime,
+</span>21 <span style=''>            timeFromStart: DeltaTime = 0,
+</span>22 <span style=''>            dt: DeltaTime = 0,
+</span>23 <span style=''>            spawnable: Spawnable[R], streamOpt: Option[LazyList[R]] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>[LazyList[R]]): GenericSpawner[R] = new </span><span style='background: #AEF1AE'>GenericSpawner[R](using Random)</span><span style=''> {
+</span>24 <span style=''>
+</span>25 <span style=''>    val stream: LazyList[R] = </span><span style='background: #AEF1AE'>streamOpt.getOrElse(LazySpawner(spawnable))</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): (Set[R], GenericSpawner[R]) = dt match
+</span>28 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &gt;= currentInterval</span><span style=''> =&gt;
+</span>29 <span style=''>        val step: Int = (n / </span><span style='background: #AEF1AE'>currentInterval</span><span style=''>).toInt
+</span>30 <span style=''>        val </span><span style='background: #AEF1AE'>(elements, newStream)</span><span style=''> = </span><span style='background: #AEF1AE'>stream.popN(step)</span><span style=''>
+</span>31 <span style=''>        (</span><span style='background: #AEF1AE'>elements.toSet</span><span style=''>, </span><span style='background: #AEF1AE'>copy(newDt = 0, Option(newStream))</span><span style=''>)
+</span>32 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; (</span><span style='background: #AEF1AE'>Set()</span><span style=''>, this)
+</span>33 <span style=''>
+</span>34 <span style=''>    </span><span style='background: #AEF1AE'>private def currentInterval</span><span style=''> = </span><span style='background: #AEF1AE'>(interval mapIf isThresholdExceeded) (
+</span>35 <span style=''></span><span style='background: #AEF1AE'>      _ ~ (timeFromStart + dt)
+</span>36 <span style=''></span><span style='background: #AEF1AE'>    )</span><span style=''>
+</span>37 <span style=''>
+</span>38 <span style=''>    private val isThresholdExceeded: () =&gt; Boolean = () =&gt; (timeFromStart + dt) &gt;= threshold
+</span>39 <span style=''>
+</span>40 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): GenericSpawner[R] = </span><span style='background: #AEF1AE'>copy(newTimeFromStart = timeFromStart + dt, newDt = dt + _dt)</span><span style=''>
+</span>41 <span style=''>
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>private def copy</span><span style=''>(newTimeFromStart: DeltaTime = timeFromStart, newDt: DeltaTime = dt, streamOpt: Option[LazyList[R]] = streamOpt): GenericSpawner[R] =
+</span>43 <span style=''>      </span><span style='background: #AEF1AE'>GenericSpawner(interval, newTimeFromStart, newDt, spawnable, streamOpt)</span><span style=''>
+</span>44 <span style=''>  }
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -103,519 +80,303 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          4
+          19
         </td>
         <td>
-          513
+          1133
         </td>
         <td>
-          78
+          430
           -
-          85
+          430
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1135
+        </td>
+        <td>
+          430
+          -
+          430
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$5
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1132
+        </td>
+        <td>
+          430
+          -
+          430
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1131
+        </td>
+        <td>
+          420
+          -
+          429
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1106
+        </td>
+        <td>
+          666
+          -
+          697
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner[R](using Random)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1134
+        </td>
+        <td>
+          614
+          -
+          626
         </td>
         <td>
           Select
         </td>
         <td>
-          Pi
+          empty
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          math.Pi
+          Option.empty
         </td>
       </tr><tr>
         <td>
-          7
+          24
         </td>
         <td>
-          514
+          1107
         </td>
         <td>
-          129
+          731
           -
-          149
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          identity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          private def identity
-        </td>
-      </tr><tr>
-        <td>
-          9
-        </td>
-        <td>
-          516
-        </td>
-        <td>
-          184
-          -
-          216
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          periodicWithNegative
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          private def periodicWithNegative
-        </td>
-      </tr><tr>
-        <td>
-          9
-        </td>
-        <td>
-          515
-        </td>
-        <td>
-          282
-          -
-          313
+          774
         </td>
         <td>
           Apply
         </td>
         <td>
-          abs
+          getOrElse
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          math.abs(value % straightAngle)
+          streamOpt.getOrElse(LazySpawner(spawnable))
         </td>
       </tr><tr>
         <td>
-          11
+          26
         </td>
         <td>
-          517
+          1119
         </td>
         <td>
-          317
+          780
           -
-          345
+          798
         </td>
         <td>
           DefDef
         </td>
         <td>
-          periodicCircular
+          spawn
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          private def periodicCircular
+          override def spawn
         </td>
       </tr><tr>
         <td>
-          40
+          27
         </td>
         <td>
-          522
+          1115
         </td>
         <td>
-          950
+          847
           -
-          961
+          877
         </td>
         <td>
-          DefDef
+          Block
         </td>
         <td>
-          radiant
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def radiant
+          case n if n &gt;= currentInterval
         </td>
       </tr><tr>
         <td>
-          41
+          27
         </td>
         <td>
-          518
+          1116
         </td>
         <td>
-          976
+          862
           -
-          994
+          877
         </td>
         <td>
-          DefDef
+          Select
         </td>
         <td>
-          degreeToRadian
+          currentInterval
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def degreeToRadian
+          currentInterval
         </td>
       </tr><tr>
         <td>
-          43
+          28
         </td>
         <td>
-          519
+          1108
+        </td>
+        <td>
+          910
+          -
+          925
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          currentInterval
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          currentInterval
+        </td>
+      </tr><tr>
+        <td>
+          29
         </td>
         <td>
           1109
+        </td>
+        <td>
+          969
           -
-          1123
+          986
         </td>
         <td>
           Apply
         </td>
         <td>
-          degreeToRadian
+          popN
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          degreeToRadian
+          stream.popN(step)
         </td>
       </tr><tr>
         <td>
-          43
+          29
         </td>
         <td>
-          521
+          1110
         </td>
         <td>
-          1076
+          945
           -
-          1134
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          conversion
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          conversion(straightAngleRadiant)(degreeToRadian)(identity)
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          520
-        </td>
-        <td>
-          1125
-          -
-          1133
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          identity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          identity
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          527
-        </td>
-        <td>
-          1248
-          -
-          1258
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          degree
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def degree
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          523
-        </td>
-        <td>
-          1273
-          -
-          1292
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          radiantToDegree
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def radiantToDegree
-        </td>
-      </tr><tr>
-        <td>
-          53
-        </td>
-        <td>
-          525
-        </td>
-        <td>
-          1416
-          -
-          1431
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          radiantToDegree
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          radiantToDegree
-        </td>
-      </tr><tr>
-        <td>
-          53
-        </td>
-        <td>
-          524
-        </td>
-        <td>
-          1385
-          -
-          1404
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          straightAngleDegree
-        </td>
-      </tr><tr>
-        <td>
-          53
-        </td>
-        <td>
-          526
-        </td>
-        <td>
-          1374
-          -
-          1432
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          conversion
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          conversion(straightAngleDegree)(identity)(radiantToDegree)
-        </td>
-      </tr><tr>
-        <td>
-          55
-        </td>
-        <td>
-          541
-        </td>
-        <td>
-          1436
-          -
-          1458
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          conversion
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          private def conversion
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          535
-        </td>
-        <td>
-          1568
-          -
-          1602
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          conversionPeriodicWithNegative
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def conversionPeriodicWithNegative
-        </td>
-      </tr><tr>
-        <td>
-          58
-        </td>
-        <td>
-          528
-        </td>
-        <td>
-          1800
-          -
-          1849
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          periodicCircular
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          periodicCircular(value, completeAngleOfConverted)
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          529
-        </td>
-        <td>
-          1876
-          -
-          1936
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _ if valuePeriodicCircular == -straightAngleOfConverted
-        </td>
-      </tr><tr>
-        <td>
-          61
-        </td>
-        <td>
-          532
-        </td>
-        <td>
-          1974
-          -
-          2085
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _ if valuePeriodicCircular &gt; straightAngleOfConverted || valuePeriodicCircular &lt; -straightAngleOfConverted
-        </td>
-      </tr><tr>
-        <td>
-          61
-        </td>
-        <td>
-          531
-        </td>
-        <td>
-          2089
-          -
-          2163
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          periodicWithNegative
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          periodicWithNegative(conversionFunction(value), straightAngleOfConversion)
-        </td>
-      </tr><tr>
-        <td>
-          61
-        </td>
-        <td>
-          530
-        </td>
-        <td>
-          2110
-          -
-          2135
+          966
         </td>
         <td>
           Apply
@@ -627,19 +388,115 @@
           
         </td>
         <td style="background: #AEF1AE">
-          conversionFunction(value)
+          (elements, newStream)
         </td>
       </tr><tr>
         <td>
-          62
+          30
         </td>
         <td>
-          534
+          1111
         </td>
         <td>
-          2172
+          996
           -
-          2178
+          1010
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toSet
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          elements.toSet
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1114
+        </td>
+        <td>
+          1012
+          -
+          1046
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          copy
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          copy(newDt = 0, Option(newStream))
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1113
+        </td>
+        <td>
+          1012
+          -
+          1016
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          copy$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          copy
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          1112
+        </td>
+        <td>
+          1028
+          -
+          1045
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Option(newStream)
+        </td>
+      </tr><tr>
+        <td>
+          31
+        </td>
+        <td>
+          1118
+        </td>
+        <td>
+          1054
+          -
+          1060
         </td>
         <td>
           Block
@@ -655,15 +512,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          31
         </td>
         <td>
-          533
+          1117
         </td>
         <td>
-          2182
+          1065
           -
-          2223
+          1070
         </td>
         <td>
           Apply
@@ -675,127 +532,273 @@
           
         </td>
         <td style="background: #AEF1AE">
-          conversionFunction(valuePeriodicCircular)
+          Set()
         </td>
       </tr><tr>
         <td>
-          65
+          33
         </td>
         <td>
-          537
+          1122
         </td>
         <td>
-          2268
+          1083
           -
-          2338
+          1110
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          currentInterval
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          private def currentInterval
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1121
+        </td>
+        <td>
+          1113
+          -
+          1188
         </td>
         <td>
           Apply
         </td>
         <td>
-          conversionPeriodicWithNegative
+          mapIf
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          conversionPeriodicWithNegative(value)(straightAngleDegree)(fromDegree)
+          (interval mapIf isThresholdExceeded) (
+      _ ~ (timeFromStart + dt)
+    )
         </td>
       </tr><tr>
         <td>
-          65
+          34
         </td>
         <td>
-          536
+          1120
         </td>
         <td>
-          2306
+          1158
           -
-          2325
+          1181
         </td>
         <td>
           Apply
         </td>
         <td>
-          int2double
+          ~
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          straightAngleDegree
+          _ ~ (timeFromStart + dt
         </td>
       </tr><tr>
         <td>
-          65
+          39
         </td>
         <td>
-          538
+          1124
         </td>
         <td>
-          2246
+          1350
           -
-          2264
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case Degree(value)
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          540
-        </td>
-        <td>
-          2345
-          -
-          2363
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case Radian(value)
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          539
-        </td>
-        <td>
-          2367
-          -
-          2438
+          1411
         </td>
         <td>
           Apply
         </td>
         <td>
-          conversionPeriodicWithNegative
+          copy
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          conversionPeriodicWithNegative(value)(straightAngleRadiant)(fromRadian)
+          copy(newTimeFromStart = timeFromStart + dt, newDt = dt + _dt)
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1123
+        </td>
+        <td>
+          1350
+          -
+          1354
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          copy$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          copy
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1125
+        </td>
+        <td>
+          1288
+          -
+          1312
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def timeElapsed
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          1127
+        </td>
+        <td>
+          1417
+          -
+          1433
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          copy
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          private def copy
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          1129
+        </td>
+        <td>
+          1498
+          -
+          1498
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          copy$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          1128
+        </td>
+        <td>
+          1464
+          -
+          1464
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          copy$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          1130
+        </td>
+        <td>
+          1535
+          -
+          1535
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          copy$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          1126
+        </td>
+        <td>
+          1573
+          -
+          1644
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner(interval, newTimeFromStart, newDt, spawnable, streamOpt)
         </td>
       </tr>
     </table>

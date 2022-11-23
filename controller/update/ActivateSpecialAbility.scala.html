@@ -27,7 +27,7 @@
 </span>3 <span style=''>import controller.Event
 </span>4 <span style=''>import controller.Event.TimePassed
 </span>5 <span style=''>import controller.update.Update.on
-</span>6 <span style=''>import model.World
+</span>6 <span style=''>import model.Game
 </span>7 <span style=''>import model.explosion.Explosion
 </span>8 <span style=''>import model.behavior.Moveable
 </span>9 <span style=''>import model.collisions.Collisionable
@@ -38,27 +38,34 @@
 </span>14 <span style=''> * Object that return an update function for the world to be update with the special abilities of its components
 </span>15 <span style=''> */
 </span>16 <span style=''>object ActivateSpecialAbility:
-</span>17 <span style=''>  /**
-</span>18 <span style=''>   * Apply function used to update the world to be update with the special abilities of its components
-</span>19 <span style=''>   *
-</span>20 <span style=''>   * @return An Update that update the world to be update with the special abilities of its components
-</span>21 <span style=''>   */
-</span>22 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, world: World) =&gt;
-</span>23 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>24 <span style=''></span><span style='background: #F0ADAD'>      def activateSpecialAbility(collisionable: Collisionable): Collisionable = collisionable match
-</span>25 <span style=''></span><span style='background: #F0ADAD'>        case missile: Missile if missile.destinationReached =&gt; missile.explode
-</span>26 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; collisionable
-</span>27 <span style=''></span><span style='background: #F0ADAD'>
-</span>28 <span style=''></span><span style='background: #F0ADAD'>      def isTerminated(collisionable: Collisionable): Boolean = collisionable match
-</span>29 <span style=''></span><span style='background: #F0ADAD'>        case explosion: Explosion =&gt; explosion.terminated
-</span>30 <span style=''></span><span style='background: #F0ADAD'>        case _ =&gt; false
-</span>31 <span style=''></span><span style='background: #F0ADAD'>
-</span>32 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = world.collisionables.map(activateSpecialAbility)
-</span>33 <span style=''></span><span style='background: #F0ADAD'>      val remainedCollisionables = collisionables.filterNot(isTerminated)
-</span>34 <span style=''></span><span style='background: #F0ADAD'>      val (newMissiles, spawner) = world.spawner.spawn()
-</span>35 <span style=''></span><span style='background: #F0ADAD'>      world.copy(collisionables = remainedCollisionables ++ newMissiles, spawner = spawner)
-</span>36 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>37 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>  extension (collisionable: Collisionable)
+</span>19 <span style=''>    </span><span style='background: #F0ADAD'>private def activateSpecialAbility</span><span style=''>: Collisionable =
+</span>20 <span style=''>      collisionable match
+</span>21 <span style=''>        </span><span style='background: #F0ADAD'>case missile: Missile if missile.destinationReached</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>missile.explode</span><span style=''>
+</span>22 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; collisionable
+</span>23 <span style=''>
+</span>24 <span style=''>    </span><span style='background: #F0ADAD'>private def isExplosionTerminated</span><span style=''>: Boolean =
+</span>25 <span style=''>      collisionable match
+</span>26 <span style=''>        </span><span style='background: #F0ADAD'>case explosion: Explosion</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>explosion.terminated</span><span style=''>
+</span>27 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; false
+</span>28 <span style=''>
+</span>29 <span style=''>  /**
+</span>30 <span style=''>   * Apply function used to update the world to be update with the special abilities of its components
+</span>31 <span style=''>   *
+</span>32 <span style=''>   * @return An Update that update the world to be update with the special abilities of its components
+</span>33 <span style=''>   */
+</span>34 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, game: Game) =&gt;
+</span>35 <span style=''></span><span style='background: #F0ADAD'>    Task {
+</span>36 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = game.world.collisionables.map(activateSpecialAbility)
+</span>37 <span style=''></span><span style='background: #F0ADAD'>      val remainedCollisionables = collisionables.filterNot(isExplosionTerminated)
+</span>38 <span style=''></span><span style='background: #F0ADAD'>      val (newMissiles, spawner) = game.spawner.spawn()
+</span>39 <span style=''></span><span style='background: #F0ADAD'>      game.copy(
+</span>40 <span style=''></span><span style='background: #F0ADAD'>        world = game.world.copy(collisionables = remainedCollisionables ++ newMissiles),
+</span>41 <span style=''></span><span style='background: #F0ADAD'>        spawner = spawner
+</span>42 <span style=''></span><span style='background: #F0ADAD'>      )
+</span>43 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>44 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -73,15 +80,231 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          21
+          18
+        </td>
+        <td>
+          42
+        </td>
+        <td>
+          494
+          -
+          528
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          activateSpecialAbility
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          private def activateSpecialAbility
+        </td>
+      </tr><tr>
+        <td>
+          20
         </td>
         <td>
           38
         </td>
         <td>
-          694
+          635
           -
-          1437
+          650
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          explode
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.explode
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          40
+        </td>
+        <td>
+          605
+          -
+          631
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destinationReached
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.destinationReached
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          39
+        </td>
+        <td>
+          580
+          -
+          631
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case missile: Missile if missile.destinationReached
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          41
+        </td>
+        <td>
+          659
+          -
+          665
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          46
+        </td>
+        <td>
+          688
+          -
+          721
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isExplosionTerminated
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          private def isExplosionTerminated
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          44
+        </td>
+        <td>
+          767
+          -
+          792
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case explosion: Explosion
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          43
+        </td>
+        <td>
+          796
+          -
+          816
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          terminated
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          explosion.terminated
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          45
+        </td>
+        <td>
+          825
+          -
+          831
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          47
+        </td>
+        <td>
+          1089
+          -
+          1512
         </td>
         <td>
           Apply
@@ -93,34 +316,29 @@
           
         </td>
         <td style="background: #F0ADAD">
-          on[TimePassed] { (_: Event, world: World) =&gt;
+          on[TimePassed] { (_: Event, game: Game) =&gt;
     Task {
-      def activateSpecialAbility(collisionable: Collisionable): Collisionable = collisionable match
-        case missile: Missile if missile.destinationReached =&gt; missile.explode
-        case _ =&gt; collisionable
-
-      def isTerminated(collisionable: Collisionable): Boolean = collisionable match
-        case explosion: Explosion =&gt; explosion.terminated
-        case _ =&gt; false
-
-      val collisionables = world.collisionables.map(activateSpecialAbility)
-      val remainedCollisionables = collisionables.filterNot(isTerminated)
-      val (newMissiles, spawner) = world.spawner.spawn()
-      world.copy(collisionables = remainedCollisionables ++ newMissiles, spawner = spawner)
+      val collisionables = game.world.collisionables.map(activateSpecialAbility)
+      val remainedCollisionables = collisionables.filterNot(isExplosionTerminated)
+      val (newMissiles, spawner) = game.spawner.spawn()
+      game.copy(
+        world = game.world.copy(collisionables = remainedCollisionables ++ newMissiles),
+        spawner = spawner
+      )
     }
   }
         </td>
       </tr><tr>
         <td>
-          21
+          33
         </td>
         <td>
-          39
+          48
         </td>
         <td>
-          672
+          1067
           -
-          681
+          1076
         </td>
         <td>
           DefDef

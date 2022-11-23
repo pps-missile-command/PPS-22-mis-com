@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/Main.scala.html
+          model/spawner/LazySpawner.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,18 +22,18 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.spawner
 </span>2 <span style=''>
-</span>3 <span style=''>import controller.Controller
-</span>4 <span style=''>import model.World
-</span>5 <span style=''>import view.gui.GUI
-</span>6 <span style=''>import monix.execution.Scheduler.Implicits.global
-</span>7 <span style=''>
-</span>8 <span style=''>object Main:
-</span>9 <span style=''>    </span><span style='background: #F0ADAD'>def main</span><span style=''>(args: Array[String]): Unit =
-</span>10 <span style=''>        val swingUI = </span><span style='background: #F0ADAD'>new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)</span><span style=''> //39 is the number of pixels in the bar
-</span>11 <span style=''>        val loop = </span><span style='background: #F0ADAD'>Controller.start(swingUI)</span><span style=''>
-</span>12 <span style=''>        </span><span style='background: #F0ADAD'>loop.runAsyncAndForget</span><span style=''>
+</span>3 <span style=''>import model.elements2d.Point2D
+</span>4 <span style=''>
+</span>5 <span style=''>import scala.util.Random
+</span>6 <span style=''>
+</span>7 <span style=''>object LazySpawner:
+</span>8 <span style=''>
+</span>9 <span style=''>  trait Spawnable[+A]:
+</span>10 <span style=''>    def generate(): A
+</span>11 <span style=''>  
+</span>12 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[A](spawnable: Spawnable[A]): LazyList[A] = </span><span style='background: #AEF1AE'>LazyList.continually(spawnable.generate())</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -48,99 +48,51 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          8
+          11
         </td>
         <td>
-          1370
+          1136
         </td>
         <td>
-          150
+          206
           -
-          158
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          main
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def main
-        </td>
-      </tr><tr>
-        <td>
-          9
-        </td>
-        <td>
-          1367
-        </td>
-        <td>
-          210
-          -
-          273
+          248
         </td>
         <td>
           Apply
         </td>
         <td>
-          &lt;init&gt;
+          continually
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)
-        </td>
-      </tr><tr>
-        <td>
-          10
-        </td>
-        <td>
-          1368
-        </td>
-        <td>
-          333
-          -
-          358
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          start
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Controller.start(swingUI)
+        <td style="background: #AEF1AE">
+          LazyList.continually(spawnable.generate())
         </td>
       </tr><tr>
         <td>
           11
         </td>
         <td>
-          1369
+          1137
         </td>
         <td>
-          367
+          153
           -
-          389
+          162
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          runAsyncAndForget
+          apply
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          loop.runAsyncAndForget
+        <td style="background: #AEF1AE">
+          def apply
         </td>
       </tr>
     </table>
