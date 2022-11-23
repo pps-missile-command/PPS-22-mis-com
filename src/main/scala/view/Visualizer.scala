@@ -1,17 +1,24 @@
 package view
 
+import model.World
+
 import java.awt.{Image, Toolkit}
 import model.collisions.{Collisionable, Damageable}
 import model.elements2d.Point2D
 import model.ground.{City, Ground, MissileBattery}
 import model.missile.{Missile, hitboxBase, hitboxHeight}
-import utilities._
-
-
+import utilities.*
 
 import javax.imageio.ImageIO
 
+extension(i: Int)
+    def use(f: (Int) => Int) = f(i)
+
 object Visualizer:
+    private val convertPosition: (Point2D) => Point2D = (p) => Point2D((p.x * ViewConstants.GUI_width) / World.width, (p.y * ViewConstants.GUI_height) / World.height)
+    private val convertWidth: (Int) => Int = (i) => (i * ViewConstants.GUI_width) / World.width
+    private val convertHeight: (Int) => Int = (i) => (i * ViewConstants.GUI_height) / World.height
+
     val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
 
     /***
@@ -22,9 +29,9 @@ object Visualizer:
     def prepareCityImage(structure: City): Tuple4[Image, Point2D, Int, Int] =
         (
             ImageIO.read(getClass.getResource("/city_" + structure.currentLife + ".png")),
-            structure.position,
-            cityBaseSize,
-            cityHeightSize
+            structure.position map convertPosition,
+            cityBaseSize use convertWidth,
+            cityHeightSize use convertHeight
         )
 
     /***
@@ -35,9 +42,9 @@ object Visualizer:
     def prepareBatteryMissileImage(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
         (
             ImageIO.read(getClass.getResource("/Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png")),
-            structure.bottomLeft_Position,
-            missileBatteryBaseSize,
-            missileBatteryHeightSize
+            structure.bottomLeft_Position map convertPosition,
+            missileBattery_BaseSize use convertWidth,
+            missileBatteryHeightSize use convertHeight
         )
 
     /***
