@@ -33,23 +33,42 @@
 </span>9 <span style=''>  
 </span>10 <span style=''>  val threshold: Int = 50
 </span>11 <span style=''>
-</span>12 <span style=''>  </span><span style='background: #AEF1AE'>def standardSpawner</span><span style=''>(using Random) = SpawnerAggregatorImpl(
-</span>13 <span style=''>    </span><span style='background: #AEF1AE'>List(
-</span>14 <span style=''></span><span style='background: #AEF1AE'>      GenericSpawner(7, spawnable = SpecificSpawners.MissileStrategy(width, height)),
-</span>15 <span style=''></span><span style='background: #AEF1AE'>      GenericSpawner(1, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
-</span>16 <span style=''></span><span style='background: #AEF1AE'>    )</span><span style=''>:_*
-</span>17 <span style=''>  )
-</span>18 <span style=''>
-</span>19 <span style=''>  extension[A](list: LazyList[A])
-</span>20 <span style=''>    </span><span style='background: #AEF1AE'>def popN</span><span style=''>(n: Int): (Set[A], LazyList[A]) = (</span><span style='background: #AEF1AE'>list.take(n).toSet</span><span style=''>, </span><span style='background: #AEF1AE'>list.drop(n)</span><span style=''>)
-</span>21 <span style=''>  
-</span>22 <span style=''>  extension(interval: DeltaTime)
-</span>23 <span style=''>  
-</span>24 <span style=''>    </span><span style='background: #AEF1AE'>def ~</span><span style=''>(timePassed: DeltaTime) : DeltaTime = interval - interval * (1 / ( 1 + </span><span style='background: #AEF1AE'>Math.exp((-interval / 4) * timePassed)</span><span style=''>) - interval / 2)
-</span>25 <span style=''>  
-</span>26 <span style=''>    </span><span style='background: #AEF1AE'>def mapIf</span><span style=''>(condition: () =&gt; Boolean)(mapper: (DeltaTime) =&gt; DeltaTime): DeltaTime = condition match
-</span>27 <span style=''>      </span><span style='background: #AEF1AE'>case _ if condition()</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>mapper(interval)</span><span style=''>
-</span>28 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; interval
+</span>12 <span style=''>  /**
+</span>13 <span style=''>   * Aggregated spawner composed by a list of [[GenericSpawner]]
+</span>14 <span style=''>   * @param Random The Random instance
+</span>15 <span style=''>   * @return the new  [[SpawnerAggregator]]
+</span>16 <span style=''>   */
+</span>17 <span style=''>  </span><span style='background: #AEF1AE'>def standardSpawner</span><span style=''>(using Random) = SpawnerAggregatorImpl(
+</span>18 <span style=''>    </span><span style='background: #AEF1AE'>List(
+</span>19 <span style=''></span><span style='background: #AEF1AE'>      GenericSpawner(3, spawnable = SpecificSpawners.MissileStrategy(width, height)),
+</span>20 <span style=''></span><span style='background: #AEF1AE'>      GenericSpawner(10, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
+</span>21 <span style=''></span><span style='background: #AEF1AE'>    )</span><span style=''>:_*
+</span>22 <span style=''>  )
+</span>23 <span style=''>
+</span>24 <span style=''>  /**
+</span>25 <span style=''>   * Extension method that permits to pop n elements from a generic LazyList
+</span>26 <span style=''>   */
+</span>27 <span style=''>  extension[A](list: LazyList[A])
+</span>28 <span style=''>    </span><span style='background: #AEF1AE'>def popN</span><span style=''>(n: Int): (Set[A], LazyList[A]) = (</span><span style='background: #AEF1AE'>list.take(n).toSet</span><span style=''>, </span><span style='background: #AEF1AE'>list.drop(n)</span><span style=''>)
+</span>29 <span style=''>
+</span>30 <span style=''>  /**
+</span>31 <span style=''>   * Extension methods for DeltaTime
+</span>32 <span style=''>   */
+</span>33 <span style=''>  extension(interval: DeltaTime)
+</span>34 <span style=''>
+</span>35 <span style=''>    /**
+</span>36 <span style=''>     * The hyperbole function that given a timePassed retun the updated missile
+</span>37 <span style=''>     */
+</span>38 <span style=''>    </span><span style='background: #AEF1AE'>def ~</span><span style=''>(timePassed: DeltaTime) : DeltaTime = interval - interval * (1 / ( 1 + </span><span style='background: #AEF1AE'>Math.exp((-interval / 4) * timePassed)</span><span style=''>) - interval / 2)
+</span>39 <span style=''>    /**
+</span>40 <span style=''>     * Function that given a condition and a world può inficiare positivamente sulle lezaione.
+</span>41 <span style=''>     * @param condition The condition to which we can subscreibe
+</span>42 <span style=''>     * @param mapper
+</span>43 <span style=''>     * @return
+</span>44 <span style=''>     */
+</span>45 <span style=''>    </span><span style='background: #AEF1AE'>def mapIf</span><span style=''>(condition: () =&gt; Boolean)(mapper: (DeltaTime) =&gt; DeltaTime): DeltaTime = condition match
+</span>46 <span style=''>      </span><span style='background: #AEF1AE'>case _ if condition()</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>mapper(interval)</span><span style=''>
+</span>47 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; interval
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -64,15 +83,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          11
+          16
         </td>
         <td>
-          1187
+          1151
         </td>
         <td>
-          159
+          319
           -
-          178
+          338
         </td>
         <td>
           DefDef
@@ -88,15 +107,15 @@
         </td>
       </tr><tr>
         <td>
-          12
+          17
         </td>
         <td>
-          1186
+          1150
         </td>
         <td>
-          222
+          382
           -
-          403
+          564
         </td>
         <td>
           Apply
@@ -109,21 +128,21 @@
         </td>
         <td style="background: #AEF1AE">
           List(
-      GenericSpawner(7, spawnable = SpecificSpawners.MissileStrategy(width, height)),
-      GenericSpawner(1, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
+      GenericSpawner(3, spawnable = SpecificSpawners.MissileStrategy(width, height)),
+      GenericSpawner(10, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
     )
         </td>
       </tr><tr>
         <td>
-          13
+          18
         </td>
         <td>
-          1178
+          1142
         </td>
         <td>
-          234
+          394
           -
-          312
+          472
         </td>
         <td>
           Apply
@@ -135,43 +154,43 @@
           
         </td>
         <td style="background: #AEF1AE">
-          GenericSpawner(7, spawnable = SpecificSpawners.MissileStrategy(width, height))
+          GenericSpawner(3, spawnable = SpecificSpawners.MissileStrategy(width, height))
         </td>
       </tr><tr>
         <td>
-          13
+          18
         </td>
         <td>
-          1177
+          1136
         </td>
         <td>
-          234
+          457
           -
-          248
+          462
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          apply$default$5
+          int2double
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          GenericSpawner
+          width
         </td>
       </tr><tr>
         <td>
-          13
+          18
         </td>
         <td>
-          1174
+          1138
         </td>
         <td>
-          264
+          424
           -
-          311
+          471
         </td>
         <td>
           Apply
@@ -187,255 +206,15 @@
         </td>
       </tr><tr>
         <td>
-          13
+          18
         </td>
         <td>
-          1176
+          1141
         </td>
         <td>
-          234
+          394
           -
-          248
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          apply$default$3
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          GenericSpawner
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          1173
-        </td>
-        <td>
-          304
-          -
-          310
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          height
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          1172
-        </td>
-        <td>
-          297
-          -
-          302
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          width
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          1175
-        </td>
-        <td>
-          234
-          -
-          248
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          apply$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          GenericSpawner
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1180
-        </td>
-        <td>
-          389
-          -
-          395
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          height
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1183
-        </td>
-        <td>
-          320
-          -
-          334
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          apply$default$3
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          GenericSpawner
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1185
-        </td>
-        <td>
-          320
-          -
-          397
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          GenericSpawner(1, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1179
-        </td>
-        <td>
-          382
-          -
-          387
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          width
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1182
-        </td>
-        <td>
-          320
-          -
-          334
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          apply$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          GenericSpawner
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1181
-        </td>
-        <td>
-          350
-          -
-          396
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          ZigZagStrategy
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          SpecificSpawners.ZigZagStrategy(width, height)
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1184
-        </td>
-        <td>
-          320
-          -
-          334
+          408
         </td>
         <td>
           Select
@@ -451,87 +230,255 @@
         </td>
       </tr><tr>
         <td>
-          19
+          18
         </td>
         <td>
-          1189
+          1140
         </td>
         <td>
-          493
+          394
           -
-          511
+          408
         </td>
         <td>
           Select
         </td>
         <td>
-          toSet
+          apply$default$3
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          list.take(n).toSet
+          GenericSpawner
         </td>
       </tr><tr>
         <td>
-          19
+          18
         </td>
         <td>
-          1188
+          1137
         </td>
         <td>
-          493
+          464
           -
-          505
+          470
         </td>
         <td>
           Apply
         </td>
         <td>
-          take
+          int2double
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          list.take(n)
+          height
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1139
+        </td>
+        <td>
+          394
+          -
+          408
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner
         </td>
       </tr><tr>
         <td>
           19
         </td>
         <td>
-          1191
+          1145
         </td>
         <td>
-          450
+          511
           -
-          458
+          557
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          popN
+          ZigZagStrategy
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def popN
+          SpecificSpawners.ZigZagStrategy(width, height)
         </td>
       </tr><tr>
         <td>
           19
         </td>
         <td>
-          1190
+          1144
         </td>
         <td>
-          513
+          550
           -
-          525
+          556
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          height
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1147
+        </td>
+        <td>
+          480
+          -
+          494
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1149
+        </td>
+        <td>
+          480
+          -
+          558
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner(10, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1143
+        </td>
+        <td>
+          543
+          -
+          548
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          width
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1146
+        </td>
+        <td>
+          480
+          -
+          494
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1148
+        </td>
+        <td>
+          480
+          -
+          494
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          apply$default$5
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          GenericSpawner
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1154
+        </td>
+        <td>
+          763
+          -
+          775
         </td>
         <td>
           Apply
@@ -547,15 +494,87 @@
         </td>
       </tr><tr>
         <td>
-          23
+          27
         </td>
         <td>
-          1192
+          1153
         </td>
         <td>
-          646
+          743
           -
-          684
+          761
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toSet
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          list.take(n).toSet
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1152
+        </td>
+        <td>
+          743
+          -
+          755
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          take
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          list.take(n)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1155
+        </td>
+        <td>
+          700
+          -
+          708
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          popN
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def popN
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          1156
+        </td>
+        <td>
+          1037
+          -
+          1075
         </td>
         <td>
           Apply
@@ -571,15 +590,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          37
         </td>
         <td>
-          1193
+          1157
         </td>
         <td>
-          570
+          961
           -
-          575
+          966
         </td>
         <td>
           DefDef
@@ -595,15 +614,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          44
         </td>
         <td>
-          1198
+          1162
         </td>
         <td>
-          709
+          1309
           -
-          718
+          1318
         </td>
         <td>
           DefDef
@@ -619,15 +638,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          45
         </td>
         <td>
-          1196
+          1160
         </td>
         <td>
-          824
+          1424
           -
-          835
+          1435
         </td>
         <td>
           Apply
@@ -643,15 +662,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          45
         </td>
         <td>
-          1195
+          1159
         </td>
         <td>
-          814
+          1414
           -
-          835
+          1435
         </td>
         <td>
           Block
@@ -667,15 +686,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          45
         </td>
         <td>
-          1194
+          1158
         </td>
         <td>
-          839
+          1439
           -
-          855
+          1455
         </td>
         <td>
           Apply
@@ -691,15 +710,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          46
         </td>
         <td>
-          1197
+          1161
         </td>
         <td>
-          862
+          1462
           -
-          868
+          1468
         </td>
         <td>
           Block

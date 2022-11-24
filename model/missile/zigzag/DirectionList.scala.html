@@ -30,91 +30,67 @@
 </span>6 <span style=''>import scala.util.Random
 </span>7 <span style=''>
 </span>8 <span style=''>/**
-</span>9 <span style=''> * tot step da punto di partenza a dest
-</span>10 <span style=''> * mi muovo sulla direzione e scelgo sotto punti
+</span>9 <span style=''> * This object models the creation of a list composed by a sequence of points that represents an
+</span>10 <span style=''> * alternate path
 </span>11 <span style=''> */
-</span>12 <span style=''>
-</span>13 <span style=''>object DirectionList:
-</span>14 <span style=''>
-</span>15 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>[A](start: A)(next: (A) =&gt; A)(cond: (A) =&gt; Boolean)(mapping: (A) =&gt; A)(using Random): LazyList[A] =
-</span>16 <span style=''>    </span><span style='background: #F0ADAD'>LazyList.iterate(start)(next) filter(cond) map(mapping</span><span style=''>)
-</span>17 <span style=''>
-</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def randomList</span><span style=''>(from: Point2D, to: Point2D, step: Int)(using Random): LazyList[Point2D] =
-</span>19 <span style=''>    val d = (</span><span style='background: #F0ADAD'>to &lt;-&gt; from</span><span style=''>) / step
-</span>20 <span style=''>    val v = </span><span style='background: #F0ADAD'>((to &lt;--&gt; from).normalize) * d</span><span style=''>
-</span>21 <span style=''>    </span><span style='background: #F0ADAD'>DirectionList(from) {
-</span>22 <span style=''></span><span style='background: #F0ADAD'>      i =&gt; i --&gt; (-v)
-</span>23 <span style=''></span><span style='background: #F0ADAD'>    } (_ != from) {
-</span>24 <span style=''></span><span style='background: #F0ADAD'>      i =&gt; i --&gt; (-v -|- Rand(Random))
-</span>25 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
-</span>26 <span style=''>
-</span>27 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(from: Point2D, to: Point2D, step: Int)(using Random): LazyList[Point2D] =
-</span>28 <span style=''>    val d = (</span><span style='background: #AEF1AE'>to &lt;-&gt; from</span><span style=''>) / step
-</span>29 <span style=''>    val v = </span><span style='background: #AEF1AE'>((to &lt;--&gt; from).normalize) * d</span><span style=''>
-</span>30 <span style=''>    val stream = </span><span style='background: #AEF1AE'>LazyList.iterate(0)(_ + 1)</span><span style=''>
-</span>31 <span style=''>    val pointsStream = </span><span style='background: #AEF1AE'>LazyList.iterate(from)( _ --&gt; (-v) )</span><span style=''>
-</span>32 <span style=''>    </span><span style='background: #AEF1AE'>for
-</span>33 <span style=''></span><span style='background: #AEF1AE'>      index &lt;- stream.take(step)
-</span>34 <span style=''></span><span style='background: #AEF1AE'>      if(index != 0)
-</span>35 <span style=''></span><span style='background: #AEF1AE'>      point = pointsStream.take(index + 1).toList.last
-</span>36 <span style=''></span><span style='background: #AEF1AE'>      direction = stream.take(index + 1).map {
-</span>37 <span style=''></span><span style='background: #AEF1AE'>        i =&gt; (i % 2) match
-</span>38 <span style=''></span><span style='background: #AEF1AE'>          case v if v == 0 =&gt; Right
-</span>39 <span style=''></span><span style='background: #AEF1AE'>          case _ =&gt; Left
-</span>40 <span style=''></span><span style='background: #AEF1AE'>      }.toList.last
-</span>41 <span style=''></span><span style='background: #AEF1AE'>    yield point --&gt; (-v -|- direction)</span><span style=''>
-</span>42 <span style=''>
-</span>43 <span style=''>  </span><span style='background: #F0ADAD'>@main def translatePoint</span><span style=''>() =
-</span>44 <span style=''>    val p = </span><span style='background: #F0ADAD'>Point2D(5,5)</span><span style=''>
-</span>45 <span style=''>    val v = </span><span style='background: #F0ADAD'>Vector2D(1,1)</span><span style=''>
-</span>46 <span style=''>    val v1 = </span><span style='background: #F0ADAD'>v -|- Right</span><span style=''>
-</span>47 <span style=''>    val v2 = </span><span style='background: #F0ADAD'>v -|- Left</span><span style=''>
-</span>48 <span style=''>    val newP = </span><span style='background: #F0ADAD'>p --&gt; (-v1</span><span style=''>)
-</span>49 <span style=''>    val newP1 = </span><span style='background: #F0ADAD'>p --&gt; (-v2</span><span style=''>)
-</span>50 <span style=''>    </span><span style='background: #F0ADAD'>println(newP)</span><span style=''>
-</span>51 <span style=''>    </span><span style='background: #F0ADAD'>println(newP1)</span><span style=''>
-</span>52 <span style=''>    val p1 = </span><span style='background: #F0ADAD'>p --&gt; v</span><span style=''>
-</span>53 <span style=''>    val newP3 = </span><span style='background: #F0ADAD'>p1 --&gt; v1</span><span style=''>
-</span>54 <span style=''>    </span><span style='background: #F0ADAD'>println(newP3)</span><span style=''>
-</span>55 <span style=''>
-</span>56 <span style=''>  </span><span style='background: #F0ADAD'>@main def testPoints</span><span style=''>() =
-</span>57 <span style=''>    val step = 4
-</span>58 <span style=''>    val p = </span><span style='background: #F0ADAD'>Point2D(0,0)</span><span style=''>
-</span>59 <span style=''>    val p1 = </span><span style='background: #F0ADAD'>Point2D(3,3)</span><span style=''>
-</span>60 <span style=''>    val d = (</span><span style='background: #F0ADAD'>p &lt;-&gt; p1</span><span style=''>) / step
-</span>61 <span style=''>    val v = </span><span style='background: #F0ADAD'>((p1 &lt;--&gt; p).normalize) * d</span><span style=''>
-</span>62 <span style=''>    </span><span style='background: #F0ADAD'>println(v)</span><span style=''>
-</span>63 <span style=''>    val newP = </span><span style='background: #F0ADAD'>p --&gt; (-v</span><span style=''>)
-</span>64 <span style=''>    </span><span style='background: #F0ADAD'>println(newP)</span><span style=''>
-</span>65 <span style=''>    val newP1 = </span><span style='background: #F0ADAD'>newP --&gt; (-v</span><span style=''>)
-</span>66 <span style=''>    </span><span style='background: #F0ADAD'>println(newP1)</span><span style=''>
-</span>67 <span style=''>    val newP2 = </span><span style='background: #F0ADAD'>newP1 --&gt; (-v</span><span style=''>)
-</span>68 <span style=''>    </span><span style='background: #F0ADAD'>println(newP2)</span><span style=''>
-</span>69 <span style=''>    val newP3 = </span><span style='background: #F0ADAD'>newP2 --&gt; (-v</span><span style=''>)
-</span>70 <span style=''>    </span><span style='background: #F0ADAD'>println(newP3)</span><span style=''>
-</span>71 <span style=''>
-</span>72 <span style=''>  </span><span style='background: #F0ADAD'>@main def test1</span><span style=''>() =
-</span>73 <span style=''>    val stream = </span><span style='background: #F0ADAD'>LazyList.iterate[Int](0)(_ + 1)</span><span style=''>
-</span>74 <span style=''>    val firstElement = </span><span style='background: #F0ADAD'>stream.take(4).toList</span><span style=''>
-</span>75 <span style=''>    val stream1 = </span><span style='background: #F0ADAD'>stream.drop(4)</span><span style=''>
-</span>76 <span style=''>    </span><span style='background: #F0ADAD'>println(firstElement)</span><span style=''>
-</span>77 <span style=''>    val secondElement = </span><span style='background: #F0ADAD'>stream1.take(1).toList</span><span style=''>
-</span>78 <span style=''>    </span><span style='background: #F0ADAD'>println(secondElement)</span><span style=''>
-</span>79 <span style=''>
-</span>80 <span style=''>  </span><span style='background: #F0ADAD'>@main def testRandomPoints</span><span style=''> =
-</span>81 <span style=''>    given </span><span style='background: #F0ADAD'>Random()</span><span style=''>
-</span>82 <span style=''>    val stream = </span><span style='background: #F0ADAD'>randomList(Point2D(0, 0), Point2D(10, 10), 4)</span><span style=''>
-</span>83 <span style=''>    val points = </span><span style='background: #F0ADAD'>stream.take(4).toList</span><span style=''>
-</span>84 <span style=''>    </span><span style='background: #F0ADAD'>println(points map {
-</span>85 <span style=''></span><span style='background: #F0ADAD'>      i =&gt; &quot;(&quot;+i.x+&quot;, &quot;+i.y+&quot;)\n&quot;
-</span>86 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
-</span>87 <span style=''>
-</span>88 <span style=''>  </span><span style='background: #F0ADAD'>@main def testZigZag</span><span style=''> =
-</span>89 <span style=''>    given </span><span style='background: #F0ADAD'>Random()</span><span style=''>
-</span>90 <span style=''>    val points = </span><span style='background: #F0ADAD'>apply(Point2D(0,0), Point2D(13, 15), 3).toList</span><span style=''>
-</span>91 <span style=''>    </span><span style='background: #F0ADAD'>println(points map {
-</span>92 <span style=''></span><span style='background: #F0ADAD'>      i =&gt; &quot;(&quot;+i.x+&quot;, &quot;+i.y+&quot;)\n&quot;
-</span>93 <span style=''></span><span style='background: #F0ADAD'>    })</span><span style=''>
+</span>12 <span style=''>object DirectionList:
+</span>13 <span style=''>  /**
+</span>14 <span style=''>   * This factory is used to create a generic LazyList starting from a determined element, specifying the successive
+</span>15 <span style=''>   * element of each one and the condition to filter some possible elements
+</span>16 <span style=''>   * @param start The starting point to iterate
+</span>17 <span style=''>   * @param next The next element to calculate
+</span>18 <span style=''>   * @param cond The condition used to filter elements
+</span>19 <span style=''>   * @param mapping Function that maps the iterated element into a new one
+</span>20 <span style=''>   * @tparam A Generic type of the LazyList
+</span>21 <span style=''>   * @return the LazyList created
+</span>22 <span style=''>   */
+</span>23 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[A](start: A)(next: (A) =&gt; A)(cond: (A) =&gt; Boolean)(mapping: (A) =&gt; A): LazyList[A] =
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>LazyList.iterate(start)(next) filter(cond) map(mapping</span><span style=''>)
+</span>25 <span style=''>
+</span>26 <span style=''>  /**
+</span>27 <span style=''>   * This method creates a list with random zigzag behavior, this means that the directions are not alternated but
+</span>28 <span style=''>   * generated randomically
+</span>29 <span style=''>   * @param from The starting point to create the path
+</span>30 <span style=''>   * @param to The destination point
+</span>31 <span style=''>   * @param step The number of direction changes to perform
+</span>32 <span style=''>   * @param Random The Random context element used to generate randomically the nth direction
+</span>33 <span style=''>   * @return the new LazyList
+</span>34 <span style=''>   */
+</span>35 <span style=''>  </span><span style='background: #AEF1AE'>def randomList</span><span style=''>(from: Point2D, to: Point2D, step: Int)(using Random): LazyList[Point2D] =
+</span>36 <span style=''>    val d = (</span><span style='background: #AEF1AE'>to &lt;-&gt; from</span><span style=''>) / step
+</span>37 <span style=''>    val v = </span><span style='background: #AEF1AE'>((to &lt;--&gt; from).normalize) * d</span><span style=''>
+</span>38 <span style=''>    </span><span style='background: #AEF1AE'>DirectionList(from) {
+</span>39 <span style=''></span><span style='background: #AEF1AE'>      i =&gt; i --&gt; (-v)
+</span>40 <span style=''></span><span style='background: #AEF1AE'>    } (_ != from) {
+</span>41 <span style=''></span><span style='background: #AEF1AE'>      i =&gt; i --&gt; (-v -|- Rand(Random))
+</span>42 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>  /**
+</span>45 <span style=''>   * This factory generates a LazyList with directions alternated (Right, Left, Right...), creating a zigzag path
+</span>46 <span style=''>   * between two points
+</span>47 <span style=''>   * @param from The starting point to create the path
+</span>48 <span style=''>   * @param to The destination point
+</span>49 <span style=''>   * @param step The number of direction changes to perform
+</span>50 <span style=''>   * @param magnitude The magnitude of the rotated vectors used to traslate (on the left or right) the subpoints of the path
+</span>51 <span style=''>   * @param maxWidth The max width whithin generate the path
+</span>52 <span style=''>   * @param Random The Random object used to
+</span>53 <span style=''>   * @return the new LazyList with the zigzag path
+</span>54 <span style=''>   */
+</span>55 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(from: Point2D, to: Point2D, step: Int, magnitude: Int = defaultMagnitude, maxWidth: Double): LazyList[Point2D] =
+</span>56 <span style=''>    val d = (</span><span style='background: #AEF1AE'>to &lt;-&gt; from</span><span style=''>) / step
+</span>57 <span style=''>    val v = </span><span style='background: #AEF1AE'>((to &lt;--&gt; from).normalize) * d</span><span style=''>
+</span>58 <span style=''>    val stream = </span><span style='background: #AEF1AE'>LazyList.iterate(0)(_ + 1)</span><span style=''>
+</span>59 <span style=''>    val pointsStream = </span><span style='background: #AEF1AE'>LazyList.iterate(from)( _ --&gt; (-v) )</span><span style=''>
+</span>60 <span style=''>    </span><span style='background: #AEF1AE'>for
+</span>61 <span style=''></span><span style='background: #AEF1AE'>      index &lt;- stream.take(step)
+</span>62 <span style=''></span><span style='background: #AEF1AE'>      if(index != 0)
+</span>63 <span style=''></span><span style='background: #AEF1AE'>      point = pointsStream.take(index + 1).toList.last
+</span>64 <span style=''></span><span style='background: #AEF1AE'>      direction = stream.take(index + 1).map {
+</span>65 <span style=''></span><span style='background: #AEF1AE'>        i =&gt; (i % 2) match
+</span>66 <span style=''></span><span style='background: #AEF1AE'>          case v if v == 0 =&gt; Right
+</span>67 <span style=''></span><span style='background: #AEF1AE'>          case _ =&gt; Left
+</span>68 <span style=''></span><span style='background: #AEF1AE'>      }.toList.last
+</span>69 <span style=''></span><span style='background: #AEF1AE'>    yield (point --&gt; (-v -|- (direction, magnitude))).filterMap(maxWidth)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -129,15 +105,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          14
+          22
         </td>
         <td>
-          909
+          918
         </td>
         <td>
-          250
+          782
           -
-          259
+          791
         </td>
         <td>
           DefDef
@@ -148,20 +124,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           def apply
         </td>
       </tr><tr>
         <td>
-          15
+          23
         </td>
         <td>
-          908
+          917
         </td>
         <td>
-          363
+          881
           -
-          417
+          935
         </td>
         <td>
           Apply
@@ -172,20 +148,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           LazyList.iterate(start)(next) filter(cond) map(mapping
         </td>
       </tr><tr>
         <td>
-          15
+          23
         </td>
         <td>
-          905
+          914
         </td>
         <td>
-          363
+          881
           -
-          371
+          889
         </td>
         <td>
           Ident
@@ -196,20 +172,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           LazyList
         </td>
       </tr><tr>
         <td>
-          15
+          23
         </td>
         <td>
-          907
+          916
         </td>
         <td>
-          363
+          881
           -
-          404
+          922
         </td>
         <td>
           Apply
@@ -220,20 +196,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           LazyList.iterate(start)(next) filter(cond
         </td>
       </tr><tr>
         <td>
-          15
+          23
         </td>
         <td>
-          906
+          915
         </td>
         <td>
-          363
+          881
           -
-          392
+          910
         </td>
         <td>
           Apply
@@ -244,20 +220,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           LazyList.iterate(start)(next)
         </td>
       </tr><tr>
         <td>
-          17
+          34
         </td>
         <td>
-          920
+          930
         </td>
         <td>
-          422
+          1371
           -
-          436
+          1385
         </td>
         <td>
           DefDef
@@ -268,20 +244,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           def randomList
         </td>
       </tr><tr>
         <td>
-          18
+          35
         </td>
         <td>
-          910
+          919
         </td>
         <td>
-          524
+          1473
           -
-          535
+          1484
         </td>
         <td>
           Apply
@@ -292,20 +268,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           to &lt;-&gt; from
         </td>
       </tr><tr>
         <td>
-          19
+          36
         </td>
         <td>
-          911
+          920
         </td>
         <td>
-          558
+          1507
           -
-          570
+          1519
         </td>
         <td>
           Apply
@@ -316,20 +292,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           to &lt;--&gt; from
         </td>
       </tr><tr>
         <td>
-          19
+          36
         </td>
         <td>
-          913
+          922
         </td>
         <td>
-          556
+          1505
           -
-          586
+          1535
         </td>
         <td>
           Apply
@@ -340,20 +316,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           ((to &lt;--&gt; from).normalize) * d
         </td>
       </tr><tr>
         <td>
-          19
+          36
         </td>
         <td>
-          912
+          921
         </td>
         <td>
-          557
+          1506
           -
-          581
+          1530
         </td>
         <td>
           Select
@@ -364,20 +340,68 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           (to &lt;--&gt; from).normalize
         </td>
       </tr><tr>
         <td>
-          20
+          38
         </td>
         <td>
-          919
+          923
         </td>
         <td>
-          591
+          1580
           -
-          699
+          1582
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          unary_-
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          -v
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          924
+        </td>
+        <td>
+          1573
+          -
+          1582
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          i --&gt; (-v
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          929
+        </td>
+        <td>
+          1540
+          -
+          1648
         </td>
         <td>
           Apply
@@ -388,7 +412,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           DirectionList(from) {
       i =&gt; i --&gt; (-v)
     } (_ != from) {
@@ -397,15 +421,39 @@
         </td>
       </tr><tr>
         <td>
-          21
+          40
         </td>
         <td>
-          914
+          926
         </td>
         <td>
-          631
+          1622
           -
-          633
+          1628
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          -|-$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          -v -|-
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          925
+        </td>
+        <td>
+          1622
+          -
+          1624
         </td>
         <td>
           Select
@@ -416,20 +464,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           -v
         </td>
       </tr><tr>
         <td>
-          21
+          40
         </td>
         <td>
-          915
+          928
         </td>
         <td>
-          624
+          1615
           -
-          633
+          1641
         </td>
         <td>
           Apply
@@ -440,20 +488,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          i --&gt; (-v
+        <td style="background: #AEF1AE">
+          i --&gt; (-v -|- Rand(Random)
         </td>
       </tr><tr>
         <td>
-          23
+          40
         </td>
         <td>
-          917
+          927
         </td>
         <td>
-          673
+          1622
           -
-          692
+          1641
         </td>
         <td>
           Apply
@@ -464,68 +512,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           -v -|- Rand(Random)
         </td>
       </tr><tr>
         <td>
-          23
+          54
         </td>
         <td>
-          916
+          959
         </td>
         <td>
-          673
+          2236
           -
-          675
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          unary_-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          -v
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          918
-        </td>
-        <td>
-          666
-          -
-          692
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          i --&gt; (-v -|- Rand(Random)
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          948
-        </td>
-        <td>
-          703
-          -
-          712
+          2245
         </td>
         <td>
           DefDef
@@ -541,15 +541,39 @@
         </td>
       </tr><tr>
         <td>
-          27
+          54
         </td>
         <td>
-          921
+          960
         </td>
         <td>
-          800
+          2302
           -
-          811
+          2302
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          931
+        </td>
+        <td>
+          2372
+          -
+          2383
         </td>
         <td>
           Apply
@@ -565,39 +589,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          56
         </td>
         <td>
-          923
+          932
         </td>
         <td>
-          833
+          2406
           -
-          857
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          normalize
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (to &lt;--&gt; from).normalize
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          922
-        </td>
-        <td>
-          834
-          -
-          846
+          2418
         </td>
         <td>
           Apply
@@ -613,15 +613,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          56
         </td>
         <td>
-          924
+          934
         </td>
         <td>
-          832
+          2404
           -
-          862
+          2434
         </td>
         <td>
           Apply
@@ -637,15 +637,63 @@
         </td>
       </tr><tr>
         <td>
-          29
+          56
         </td>
         <td>
-          926
+          933
         </td>
         <td>
-          880
+          2405
           -
-          906
+          2429
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          normalize
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (to &lt;--&gt; from).normalize
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          935
+        </td>
+        <td>
+          2452
+          -
+          2460
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          LazyList
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          LazyList
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          936
+        </td>
+        <td>
+          2452
+          -
+          2478
         </td>
         <td>
           Apply
@@ -661,63 +709,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          58
         </td>
         <td>
-          925
+          938
         </td>
         <td>
-          880
+          2533
           -
-          888
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          LazyList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          LazyList
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          929
-        </td>
-        <td>
-          954
-          -
-          963
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _ --&gt; (-v
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          928
-        </td>
-        <td>
-          961
-          -
-          963
+          2535
         </td>
         <td>
           Select
@@ -733,15 +733,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          58
         </td>
         <td>
-          927
+          937
         </td>
         <td>
-          930
+          2502
           -
-          938
+          2510
         </td>
         <td>
           Ident
@@ -757,15 +757,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          58
         </td>
         <td>
-          930
+          940
         </td>
         <td>
-          930
+          2502
           -
-          966
+          2538
         </td>
         <td>
           Apply
@@ -781,15 +781,39 @@
         </td>
       </tr><tr>
         <td>
-          31
+          58
         </td>
         <td>
-          947
+          939
         </td>
         <td>
-          971
+          2526
           -
-          1277
+          2535
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ --&gt; (-v
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          958
+        </td>
+        <td>
+          2543
+          -
+          2884
         </td>
         <td>
           Apply
@@ -810,71 +834,19 @@
           case v if v == 0 =&gt; Right
           case _ =&gt; Left
       }.toList.last
-    yield point --&gt; (-v -|- direction)
+    yield (point --&gt; (-v -|- (direction, magnitude))).filterMap(maxWidth)
         </td>
       </tr><tr>
         <td>
-          32
+          60
         </td>
         <td>
-          932
+          941
         </td>
         <td>
-          981
+          2562
           -
-          1028
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withFilter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          index &lt;- stream.take(step)
-      if(index != 0)
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          946
-        </td>
-        <td>
-          981
-          -
-          1099
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          index &lt;- stream.take(step)
-      if(index != 0)
-      point = pointsStream.take(index + 1).toList.last
-      direction
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          931
-        </td>
-        <td>
-          990
-          -
-          1007
+          2579
         </td>
         <td>
           Apply
@@ -890,15 +862,15 @@
         </td>
       </tr><tr>
         <td>
-          32
+          60
         </td>
         <td>
-          942
+          952
         </td>
         <td>
-          981
+          2553
           -
-          1238
+          2810
         </td>
         <td>
           Apply
@@ -921,39 +893,67 @@
         </td>
       </tr><tr>
         <td>
-          34
+          60
         </td>
         <td>
-          935
+          957
         </td>
         <td>
-          1043
+          2553
           -
-          1083
+          2671
         </td>
         <td>
-          Select
+          Block
         </td>
         <td>
-          last
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          pointsStream.take(index + 1).toList.last
+          index &lt;- stream.take(step)
+      if(index != 0)
+      point = pointsStream.take(index + 1).toList.last
+      direction
         </td>
       </tr><tr>
         <td>
-          34
+          60
         </td>
         <td>
-          934
+          942
         </td>
         <td>
-          1043
+          2553
           -
-          1078
+          2600
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          index &lt;- stream.take(step)
+      if(index != 0)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          944
+        </td>
+        <td>
+          2615
+          -
+          2650
         </td>
         <td>
           Select
@@ -969,15 +969,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          62
         </td>
         <td>
-          933
+          943
         </td>
         <td>
-          1043
+          2615
           -
-          1071
+          2643
         </td>
         <td>
           Apply
@@ -993,15 +993,39 @@
         </td>
       </tr><tr>
         <td>
-          35
+          62
         </td>
         <td>
-          936
+          945
         </td>
         <td>
-          1102
+          2615
           -
-          1124
+          2655
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          last
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          pointsStream.take(index + 1).toList.last
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          946
+        </td>
+        <td>
+          2674
+          -
+          2696
         </td>
         <td>
           Apply
@@ -1017,15 +1041,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          63
         </td>
         <td>
-          939
+          949
         </td>
         <td>
-          1102
+          2674
           -
-          1226
+          2798
         </td>
         <td>
           Apply
@@ -1045,15 +1069,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          65
         </td>
         <td>
-          937
+          947
         </td>
         <td>
-          1168
+          2740
           -
-          1184
+          2756
         </td>
         <td>
           Block
@@ -1069,15 +1093,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          66
         </td>
         <td>
-          938
+          948
         </td>
         <td>
-          1204
+          2776
           -
-          1210
+          2782
         </td>
         <td>
           Block
@@ -1093,43 +1117,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          67
         </td>
         <td>
-          941
+          950
         </td>
         <td>
-          1102
+          2674
           -
-          1238
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          last
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          stream.take(index + 1).map {
-        i =&gt; (i % 2) match
-          case v if v == 0 =&gt; Right
-          case _ =&gt; Left
-      }.toList.last
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          940
-        </td>
-        <td>
-          1102
-          -
-          1233
+          2805
         </td>
         <td>
           Select
@@ -1149,207 +1145,43 @@
         </td>
       </tr><tr>
         <td>
-          40
-        </td>
-        <td>
-          944
-        </td>
-        <td>
-          1260
-          -
-          1276
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          -|-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          -v -|- direction
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          943
-        </td>
-        <td>
-          1260
-          -
-          1262
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          unary_-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          -v
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          945
-        </td>
-        <td>
-          1249
-          -
-          1276
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point --&gt; (-v -|- direction
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          962
-        </td>
-        <td>
-          1281
-          -
-          1305
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          translatePoint
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          @main def translatePoint
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          949
-        </td>
-        <td>
-          1322
-          -
-          1334
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(5,5)
-        </td>
-      </tr><tr>
-        <td>
-          44
-        </td>
-        <td>
-          950
-        </td>
-        <td>
-          1347
-          -
-          1360
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Vector2D(1,1)
-        </td>
-      </tr><tr>
-        <td>
-          45
+          67
         </td>
         <td>
           951
         </td>
         <td>
-          1374
+          2674
           -
-          1385
+          2810
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          -|-
+          last
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          v -|- Right
+        <td style="background: #AEF1AE">
+          stream.take(index + 1).map {
+        i =&gt; (i % 2) match
+          case v if v == 0 =&gt; Right
+          case _ =&gt; Left
+      }.toList.last
         </td>
       </tr><tr>
         <td>
-          46
-        </td>
-        <td>
-          952
-        </td>
-        <td>
-          1399
-          -
-          1409
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          -|-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          v -|- Left
-        </td>
-      </tr><tr>
-        <td>
-          47
+          68
         </td>
         <td>
           953
         </td>
         <td>
-          1432
+          2833
           -
-          1435
+          2835
         </td>
         <td>
           Select
@@ -1360,140 +1192,44 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          -v1
+        <td style="background: #AEF1AE">
+          -v
         </td>
       </tr><tr>
         <td>
-          47
-        </td>
-        <td>
-          954
-        </td>
-        <td>
-          1425
-          -
-          1435
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          p --&gt; (-v1
-        </td>
-      </tr><tr>
-        <td>
-          48
+          68
         </td>
         <td>
           956
         </td>
         <td>
-          1453
+          2821
           -
-          1463
+          2884
         </td>
         <td>
           Apply
         </td>
         <td>
-          --&gt;
+          filterMap
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          p --&gt; (-v2
+        <td style="background: #AEF1AE">
+          (point --&gt; (-v -|- (direction, magnitude))).filterMap(maxWidth)
         </td>
       </tr><tr>
         <td>
-          48
+          68
         </td>
         <td>
           955
         </td>
         <td>
-          1460
+          2822
           -
-          1463
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          unary_-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          -v2
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          957
-        </td>
-        <td>
-          1469
-          -
-          1482
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(newP)
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          958
-        </td>
-        <td>
-          1487
-          -
-          1501
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(newP1)
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          959
-        </td>
-        <td>
-          1515
-          -
-          1522
+          2862
         </td>
         <td>
           Apply
@@ -1504,1480 +1240,32 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          p --&gt; v
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          960
-        </td>
-        <td>
-          1539
-          -
-          1548
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          p1 --&gt; v1
-        </td>
-      </tr><tr>
-        <td>
-          53
-        </td>
-        <td>
-          961
-        </td>
-        <td>
-          1553
-          -
-          1567
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(newP3)
-        </td>
-      </tr><tr>
-        <td>
-          55
-        </td>
-        <td>
-          982
-        </td>
-        <td>
-          1571
-          -
-          1591
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          testPoints
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          @main def testPoints
-        </td>
-      </tr><tr>
-        <td>
-          57
-        </td>
-        <td>
-          963
-        </td>
-        <td>
-          1625
-          -
-          1637
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(0,0)
-        </td>
-      </tr><tr>
-        <td>
-          58
-        </td>
-        <td>
-          964
-        </td>
-        <td>
-          1651
-          -
-          1663
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(3,3)
-        </td>
-      </tr><tr>
-        <td>
-          59
-        </td>
-        <td>
-          965
-        </td>
-        <td>
-          1677
-          -
-          1685
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;-&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          p &lt;-&gt; p1
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          968
-        </td>
-        <td>
-          1706
-          -
-          1733
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          *
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ((p1 &lt;--&gt; p).normalize) * d
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          967
-        </td>
-        <td>
-          1707
-          -
-          1728
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          normalize
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          (p1 &lt;--&gt; p).normalize
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          966
-        </td>
-        <td>
-          1708
-          -
-          1717
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;--&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          p1 &lt;--&gt; p
-        </td>
-      </tr><tr>
-        <td>
-          61
-        </td>
-        <td>
-          969
-        </td>
-        <td>
-          1738
-          -
-          1748
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(v)
-        </td>
-      </tr><tr>
-        <td>
-          62
-        </td>
-        <td>
-          971
-        </td>
-        <td>
-          1764
-          -
-          1773
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          p --&gt; (-v
-        </td>
-      </tr><tr>
-        <td>
-          62
-        </td>
-        <td>
-          970
-        </td>
-        <td>
-          1771
-          -
-          1773
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          unary_-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          -v
-        </td>
-      </tr><tr>
-        <td>
-          63
-        </td>
-        <td>
-          972
-        </td>
-        <td>
-          1779
-          -
-          1792
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(newP)
-        </td>
-      </tr><tr>
-        <td>
-          64
-        </td>
-        <td>
-          974
-        </td>
-        <td>
-          1809
-          -
-          1821
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          newP --&gt; (-v
-        </td>
-      </tr><tr>
-        <td>
-          64
-        </td>
-        <td>
-          973
-        </td>
-        <td>
-          1819
-          -
-          1821
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          unary_-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          -v
-        </td>
-      </tr><tr>
-        <td>
-          65
-        </td>
-        <td>
-          975
-        </td>
-        <td>
-          1827
-          -
-          1841
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(newP1)
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          977
-        </td>
-        <td>
-          1858
-          -
-          1871
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          newP1 --&gt; (-v
-        </td>
-      </tr><tr>
-        <td>
-          66
-        </td>
-        <td>
-          976
-        </td>
-        <td>
-          1869
-          -
-          1871
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          unary_-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          -v
-        </td>
-      </tr><tr>
-        <td>
-          67
-        </td>
-        <td>
-          978
-        </td>
-        <td>
-          1877
-          -
-          1891
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(newP2)
+        <td style="background: #AEF1AE">
+          point --&gt; (-v -|- (direction, magnitude)
         </td>
       </tr><tr>
         <td>
           68
         </td>
         <td>
-          980
+          954
         </td>
         <td>
-          1908
+          2833
           -
-          1921
+          2862
         </td>
         <td>
           Apply
         </td>
         <td>
-          --&gt;
+          -|-
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          newP2 --&gt; (-v
-        </td>
-      </tr><tr>
-        <td>
-          68
-        </td>
-        <td>
-          979
-        </td>
-        <td>
-          1919
-          -
-          1921
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          unary_-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          -v
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          981
-        </td>
-        <td>
-          1927
-          -
-          1941
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(newP3)
-        </td>
-      </tr><tr>
-        <td>
-          71
-        </td>
-        <td>
-          992
-        </td>
-        <td>
-          1945
-          -
-          1960
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          test1
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          @main def test1
-        </td>
-      </tr><tr>
-        <td>
-          72
-        </td>
-        <td>
-          983
-        </td>
-        <td>
-          1982
-          -
-          1990
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          LazyList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          LazyList
-        </td>
-      </tr><tr>
-        <td>
-          72
-        </td>
-        <td>
-          984
-        </td>
-        <td>
-          1982
-          -
-          2013
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          iterate
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          LazyList.iterate[Int](0)(_ + 1)
-        </td>
-      </tr><tr>
-        <td>
-          73
-        </td>
-        <td>
-          986
-        </td>
-        <td>
-          2037
-          -
-          2058
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          toList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          stream.take(4).toList
-        </td>
-      </tr><tr>
-        <td>
-          73
-        </td>
-        <td>
-          985
-        </td>
-        <td>
-          2037
-          -
-          2051
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          take
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          stream.take(4)
-        </td>
-      </tr><tr>
-        <td>
-          74
-        </td>
-        <td>
-          987
-        </td>
-        <td>
-          2077
-          -
-          2091
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          drop
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          stream.drop(4)
-        </td>
-      </tr><tr>
-        <td>
-          75
-        </td>
-        <td>
-          988
-        </td>
-        <td>
-          2096
-          -
-          2117
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(firstElement)
-        </td>
-      </tr><tr>
-        <td>
-          76
-        </td>
-        <td>
-          989
-        </td>
-        <td>
-          2142
-          -
-          2157
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          take
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          stream1.take(1)
-        </td>
-      </tr><tr>
-        <td>
-          76
-        </td>
-        <td>
-          990
-        </td>
-        <td>
-          2142
-          -
-          2164
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          toList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          stream1.take(1).toList
-        </td>
-      </tr><tr>
-        <td>
-          77
-        </td>
-        <td>
-          991
-        </td>
-        <td>
-          2169
-          -
-          2191
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(secondElement)
-        </td>
-      </tr><tr>
-        <td>
-          79
-        </td>
-        <td>
-          1007
-        </td>
-        <td>
-          2195
-          -
-          2221
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          testRandomPoints
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          @main def testRandomPoints
-        </td>
-      </tr><tr>
-        <td>
-          80
-        </td>
-        <td>
-          993
-        </td>
-        <td>
-          2234
-          -
-          2242
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Random()
-        </td>
-      </tr><tr>
-        <td>
-          81
-        </td>
-        <td>
-          995
-        </td>
-        <td>
-          2286
-          -
-          2301
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(10, 10)
-        </td>
-      </tr><tr>
-        <td>
-          81
-        </td>
-        <td>
-          994
-        </td>
-        <td>
-          2271
-          -
-          2284
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(0, 0)
-        </td>
-      </tr><tr>
-        <td>
-          81
-        </td>
-        <td>
-          996
-        </td>
-        <td>
-          2260
-          -
-          2305
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          randomList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          randomList(Point2D(0, 0), Point2D(10, 10), 4)
-        </td>
-      </tr><tr>
-        <td>
-          82
-        </td>
-        <td>
-          998
-        </td>
-        <td>
-          2323
-          -
-          2344
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          toList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          stream.take(4).toList
-        </td>
-      </tr><tr>
-        <td>
-          82
-        </td>
-        <td>
-          997
-        </td>
-        <td>
-          2323
-          -
-          2337
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          take
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          stream.take(4)
-        </td>
-      </tr><tr>
-        <td>
-          83
-        </td>
-        <td>
-          1006
-        </td>
-        <td>
-          2349
-          -
-          2410
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(points map {
-      i =&gt; &quot;(&quot;+i.x+&quot;, &quot;+i.y+&quot;)\n&quot;
-    })
-        </td>
-      </tr><tr>
-        <td>
-          83
-        </td>
-        <td>
-          1005
-        </td>
-        <td>
-          2357
-          -
-          2409
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          points map {
-      i =&gt; &quot;(&quot;+i.x+&quot;, &quot;+i.y+&quot;)\n&quot;
-    }
-        </td>
-      </tr><tr>
-        <td>
-          84
-        </td>
-        <td>
-          1001
-        </td>
-        <td>
-          2381
-          -
-          2393
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;(&quot;+i.x+&quot;, &quot;
-        </td>
-      </tr><tr>
-        <td>
-          84
-        </td>
-        <td>
-          1004
-        </td>
-        <td>
-          2381
-          -
-          2403
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;(&quot;+i.x+&quot;, &quot;+i.y+&quot;)\n&quot;
-        </td>
-      </tr><tr>
-        <td>
-          84
-        </td>
-        <td>
-          1000
-        </td>
-        <td>
-          2381
-          -
-          2388
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;(&quot;+i.x
-        </td>
-      </tr><tr>
-        <td>
-          84
-        </td>
-        <td>
-          1003
-        </td>
-        <td>
-          2381
-          -
-          2397
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;(&quot;+i.x+&quot;, &quot;+i.y
-        </td>
-      </tr><tr>
-        <td>
-          84
-        </td>
-        <td>
-          999
-        </td>
-        <td>
-          2385
-          -
-          2388
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          i.x
-        </td>
-      </tr><tr>
-        <td>
-          84
-        </td>
-        <td>
-          1002
-        </td>
-        <td>
-          2394
-          -
-          2397
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          i.y
-        </td>
-      </tr><tr>
-        <td>
-          87
-        </td>
-        <td>
-          1021
-        </td>
-        <td>
-          2414
-          -
-          2434
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          testZigZag
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          @main def testZigZag
-        </td>
-      </tr><tr>
-        <td>
-          88
-        </td>
-        <td>
-          1008
-        </td>
-        <td>
-          2447
-          -
-          2455
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Random()
-        </td>
-      </tr><tr>
-        <td>
-          89
-        </td>
-        <td>
-          1010
-        </td>
-        <td>
-          2493
-          -
-          2508
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(13, 15)
-        </td>
-      </tr><tr>
-        <td>
-          89
-        </td>
-        <td>
-          1009
-        </td>
-        <td>
-          2479
-          -
-          2491
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(0,0)
-        </td>
-      </tr><tr>
-        <td>
-          89
-        </td>
-        <td>
-          1012
-        </td>
-        <td>
-          2473
-          -
-          2519
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          toList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          apply(Point2D(0,0), Point2D(13, 15), 3).toList
-        </td>
-      </tr><tr>
-        <td>
-          89
-        </td>
-        <td>
-          1011
-        </td>
-        <td>
-          2473
-          -
-          2512
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          apply(Point2D(0,0), Point2D(13, 15), 3)
-        </td>
-      </tr><tr>
-        <td>
-          90
-        </td>
-        <td>
-          1019
-        </td>
-        <td>
-          2532
-          -
-          2584
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          points map {
-      i =&gt; &quot;(&quot;+i.x+&quot;, &quot;+i.y+&quot;)\n&quot;
-    }
-        </td>
-      </tr><tr>
-        <td>
-          90
-        </td>
-        <td>
-          1020
-        </td>
-        <td>
-          2524
-          -
-          2585
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          println
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          println(points map {
-      i =&gt; &quot;(&quot;+i.x+&quot;, &quot;+i.y+&quot;)\n&quot;
-    })
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          1013
-        </td>
-        <td>
-          2560
-          -
-          2563
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          i.x
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          1016
-        </td>
-        <td>
-          2569
-          -
-          2572
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          i.y
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          1015
-        </td>
-        <td>
-          2556
-          -
-          2568
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;(&quot;+i.x+&quot;, &quot;
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          1018
-        </td>
-        <td>
-          2556
-          -
-          2578
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;(&quot;+i.x+&quot;, &quot;+i.y+&quot;)\n&quot;
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          1014
-        </td>
-        <td>
-          2556
-          -
-          2563
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;(&quot;+i.x
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          1017
-        </td>
-        <td>
-          2556
-          -
-          2572
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;(&quot;+i.x+&quot;, &quot;+i.y
+        <td style="background: #AEF1AE">
+          -v -|- (direction, magnitude)
         </td>
       </tr>
     </table>

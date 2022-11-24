@@ -24,22 +24,29 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
 </span>2 <span style=''>
-</span>3 <span style=''>import java.awt.Component
-</span>4 <span style=''>import monix.execution.cancelables.SingleAssignCancelable
-</span>5 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
-</span>6 <span style=''>import monix.reactive.subjects.PublishSubject
-</span>7 <span style=''>
-</span>8 <span style=''>import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
+</span>3 <span style=''>import model.elements2d.Point2D
+</span>4 <span style=''>
+</span>5 <span style=''>import java.awt.Component
+</span>6 <span style=''>import monix.execution.cancelables.SingleAssignCancelable
+</span>7 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
+</span>8 <span style=''>import monix.reactive.subjects.PublishSubject
 </span>9 <span style=''>
-</span>10 <span style=''>extension (component: Component)
-</span>11 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[(Int, Int)] =
-</span>12 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-</span>13 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter:
-</span>14 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
-</span>15 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext((e.getX, e.getY))
-</span>16 <span style=''></span><span style='background: #F0ADAD'>      )
-</span>17 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
-</span>18 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>10 <span style=''>import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
+</span>11 <span style=''>
+</span>12 <span style=''>/**
+</span>13 <span style=''> * Extension method that adds a new mouseObservable method to [[Component]].
+</span>14 <span style=''> * This method returns an Observable[Point2D] that adds a mouse clicked listener to the given
+</span>15 <span style=''> * component and generating new events as the click are listened
+</span>16 <span style=''> */
+</span>17 <span style=''>extension (component: Component)
+</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[Point2D] =
+</span>19 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
+</span>20 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter:
+</span>21 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
+</span>22 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(Point2D(e.getX, e.getY))
+</span>23 <span style=''></span><span style='background: #F0ADAD'>      )
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
+</span>25 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -54,15 +61,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          10
+          17
         </td>
         <td>
-          1335
+          1305
         </td>
         <td>
-          308
+          585
           -
-          327
+          604
         </td>
         <td>
           DefDef
@@ -78,15 +85,15 @@
         </td>
       </tr><tr>
         <td>
-          11
+          18
         </td>
         <td>
-          1326
+          1293
         </td>
         <td>
-          360
+          634
           -
-          377
+          651
         </td>
         <td>
           Select
@@ -102,15 +109,15 @@
         </td>
       </tr><tr>
         <td>
-          11
+          18
         </td>
         <td>
-          1334
+          1304
         </td>
         <td>
-          360
+          634
           -
-          614
+          895
         </td>
         <td>
           Apply
@@ -125,22 +132,22 @@
           Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
       component.addMouseListener(new MouseAdapter:
         override def mouseClicked(e: MouseEvent): Unit =
-          subject.onNext((e.getX, e.getY))
+          subject.onNext(Point2D(e.getX, e.getY))
       )
       SingleAssignCancelable()
     }
         </td>
       </tr><tr>
         <td>
-          12
+          19
         </td>
         <td>
-          1327
+          1294
         </td>
         <td>
-          456
+          730
           -
-          468
+          742
         </td>
         <td>
           Apply
@@ -156,15 +163,15 @@
         </td>
       </tr><tr>
         <td>
-          12
+          19
         </td>
         <td>
-          1332
+          1302
         </td>
         <td>
-          425
+          699
           -
-          577
+          858
         </td>
         <td>
           Apply
@@ -178,20 +185,20 @@
         <td style="background: #F0ADAD">
           component.addMouseListener(new MouseAdapter:
         override def mouseClicked(e: MouseEvent): Unit =
-          subject.onNext((e.getX, e.getY))
+          subject.onNext(Point2D(e.getX, e.getY))
       )
         </td>
       </tr><tr>
         <td>
-          13
+          20
         </td>
         <td>
-          1331
+          1301
         </td>
         <td>
-          478
+          752
           -
-          503
+          777
         </td>
         <td>
           DefDef
@@ -207,39 +214,15 @@
         </td>
       </tr><tr>
         <td>
-          14
+          21
         </td>
         <td>
-          1330
+          1297
         </td>
         <td>
-          537
+          842
           -
-          569
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          onNext
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          subject.onNext((e.getX, e.getY))
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1329
-        </td>
-        <td>
-          561
-          -
-          567
+          848
         </td>
         <td>
           Apply
@@ -255,15 +238,87 @@
         </td>
       </tr><tr>
         <td>
-          14
+          21
         </td>
         <td>
-          1328
+          1300
         </td>
         <td>
-          553
+          811
           -
-          559
+          850
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          onNext
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          subject.onNext(Point2D(e.getX, e.getY))
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1296
+        </td>
+        <td>
+          834
+          -
+          840
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getX
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1299
+        </td>
+        <td>
+          826
+          -
+          849
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D(e.getX, e.getY)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1295
+        </td>
+        <td>
+          834
+          -
+          840
         </td>
         <td>
           Apply
@@ -279,15 +334,39 @@
         </td>
       </tr><tr>
         <td>
-          16
+          21
         </td>
         <td>
-          1333
+          1298
         </td>
         <td>
-          584
+          842
           -
-          608
+          848
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getY
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1303
+        </td>
+        <td>
+          865
+          -
+          889
         </td>
         <td>
           Apply
