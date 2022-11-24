@@ -52,7 +52,7 @@ object Explosion:
    * @param parentAffiliation The same parent affiliation
    * @return The new explosion
    */
-  def apply(damageToInflict: LifePoint, hitboxRadius: Double = standardRadius, position: Point2D, dt: DeltaTime = 0, maxTime: DeltaTime = maxTimeExplosion)(using parentAffiliation: Affiliation): Explosion = new Explosion {
+  def apply(damageToInflict: LifePoint, hitboxRadius: Double = standardRadius, expPosition: Point2D, dt: DeltaTime = 0, maxTime: DeltaTime = maxTimeExplosion)(using parentAffiliation: Affiliation): Explosion = new Explosion {
 
     /**
      * Check of the damageToInflict and hitboxRadius validity
@@ -65,7 +65,7 @@ object Explosion:
      * 
      *  @return the position of the explosion
      */
-    override def position: Point2D = position
+    override def position: Point2D = expPosition
 
     /**
      * 
