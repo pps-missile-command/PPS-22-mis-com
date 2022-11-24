@@ -61,11 +61,6 @@ class DirectionListTest extends AnyFunSpec :
           val list = DirectionList(Point2D(0, 0), Point2D(5,5), step, maxWidth = 20)
           assert(list.size == (step - 1))
         }
-        it("should have n-1 elements (without the starting point)") {
-          val step = 5
-          val list = DirectionList(Point2D(0, 0), Point2D(5,5), step, maxWidth = 20)
-          assert(list.size == (step - 1))
-        }
       }
     }
   }

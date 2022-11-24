@@ -20,14 +20,14 @@ trait ZigZagMissile(step: Int = 5, positions: LazyList[Point2D], to: Point2D):
    * change every time the ZigZagMissile reach it, taking the next destination available into the list
    * @return a boolean value true or false to models the equivalency
    */
-    def subDestinationReached: Boolean = position == destination
+    def subDestinationReached: Boolean = position ~= destination
 
   /**
    * This method overrides the same method defined in [[Missile]]: in this case we check if the current position is
    * equal to the last position of the path, that is the final destination
    * @return a boolean true or false
    */
-    override def destinationReached: Boolean = position == to
+    override def destinationReached: Boolean = position ~= to
 
   /**
    * Copy method that creates a new ZigZagMissile with the new properties specified

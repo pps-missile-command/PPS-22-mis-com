@@ -11,7 +11,7 @@ import org.scalatest.matchers.should.Matchers.shouldBe
 import scala.util.Random
 
 object ZigZagMissileTest:
-  val maxWidth: Double = 50
+  val maxWidth: Double = 20
 
 class ZigZagMissileTest extends AnyFunSpec :
   import ZigZagMissileTest._
@@ -31,7 +31,7 @@ class ZigZagMissileTest extends AnyFunSpec :
       assert(!newMissile.asInstanceOf[ZigZagMissile].destinationReached)
     }
     it("should explode only in the final position") {
-      val missile: Missile = ZigZagMissile(Point2D(0,0), Point2D(maxWidth,maxWidth), 2, maxWidth = maxWidth)
+      val missile: Missile = ZigZagMissile(Point2D(0,0), Point2D(10,10), 2, maxWidth = maxWidth)
       val newMissile: Missile = missile.timeElapsed((missile.position <-> missile.destination) / missile.velocity).move().asInstanceOf[Missile]
       val tempMissile: Missile = newMissile.timeElapsed(0).move().asInstanceOf[Missile]
       val finalMissile = tempMissile.timeElapsed((tempMissile.position <-> tempMissile.destination) / tempMissile.velocity).move()

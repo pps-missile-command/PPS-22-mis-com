@@ -37,6 +37,7 @@ package object zigzag:
       case Rand(rand) =>
         val value = rand.nextDouble()
         Vector2D(1, Angle.Degree(v.direction.get.degree + 90 * value.mapToSign))
+      case _ => v
 
   /**
    * Extension method that adds the pop mechanism to a LazyList, return a pair composed by the first element
