@@ -11,11 +11,6 @@ import scala.util.Random
 
 package object missile:
 
-  sealed trait MissileType
-  case class BasicMissile(affiliation: Affiliation) extends MissileType
-  case object RandomMissile extends MissileType
-  case object ZigZagMissile extends MissileType
-
   val initialLife: LifePoint = 1
   val velocity: Double = 100
   val damage: Int = 1
@@ -24,12 +19,21 @@ package object missile:
   val maxHeight: Int = 100
   val maxWidth: Int = 50
   val angle: Angle = Angle.Degree(90)
-  
-  val basicHitBox: (Point2D, Option[Angle]) => HitBox = (point_, angle_) => HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))
 
+  /**
+   * Given conversion that converts a pair of [[Point2D]] into a [[Vector2D]]
+   */
   given Conversion[(Point2D, Point2D), Vector2D] with
     override def apply(x: (Point2D, Point2D)): Vector2D = (x._2 <--> x._1).normalize
 
+  /**
+   * This function models the movement of a missile given the virtual delta time passed since its last update.
+   * It calculates the distance to move and the distance to the final position, and perform the traslation of the missile's
+   * position.
+   * @param missile The missile to move
+   * @param dt The virtual delta time
+   * @return the new missile with its new position updated
+   */
   def BasicMove(missile: Missile)(dt: DeltaTime): Point2D =
     val distanceToMove = missile.velocity * dt
     val distanceToFinalPosition = missile.position <-> missile.destination
