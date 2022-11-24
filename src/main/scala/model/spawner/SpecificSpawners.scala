@@ -3,7 +3,8 @@ package model.spawner
 import model.elements2d.Point2D
 import model.missile
 import model.missile.Missile
-import model.missile.zigzag.ZigZagMissile.ZigZagMissile
+import model.missile.zigzag
+import model.missile.zigzag.ZigZagMissile.*
 import model.spawner.LazySpawner.Spawnable
 
 import scala.util.Random
@@ -24,5 +25,5 @@ object SpecificSpawners:
     () => Missile.enemyMissile(position = r.randomX(maxWidth, 0), finalPosition = r.randomX(maxWidth, maxHeight))
 
   def ZigZagStrategy(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
-    () => missile.zigzag.ZigZagMissile(r.randomX(maxWidth, 0), r.randomX(maxWidth, maxHeight), 5)
+    () => missile.zigzag.ZigZagMissile(r.randomX(maxWidth, 0), r.randomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)
     

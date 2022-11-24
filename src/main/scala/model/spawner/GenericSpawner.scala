@@ -9,7 +9,7 @@ import model.spawner.LazySpawner.*
 
 import scala.util.Random
 
-trait GenericSpawner[A](using Random) extends Timeable:
+trait GenericSpawner[A <: Collisionable](using Random) extends Timeable:
 
   def spawn(): (Set[A], GenericSpawner[A])
 

@@ -36,7 +36,7 @@ class GUI(width: Int, height: Int) extends UI:
 
     override def events: Observable[Event] = frame.getContentPane
       .mouseObservable()
-      .map((x, y) => Event.LaunchMissileTo(Point2D((x * World.width) / width, (y * World.height) / height )) )
+      .map(p => Event.LaunchMissileTo(Point2D((p.x * World.width) / width, (p.y * World.height) / height )) )
 
     override def gameOver(game: Game): Task[Unit] = Task {
         SwingUtilities.invokeLater { () =>

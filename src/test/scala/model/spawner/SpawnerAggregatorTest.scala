@@ -3,6 +3,7 @@ package model.spawner
 import model.DeltaTime
 import model.collisions.Collisionable
 import model.missile.Missile
+import model.missile.zigzag.ZigZagMissile
 import model.missile.zigzag.ZigZagMissile.*
 import org.scalatest.funspec.AnyFunSpec
 

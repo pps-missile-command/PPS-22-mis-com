@@ -10,18 +10,38 @@ import model.missile.{Missile, MissileDamageable, MissileImpl, hitboxBase, hitbo
 
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
-import java.io.File
+import java.io.{File, FileNotFoundException}
 
+/**
+ * Extension method for a Point2D, that perform a mapping returning a new Point2D based
+ * on the function taken by input
+ */
 extension(p: Point2D)
   def map(f: (Point2D) => Point2D) = f(p)
 
+/**
+ * Case class that represent a graphic collisionable element
+ * @param image The image for the given collisionable
+ * @param baseWidth The width of the image
+ * @param baseHeight The height of the image
+ * @param position The position of the image mapped into the GUI space
+ * @param angle The angle of the image
+ */
 case class CollisionableElement(image: BufferedImage, baseWidth: Int, baseHeight: Int,
                                 position: Point2D, angle: Angle = Angle.Degree(0))
 
 object CollisionableVisualizer:
-
+  /**
+   * Lambda value that return a gui mapped Point2D given a logical one
+   */
   private val convertPosition: (Point2D) => Point2D = (p) => Point2D((p.x * ViewConstants.GUI_width) / World.width, (p.y * ViewConstants.GUI_height) / World.height)
 
+  /**
+   * Method that creates a graphic set of [[CollisionableElement]] from a set of [[Collisionable]]
+   * @param collisionables The set of [[Collisionable]] to convert
+   * @param conversion The conversion method to convert double values into integers
+   * @return the set of CollisionableElements created
+   */
   def printElements(collisionables: Set[Collisionable])(using conversion: Conversion[Double, Int]): Set[CollisionableElement] =
 
     val conversion: Collisionable => CollisionableElement = (c: Collisionable) => c match
@@ -31,6 +51,8 @@ object CollisionableVisualizer:
           m.affiliation match
             case Affiliation.Enemy => optImage = Option(ImageIO.read(getClass.getResource("/enemy_missile.png")))
             case _ => optImage = Option(ImageIO.read(getClass.getResource("/friendly_missile.png")))
+        } catch {
+          case e: Exception => throw new FileNotFoundException()
         }
         CollisionableElement(optImage.getOrElse(null), hitboxBase, hitboxHeight, m.position map convertPosition, m.angle.getOrElse(Angle.Degree(0)))
       case e: Explosion =>

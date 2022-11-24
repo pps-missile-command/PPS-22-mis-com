@@ -6,7 +6,7 @@ import model.collisions.Collisionable
 
 import scala.util.Random
 
-trait SpawnerAggregator[A] extends GenericSpawner[A]:
+trait SpawnerAggregator[A <: Collisionable] extends GenericSpawner[A]:
 
   override def spawn(): (Set[A], SpawnerAggregator[A])
 
