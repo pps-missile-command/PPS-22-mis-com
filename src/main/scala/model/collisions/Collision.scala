@@ -16,6 +16,12 @@ object Collision:
   def apply(collisionables: Collisionable*): Collision =
     collisionables.toSet
 
+  /**
+   * Creates a new [[Collision]] from a [[Set]] of [[Collisionable]]s
+   *
+   * @param collisionables the collisionables that collide
+   * @return a new [[Collision]] from the [[Collisionable]]s
+   */
   def apply(collisionables: Set[Collisionable]): Collision =
     collisionables
 
