@@ -41,42 +41,16 @@ object ViewModule:
     self: Requirements =>
 
 object ControllerModule:
-  trait ControllerM:
-    def startGame(): Task[Unit]
+  trait MainController:
+    def startGame(): Unit
   trait Provider:
-    val controller: ControllerM
+    val controller: MainController
   type Requirements = ViewModule.Provider with ModelModule.Provider
   trait Component:
     context: Requirements =>
-    class ControllerImpl extends ControllerM:
+    class ControllerImpl extends MainController:
 
-      private val time: Observable[Event] = TimeFlow
-        .tickEach(50 milliseconds)
-        .map(_.toDouble / 1000)
-        .map(Event.TimePassed.apply)
-
-      override def startGame(): Task[Unit] =
-        given OverflowStrategy[Event] = OverflowStrategy.Default
-
-        val game = model.initializeGame()
-        val controls: Update = Update.combine(
-          UpdateTime(),
-          UpdatePosition(),
-          ActivateSpecialAbility(),
-          CollisionsDetection(),
-          LaunchNewMissile()
-        )
-
-        val init = Task((game, controls))
-        val events =
-          Observable(time, view.events).merge
-        events
-          .scanEval(init) { case ((game, controls), event) => controls(event, game) }
-          .doOnNext { case (game, _) => view.render(game) }
-          .takeWhile { case (game, _) => game.world.ground.stillAlive }
-          .last
-          .doOnNext { case (game, _) => view.gameOver(game) }
-          .completedL
+      override def startGame(): Unit = Controller.start(view).runAsyncAndForget
 
   trait Interface extends Provider with Component:
     self: Requirements =>
@@ -89,7 +63,7 @@ object MVC
 
   override val model: ModelModule.Model = new ModelImpl()
   override val view: UI = new ViewImpl()
-  override val controller: ControllerModule.ControllerM = new ControllerImpl()
+  override val controller: ControllerModule.MainController = new ControllerImpl()
 
   @main def main(): Unit =
-    controller.startGame().runAsyncAndForget
+    controller.startGame()
