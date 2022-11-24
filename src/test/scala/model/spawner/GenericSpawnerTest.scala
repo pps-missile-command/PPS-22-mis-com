@@ -4,7 +4,7 @@ import model.DeltaTime
 import model.collisions.Affiliation
 import model.missile.Missile
 import model.missile.zigzag.ZigZagMissile
-import model.missile.zigzag.ZigZagMissile.ZigZagMissile
+import model.missile.zigzag.ZigZagMissile.*
 import model.spawner.GenericSpawner
 import org.scalatest.events.TestFailed
 import org.scalatest.funspec.AnyFunSpec
@@ -35,7 +35,6 @@ class GenericSpawnerTest extends AnyFunSpec :
           val (missiles, _) = newSpawner.spawn()
           missiles.toList(0) match
             case m: Missile => assertResult(timePassed)(missiles.size)
-            case _ => throw IllegalStateException()
         }
       }
       describe("after a specific amount of time that exceeds a fixed threshold") {
@@ -93,7 +92,7 @@ class GenericSpawnerTest extends AnyFunSpec :
       }
     }
     describe("with an interval of a missile every 0.33 second") {
-      it("should generate  missiles after 1 second of virtual time") {
+      it("should generate missiles after 1 second of virtual time") {
         val timePassed = 1
         val old_spawner = GenericSpawner[Missile](0.33, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
         val spawner = old_spawner.timeElapsed(timePassed)
