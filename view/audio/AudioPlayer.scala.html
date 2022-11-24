@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/gui/EndGamePane.scala.html
+          view/audio/AudioPlayer.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,30 +22,27 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.audio
 </span>2 <span style=''>
-</span>3 <span style=''>import view.Visualizer
-</span>4 <span style=''>
-</span>5 <span style=''>import java.awt.{Color, Component, Graphics, FlowLayout}
-</span>6 <span style=''>import javax.swing.{JLabel, JPanel}
-</span>7 <span style=''>import javax.swing.JButton
-</span>8 <span style=''>
-</span>9 <span style=''>import java.awt.BorderLayout
-</span>10 <span style=''>import java.awt.Dimension
-</span>11 <span style=''>
-</span>12 <span style=''>class EndGamePane(width: Int, height: Int) extends </span><span style='background: #F0ADAD'>JPanel</span><span style=''>{
-</span>13 <span style=''>
-</span>14 <span style=''>  </span><span style='background: #F0ADAD'>this.setSize(width, height)</span><span style=''>
-</span>15 <span style=''>
-</span>16 <span style=''>  </span><span style='background: #F0ADAD'>override def paintComponent</span><span style=''>(graphics: Graphics): Unit =
-</span>17 <span style=''>    </span><span style='background: #F0ADAD'>super.paintComponent(graphics)</span><span style=''>
-</span>18 <span style=''>    </span><span style='background: #F0ADAD'>graphics.clearRect(0, 0, width, height)</span><span style=''>
-</span>19 <span style=''>    </span><span style='background: #F0ADAD'>graphics.setColor(Color.GRAY)</span><span style=''>
-</span>20 <span style=''>    </span><span style='background: #F0ADAD'>graphics.fillRect((width / 2) - 50, (height / 2) - 50, 100, 100)</span><span style=''>
-</span>21 <span style=''>    </span><span style='background: #F0ADAD'>graphics.setColor(Color.WHITE)</span><span style=''>
-</span>22 <span style=''>    </span><span style='background: #F0ADAD'>graphics.drawString(&quot;FINE GIOCO&quot;, width/2 - 30, height/2)</span><span style=''>
-</span>23 <span style=''>  
-</span>24 <span style=''>}
+</span>3 <span style=''>import java.net.{MalformedURLException, URL}
+</span>4 <span style=''>import javax.sound.sampled.{AudioSystem, UnsupportedAudioFileException}
+</span>5 <span style=''>
+</span>6 <span style=''>object AudioPlayer:
+</span>7 <span style=''>    </span><span style='background: #F0ADAD'>def playAudio</span><span style=''>(URL_audio: String): Unit =
+</span>8 <span style=''>        try
+</span>9 <span style=''>            </span><span style='background: #F0ADAD'>val url = new URL(URL_audio)
+</span>10 <span style=''></span><span style='background: #F0ADAD'>            val audioIn = AudioSystem.getAudioInputStream(url)
+</span>11 <span style=''></span><span style='background: #F0ADAD'>            val clip = AudioSystem.getClip
+</span>12 <span style=''></span><span style='background: #F0ADAD'>            clip.open(audioIn)
+</span>13 <span style=''></span><span style='background: #F0ADAD'>            clip.start</span><span style=''>
+</span>14 <span style=''>        catch
+</span>15 <span style=''>            </span><span style='background: #F0ADAD'>case ex1: MalformedURLException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL not found&quot;)</span><span style=''>
+</span>16 <span style=''>            </span><span style='background: #F0ADAD'>case ex2: UnsupportedAudioFileException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL found, but not an audio&quot;)</span><span style=''>
+</span>17 <span style=''>            </span><span style='background: #F0ADAD'>case ex3: Throwable</span><span style=''> =&gt;
+</span>18 <span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>    //Add audio here
+</span>21 <span style=''>    val explosionSmall = &quot;https://www.shockwave-sound.com/sound-effects/explosion-sounds/Arcade%20Explo%20A.wav&quot;
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -60,15 +57,67 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          11
+          6
         </td>
         <td>
-          1301
+          1300
         </td>
         <td>
-          270
+          162
           -
-          276
+          175
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          playAudio
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def playAudio
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1294
+        </td>
+        <td>
+          227
+          -
+          415
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          val url = new URL(URL_audio)
+            val audioIn = AudioSystem.getAudioInputStream(url)
+            val clip = AudioSystem.getClip
+            clip.open(audioIn)
+            clip.start
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1289
+        </td>
+        <td>
+          237
+          -
+          255
         </td>
         <td>
           Apply
@@ -80,199 +129,223 @@
           
         </td>
         <td style="background: #F0ADAD">
-          JPanel
+          new URL(URL_audio)
         </td>
       </tr><tr>
         <td>
-          13
+          9
         </td>
         <td>
-          1302
+          1290
         </td>
         <td>
-          281
+          282
           -
-          308
+          318
         </td>
         <td>
           Apply
         </td>
         <td>
-          setSize
+          getAudioInputStream
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          this.setSize(width, height)
+          AudioSystem.getAudioInputStream(url)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          1291
+        </td>
+        <td>
+          342
+          -
+          361
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getClip
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          AudioSystem.getClip
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1292
+        </td>
+        <td>
+          374
+          -
+          392
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          open
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          clip.open(audioIn)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1293
+        </td>
+        <td>
+          405
+          -
+          415
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          start
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          clip.start
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1296
+        </td>
+        <td>
+          442
+          -
+          473
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case ex1: MalformedURLException
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1295
+        </td>
+        <td>
+          477
+          -
+          501
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          println
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          println(&quot;URL not found&quot;)
         </td>
       </tr><tr>
         <td>
           15
         </td>
         <td>
-          1309
+          1297
         </td>
         <td>
-          312
+          557
           -
-          339
+          595
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          paintComponent
+          println
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def paintComponent
+          println(&quot;URL found, but not an audio&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1298
+        </td>
+        <td>
+          514
+          -
+          553
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case ex2: UnsupportedAudioFileException
         </td>
       </tr><tr>
         <td>
           16
         </td>
         <td>
-          1303
+          1299
         </td>
         <td>
-          372
+          608
           -
-          402
+          627
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          paintComponent
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          super.paintComponent(graphics)
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          1304
-        </td>
-        <td>
-          407
-          -
-          446
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          clearRect
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          graphics.clearRect(0, 0, width, height)
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          1305
-        </td>
-        <td>
-          451
-          -
-          480
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          setColor
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          graphics.setColor(Color.GRAY)
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          1306
-        </td>
-        <td>
-          485
-          -
-          549
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          fillRect
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          graphics.fillRect((width / 2) - 50, (height / 2) - 50, 100, 100)
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          1307
-        </td>
-        <td>
-          554
-          -
-          584
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          setColor
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          graphics.setColor(Color.WHITE)
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1308
-        </td>
-        <td>
-          589
-          -
-          646
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          drawString
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          graphics.drawString(&quot;FINE GIOCO&quot;, width/2 - 30, height/2)
+          case ex3: Throwable
         </td>
       </tr>
     </table>
