@@ -19,9 +19,7 @@ object ModelModule:
     val model: Model
   trait Component:
     class ModelImpl extends Model:
-
       override def initializeGame(): Game = Game.initialGame
-
   trait Interface extends Provider with Component
 
 object ViewModule:
