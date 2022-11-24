@@ -129,7 +129,7 @@ case class MissileImpl(
    *  @return the explosion of the missile
    */
   override def explode: Explosion =
-    Explosion(damage, position = position)(using affiliation)
+    Explosion(damage, expPosition = position)(using affiliation)
   
   override def newMissile(
                           life: LifePoint = lifePoint,

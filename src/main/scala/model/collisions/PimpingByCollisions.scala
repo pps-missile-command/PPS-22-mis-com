@@ -14,7 +14,7 @@ object PimpingByCollisions:
      */
     def allScorableDestroyedThatCollide: Set[Collisionable] =
       collisions
-        .flatMap(_.involvedCollisionables)
+        .flatten
         .filter(_.isScorable)
         .filter(_.isDestroyed)
 
@@ -86,12 +86,9 @@ object PimpingByCollisions:
     def updateCollisionablesContained(mapping: Map[Collisionable, Collisionable]): Set[Collision] =
       collisions
         .map(collision =>
-          Collision(
             collision
-              .involvedCollisionables
               .map(collisonable =>
                 mapping
                   .getOrElse(collisonable, collisonable)
               )
-          )
         )
