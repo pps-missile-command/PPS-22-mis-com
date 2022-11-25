@@ -24,38 +24,153 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.Collisionable
-</span>4 <span style=''>import model.ground.Ground
-</span>5 <span style=''>
-</span>6 <span style=''>/**
-</span>7 <span style=''> * Object with the values of the world and its initial state.
-</span>8 <span style=''> */
-</span>9 <span style=''>object World:
-</span>10 <span style=''>
-</span>11 <span style=''>  /**
-</span>12 <span style=''>   * The width of the world.
-</span>13 <span style=''>   */
-</span>14 <span style=''>  val width = 700
-</span>15 <span style=''>  
-</span>16 <span style=''>  /**
-</span>17 <span style=''>   * The height of the world.
-</span>18 <span style=''>   */
-</span>19 <span style=''>  val height = 300
-</span>20 <span style=''>
-</span>21 <span style=''>  /**
-</span>22 <span style=''>   * The initial state of the world.
-</span>23 <span style=''>   *
-</span>24 <span style=''>   * @return the initial state of the world
-</span>25 <span style=''>   */
-</span>26 <span style=''>  </span><span style='background: #AEF1AE'>def initialWorld</span><span style=''>: World = World(</span><span style='background: #AEF1AE'>Ground()</span><span style=''>, </span><span style='background: #AEF1AE'>Set.empty</span><span style=''>[Collisionable])
-</span>27 <span style=''>
-</span>28 <span style=''>/**
-</span>29 <span style=''> * Class that represents the world.
-</span>30 <span style=''> *
-</span>31 <span style=''> * @param ground         the ground of the player in the world.
-</span>32 <span style=''> * @param collisionables the collisionables in the world.
-</span>33 <span style=''> */
-</span>34 <span style=''>case class World(ground: Ground, collisionables: Set[Collisionable])
+</span>3 <span style=''>import model.behavior.Timeable
+</span>4 <span style=''>import model.collisions.{Collision, Collisionable, _}
+</span>5 <span style=''>import model.ground.Ground
+</span>6 <span style=''>import model.collisions.PimpingByCollisionable._
+</span>7 <span style=''>import model.collisions.PimpingByCollisionables._
+</span>8 <span style=''>import model.collisions.PimpingByCollisions._
+</span>9 <span style=''>import model.ScorePoint
+</span>10 <span style=''>import model.elements2d.Point2D
+</span>11 <span style=''>import model.explosion.Explosion
+</span>12 <span style=''>
+</span>13 <span style=''>import scala.annotation.tailrec
+</span>14 <span style=''>
+</span>15 <span style=''>/**
+</span>16 <span style=''> * Class that represents the world.
+</span>17 <span style=''> *
+</span>18 <span style=''> */
+</span>19 <span style=''>trait World extends WorldActions[World] :
+</span>20 <span style=''>  /**
+</span>21 <span style=''>   * The ground of the player in the world.
+</span>22 <span style=''>   */
+</span>23 <span style=''>  val ground: Ground
+</span>24 <span style=''>  /**
+</span>25 <span style=''>   * The collisionables in the world.
+</span>26 <span style=''>   */
+</span>27 <span style=''>  val collisionables: Set[Collisionable]
+</span>28 <span style=''>
+</span>29 <span style=''>  /**
+</span>30 <span style=''>   * Change the ground of the world.
+</span>31 <span style=''>   *
+</span>32 <span style=''>   * @param newGround the new ground instance
+</span>33 <span style=''>   * @return a world with the new ground
+</span>34 <span style=''>   */
+</span>35 <span style=''>  def updateGround(newGround: Ground): World
+</span>36 <span style=''>
+</span>37 <span style=''>  /**
+</span>38 <span style=''>   * Change the collisionables of the world.
+</span>39 <span style=''>   *
+</span>40 <span style=''>   * @param newCollisionables the new collisionables instance
+</span>41 <span style=''>   * @return a world with the new collisionables
+</span>42 <span style=''>   */
+</span>43 <span style=''>  def updateCollisionables(newCollisionables: Set[Collisionable]): World
+</span>44 <span style=''>
+</span>45 <span style=''>  /**
+</span>46 <span style=''>   * Add a set of new collisionables to the world.
+</span>47 <span style=''>   *
+</span>48 <span style=''>   * @param collisionablesToAdd the new collisionables to add
+</span>49 <span style=''>   * @return a world with the new collisionables added
+</span>50 <span style=''>   */
+</span>51 <span style=''>  </span><span style='background: #AEF1AE'>def addCollisionables</span><span style=''>[C &lt;: Collisionable](collisionablesToAdd: Set[C]): World =
+</span>52 <span style=''>    </span><span style='background: #AEF1AE'>updateCollisionables(collisionables ++ collisionablesToAdd)</span><span style=''>
+</span>53 <span style=''>
+</span>54 <span style=''>
+</span>55 <span style=''>/**
+</span>56 <span style=''> * Object with the values of the world and its initial state.
+</span>57 <span style=''> */
+</span>58 <span style=''>object World:
+</span>59 <span style=''>
+</span>60 <span style=''>  /**
+</span>61 <span style=''>   * The width of the world.
+</span>62 <span style=''>   */
+</span>63 <span style=''>  val width = 700
+</span>64 <span style=''>
+</span>65 <span style=''>  /**
+</span>66 <span style=''>   * The height of the world.
+</span>67 <span style=''>   */
+</span>68 <span style=''>  val height = 300
+</span>69 <span style=''>
+</span>70 <span style=''>  /**
+</span>71 <span style=''>   * The initial state of the world.
+</span>72 <span style=''>   *
+</span>73 <span style=''>   * @return the initial state of the world
+</span>74 <span style=''>   */
+</span>75 <span style=''>  </span><span style='background: #AEF1AE'>def initialWorld</span><span style=''>: World = </span><span style='background: #AEF1AE'>World(Ground(), Set.empty[Collisionable])</span><span style=''>
+</span>76 <span style=''>
+</span>77 <span style=''>  /**
+</span>78 <span style=''>   * Create a new world with the given ground and collisionables.
+</span>79 <span style=''>   *
+</span>80 <span style=''>   * @param ground         the ground of the world
+</span>81 <span style=''>   * @param collisionables the collisionables in the world
+</span>82 <span style=''>   * @return a new world with the given ground and collisionables
+</span>83 <span style=''>   */
+</span>84 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(ground: Ground, collisionables: Set[Collisionable]): World =
+</span>85 <span style=''>    case class WorldImpl(ground: Ground, collisionables: Set[Collisionable]) extends World :
+</span>86 <span style=''>
+</span>87 <span style=''>      </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): World =
+</span>88 <span style=''>        val newCollisionables = </span><span style='background: #AEF1AE'>collisionables.map(_.updateTimebleTime(dt))</span><span style=''>
+</span>89 <span style=''>        val newGround = </span><span style='background: #AEF1AE'>Ground(ground.cities, ground.turrets.map(_.timeElapsed(dt)))</span><span style=''>
+</span>90 <span style=''>        WorldImpl(newGround, newCollisionables)
+</span>91 <span style=''>
+</span>92 <span style=''>
+</span>93 <span style=''>      </span><span style='background: #AEF1AE'>override def checkCollisions</span><span style=''>: (World, Set[Collision]) =
+</span>94 <span style=''>
+</span>95 <span style=''>        extension (tuple: (Set[Collisionable], Set[Collision]))
+</span>96 <span style=''>
+</span>97 <span style=''>          </span><span style='background: #AEF1AE'>def removeDestroyed</span><span style=''>(): (Set[Collisionable], Set[Collision]) =
+</span>98 <span style=''>            val </span><span style='background: #AEF1AE'>(collisionables, collisions)</span><span style=''> = tuple
+</span>99 <span style=''>            val notDestroyed = </span><span style='background: #AEF1AE'>collisionables.filterNot(isDestroyed)</span><span style=''>
+</span>100 <span style=''>            (notDestroyed, collisions)
+</span>101 <span style=''>
+</span>102 <span style=''>          </span><span style='background: #AEF1AE'>def addExplosions</span><span style=''>(explosions: Set[Explosion]): (Set[Collisionable], Set[Collision]) =
+</span>103 <span style=''>            val </span><span style='background: #AEF1AE'>(collisionables, collisions)</span><span style=''> = tuple
+</span>104 <span style=''>            val newCollisionables = </span><span style='background: #AEF1AE'>collisionables ++ explosions</span><span style=''>
+</span>105 <span style=''>            (newCollisionables, collisions)
+</span>106 <span style=''>
+</span>107 <span style=''>        </span><span style='background: #AEF1AE'>def checkCollision</span><span style=''>[C &lt;: Collisionable](allCollisionables: Set[Collisionable], collisionables: Set[C])
+</span>108 <span style=''>                                              (oldColliosions: Set[Collision]): (Set[Collisionable], Set[Collision]) =
+</span>109 <span style=''>          val </span><span style='background: #AEF1AE'>(updatedCollisionables, updatedCollisions)</span><span style=''> = </span><span style='background: #AEF1AE'>allCollisionables.applyDamagesBasedOnWithOld(
+</span>110 <span style=''></span><span style='background: #AEF1AE'>            allCollisionables calculateCollisionsWith collisionables,
+</span>111 <span style=''></span><span style='background: #AEF1AE'>            oldColliosions
+</span>112 <span style=''></span><span style='background: #AEF1AE'>          )</span><span style=''>
+</span>113 <span style=''>          val newExplosion = </span><span style='background: #AEF1AE'>updatedCollisionables.explosionsOfDestroyedMissiles</span><span style=''>
+</span>114 <span style=''>          val newCollisionables = </span><span style='background: #AEF1AE'>updatedCollisionables.filterNot(isDestroyed)</span><span style=''>
+</span>115 <span style=''>          newExplosion match
+</span>116 <span style=''>            </span><span style='background: #AEF1AE'>case _ if newExplosion.isEmpty</span><span style=''> =&gt;
+</span>117 <span style=''>              </span><span style='background: #AEF1AE'>(newCollisionables, updatedCollisions).removeDestroyed()</span><span style=''>
+</span>118 <span style=''>            </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>checkCollision(newCollisionables, newExplosion)(updatedCollisions).addExplosions(newExplosion)</span><span style=''>
+</span>119 <span style=''>
+</span>120 <span style=''>        val allCollisionables = </span><span style='background: #AEF1AE'>collisionables ++ ground.cities ++ ground.turrets</span><span style=''>
+</span>121 <span style=''>        val </span><span style='background: #AEF1AE'>(tmpNewCollisionables, collisionsUpdate)</span><span style=''> = </span><span style='background: #AEF1AE'>checkCollision(allCollisionables, allCollisionables)(Set.empty)</span><span style=''>
+</span>122 <span style=''>        val </span><span style='background: #AEF1AE'>(newGround, newCollisionables)</span><span style=''> = </span><span style='background: #AEF1AE'>tmpNewCollisionables.splitGroundFromOther</span><span style=''>
+</span>123 <span style=''>        val newWorld = WorldImpl(newGround, newCollisionables)
+</span>124 <span style=''>        (newWorld, collisionsUpdate)
+</span>125 <span style=''>
+</span>126 <span style=''>      </span><span style='background: #AEF1AE'>override def activateSpecialAbility</span><span style=''>: World =
+</span>127 <span style=''>        </span><span style='background: #AEF1AE'>updateCollisionables(
+</span>128 <span style=''></span><span style='background: #AEF1AE'>          collisionables
+</span>129 <span style=''></span><span style='background: #AEF1AE'>            .activateSpecialAbility
+</span>130 <span style=''></span><span style='background: #AEF1AE'>            .filterNot(</span><span style='background: #F0ADAD'>isExplosionTerminated</span><span style='background: #AEF1AE'>)
+</span>131 <span style=''></span><span style='background: #AEF1AE'>        )</span><span style=''>
+</span>132 <span style=''>
+</span>133 <span style=''>      </span><span style='background: #AEF1AE'>override def shootMissile</span><span style=''>(destination: Point2D): World =
+</span>134 <span style=''>        </span><span style='background: #AEF1AE'>ground.shootMissile(destination)</span><span style=''> match
+</span>135 <span style=''>          </span><span style='background: #AEF1AE'>case (newGround, Some(missile))</span><span style=''> =&gt;
+</span>136 <span style=''>            </span><span style='background: #AEF1AE'>updateGround(newGround)
+</span>137 <span style=''></span><span style='background: #AEF1AE'>              .addCollisionables(Set(missile))</span><span style=''>
+</span>138 <span style=''>          </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; this
+</span>139 <span style=''>
+</span>140 <span style=''>      </span><span style='background: #AEF1AE'>override def moveElements</span><span style=''>: World =
+</span>141 <span style=''>        </span><span style='background: #AEF1AE'>updateCollisionables(collisionables.map(_.updateMovablePosition()))</span><span style=''>
+</span>142 <span style=''>
+</span>143 <span style=''>      </span><span style='background: #AEF1AE'>def updateGround</span><span style=''>(newGround: Ground): World =
+</span>144 <span style=''>        WorldImpl(newGround, collisionables)
+</span>145 <span style=''>
+</span>146 <span style=''>      </span><span style='background: #AEF1AE'>def updateCollisionables</span><span style=''>(newCollisionables: Set[Collisionable]): World =
+</span>147 <span style=''>        WorldImpl(ground, newCollisionables)
+</span>148 <span style=''>
+</span>149 <span style=''>    WorldImpl(ground, collisionables)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -70,63 +185,87 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          25
+          50
         </td>
         <td>
-          158
+          139
         </td>
         <td>
-          432
+          1274
           -
-          441
+          1295
         </td>
         <td>
-          Select
+          DefDef
         </td>
         <td>
-          empty
+          addCollisionables
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Set.empty
+          def addCollisionables
         </td>
       </tr><tr>
         <td>
-          25
+          51
         </td>
         <td>
-          157
+          137
         </td>
         <td>
-          432
+          1379
           -
-          435
+          1416
         </td>
         <td>
-          Ident
+          Apply
         </td>
         <td>
-          Set
+          ++
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Set
+          collisionables ++ collisionablesToAdd
         </td>
       </tr><tr>
         <td>
-          25
+          51
         </td>
         <td>
-          156
+          138
         </td>
         <td>
-          422
+          1358
           -
-          430
+          1417
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateCollisionables
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateCollisionables(collisionables ++ collisionablesToAdd)
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          140
+        </td>
+        <td>
+          1759
+          -
+          1767
         </td>
         <td>
           Apply
@@ -142,15 +281,63 @@
         </td>
       </tr><tr>
         <td>
-          25
+          74
         </td>
         <td>
-          159
+          142
         </td>
         <td>
-          390
+          1769
           -
-          406
+          1778
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          empty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set.empty
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          141
+        </td>
+        <td>
+          1769
+          -
+          1772
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          Set
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          144
+        </td>
+        <td>
+          1727
+          -
+          1743
         </td>
         <td>
           DefDef
@@ -163,6 +350,1361 @@
         </td>
         <td style="background: #AEF1AE">
           def initialWorld
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          143
+        </td>
+        <td>
+          1753
+          -
+          1794
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          World(Ground(), Set.empty[Collisionable])
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          199
+        </td>
+        <td>
+          2057
+          -
+          2066
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          150
+        </td>
+        <td>
+          2228
+          -
+          2252
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def timeElapsed
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          146
+        </td>
+        <td>
+          2309
+          -
+          2352
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables.map(_.updateTimebleTime(dt))
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          145
+        </td>
+        <td>
+          2328
+          -
+          2351
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateTimebleTime
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.updateTimebleTime(dt)
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          149
+        </td>
+        <td>
+          2377
+          -
+          2437
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Ground(ground.cities, ground.turrets.map(_.timeElapsed(dt)))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          148
+        </td>
+        <td>
+          2399
+          -
+          2436
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ground.turrets.map(_.timeElapsed(dt))
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          147
+        </td>
+        <td>
+          2418
+          -
+          2435
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.timeElapsed(dt)
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          180
+        </td>
+        <td>
+          2494
+          -
+          2522
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          checkCollisions
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def checkCollisions
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          154
+        </td>
+        <td>
+          2626
+          -
+          2645
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          removeDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def removeDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          151
+        </td>
+        <td>
+          2704
+          -
+          2732
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (collisionables, collisions)
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          153
+        </td>
+        <td>
+          2772
+          -
+          2809
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filterNot
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables.filterNot(isDestroyed)
+        </td>
+      </tr><tr>
+        <td>
+          98
+        </td>
+        <td>
+          152
+        </td>
+        <td>
+          2797
+          -
+          2808
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          157
+        </td>
+        <td>
+          2860
+          -
+          2877
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          addExplosions
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def addExplosions
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          155
+        </td>
+        <td>
+          2962
+          -
+          2990
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (collisionables, collisions)
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          156
+        </td>
+        <td>
+          3035
+          -
+          3063
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ++
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables ++ explosions
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          171
+        </td>
+        <td>
+          3117
+          -
+          3135
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          checkCollision
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def checkCollision
+        </td>
+      </tr><tr>
+        <td>
+          108
+        </td>
+        <td>
+          160
+        </td>
+        <td>
+          3397
+          -
+          3551
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          applyDamagesBasedOnWithOld
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          allCollisionables.applyDamagesBasedOnWithOld(
+            allCollisionables calculateCollisionsWith collisionables,
+            oldColliosions
+          )
+        </td>
+      </tr><tr>
+        <td>
+          108
+        </td>
+        <td>
+          161
+        </td>
+        <td>
+          3352
+          -
+          3394
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (updatedCollisionables, updatedCollisions)
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          158
+        </td>
+        <td>
+          3455
+          -
+          3496
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          calculateCollisionsWith
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          allCollisionables calculateCollisionsWith
+        </td>
+      </tr><tr>
+        <td>
+          109
+        </td>
+        <td>
+          159
+        </td>
+        <td>
+          3455
+          -
+          3511
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          allCollisionables calculateCollisionsWith collisionables
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          162
+        </td>
+        <td>
+          3581
+          -
+          3632
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          explosionsOfDestroyedMissiles
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updatedCollisionables.explosionsOfDestroyedMissiles
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          164
+        </td>
+        <td>
+          3667
+          -
+          3711
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filterNot
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updatedCollisionables.filterNot(isDestroyed)
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          163
+        </td>
+        <td>
+          3699
+          -
+          3710
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          isDestroyed
+        </td>
+      </tr><tr>
+        <td>
+          115
+        </td>
+        <td>
+          167
+        </td>
+        <td>
+          3763
+          -
+          3783
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isEmpty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          newExplosion.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          115
+        </td>
+        <td>
+          166
+        </td>
+        <td>
+          3753
+          -
+          3783
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _ if newExplosion.isEmpty
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          165
+        </td>
+        <td>
+          3801
+          -
+          3857
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          removeDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (newCollisionables, updatedCollisions).removeDestroyed()
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          169
+        </td>
+        <td>
+          3880
+          -
+          3974
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          addExplosions
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          checkCollision(newCollisionables, newExplosion)(updatedCollisions).addExplosions(newExplosion)
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          168
+        </td>
+        <td>
+          3880
+          -
+          3946
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          checkCollision
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          checkCollision(newCollisionables, newExplosion)(updatedCollisions)
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          170
+        </td>
+        <td>
+          3870
+          -
+          3876
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          173
+        </td>
+        <td>
+          4008
+          -
+          4057
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ++
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables ++ ground.cities ++ ground.turrets
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          172
+        </td>
+        <td>
+          4008
+          -
+          4039
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ++
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables ++ ground.cities
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          176
+        </td>
+        <td>
+          4113
+          -
+          4176
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          checkCollision
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          checkCollision(allCollisionables, allCollisionables)(Set.empty)
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          175
+        </td>
+        <td>
+          4166
+          -
+          4175
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          empty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set.empty
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          174
+        </td>
+        <td>
+          4166
+          -
+          4169
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          Set
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          177
+        </td>
+        <td>
+          4070
+          -
+          4110
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (tmpNewCollisionables, collisionsUpdate)
+        </td>
+      </tr><tr>
+        <td>
+          121
+        </td>
+        <td>
+          178
+        </td>
+        <td>
+          4222
+          -
+          4263
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          splitGroundFromOther
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          tmpNewCollisionables.splitGroundFromOther
+        </td>
+      </tr><tr>
+        <td>
+          121
+        </td>
+        <td>
+          179
+        </td>
+        <td>
+          4189
+          -
+          4219
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (newGround, newCollisionables)
+        </td>
+      </tr><tr>
+        <td>
+          125
+        </td>
+        <td>
+          185
+        </td>
+        <td>
+          4371
+          -
+          4406
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          activateSpecialAbility
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def activateSpecialAbility
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          184
+        </td>
+        <td>
+          4424
+          -
+          4562
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateCollisionables
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateCollisionables(
+          collisionables
+            .activateSpecialAbility
+            .filterNot(isExplosionTerminated)
+        )
+        </td>
+      </tr><tr>
+        <td>
+          128
+        </td>
+        <td>
+          181
+        </td>
+        <td>
+          4456
+          -
+          4506
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          activateSpecialAbility
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables
+            .activateSpecialAbility
+        </td>
+      </tr><tr>
+        <td>
+          129
+        </td>
+        <td>
+          182
+        </td>
+        <td>
+          4530
+          -
+          4551
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isExplosionTerminated
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          isExplosionTerminated
+        </td>
+      </tr><tr>
+        <td>
+          129
+        </td>
+        <td>
+          183
+        </td>
+        <td>
+          4456
+          -
+          4552
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filterNot
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables
+            .activateSpecialAbility
+            .filterNot(isExplosionTerminated)
+        </td>
+      </tr><tr>
+        <td>
+          132
+        </td>
+        <td>
+          192
+        </td>
+        <td>
+          4570
+          -
+          4595
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          shootMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def shootMissile
+        </td>
+      </tr><tr>
+        <td>
+          133
+        </td>
+        <td>
+          186
+        </td>
+        <td>
+          4635
+          -
+          4667
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          shootMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ground.shootMissile(destination)
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          190
+        </td>
+        <td>
+          4684
+          -
+          4715
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case (newGround, Some(missile))
+        </td>
+      </tr><tr>
+        <td>
+          135
+        </td>
+        <td>
+          187
+        </td>
+        <td>
+          4731
+          -
+          4754
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateGround
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateGround(newGround)
+        </td>
+      </tr><tr>
+        <td>
+          136
+        </td>
+        <td>
+          189
+        </td>
+        <td>
+          4731
+          -
+          4801
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          addCollisionables
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateGround(newGround)
+              .addCollisionables(Set(missile))
+        </td>
+      </tr><tr>
+        <td>
+          136
+        </td>
+        <td>
+          188
+        </td>
+        <td>
+          4788
+          -
+          4800
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set(missile)
+        </td>
+      </tr><tr>
+        <td>
+          137
+        </td>
+        <td>
+          191
+        </td>
+        <td>
+          4812
+          -
+          4818
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          139
+        </td>
+        <td>
+          196
+        </td>
+        <td>
+          4834
+          -
+          4859
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          moveElements
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def moveElements
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          194
+        </td>
+        <td>
+          4898
+          -
+          4943
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables.map(_.updateMovablePosition())
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          193
+        </td>
+        <td>
+          4917
+          -
+          4942
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateMovablePosition
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.updateMovablePosition()
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          195
+        </td>
+        <td>
+          4877
+          -
+          4944
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateCollisionables
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateCollisionables(collisionables.map(_.updateMovablePosition()))
+        </td>
+      </tr><tr>
+        <td>
+          142
+        </td>
+        <td>
+          197
+        </td>
+        <td>
+          4952
+          -
+          4968
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateGround
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def updateGround
+        </td>
+      </tr><tr>
+        <td>
+          145
+        </td>
+        <td>
+          198
+        </td>
+        <td>
+          5049
+          -
+          5073
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateCollisionables
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def updateCollisionables
         </td>
       </tr>
     </table>

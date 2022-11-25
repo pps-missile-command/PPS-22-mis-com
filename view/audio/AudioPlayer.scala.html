@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/spawner/PimpingByRandom.scala.html
+          view/audio/AudioPlayer.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,21 +22,27 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.spawner
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.audio
 </span>2 <span style=''>
-</span>3 <span style=''>import model.elements2d.Point2D
-</span>4 <span style=''>import model.vehicle.vehicleTypes
+</span>3 <span style=''>import java.net.{MalformedURLException, URL}
+</span>4 <span style=''>import javax.sound.sampled.{AudioSystem, UnsupportedAudioFileException}
 </span>5 <span style=''>
-</span>6 <span style=''>import scala.util.Random
-</span>7 <span style=''>
-</span>8 <span style=''>object PimpingByRandom:
-</span>9 <span style=''>  extension(r: Random)
-</span>10 <span style=''>    </span><span style='background: #F0ADAD'>def nextRandomPosition</span><span style=''>(maxWidth: Double, maxHeight: Double): Point2D = </span><span style='background: #F0ADAD'>Point2D(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight)</span><span style=''>
-</span>11 <span style=''>    </span><span style='background: #AEF1AE'>def nextRandomX</span><span style=''>(maxWidth: Double, y: Double): Point2D = </span><span style='background: #AEF1AE'>Point2D(r.nextDouble() * maxWidth, y)</span><span style=''>
-</span>12 <span style=''>    </span><span style='background: #F0ADAD'>def nextRandomY</span><span style=''>(maxHeight: Double, x: Double): Point2D = </span><span style='background: #F0ADAD'>Point2D(x, r.nextDouble() * maxHeight)</span><span style=''>
-</span>13 <span style=''>    </span><span style='background: #AEF1AE'>def nextRandomDirection</span><span style=''>(): vehicleTypes = </span><span style='background: #AEF1AE'>r.nextDouble()</span><span style=''> match
-</span>14 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0.5</span><span style=''> =&gt; vehicleTypes.Right_To_Left
-</span>15 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; vehicleTypes.Left_To_Right
+</span>6 <span style=''>object AudioPlayer:
+</span>7 <span style=''>    </span><span style='background: #F0ADAD'>def playAudio</span><span style=''>(URL_audio: String): Unit =
+</span>8 <span style=''>        try
+</span>9 <span style=''>            </span><span style='background: #F0ADAD'>val url = new URL(URL_audio)
+</span>10 <span style=''></span><span style='background: #F0ADAD'>            val audioIn = AudioSystem.getAudioInputStream(url)
+</span>11 <span style=''></span><span style='background: #F0ADAD'>            val clip = AudioSystem.getClip
+</span>12 <span style=''></span><span style='background: #F0ADAD'>            clip.open(audioIn)
+</span>13 <span style=''></span><span style='background: #F0ADAD'>            clip.start</span><span style=''>
+</span>14 <span style=''>        catch
+</span>15 <span style=''>            </span><span style='background: #F0ADAD'>case ex1: MalformedURLException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL not found&quot;)</span><span style=''>
+</span>16 <span style=''>            </span><span style='background: #F0ADAD'>case ex2: UnsupportedAudioFileException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL found, but not an audio&quot;)</span><span style=''>
+</span>17 <span style=''>            </span><span style='background: #F0ADAD'>case ex3: Throwable</span><span style=''> =&gt;
+</span>18 <span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>    //Add audio here
+</span>21 <span style=''>    val explosionSmall = &quot;https://www.shockwave-sound.com/sound-effects/explosion-sounds/Arcade%20Explo%20A.wav&quot;
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -51,303 +57,63 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          9
+          6
         </td>
         <td>
-          1097
+          1389
         </td>
         <td>
-          273
+          162
           -
-          287
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          r.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          9
-        </td>
-        <td>
-          1096
-        </td>
-        <td>
-          246
-          -
-          260
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          r.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          9
-        </td>
-        <td>
-          1099
-        </td>
-        <td>
-          167
-          -
-          189
+          175
         </td>
         <td>
           DefDef
         </td>
         <td>
-          nextRandomPosition
+          playAudio
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def nextRandomPosition
+          def playAudio
         </td>
       </tr><tr>
         <td>
-          9
+          8
         </td>
         <td>
-          1098
+          1378
         </td>
         <td>
-          238
+          237
           -
-          300
+          255
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Point2D(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight)
+          new URL(URL_audio)
         </td>
       </tr><tr>
         <td>
-          10
+          8
         </td>
         <td>
-          1100
+          1383
         </td>
         <td>
-          369
+          227
           -
-          383
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          10
-        </td>
-        <td>
-          1102
-        </td>
-        <td>
-          305
-          -
-          320
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          nextRandomX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def nextRandomX
-        </td>
-      </tr><tr>
-        <td>
-          10
-        </td>
-        <td>
-          1101
-        </td>
-        <td>
-          361
-          -
-          398
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Point2D(r.nextDouble() * maxWidth, y)
-        </td>
-      </tr><tr>
-        <td>
-          11
-        </td>
-        <td>
-          1105
-        </td>
-        <td>
-          403
-          -
-          418
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          nextRandomY
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def nextRandomY
-        </td>
-      </tr><tr>
-        <td>
-          11
-        </td>
-        <td>
-          1104
-        </td>
-        <td>
-          460
-          -
-          498
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(x, r.nextDouble() * maxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          11
-        </td>
-        <td>
-          1103
-        </td>
-        <td>
-          471
-          -
-          485
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          r.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          12
-        </td>
-        <td>
-          1106
-        </td>
-        <td>
-          545
-          -
-          559
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          12
-        </td>
-        <td>
-          1109
-        </td>
-        <td>
-          503
-          -
-          526
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          nextRandomDirection
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def nextRandomDirection
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          1107
-        </td>
-        <td>
-          572
-          -
-          589
+          415
         </td>
         <td>
           Block
@@ -358,20 +124,144 @@
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          case n if n &lt; 0.5
+        <td style="background: #F0ADAD">
+          val url = new URL(URL_audio)
+            val audioIn = AudioSystem.getAudioInputStream(url)
+            val clip = AudioSystem.getClip
+            clip.open(audioIn)
+            clip.start
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          1379
+        </td>
+        <td>
+          282
+          -
+          318
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getAudioInputStream
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          AudioSystem.getAudioInputStream(url)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          1380
+        </td>
+        <td>
+          342
+          -
+          361
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getClip
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          AudioSystem.getClip
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1381
+        </td>
+        <td>
+          374
+          -
+          392
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          open
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          clip.open(audioIn)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1382
+        </td>
+        <td>
+          405
+          -
+          415
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          start
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          clip.start
         </td>
       </tr><tr>
         <td>
           14
         </td>
         <td>
-          1108
+          1384
         </td>
         <td>
-          626
+          477
           -
-          632
+          501
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          println
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          println(&quot;URL not found&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1385
+        </td>
+        <td>
+          442
+          -
+          473
         </td>
         <td>
           Block
@@ -382,8 +272,80 @@
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          case _
+        <td style="background: #F0ADAD">
+          case ex1: MalformedURLException
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1387
+        </td>
+        <td>
+          514
+          -
+          553
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case ex2: UnsupportedAudioFileException
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1386
+        </td>
+        <td>
+          557
+          -
+          595
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          println
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          println(&quot;URL found, but not an audio&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          1388
+        </td>
+        <td>
+          608
+          -
+          627
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case ex3: Throwable
         </td>
       </tr>
     </table>

@@ -28,32 +28,23 @@
 </span>4 <span style=''>import controller.Event.TimePassed
 </span>5 <span style=''>import controller.update.Update.on
 </span>6 <span style=''>import model.Game
-</span>7 <span style=''>import model.behavior.Moveable
-</span>8 <span style=''>import model.collisions.Collisionable
-</span>9 <span style=''>import monix.eval.Task
-</span>10 <span style=''>
-</span>11 <span style=''>/**
-</span>12 <span style=''> * Object that return an update function for the world to update the position its components
-</span>13 <span style=''> */
-</span>14 <span style=''>object UpdatePosition:
-</span>15 <span style=''>
-</span>16 <span style=''>  extension (collisionable: Collisionable)
-</span>17 <span style=''>    </span><span style='background: #F0ADAD'>private def updateMovablePosition</span><span style=''>(): Collisionable =
-</span>18 <span style=''>      collisionable match
-</span>19 <span style=''>        </span><span style='background: #F0ADAD'>case moveable: Moveable</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>moveable.move()</span><span style=''>.asInstanceOf[Collisionable]
-</span>20 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; collisionable
-</span>21 <span style=''>
-</span>22 <span style=''>  /**
-</span>23 <span style=''>   * Apply function used to update the position of the game components
-</span>24 <span style=''>   *
-</span>25 <span style=''>   * @return An Update that update the position of the game components
-</span>26 <span style=''>   */
-</span>27 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, game: Game) =&gt;
-</span>28 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>29 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = game.world.collisionables.map(_.updateMovablePosition())
-</span>30 <span style=''></span><span style='background: #F0ADAD'>      game.copy(world = game.world.copy(collisionables = collisionables))
-</span>31 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>32 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>7 <span style=''>import monix.eval.Task
+</span>8 <span style=''>
+</span>9 <span style=''>/**
+</span>10 <span style=''> * Object that return an update function for the world to update the position its components
+</span>11 <span style=''> */
+</span>12 <span style=''>object UpdatePosition:
+</span>13 <span style=''>
+</span>14 <span style=''>  /**
+</span>15 <span style=''>   * Apply function used to update the position of the game components
+</span>16 <span style=''>   *
+</span>17 <span style=''>   * @return An Update that update the position of the game components
+</span>18 <span style=''>   */
+</span>19 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (_: Event, game: Game) =&gt;
+</span>20 <span style=''></span><span style='background: #F0ADAD'>    Task {
+</span>21 <span style=''></span><span style='background: #F0ADAD'>      game.moveElements
+</span>22 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>23 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -68,111 +59,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          16
-        </td>
-        <td>
-          140
-        </td>
-        <td>
-          404
-          -
-          437
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          updateMovablePosition
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          private def updateMovablePosition
-        </td>
-      </tr><tr>
-        <td>
           18
         </td>
         <td>
-          137
+          76
         </td>
         <td>
-          518
+          449
           -
-          533
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          move
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          moveable.move()
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          138
-        </td>
-        <td>
-          491
-          -
-          514
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case moveable: Moveable
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          139
-        </td>
-        <td>
-          570
-          -
-          576
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          142
-        </td>
-        <td>
-          756
-          -
-          765
+          458
         </td>
         <td>
           DefDef
@@ -188,15 +83,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          18
         </td>
         <td>
-          141
+          75
         </td>
         <td>
-          778
+          471
           -
-          999
+          558
         </td>
         <td>
           Apply
@@ -210,8 +105,7 @@
         <td style="background: #F0ADAD">
           on[TimePassed] { (_: Event, game: Game) =&gt;
     Task {
-      val collisionables = game.world.collisionables.map(_.updateMovablePosition())
-      game.copy(world = game.world.copy(collisionables = collisionables))
+      game.moveElements
     }
   }
         </td>

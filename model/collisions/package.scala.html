@@ -50,71 +50,82 @@
 </span>26 <span style=''>   * Alias for the distance between points in the hit box area
 </span>27 <span style=''>   */
 </span>28 <span style=''>  type Distance = Double
-</span>29 <span style=''>  extension(collisionables: Set[Collisionable])
-</span>30 <span style=''>    </span><span style='background: #AEF1AE'>private def totalDamageFor</span><span style=''>(collisionable: Collisionable): LifePoint =
-</span>31 <span style=''>      </span><span style='background: #AEF1AE'>collisionables
-</span>32 <span style=''></span><span style='background: #AEF1AE'>        .filter(_.affiliation != collisionable.affiliation)
-</span>33 <span style=''></span><span style='background: #AEF1AE'>        .toSeq
-</span>34 <span style=''></span><span style='background: #AEF1AE'>        .map(_.damage)
-</span>35 <span style=''></span><span style='background: #AEF1AE'>        .sum</span><span style=''>
-</span>36 <span style=''>
-</span>37 <span style=''>    /**
-</span>38 <span style=''>     * Apply the damage to the damageable object in the set.
-</span>39 <span style=''>     *
-</span>40 <span style=''>     * @param collisions a set with all the detected collisions
-</span>41 <span style=''>     * @return a tuple with the updated collisionables and the collisions
-</span>42 <span style=''>     */
-</span>43 <span style=''>    </span><span style='background: #AEF1AE'>def applyDamagesBasedOn</span><span style=''>(collisions: Set[Collision]): (Set[Collisionable], Set[Collision]) =
-</span>44 <span style=''>      val mapping: Map[Collisionable, Collisionable] =
-</span>45 <span style=''>        </span><span style='background: #AEF1AE'>(for
-</span>46 <span style=''></span><span style='background: #AEF1AE'>          collisionable &lt;- collisionables
-</span>47 <span style=''></span><span style='background: #AEF1AE'>          allCollidingCollisionables = collisions allCollisionablesThatCollideWith collisionable
-</span>48 <span style=''></span><span style='background: #AEF1AE'>          if allCollidingCollisionables.nonEmpty
-</span>49 <span style=''></span><span style='background: #AEF1AE'>          totalDamage = allCollidingCollisionables totalDamageFor collisionable
-</span>50 <span style=''></span><span style='background: #AEF1AE'>          newCollisionable = collisionable applyDamage totalDamage
-</span>51 <span style=''></span><span style='background: #AEF1AE'>        yield
-</span>52 <span style=''></span><span style='background: #AEF1AE'>          collisionable -&gt; newCollisionable)
-</span>53 <span style=''></span><span style='background: #AEF1AE'>          .toMap</span><span style=''>
-</span>54 <span style=''>      val unUpdateCollisionables = </span><span style='background: #AEF1AE'>collisions.allCollisionablesThatDoesntCollideWith(collisionables, mapping.keySet)</span><span style=''>
-</span>55 <span style=''>      (</span><span style='background: #AEF1AE'>mapping.values.toSet ++ unUpdateCollisionables</span><span style=''>, </span><span style='background: #AEF1AE'>collisions updateCollisionablesContained mapping</span><span style=''>)
-</span>56 <span style=''>
-</span>57 <span style=''>    /**
-</span>58 <span style=''>     * Check the collision between the set of collisionables,
-</span>59 <span style=''>     * return a set that has the collisions of the collisionables.
-</span>60 <span style=''>     * The methods only check the collision between the collisionables that aren't on the same side .
+</span>29 <span style=''>  
+</span>30 <span style=''>  extension (collisionables: Set[Collisionable])
+</span>31 <span style=''>    </span><span style='background: #AEF1AE'>private def totalDamageFor</span><span style=''>(collisionable: Collisionable): LifePoint =
+</span>32 <span style=''>      </span><span style='background: #AEF1AE'>collisionables
+</span>33 <span style=''></span><span style='background: #AEF1AE'>        .filter(_.affiliation != collisionable.affiliation)
+</span>34 <span style=''></span><span style='background: #AEF1AE'>        .toSeq
+</span>35 <span style=''></span><span style='background: #AEF1AE'>        .map(_.damage)
+</span>36 <span style=''></span><span style='background: #AEF1AE'>        .sum</span><span style=''>
+</span>37 <span style=''>
+</span>38 <span style=''>    /**
+</span>39 <span style=''>     * Apply the damage to the damageable object in the set.
+</span>40 <span style=''>     *
+</span>41 <span style=''>     * @param collisions    a set with all the detected collisions
+</span>42 <span style=''>     * @param oldCollisions a set with all the old collisions
+</span>43 <span style=''>     * @return a tuple with the updated collisionables and the collisions
+</span>44 <span style=''>     */
+</span>45 <span style=''>    </span><span style='background: #AEF1AE'>def applyDamagesBasedOnWithOld</span><span style=''>(collisions: Set[Collision], oldCollisions: Set[Collision]): (Set[Collisionable], Set[Collision]) =
+</span>46 <span style=''>      val mapping: Map[Collisionable, Collisionable] =
+</span>47 <span style=''>        </span><span style='background: #AEF1AE'>(for
+</span>48 <span style=''></span><span style='background: #AEF1AE'>          collisionable &lt;- collisionables
+</span>49 <span style=''></span><span style='background: #AEF1AE'>          allCollidingCollisionables = collisions allCollisionablesThatCollideWith collisionable
+</span>50 <span style=''></span><span style='background: #AEF1AE'>          if allCollidingCollisionables.nonEmpty
+</span>51 <span style=''></span><span style='background: #AEF1AE'>          totalDamage = allCollidingCollisionables totalDamageFor collisionable
+</span>52 <span style=''></span><span style='background: #AEF1AE'>          newCollisionable = collisionable applyDamage totalDamage
+</span>53 <span style=''></span><span style='background: #AEF1AE'>        yield
+</span>54 <span style=''></span><span style='background: #AEF1AE'>          collisionable -&gt; newCollisionable)
+</span>55 <span style=''></span><span style='background: #AEF1AE'>          .toMap</span><span style=''>
+</span>56 <span style=''>      val unUpdateCollisionables = </span><span style='background: #AEF1AE'>collisions.allCollisionablesThatDoesntCollideWith(collisionables, mapping.keySet)</span><span style=''>
+</span>57 <span style=''>      (</span><span style='background: #AEF1AE'>mapping.values.toSet ++ unUpdateCollisionables</span><span style=''>, </span><span style='background: #AEF1AE'>(collisions ++ oldCollisions) updateCollisionablesContained mapping</span><span style=''>)
+</span>58 <span style=''>
+</span>59 <span style=''>    /**
+</span>60 <span style=''>     * Apply the damage to the damageable object in the set.
 </span>61 <span style=''>     *
-</span>62 <span style=''>     * @return a set with all the collisions
-</span>63 <span style=''>     */
-</span>64 <span style=''>    </span><span style='background: #AEF1AE'>def calculateCollisions</span><span style=''>: Set[Collision] =
-</span>65 <span style=''>      </span><span style='background: #AEF1AE'>collisionables calculateCollisionsWith collisionables</span><span style=''>
-</span>66 <span style=''>
-</span>67 <span style=''>    /**
-</span>68 <span style=''>     * Check the collision between the current collisionables and the the set of other collisionables,
-</span>69 <span style=''>     * return a set that has the collisions of the collisionables.
-</span>70 <span style=''>     * The methods only check the collision between the collisionables that aren't on the same side .
-</span>71 <span style=''>     *
-</span>72 <span style=''>     * @param otherCollisionables the set of collisionable objects to check if collide with the current one set
-</span>73 <span style=''>     * @tparam CO the type of the other set of collisionables
-</span>74 <span style=''>     * @return a set with all the collisions between the two sets
-</span>75 <span style=''>     */
-</span>76 <span style=''>    </span><span style='background: #AEF1AE'>def calculateCollisionsWith</span><span style=''>[CO &lt;: Collisionable](otherCollisionables: Set[CO]): Set[Collision] =
-</span>77 <span style=''>      given Distance = 5.0
-</span>78 <span style=''>
-</span>79 <span style=''>      </span><span style='background: #AEF1AE'>def areOnTheSameSide</span><span style=''>(collisionable: Collisionable, otherCollisionable: Collisionable): Boolean =
-</span>80 <span style=''>        </span><span style='background: #AEF1AE'>collisionable.affiliation</span><span style=''> == </span><span style='background: #AEF1AE'>otherCollisionable.affiliation</span><span style=''>
-</span>81 <span style=''>
-</span>82 <span style=''>      </span><span style='background: #AEF1AE'>for
-</span>83 <span style=''></span><span style='background: #AEF1AE'>        collisionable &lt;- collisionables
-</span>84 <span style=''></span><span style='background: #AEF1AE'>        if collisionable != null
-</span>85 <span style=''></span><span style='background: #AEF1AE'>        if collisionable.isNotDestroyed
-</span>86 <span style=''></span><span style='background: #AEF1AE'>        collisionable2 &lt;- otherCollisionables
-</span>87 <span style=''></span><span style='background: #AEF1AE'>        if collisionable2 != null
-</span>88 <span style=''></span><span style='background: #AEF1AE'>        if collisionable != collisionable2
-</span>89 <span style=''></span><span style='background: #AEF1AE'>        if collisionable2.isNotDestroyed
-</span>90 <span style=''></span><span style='background: #AEF1AE'>        if !areOnTheSameSide(collisionable, collisionable2)
-</span>91 <span style=''></span><span style='background: #AEF1AE'>        if collisionable isCollidingWith collisionable2
-</span>92 <span style=''></span><span style='background: #AEF1AE'>      yield
-</span>93 <span style=''></span><span style='background: #AEF1AE'>        Collision(collisionable, collisionable2)</span><span style=''>
+</span>62 <span style=''>     * @param collisions a set with all the detected collisions
+</span>63 <span style=''>     * @return a tuple with the updated collisionables and the collisions
+</span>64 <span style=''>     */
+</span>65 <span style=''>    </span><span style='background: #AEF1AE'>def applyDamagesBasedOn</span><span style=''>(collisions: Set[Collision]): (Set[Collisionable], Set[Collision]) =
+</span>66 <span style=''>      </span><span style='background: #AEF1AE'>applyDamagesBasedOnWithOld(collisions, Set.empty[Collision])</span><span style=''>
+</span>67 <span style=''>
+</span>68 <span style=''>    /**
+</span>69 <span style=''>     * Check the collision between the set of collisionables,
+</span>70 <span style=''>     * return a set that has the collisions of the collisionables.
+</span>71 <span style=''>     * The methods only check the collision between the collisionables that aren't on the same side .
+</span>72 <span style=''>     *
+</span>73 <span style=''>     * @return a set with all the collisions
+</span>74 <span style=''>     */
+</span>75 <span style=''>    </span><span style='background: #AEF1AE'>def calculateCollisions</span><span style=''>: Set[Collision] =
+</span>76 <span style=''>      </span><span style='background: #AEF1AE'>collisionables calculateCollisionsWith collisionables</span><span style=''>
+</span>77 <span style=''>
+</span>78 <span style=''>    /**
+</span>79 <span style=''>     * Check the collision between the current collisionables and the the set of other collisionables,
+</span>80 <span style=''>     * return a set that has the collisions of the collisionables.
+</span>81 <span style=''>     * The methods only check the collision between the collisionables that aren't on the same side .
+</span>82 <span style=''>     *
+</span>83 <span style=''>     * @param otherCollisionables the set of collisionable objects to check if collide with the current one set
+</span>84 <span style=''>     * @tparam CO the type of the other set of collisionables
+</span>85 <span style=''>     * @return a set with all the collisions between the two sets
+</span>86 <span style=''>     */
+</span>87 <span style=''>    </span><span style='background: #AEF1AE'>def calculateCollisionsWith</span><span style=''>[CO &lt;: Collisionable](otherCollisionables: Set[CO]): Set[Collision] =
+</span>88 <span style=''>      given Distance = 5.0
+</span>89 <span style=''>
+</span>90 <span style=''>      </span><span style='background: #AEF1AE'>def areOnTheSameSide</span><span style=''>(collisionable: Collisionable, otherCollisionable: Collisionable): Boolean =
+</span>91 <span style=''>        </span><span style='background: #AEF1AE'>collisionable.affiliation</span><span style=''> == </span><span style='background: #AEF1AE'>otherCollisionable.affiliation</span><span style=''>
+</span>92 <span style=''>
+</span>93 <span style=''>      </span><span style='background: #AEF1AE'>for
+</span>94 <span style=''></span><span style='background: #AEF1AE'>        collisionable &lt;- collisionables
+</span>95 <span style=''></span><span style='background: #AEF1AE'>        if collisionable != null
+</span>96 <span style=''></span><span style='background: #AEF1AE'>        if collisionable.isNotDestroyed
+</span>97 <span style=''></span><span style='background: #AEF1AE'>        collisionable2 &lt;- otherCollisionables
+</span>98 <span style=''></span><span style='background: #AEF1AE'>        if collisionable2 != null
+</span>99 <span style=''></span><span style='background: #AEF1AE'>        if collisionable != collisionable2
+</span>100 <span style=''></span><span style='background: #AEF1AE'>        if collisionable2.isNotDestroyed
+</span>101 <span style=''></span><span style='background: #AEF1AE'>        if !areOnTheSameSide(collisionable, collisionable2)
+</span>102 <span style=''></span><span style='background: #AEF1AE'>        if collisionable isCollidingWith collisionable2
+</span>103 <span style=''></span><span style='background: #AEF1AE'>      yield
+</span>104 <span style=''></span><span style='background: #AEF1AE'>        Collision(collisionable, collisionable2)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -129,15 +140,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          29
+          30
         </td>
         <td>
-          468
+          588
         </td>
         <td>
-          613
+          617
           -
-          639
+          643
         </td>
         <td>
           DefDef
@@ -153,15 +164,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          31
         </td>
         <td>
-          467
+          587
         </td>
         <td>
-          689
+          693
           -
-          814
+          818
         </td>
         <td>
           Apply
@@ -181,40 +192,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          32
         </td>
         <td>
-          463
+          582
         </td>
         <td>
-          689
+          741
           -
-          763
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          filter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisionables
-        .filter(_.affiliation != collisionable.affiliation)
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          462
-        </td>
-        <td>
-          737
-          -
-          762
+          766
         </td>
         <td>
           Select
@@ -230,15 +216,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          32
         </td>
         <td>
-          461
+          581
         </td>
         <td>
-          720
+          724
           -
-          733
+          737
         </td>
         <td>
           Select
@@ -257,12 +243,37 @@
           32
         </td>
         <td>
-          464
+          583
         </td>
         <td>
-          689
+          693
           -
-          778
+          767
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables
+        .filter(_.affiliation != collisionable.affiliation)
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          584
+        </td>
+        <td>
+          693
+          -
+          782
         </td>
         <td>
           Select
@@ -280,15 +291,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          34
         </td>
         <td>
-          465
+          585
         </td>
         <td>
-          792
+          796
           -
-          800
+          804
         </td>
         <td>
           Apply
@@ -304,15 +315,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          34
         </td>
         <td>
-          466
+          586
         </td>
         <td>
-          689
+          693
           -
-          801
+          805
         </td>
         <td>
           Apply
@@ -331,39 +342,70 @@
         </td>
       </tr><tr>
         <td>
-          42
+          44
         </td>
         <td>
-          488
+          609
         </td>
         <td>
-          1042
+          1111
           -
-          1065
+          1141
         </td>
         <td>
           DefDef
         </td>
         <td>
-          applyDamagesBasedOn
+          applyDamagesBasedOnWithOld
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def applyDamagesBasedOn
+          def applyDamagesBasedOnWithOld
         </td>
       </tr><tr>
         <td>
-          44
+          46
         </td>
         <td>
-          481
+          600
         </td>
         <td>
-          1197
+          1305
           -
-          1612
+          1701
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for
+          collisionable &lt;- collisionables
+          allCollidingCollisionables = collisions allCollisionablesThatCollideWith collisionable
+          if allCollidingCollisionables.nonEmpty
+          totalDamage = allCollidingCollisionables totalDamageFor collisionable
+          newCollisionable = collisionable applyDamage totalDamage
+        yield
+          collisionable -&gt; newCollisionable
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          601
+        </td>
+        <td>
+          1304
+          -
+          1719
         </td>
         <td>
           Apply
@@ -387,71 +429,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          47
         </td>
         <td>
-          480
+          597
         </td>
         <td>
-          1198
+          1319
           -
-          1594
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          for
-          collisionable &lt;- collisionables
-          allCollidingCollisionables = collisions allCollisionablesThatCollideWith collisionable
-          if allCollidingCollisionables.nonEmpty
-          totalDamage = allCollidingCollisionables totalDamageFor collisionable
-          newCollisionable = collisionable applyDamage totalDamage
-        yield
-          collisionable -&gt; newCollisionable
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          472
-        </td>
-        <td>
-          1212
-          -
-          1280
-        </td>
-        <td>
-          Typed
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisionable &lt;- collisionables
-          allCollidingCollisionables
-        </td>
-      </tr><tr>
-        <td>
-          45
-        </td>
-        <td>
-          477
-        </td>
-        <td>
-          1212
-          -
-          1536
+          1643
         </td>
         <td>
           Apply
@@ -471,15 +457,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          47
         </td>
         <td>
-          470
+          590
         </td>
         <td>
-          1212
+          1319
           -
-          1340
+          1447
         </td>
         <td>
           Apply
@@ -496,15 +482,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          47
         </td>
         <td>
-          479
+          599
         </td>
         <td>
-          1212
+          1319
           -
-          1496
+          1603
         </td>
         <td>
           Block
@@ -524,15 +510,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          47
         </td>
         <td>
-          473
+          593
         </td>
         <td>
-          1212
+          1319
           -
-          1389
+          1496
         </td>
         <td>
           Apply
@@ -550,15 +536,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          47
         </td>
         <td>
-          476
+          596
         </td>
         <td>
-          1212
+          1319
           -
-          1280
+          1387
         </td>
         <td>
           Block
@@ -575,15 +561,40 @@
         </td>
       </tr><tr>
         <td>
-          46
+          47
         </td>
         <td>
-          469
+          592
         </td>
         <td>
-          1283
+          1319
           -
-          1340
+          1387
+        </td>
+        <td>
+          Typed
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionable &lt;- collisionables
+          allCollidingCollisionables
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          589
+        </td>
+        <td>
+          1390
+          -
+          1447
         </td>
         <td>
           Apply
@@ -599,15 +610,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          49
         </td>
         <td>
-          471
+          591
         </td>
         <td>
-          1354
+          1461
           -
-          1389
+          1496
         </td>
         <td>
           Select
@@ -623,15 +634,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          50
         </td>
         <td>
-          474
+          594
         </td>
         <td>
-          1414
+          1521
           -
-          1469
+          1576
         </td>
         <td>
           Apply
@@ -647,15 +658,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          51
         </td>
         <td>
-          475
+          595
         </td>
         <td>
-          1499
+          1606
           -
-          1536
+          1643
         </td>
         <td>
           Apply
@@ -671,15 +682,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          53
         </td>
         <td>
-          478
+          598
         </td>
         <td>
-          1561
+          1668
           -
-          1594
+          1701
         </td>
         <td>
           Apply
@@ -695,15 +706,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
-          483
+          603
         </td>
         <td>
-          1648
+          1755
           -
-          1729
+          1836
         </td>
         <td>
           Apply
@@ -719,15 +730,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
-          482
+          602
         </td>
         <td>
-          1714
+          1821
           -
-          1728
+          1835
         </td>
         <td>
           Select
@@ -743,39 +754,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          56
         </td>
         <td>
-          487
+          606
         </td>
         <td>
-          1785
+          1844
           -
-          1833
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          updateCollisionablesContained
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisions updateCollisionablesContained mapping
-        </td>
-      </tr><tr>
-        <td>
-          54
-        </td>
-        <td>
-          486
-        </td>
-        <td>
-          1737
-          -
-          1783
+          1890
         </td>
         <td>
           Apply
@@ -791,15 +778,39 @@
         </td>
       </tr><tr>
         <td>
-          54
+          56
         </td>
         <td>
-          485
+          608
         </td>
         <td>
-          1737
+          1892
           -
-          1757
+          1959
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateCollisionablesContained
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (collisions ++ oldCollisions) updateCollisionablesContained mapping
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          605
+        </td>
+        <td>
+          1844
+          -
+          1864
         </td>
         <td>
           Select
@@ -815,15 +826,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          56
         </td>
         <td>
-          484
+          604
         </td>
         <td>
-          1737
+          1844
           -
-          1751
+          1858
         </td>
         <td>
           Select
@@ -839,15 +850,135 @@
         </td>
       </tr><tr>
         <td>
-          63
+          56
         </td>
         <td>
-          491
+          607
         </td>
         <td>
-          2139
+          1893
           -
-          2162
+          1920
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ++
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions ++ oldCollisions
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          613
+        </td>
+        <td>
+          2188
+          -
+          2211
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          applyDamagesBasedOn
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def applyDamagesBasedOn
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          612
+        </td>
+        <td>
+          2286
+          -
+          2346
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          applyDamagesBasedOnWithOld
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          applyDamagesBasedOnWithOld(collisions, Set.empty[Collision])
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          611
+        </td>
+        <td>
+          2325
+          -
+          2334
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          empty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set.empty
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          610
+        </td>
+        <td>
+          2325
+          -
+          2328
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          Set
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set
+        </td>
+      </tr><tr>
+        <td>
+          74
+        </td>
+        <td>
+          616
+        </td>
+        <td>
+          2651
+          -
+          2674
         </td>
         <td>
           DefDef
@@ -863,15 +994,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          75
         </td>
         <td>
-          490
+          615
         </td>
         <td>
-          2187
+          2699
           -
-          2240
+          2752
         </td>
         <td>
           Apply
@@ -887,15 +1018,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          75
         </td>
         <td>
-          489
+          614
         </td>
         <td>
-          2187
+          2699
           -
-          2225
+          2737
         </td>
         <td>
           Apply
@@ -911,15 +1042,15 @@
         </td>
       </tr><tr>
         <td>
-          75
+          86
         </td>
         <td>
-          509
+          634
         </td>
         <td>
-          2781
+          3293
           -
-          2808
+          3320
         </td>
         <td>
           DefDef
@@ -935,15 +1066,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          89
         </td>
         <td>
-          494
+          619
         </td>
         <td>
-          2912
+          3424
           -
-          2932
+          3444
         </td>
         <td>
           DefDef
@@ -959,39 +1090,15 @@
         </td>
       </tr><tr>
         <td>
-          79
+          90
         </td>
         <td>
-          492
+          618
         </td>
         <td>
-          3017
+          3558
           -
-          3042
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          affiliation
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisionable.affiliation
-        </td>
-      </tr><tr>
-        <td>
-          79
-        </td>
-        <td>
-          493
-        </td>
-        <td>
-          3046
-          -
-          3076
+          3588
         </td>
         <td>
           Select
@@ -1007,15 +1114,39 @@
         </td>
       </tr><tr>
         <td>
-          81
+          90
         </td>
         <td>
-          508
+          617
         </td>
         <td>
-          3084
+          3529
           -
-          3541
+          3554
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          affiliation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionable.affiliation
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          633
+        </td>
+        <td>
+          3596
+          -
+          4053
         </td>
         <td>
           Apply
@@ -1042,15 +1173,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          93
         </td>
         <td>
-          495
+          620
         </td>
         <td>
-          3096
+          3608
           -
-          3160
+          3672
         </td>
         <td>
           Apply
@@ -1067,15 +1198,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          93
         </td>
         <td>
-          497
+          622
         </td>
         <td>
-          3096
+          3608
           -
-          3200
+          3712
         </td>
         <td>
           Apply
@@ -1093,15 +1224,15 @@
         </td>
       </tr><tr>
         <td>
-          84
+          95
         </td>
         <td>
-          496
+          621
         </td>
         <td>
-          3172
+          3684
           -
-          3200
+          3712
         </td>
         <td>
           Apply
@@ -1117,15 +1248,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          96
         </td>
         <td>
-          505
+          630
         </td>
         <td>
-          3209
+          3721
           -
-          3480
+          3992
         </td>
         <td>
           Apply
@@ -1146,15 +1277,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          96
         </td>
         <td>
-          499
+          624
         </td>
         <td>
-          3209
+          3721
           -
-          3323
+          3835
         </td>
         <td>
           Apply
@@ -1172,15 +1303,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          96
         </td>
         <td>
-          498
+          623
         </td>
         <td>
-          3209
+          3721
           -
-          3280
+          3792
         </td>
         <td>
           Apply
@@ -1197,15 +1328,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          96
         </td>
         <td>
-          507
+          632
         </td>
         <td>
-          3209
+          3721
           -
-          3541
+          4053
         </td>
         <td>
           Apply
@@ -1228,15 +1359,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          96
         </td>
         <td>
-          501
+          626
         </td>
         <td>
-          3209
+          3721
           -
-          3364
+          3876
         </td>
         <td>
           Apply
@@ -1255,15 +1386,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          96
         </td>
         <td>
-          503
+          628
         </td>
         <td>
-          3209
+          3721
           -
-          3424
+          3936
         </td>
         <td>
           Apply
@@ -1283,15 +1414,15 @@
         </td>
       </tr><tr>
         <td>
-          88
+          99
         </td>
         <td>
-          500
+          625
         </td>
         <td>
-          3335
+          3847
           -
-          3364
+          3876
         </td>
         <td>
           Apply
@@ -1307,15 +1438,15 @@
         </td>
       </tr><tr>
         <td>
-          89
+          100
         </td>
         <td>
-          502
+          627
         </td>
         <td>
-          3377
+          3889
           -
-          3424
+          3936
         </td>
         <td>
           Apply
@@ -1331,15 +1462,15 @@
         </td>
       </tr><tr>
         <td>
-          90
+          101
         </td>
         <td>
-          504
+          629
         </td>
         <td>
-          3436
+          3948
           -
-          3480
+          3992
         </td>
         <td>
           Apply
@@ -1355,15 +1486,15 @@
         </td>
       </tr><tr>
         <td>
-          92
+          103
         </td>
         <td>
-          506
+          631
         </td>
         <td>
-          3501
+          4013
           -
-          3541
+          4053
         </td>
         <td>
           Apply

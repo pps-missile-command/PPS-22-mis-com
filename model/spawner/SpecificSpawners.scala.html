@@ -30,26 +30,27 @@
 </span>6 <span style=''>import model.missile.zigzag
 </span>7 <span style=''>import model.missile.zigzag.ZigZagMissile.*
 </span>8 <span style=''>import model.spawner.LazySpawner.Spawnable
-</span>9 <span style=''>import model.spawner.PimpingByRandom.*
-</span>10 <span style=''>import model.vehicle.Plane
+</span>9 <span style=''>
+</span>10 <span style=''>import scala.util.Random
 </span>11 <span style=''>
-</span>12 <span style=''>import scala.util.Random
-</span>13 <span style=''>
-</span>14 <span style=''>/**
-</span>15 <span style=''> * Specific spawners strategies to spawn objects
-</span>16 <span style=''> * missili, plane
-</span>17 <span style=''> * plane spawnabile in un range witdh1 e width2
-</span>18 <span style=''> */
-</span>19 <span style=''>object SpecificSpawners:
-</span>20 <span style=''>
-</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def MissileStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
-</span>22 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))</span><span style=''>
+</span>12 <span style=''>extension(r: Random)
+</span>13 <span style=''>  </span><span style='background: #F0ADAD'>def randomPosition</span><span style=''>(maxWidth: Double, maxHeight: Double): Point2D = </span><span style='background: #F0ADAD'>Point2D(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight)</span><span style=''>
+</span>14 <span style=''>  </span><span style='background: #AEF1AE'>def randomX</span><span style=''>(maxWidth: Double, y: Double): Point2D = </span><span style='background: #AEF1AE'>Point2D(r.nextDouble() * maxWidth, y)</span><span style=''>
+</span>15 <span style=''>  </span><span style='background: #F0ADAD'>def randomY</span><span style=''>(maxHeight: Double, x: Double): Point2D = </span><span style='background: #F0ADAD'>Point2D(x, r.nextDouble() * maxHeight)</span><span style=''>
+</span>16 <span style=''>
+</span>17 <span style=''>/**
+</span>18 <span style=''> * Specific spawners strategies to spawn objects
+</span>19 <span style=''> * missili, plane
+</span>20 <span style=''> * plane spawnabile in un range witdh1 e width2
+</span>21 <span style=''> */
+</span>22 <span style=''>object SpecificSpawners:
 </span>23 <span style=''>
-</span>24 <span style=''>  </span><span style='background: #AEF1AE'>def ZigZagStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
-</span>25 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>missile.zigzag.ZigZagMissile(r.nextRandomX(maxWidth, 0), r.nextRandomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)</span><span style=''>
+</span>24 <span style=''>  </span><span style='background: #AEF1AE'>def MissileStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
+</span>25 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Missile.enemyMissile(position = r.randomX(maxWidth, 0), finalPosition = r.randomX(maxWidth, maxHeight))</span><span style=''>
 </span>26 <span style=''>
-</span>27 <span style=''>  </span><span style='background: #AEF1AE'>def PlaneStrategy</span><span style=''>(maxHeight: Double)(using r: Random): Spawnable[Plane] =
-</span>28 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)</span><span style=''>
+</span>27 <span style=''>  </span><span style='background: #AEF1AE'>def ZigZagStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
+</span>28 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>missile.zigzag.ZigZagMissile(r.randomX(maxWidth, 0), r.randomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)</span><span style=''>
+</span>29 <span style=''>    
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -64,255 +65,87 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          12
         </td>
         <td>
-          1132
+          1249
         </td>
         <td>
-          464
+          372
           -
-          483
+          386
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          r.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1248
+        </td>
+        <td>
+          345
+          -
+          359
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          r.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1251
+        </td>
+        <td>
+          270
+          -
+          288
         </td>
         <td>
           DefDef
         </td>
         <td>
-          MissileStrategy
+          randomPosition
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          def MissileStrategy
+        <td style="background: #F0ADAD">
+          def randomPosition
         </td>
       </tr><tr>
         <td>
-          21
+          12
         </td>
         <td>
-          1127
+          1250
         </td>
         <td>
-          570
+          337
           -
-          590
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          enemyMissile$default$1
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1126
-        </td>
-        <td>
-          646
-          -
-          680
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextRandomX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.nextRandomX(maxWidth, maxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1129
-        </td>
-        <td>
-          570
-          -
-          590
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          enemyMissile$default$3
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1125
-        </td>
-        <td>
-          602
-          -
-          628
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextRandomX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.nextRandomX(maxWidth, 0)
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1128
-        </td>
-        <td>
-          570
-          -
-          590
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          enemyMissile$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1131
-        </td>
-        <td>
-          570
-          -
-          681
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          enemyMissile
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1130
-        </td>
-        <td>
-          570
-          -
-          590
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          enemyMissile$default$6
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          1136
-        </td>
-        <td>
-          685
-          -
-          703
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          ZigZagStrategy
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def ZigZagStrategy
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1133
-        </td>
-        <td>
-          819
-          -
-          845
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextRandomX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.nextRandomX(maxWidth, 0)
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1135
-        </td>
-        <td>
-          790
-          -
-          906
+          399
         </td>
         <td>
           Apply
@@ -323,68 +156,20 @@
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          missile.zigzag.ZigZagMissile(r.nextRandomX(maxWidth, 0), r.nextRandomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)
+        <td style="background: #F0ADAD">
+          Point2D(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight)
         </td>
       </tr><tr>
         <td>
-          24
+          13
         </td>
         <td>
-          1134
+          1252
         </td>
         <td>
-          847
+          462
           -
-          881
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextRandomX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.nextRandomX(maxWidth, maxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          1140
-        </td>
-        <td>
-          910
-          -
-          927
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          PlaneStrategy
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def PlaneStrategy
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          1138
-        </td>
-        <td>
-          1025
-          -
-          1039
+          476
         </td>
         <td>
           Apply
@@ -400,39 +185,39 @@
         </td>
       </tr><tr>
         <td>
-          27
+          13
         </td>
         <td>
-          1137
+          1254
         </td>
         <td>
-          1000
+          402
           -
-          1023
+          413
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          nextRandomDirection
+          randomX
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          r.nextRandomDirection()
+          def randomX
         </td>
       </tr><tr>
         <td>
-          27
+          13
         </td>
         <td>
-          1139
+          1253
         </td>
         <td>
-          994
+          454
           -
-          1066
+          491
         </td>
         <td>
           Apply
@@ -444,7 +229,367 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)
+          Point2D(r.nextDouble() * maxWidth, y)
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1255
+        </td>
+        <td>
+          558
+          -
+          572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          r.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1257
+        </td>
+        <td>
+          494
+          -
+          505
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          randomY
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def randomY
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1256
+        </td>
+        <td>
+          547
+          -
+          585
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D(x, r.nextDouble() * maxHeight)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1243
+        </td>
+        <td>
+          738
+          -
+          757
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          MissileStrategy
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def MissileStrategy
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1237
+        </td>
+        <td>
+          916
+          -
+          946
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          randomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.randomX(maxWidth, maxHeight)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1240
+        </td>
+        <td>
+          844
+          -
+          864
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1236
+        </td>
+        <td>
+          876
+          -
+          898
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          randomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.randomX(maxWidth, 0)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1239
+        </td>
+        <td>
+          844
+          -
+          864
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1242
+        </td>
+        <td>
+          844
+          -
+          947
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          enemyMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile(position = r.randomX(maxWidth, 0), finalPosition = r.randomX(maxWidth, maxHeight))
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1241
+        </td>
+        <td>
+          844
+          -
+          864
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$6
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1238
+        </td>
+        <td>
+          844
+          -
+          864
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1247
+        </td>
+        <td>
+          951
+          -
+          969
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          ZigZagStrategy
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def ZigZagStrategy
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1246
+        </td>
+        <td>
+          1056
+          -
+          1164
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.zigzag.ZigZagMissile(r.randomX(maxWidth, 0), r.randomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1245
+        </td>
+        <td>
+          1109
+          -
+          1139
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          randomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.randomX(maxWidth, maxHeight)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1244
+        </td>
+        <td>
+          1085
+          -
+          1107
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          randomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.randomX(maxWidth, 0)
         </td>
       </tr>
     </table>

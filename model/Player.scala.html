@@ -25,27 +25,63 @@
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model
 </span>2 <span style=''>
 </span>3 <span style=''>import model.Timer.Timer
-</span>4 <span style=''>
-</span>5 <span style=''>/**
-</span>6 <span style=''> * Class that represents a player in the game.
-</span>7 <span style=''> *
-</span>8 <span style=''> * @param score the score of the player
-</span>9 <span style=''> * @param timer the surviving timer of the player
-</span>10 <span style=''> */
-</span>11 <span style=''>case class Player(score: ScorePoint, timer: Timer)
-</span>12 <span style=''>
-</span>13 <span style=''>/**
-</span>14 <span style=''> * Companion object of the Player class.
-</span>15 <span style=''> */
-</span>16 <span style=''>object Player:
-</span>17 <span style=''>
-</span>18 <span style=''>  /**
-</span>19 <span style=''>   * The initial player.
-</span>20 <span style=''>   *
-</span>21 <span style=''>   * @return the initial player
-</span>22 <span style=''>   */
-</span>23 <span style=''>  </span><span style='background: #AEF1AE'>def initialPlayer</span><span style=''>: Player =
-</span>24 <span style=''>    Player(0, Timer(0))
+</span>4 <span style=''>import model.collisions.Collision
+</span>5 <span style=''>
+</span>6 <span style=''>/**
+</span>7 <span style=''> * Trait that represents a player in the game.
+</span>8 <span style=''> *
+</span>9 <span style=''> */
+</span>10 <span style=''>trait Player extends PlayerActions[Player] :
+</span>11 <span style=''>
+</span>12 <span style=''>  /**
+</span>13 <span style=''>   * The score of the player.
+</span>14 <span style=''>   */
+</span>15 <span style=''>  val score: ScorePoint
+</span>16 <span style=''>
+</span>17 <span style=''>  /**
+</span>18 <span style=''>   * The timer of the player.
+</span>19 <span style=''>   */
+</span>20 <span style=''>  val timer: Timer
+</span>21 <span style=''>
+</span>22 <span style=''>  def updateScore(score: ScorePoint): Player
+</span>23 <span style=''>
+</span>24 <span style=''>  def updateTimer(timer: Timer): Player
+</span>25 <span style=''>
+</span>26 <span style=''>/**
+</span>27 <span style=''> * Companion object of the Player class.
+</span>28 <span style=''> */
+</span>29 <span style=''>object Player:
+</span>30 <span style=''>
+</span>31 <span style=''>  /**
+</span>32 <span style=''>   * The initial player of the game with a score of 0 and a timer of 0.
+</span>33 <span style=''>   *
+</span>34 <span style=''>   * @return the initial player
+</span>35 <span style=''>   */
+</span>36 <span style=''>  </span><span style='background: #AEF1AE'>def initialPlayer</span><span style=''>: Player =
+</span>37 <span style=''>    </span><span style='background: #AEF1AE'>Player(0, Timer(0))</span><span style=''>
+</span>38 <span style=''>
+</span>39 <span style=''>  /**
+</span>40 <span style=''>   * Creates a new player with the given score and timer.
+</span>41 <span style=''>   *
+</span>42 <span style=''>   * @param score the score of the player
+</span>43 <span style=''>   * @param timer the survival timer of the player
+</span>44 <span style=''>   * @return a new player with the given score and timer
+</span>45 <span style=''>   */
+</span>46 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(score: ScorePoint, timer: Timer): Player =
+</span>47 <span style=''>    case class PlayerImpl(score: ScorePoint, timer: Timer) extends Player :
+</span>48 <span style=''>      </span><span style='background: #AEF1AE'>override def updateScore</span><span style=''>(score: ScorePoint): Player =
+</span>49 <span style=''>        PlayerImpl(score, timer)
+</span>50 <span style=''>
+</span>51 <span style=''>      </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Player =
+</span>52 <span style=''>        </span><span style='background: #F0ADAD'>updateTimer(timer.timeElapsed(dt))</span><span style=''>
+</span>53 <span style=''>
+</span>54 <span style=''>      </span><span style='background: #AEF1AE'>override def updateScoreByCollisions</span><span style=''>(collisions: Set[Collision]): Player =
+</span>55 <span style=''>        </span><span style='background: #AEF1AE'>updateScore(score calculateNewScoreBasedOn collisions)</span><span style=''>
+</span>56 <span style=''>
+</span>57 <span style=''>      </span><span style='background: #AEF1AE'>override def updateTimer</span><span style=''>(timer: Timer): Player =
+</span>58 <span style=''>        PlayerImpl(score, timer)
+</span>59 <span style=''>
+</span>60 <span style=''>    PlayerImpl(score, timer)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -60,15 +96,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          22
+          35
         </td>
         <td>
-          154
+          126
         </td>
         <td>
-          382
+          583
           -
-          399
+          600
         </td>
         <td>
           DefDef
@@ -81,6 +117,246 @@
         </td>
         <td style="background: #AEF1AE">
           def initialPlayer
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          125
+        </td>
+        <td>
+          615
+          -
+          634
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Player(0, Timer(0))
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          135
+        </td>
+        <td>
+          863
+          -
+          872
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          127
+        </td>
+        <td>
+          998
+          -
+          1022
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateScore
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def updateScore
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          130
+        </td>
+        <td>
+          1092
+          -
+          1116
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def timeElapsed
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          128
+        </td>
+        <td>
+          1162
+          -
+          1183
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          timer.timeElapsed(dt)
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          129
+        </td>
+        <td>
+          1150
+          -
+          1184
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateTimer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          updateTimer(timer.timeElapsed(dt))
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          133
+        </td>
+        <td>
+          1192
+          -
+          1228
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateScoreByCollisions
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def updateScoreByCollisions
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          131
+        </td>
+        <td>
+          1287
+          -
+          1328
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          calculateNewScoreBasedOn
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          score calculateNewScoreBasedOn collisions
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          132
+        </td>
+        <td>
+          1275
+          -
+          1329
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateScore
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateScore(score calculateNewScoreBasedOn collisions)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          134
+        </td>
+        <td>
+          1337
+          -
+          1361
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateTimer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def updateTimer
         </td>
       </tr>
     </table>
