@@ -1,14 +1,16 @@
 package model
 
 import model.behavior.Timeable
-import model.collisions.{Collisionable, Collision}
+import model.collisions.{Collision, Collisionable, _}
 import model.ground.Ground
 import model.collisions.PimpingByCollisionable._
 import model.collisions.PimpingByCollisionables._
 import model.collisions.PimpingByCollisions._
-import model.collisions._
 import model.ScorePoint
 import model.elements2d.Point2D
+import model.explosion.Explosion
+
+import scala.annotation.tailrec
 
 /**
  * Class that represents the world.
@@ -89,15 +91,36 @@ object World:
 
 
       override def checkCollisions: (World, Set[Collision]) =
+
+        extension (tuple: (Set[Collisionable], Set[Collision]))
+
+          def removeDestroyed(): (Set[Collisionable], Set[Collision]) =
+            val (collisionables, collisions) = tuple
+            val notDestroyed = collisionables.filterNot(isDestroyed)
+            (notDestroyed, collisions)
+
+          def addExplosions(explosions: Set[Explosion]): (Set[Collisionable], Set[Collision]) =
+            val (collisionables, collisions) = tuple
+            val newCollisionables = collisionables ++ explosions
+            (newCollisionables, collisions)
+
+        def checkCollision[C <: Collisionable](allCollisionables: Set[Collisionable], collisionables: Set[C])
+                                              (oldColliosions: Set[Collision]): (Set[Collisionable], Set[Collision]) =
+          val (updatedCollisionables, updatedCollisions) = allCollisionables.applyDamagesBasedOnWithOld(
+            allCollisionables calculateCollisionsWith collisionables,
+            oldColliosions
+          )
+          val newExplosion = updatedCollisionables.explosionsOfDestroyedMissiles
+          val newCollisionables = updatedCollisionables.filterNot(isDestroyed)
+          newExplosion match
+            case _ if newExplosion.isEmpty =>
+              (newCollisionables, updatedCollisions).removeDestroyed()
+            case _ => checkCollision(newCollisionables, newExplosion)(updatedCollisions).addExplosions(newExplosion)
+
         val allCollisionables = collisionables ++ ground.cities ++ ground.turrets
-        val (tmpNewCollisionables, collisionsUpdate) =
-          allCollisionables applyDamagesBasedOn (allCollisionables calculateCollisionsWith collisionables)
-        val newExplosion = tmpNewCollisionables.explosionsOfDestroyedMissiles
-        val (collisionableAfterSecondCollisions, _) =
-          tmpNewCollisionables applyDamagesBasedOn (tmpNewCollisionables calculateCollisionsWith newExplosion)
-        val (newGround, newCollisionables) = collisionableAfterSecondCollisions.splitGroundFromOther
-        val newNotDestroyedCollisionables = newCollisionables.filterNot(isDestroyed) ++ newExplosion
-        val newWorld = WorldImpl(newGround, newNotDestroyedCollisionables)
+        val (tmpNewCollisionables, collisionsUpdate) = checkCollision(allCollisionables, allCollisionables)(Set.empty)
+        val (newGround, newCollisionables) = tmpNewCollisionables.splitGroundFromOther
+        val newWorld = WorldImpl(newGround, newCollisionables)
         (newWorld, collisionsUpdate)
 
       override def activateSpecialAbility: World =
