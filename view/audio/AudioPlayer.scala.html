@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/gui/MouseHandler.scala.html
+          view/audio/AudioPlayer.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,31 +22,27 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.audio
 </span>2 <span style=''>
-</span>3 <span style=''>import model.elements2d.Point2D
-</span>4 <span style=''>
-</span>5 <span style=''>import java.awt.Component
-</span>6 <span style=''>import monix.execution.cancelables.SingleAssignCancelable
-</span>7 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
-</span>8 <span style=''>import monix.reactive.subjects.PublishSubject
-</span>9 <span style=''>
-</span>10 <span style=''>import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
-</span>11 <span style=''>
-</span>12 <span style=''>/**
-</span>13 <span style=''> * Extension method that adds a new mouseObservable method to [[Component]].
-</span>14 <span style=''> * This method returns an Observable[Point2D] that adds a mouse clicked listener to the given
-</span>15 <span style=''> * component and generating new events as the click are listened
-</span>16 <span style=''> */
-</span>17 <span style=''>extension (component: Component)
-</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[Point2D] =
-</span>19 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-</span>20 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter:
-</span>21 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
-</span>22 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(Point2D(e.getX, e.getY))
-</span>23 <span style=''></span><span style='background: #F0ADAD'>      )
-</span>24 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
-</span>25 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>3 <span style=''>import java.net.{MalformedURLException, URL}
+</span>4 <span style=''>import javax.sound.sampled.{AudioSystem, UnsupportedAudioFileException}
+</span>5 <span style=''>
+</span>6 <span style=''>object AudioPlayer:
+</span>7 <span style=''>    </span><span style='background: #F0ADAD'>def playAudio</span><span style=''>(URL_audio: String): Unit =
+</span>8 <span style=''>        try
+</span>9 <span style=''>            </span><span style='background: #F0ADAD'>val url = new URL(URL_audio)
+</span>10 <span style=''></span><span style='background: #F0ADAD'>            val audioIn = AudioSystem.getAudioInputStream(url)
+</span>11 <span style=''></span><span style='background: #F0ADAD'>            val clip = AudioSystem.getClip
+</span>12 <span style=''></span><span style='background: #F0ADAD'>            clip.open(audioIn)
+</span>13 <span style=''></span><span style='background: #F0ADAD'>            clip.start</span><span style=''>
+</span>14 <span style=''>        catch
+</span>15 <span style=''>            </span><span style='background: #F0ADAD'>case ex1: MalformedURLException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL not found&quot;)</span><span style=''>
+</span>16 <span style=''>            </span><span style='background: #F0ADAD'>case ex2: UnsupportedAudioFileException</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>println(&quot;URL found, but not an audio&quot;)</span><span style=''>
+</span>17 <span style=''>            </span><span style='background: #F0ADAD'>case ex3: Throwable</span><span style=''> =&gt;
+</span>18 <span style=''>
+</span>19 <span style=''>
+</span>20 <span style=''>    //Add audio here
+</span>21 <span style=''>    val explosionSmall = &quot;https://www.shockwave-sound.com/sound-effects/explosion-sounds/Arcade%20Explo%20A.wav&quot;
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -61,120 +57,39 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          17
+          6
         </td>
         <td>
-          1408
+          1370
         </td>
         <td>
-          585
+          162
           -
-          604
+          175
         </td>
         <td>
           DefDef
         </td>
         <td>
-          mouseObservable
+          playAudio
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def mouseObservable
+          def playAudio
         </td>
       </tr><tr>
         <td>
-          18
+          8
         </td>
         <td>
-          1396
+          1359
         </td>
         <td>
-          634
+          237
           -
-          651
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          create$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable.create
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          1407
-        </td>
-        <td>
-          634
-          -
-          895
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          create
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-      component.addMouseListener(new MouseAdapter:
-        override def mouseClicked(e: MouseEvent): Unit =
-          subject.onNext(Point2D(e.getX, e.getY))
-      )
-      SingleAssignCancelable()
-    }
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          1405
-        </td>
-        <td>
-          699
-          -
-          858
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          addMouseListener
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          component.addMouseListener(new MouseAdapter:
-        override def mouseClicked(e: MouseEvent): Unit =
-          subject.onNext(Point2D(e.getX, e.getY))
-      )
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          1397
-        </td>
-        <td>
-          730
-          -
-          742
+          255
         </td>
         <td>
           Apply
@@ -186,199 +101,251 @@
           
         </td>
         <td style="background: #F0ADAD">
-          MouseAdapter
+          new URL(URL_audio)
         </td>
       </tr><tr>
         <td>
-          20
+          8
         </td>
         <td>
-          1404
+          1364
         </td>
         <td>
-          752
+          227
           -
-          777
+          415
         </td>
         <td>
-          DefDef
+          Block
         </td>
         <td>
-          mouseClicked
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def mouseClicked
+          val url = new URL(URL_audio)
+            val audioIn = AudioSystem.getAudioInputStream(url)
+            val clip = AudioSystem.getClip
+            clip.open(audioIn)
+            clip.start
         </td>
       </tr><tr>
         <td>
-          21
+          9
         </td>
         <td>
-          1402
+          1360
         </td>
         <td>
-          826
+          282
           -
-          849
+          318
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          getAudioInputStream
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Point2D(e.getX, e.getY)
+          AudioSystem.getAudioInputStream(url)
         </td>
       </tr><tr>
         <td>
-          21
+          10
         </td>
         <td>
-          1399
+          1361
         </td>
         <td>
-          834
+          342
           -
-          840
+          361
         </td>
         <td>
           Apply
         </td>
         <td>
-          int2double
+          getClip
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          e.getX
+          AudioSystem.getClip
         </td>
       </tr><tr>
         <td>
-          21
+          11
         </td>
         <td>
-          1398
+          1362
         </td>
         <td>
-          834
+          374
           -
-          840
+          392
         </td>
         <td>
           Apply
         </td>
         <td>
-          getX
+          open
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          e.getX
+          clip.open(audioIn)
         </td>
       </tr><tr>
         <td>
-          21
+          12
         </td>
         <td>
-          1401
+          1363
         </td>
         <td>
-          842
+          405
           -
-          848
+          415
         </td>
         <td>
           Apply
         </td>
         <td>
-          int2double
+          start
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          e.getY
+          clip.start
         </td>
       </tr><tr>
         <td>
-          21
+          14
         </td>
         <td>
-          1403
+          1366
         </td>
         <td>
-          811
+          442
           -
-          850
+          473
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case ex1: MalformedURLException
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1365
+        </td>
+        <td>
+          477
+          -
+          501
         </td>
         <td>
           Apply
         </td>
         <td>
-          onNext
+          println
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          subject.onNext(Point2D(e.getX, e.getY))
+          println(&quot;URL not found&quot;)
         </td>
       </tr><tr>
         <td>
-          21
+          15
         </td>
         <td>
-          1400
+          1368
         </td>
         <td>
-          842
+          514
           -
-          848
+          553
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case ex2: UnsupportedAudioFileException
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1367
+        </td>
+        <td>
+          557
+          -
+          595
         </td>
         <td>
           Apply
         </td>
         <td>
-          getY
+          println
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          e.getY
+          println(&quot;URL found, but not an audio&quot;)
         </td>
       </tr><tr>
         <td>
-          23
+          16
         </td>
         <td>
-          1406
+          1369
         </td>
         <td>
-          865
+          608
           -
-          889
+          627
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          apply
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          SingleAssignCancelable()
+          case ex3: Throwable
         </td>
       </tr>
     </table>
