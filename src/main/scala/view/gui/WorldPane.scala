@@ -9,12 +9,10 @@ import java.awt.geom.AffineTransform
 import java.awt.image.{AffineTransformOp, BufferedImage}
 import javax.swing.{JButton, JPanel}
 import model.elements2d.Angle
+import view.given_Conversion_Double_Int
 
 import java.io.File
 import javax.imageio.ImageIO
-
-given Conversion[Double, Int] with
-    override def apply(x: Double): Int = x.toInt
 
 private class WorldPane(val game: Game, width: Int, height: Int) extends JPanel:
     this.setSize(width, height)
@@ -41,13 +39,3 @@ private class WorldPane(val game: Game, width: Int, height: Int) extends JPanel:
             g2d.rotate(-1 * (i.angle.radiant - Angle.Degree(90).radiant))
             g2d.translate(-i.position.x, -i.position.y)
         }
-
-
-//        world.all.foreach { entity =>
-//            val (x, y) = ((entity.position.x * width).toInt, (entity.position.y * height).toInt)
-//            val (widthCircle, heightCircle) = ((entity.diameter * width).toInt, (entity.diameter * height).toInt)
-//            graphics.setColor(Color.getHSBColor(entity.size.toFloat, 1, 0.5))
-//            graphics.fillOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
-//            graphics.setColor(Color.BLACK)
-//            graphics.drawOval(x - widthCircle / 2, y - heightCircle / 2, widthCircle, heightCircle)
-//        }
