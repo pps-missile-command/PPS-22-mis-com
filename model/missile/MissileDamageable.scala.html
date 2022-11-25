@@ -29,15 +29,33 @@
 </span>5 <span style=''>import model.elements2d.{Angle, Point2D}
 </span>6 <span style=''>import model.missile
 </span>7 <span style=''>
-</span>8 <span style=''>trait MissileDamageable(lifePoint: LifePoint, position: Point2D, finalPosition: Point2D) extends Damageable:
-</span>9 <span style=''>
-</span>10 <span style=''>  </span><span style='background: #F0ADAD'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #F0ADAD'>basicHitBox(position, angle)</span><span style=''>
-</span>11 <span style=''>
-</span>12 <span style=''>  </span><span style='background: #F0ADAD'>override def initialLife</span><span style=''>: LifePoint = missile.initialLife
-</span>13 <span style=''>
-</span>14 <span style=''>  </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = lifePoint
-</span>15 <span style=''>  
-</span>16 <span style=''>  </span><span style='background: #AEF1AE'>def angle</span><span style=''>: Option[Angle] = </span><span style='background: #AEF1AE'>(finalPosition &lt;--&gt; position).direction</span><span style=''>
+</span>8 <span style=''>/**
+</span>9 <span style=''> * This trait models a missile damageable, implementing and overriding all the required methods.
+</span>10 <span style=''> */
+</span>11 <span style=''>trait MissileDamageable(lifePoint: LifePoint, position: Point2D, finalPosition: Point2D) extends Damageable:
+</span>12 <span style=''>  /**
+</span>13 <span style=''>   *
+</span>14 <span style=''>   *  @return the hit box of the object.
+</span>15 <span style=''>   */
+</span>16 <span style=''>  </span><span style='background: #F0ADAD'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #F0ADAD'>HitBoxRectangular(position, hitboxBase, hitboxHeight, angle.get)</span><span style=''>
+</span>17 <span style=''>
+</span>18 <span style=''>  /**
+</span>19 <span style=''>   *
+</span>20 <span style=''>   *  @return the initial health of the object.
+</span>21 <span style=''>   */
+</span>22 <span style=''>  </span><span style='background: #AEF1AE'>override def initialLife</span><span style=''>: LifePoint = missile.initialLife
+</span>23 <span style=''>
+</span>24 <span style=''>  /**
+</span>25 <span style=''>   *
+</span>26 <span style=''>   *  @return the current health of the object.
+</span>27 <span style=''>   */
+</span>28 <span style=''>  </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = lifePoint
+</span>29 <span style=''>
+</span>30 <span style=''>  /**
+</span>31 <span style=''>   * This method calculate the angle of the missile, given its final position and the current position
+</span>32 <span style=''>   * @return the angle of the missile (of its direction)
+</span>33 <span style=''>   */
+</span>34 <span style=''>  </span><span style='background: #AEF1AE'>def angle</span><span style=''>: Option[Angle] = </span><span style='background: #AEF1AE'>(finalPosition &lt;--&gt; position).direction</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -52,15 +70,39 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          9
+          15
         </td>
         <td>
-          881
+          884
         </td>
         <td>
-          341
+          597
           -
-          370
+          606
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          angle.get
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          886
+        </td>
+        <td>
+          503
+          -
+          532
         </td>
         <td>
           DefDef
@@ -76,39 +118,15 @@
         </td>
       </tr><tr>
         <td>
-          9
+          15
         </td>
         <td>
-          880
+          883
         </td>
         <td>
-          381
+          597
           -
-          409
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          basicHitBox(position, angle)
-        </td>
-      </tr><tr>
-        <td>
-          9
-        </td>
-        <td>
-          879
-        </td>
-        <td>
-          403
-          -
-          408
+          602
         </td>
         <td>
           Select
@@ -124,15 +142,39 @@
         </td>
       </tr><tr>
         <td>
-          11
+          15
         </td>
         <td>
-          882
+          885
         </td>
         <td>
-          413
+          543
           -
-          437
+          607
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          HitBoxRectangular(position, hitboxBase, hitboxHeight, angle.get)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          887
+        </td>
+        <td>
+          676
+          -
+          700
         </td>
         <td>
           DefDef
@@ -143,20 +185,20 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           override def initialLife
         </td>
       </tr><tr>
         <td>
-          13
+          27
         </td>
         <td>
-          883
+          888
         </td>
         <td>
-          474
+          802
           -
-          498
+          826
         </td>
         <td>
           DefDef
@@ -172,39 +214,15 @@
         </td>
       </tr><tr>
         <td>
-          15
+          33
         </td>
         <td>
-          884
+          891
         </td>
         <td>
-          555
+          1025
           -
-          582
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;--&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          finalPosition &lt;--&gt; position
-        </td>
-      </tr><tr>
-        <td>
-          15
-        </td>
-        <td>
-          886
-        </td>
-        <td>
-          527
-          -
-          536
+          1034
         </td>
         <td>
           DefDef
@@ -220,15 +238,15 @@
         </td>
       </tr><tr>
         <td>
-          15
+          33
         </td>
         <td>
-          885
+          890
         </td>
         <td>
-          554
+          1052
           -
-          593
+          1091
         </td>
         <td>
           Select
@@ -241,6 +259,30 @@
         </td>
         <td style="background: #AEF1AE">
           (finalPosition &lt;--&gt; position).direction
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          889
+        </td>
+        <td>
+          1053
+          -
+          1080
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;--&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          finalPosition &lt;--&gt; position
         </td>
       </tr>
     </table>
