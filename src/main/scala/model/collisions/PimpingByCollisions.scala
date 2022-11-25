@@ -87,8 +87,8 @@ object PimpingByCollisions:
       collisions
         .map(collision =>
             collision
-              .map(collisonable =>
+              .map(collisionable =>
                 mapping
-                  .getOrElse(collisonable, collisonable)
+                  .getOrElse(collisionable, collisionable)
               )
         )
