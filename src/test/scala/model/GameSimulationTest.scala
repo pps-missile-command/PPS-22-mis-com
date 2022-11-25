@@ -2,12 +2,13 @@ package model
 
 import model.collisions.{Affiliation, DamageableTest, DamagerTest}
 import model.elements2d.Point2D
-import model.missile._
-import model.missile.Missile._
+import model.explosion.Explosion
+import model.missile.*
+import model.missile.Missile.*
 import model.ground.MissileBattery
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import utilities.reloadingTime
+import utilities.{missileHealth, reloadingTime}
 
 class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
 
@@ -105,5 +106,40 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       val expectedMissile = missiles.map(m => m.timeElapsed(dt).move())
       assert(updatedGame.world.collisionables.size == 4)
       assert(updatedGame.world.collisionables == expectedMissile)
+    }
+
+    Scenario("In the game there are two friendly missile and one enemy missile that collides") {
+      val destination = Point2D(70, 0)
+      val enemyMissileObject = enemyMissile(position = Point2D(50, 50), finalPosition = destination)
+      val friendlyMissile = Missile(1, 1, velocity, Point2D(40, 50), destination)
+      val explosion = Explosion(damageToInflict = 1, expPosition = Point2D(60, 50), dt = 10)(using Affiliation.Friendly)
+      Given("An initial game with some missile")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                enemyMissileObject,
+                friendlyMissile,
+                explosion
+              )
+            )
+          )
+
+      When("The game executes collisions")
+      val (updatedGame, collisions) =
+        game
+          .checkCollisions
+      val gameScore = (updatedGame, collisions).updateScore()
+
+      Then("The collisionables should be 3 explosion")
+      assert(collisions.size == 4)
+      assert(updatedGame.world.collisionables.size == 3)
+      assert(updatedGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 3)
+      Then("The score should be 1")
+      assert(gameScore.player.score == 1)
+
+
     }
   }
