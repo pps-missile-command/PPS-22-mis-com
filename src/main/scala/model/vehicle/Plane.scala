@@ -16,17 +16,20 @@ trait Plane extends Moveable, Damageable, GenericSpawner[Missile]:
     def position: Point2D
     def velocity: Double
     def direction: Vector2D = (position, destination)
+    def planeDirection: vehicleTypes
     override def move(): Plane
     override def timeElapsed(dt: DeltaTime): Plane
 
 case class PlaneImpl(actualPosition: Point2D,
                      finalPosition: Point2D,
+                     choosedDirection: vehicleTypes,
                      lifePoint: LifePoint = planeInitialLife,
                      deltaTime: DeltaTime = 0,
                      missileSpawner: GenericSpawner[Missile] =
                      GenericSpawner[Missile](1, spawnable = SpecificSpawners.MissileStrategy(width, height)(using Random)))(using Random)
                     extends Plane:
 
+    override def planeDirection: vehicleTypes = choosedDirection
     override def position: Point2D = actualPosition
     override def velocity: Double = planeVelocity
     override def move(): Plane = this match
@@ -106,13 +109,6 @@ case class PlaneImpl(actualPosition: Point2D,
                                     "actual life: " + currentLife
 
 object Plane:
-    def apply(actualPosition: Point2D,
-              finalPosition: Point2D,
-              lifePoint: LifePoint)(using Random) : Plane = PlaneImpl(actualPosition, finalPosition, lifePoint)
-    def apply(actualPosition: Point2D,
-              finalPosition: Point2D)(using Random) : Plane = PlaneImpl(actualPosition, finalPosition)
-
-object LinearPlane:
     def apply(direction: vehicleTypes, height: Double)(using Random) : Plane = direction match
-        case vehicleTypes.Left_To_Right => PlaneImpl(Point2D(0, height), Point2D(World.width, height))
-        case vehicleTypes.Right_To_Left => PlaneImpl(Point2D(World.width, height), Point2D(0, height))
+        case vehicleTypes.Left_To_Right => PlaneImpl(Point2D(0, height), Point2D(World.width, height), direction)
+        case vehicleTypes.Right_To_Left => PlaneImpl(Point2D(World.width, height), Point2D(0, height), direction)
