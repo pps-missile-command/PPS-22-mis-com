@@ -35,35 +35,31 @@
 </span>11 <span style=''>
 </span>12 <span style=''>package object missile:
 </span>13 <span style=''>
-</span>14 <span style=''>  val initialLife: LifePoint = 1
-</span>15 <span style=''>  val velocity: Double = 100
-</span>16 <span style=''>  val damage: Int = 1
-</span>17 <span style=''>  val hitboxBase: Double = 10.0
-</span>18 <span style=''>  val hitboxHeight: Double = 30.0
-</span>19 <span style=''>  val maxHeight: Int = 100
-</span>20 <span style=''>  val maxWidth: Int = 50
-</span>21 <span style=''>  val angle: Angle = Angle.Degree(90)
-</span>22 <span style=''>
-</span>23 <span style=''>  /**
-</span>24 <span style=''>   * Given conversion that converts a pair of [[Point2D]] into a [[Vector2D]]
-</span>25 <span style=''>   */
-</span>26 <span style=''>  given </span><span style='background: #AEF1AE'>Conversion[(Point2D, Point2D), Vector2D]</span><span style=''> with
-</span>27 <span style=''>    </span><span style='background: #AEF1AE'>override def apply</span><span style=''>(x: (Point2D, Point2D)): Vector2D = </span><span style='background: #AEF1AE'>(x._2 &lt;--&gt; x._1).normalize</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>  /**
-</span>30 <span style=''>   * This function models the movement of a missile given the virtual delta time passed since its last update.
-</span>31 <span style=''>   * It calculates the distance to move and the distance to the final position, and perform the traslation of the missile's
-</span>32 <span style=''>   * position.
-</span>33 <span style=''>   * @param missile The missile to move
-</span>34 <span style=''>   * @param dt The virtual delta time
-</span>35 <span style=''>   * @return the new missile with its new position updated
-</span>36 <span style=''>   */
-</span>37 <span style=''>  </span><span style='background: #AEF1AE'>def BasicMove</span><span style=''>(missile: Missile)(dt: DeltaTime): Point2D =
-</span>38 <span style=''>    val distanceToMove = </span><span style='background: #AEF1AE'>missile.velocity</span><span style=''> * dt
-</span>39 <span style=''>    val distanceToFinalPosition = </span><span style='background: #AEF1AE'>missile.position &lt;-&gt; missile.destination</span><span style=''>
-</span>40 <span style=''>    if distanceToMove &gt;= distanceToFinalPosition
-</span>41 <span style=''>    then </span><span style='background: #AEF1AE'>missile.destination</span><span style=''>
-</span>42 <span style=''>    else </span><span style='background: #AEF1AE'>missile.position --&gt; (missile.direction * distanceToMove * (-1)</span><span style=''>)
+</span>14 <span style=''>  sealed trait MissileType
+</span>15 <span style=''>  case class BasicMissile(affiliation: Affiliation) extends MissileType
+</span>16 <span style=''>  case object RandomMissile extends MissileType
+</span>17 <span style=''>  case object ZigZagMissile extends MissileType
+</span>18 <span style=''>
+</span>19 <span style=''>  val initialLife: LifePoint = 1
+</span>20 <span style=''>  val velocity: Double = 100
+</span>21 <span style=''>  val damage: Int = 1
+</span>22 <span style=''>  val hitboxBase: Double = 10.0
+</span>23 <span style=''>  val hitboxHeight: Double = 30.0
+</span>24 <span style=''>  val maxHeight: Int = 100
+</span>25 <span style=''>  val maxWidth: Int = 50
+</span>26 <span style=''>  val angle: Angle = Angle.Degree(90)
+</span>27 <span style=''>  
+</span>28 <span style=''>  val basicHitBox: (Point2D, Option[Angle]) =&gt; HitBox = (point_, angle_) =&gt; </span><span style='background: #F0ADAD'>HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>  given </span><span style='background: #AEF1AE'>Conversion[(Point2D, Point2D), Vector2D]</span><span style=''> with
+</span>31 <span style=''>    </span><span style='background: #AEF1AE'>override def apply</span><span style=''>(x: (Point2D, Point2D)): Vector2D = </span><span style='background: #AEF1AE'>(x._2 &lt;--&gt; x._1).normalize</span><span style=''>
+</span>32 <span style=''>
+</span>33 <span style=''>  </span><span style='background: #AEF1AE'>def BasicMove</span><span style=''>(missile: Missile)(dt: DeltaTime): Point2D =
+</span>34 <span style=''>    val distanceToMove = </span><span style='background: #AEF1AE'>missile.velocity</span><span style=''> * dt
+</span>35 <span style=''>    val distanceToFinalPosition = </span><span style='background: #AEF1AE'>missile.position &lt;-&gt; missile.destination</span><span style=''>
+</span>36 <span style=''>    if distanceToMove &gt;= distanceToFinalPosition
+</span>37 <span style=''>    then </span><span style='background: #F0ADAD'>missile.destination</span><span style=''>
+</span>38 <span style=''>    else </span><span style='background: #AEF1AE'>missile.position --&gt; (missile.direction * distanceToMove * (-1)</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -78,15 +74,63 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          25
+          27
         </td>
         <td>
-          909
+          887
         </td>
         <td>
-          656
+          884
           -
-          696
+          907
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getOrElse
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          angle_.getOrElse(angle)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          888
+        </td>
+        <td>
+          832
+          -
+          908
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          HitBoxRectangular(point_, hitboxBase, hitboxHeight, angle_.getOrElse(angle))
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          889
+        </td>
+        <td>
+          918
+          -
+          958
         </td>
         <td>
           Apply
@@ -102,15 +146,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          30
         </td>
         <td>
-          911
+          891
         </td>
         <td>
-          771
+          1033
           -
-          775
+          1037
         </td>
         <td>
           Select
@@ -126,63 +170,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          30
         </td>
         <td>
-          914
+          890
         </td>
         <td>
-          706
+          1023
           -
-          724
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def apply
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          913
-        </td>
-        <td>
-          760
-          -
-          786
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          normalize
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (x._2 &lt;--&gt; x._1).normalize
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          910
-        </td>
-        <td>
-          761
-          -
-          765
+          1027
         </td>
         <td>
           Select
@@ -198,15 +194,39 @@
         </td>
       </tr><tr>
         <td>
-          26
+          30
         </td>
         <td>
-          912
+          893
         </td>
         <td>
-          761
+          1022
           -
-          775
+          1048
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          normalize
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (x._2 &lt;--&gt; x._1).normalize
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          892
+        </td>
+        <td>
+          1023
+          -
+          1037
         </td>
         <td>
           Apply
@@ -222,15 +242,39 @@
         </td>
       </tr><tr>
         <td>
-          36
+          30
         </td>
         <td>
-          927
+          894
         </td>
         <td>
-          1189
+          968
           -
-          1202
+          986
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override def apply
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          907
+        </td>
+        <td>
+          1052
+          -
+          1065
         </td>
         <td>
           DefDef
@@ -246,15 +290,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          33
         </td>
         <td>
-          915
+          895
         </td>
         <td>
-          1272
+          1135
           -
-          1288
+          1151
         </td>
         <td>
           Select
@@ -270,39 +314,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          34
         </td>
         <td>
-          917
+          896
         </td>
         <td>
-          1349
+          1191
           -
-          1368
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          destination
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missile.destination
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          916
-        </td>
-        <td>
-          1328
-          -
-          1344
+          1207
         </td>
         <td>
           Select
@@ -318,15 +338,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          34
         </td>
         <td>
-          918
+          898
         </td>
         <td>
-          1328
+          1191
           -
-          1368
+          1231
         </td>
         <td>
           Apply
@@ -342,39 +362,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          34
         </td>
         <td>
-          920
+          897
         </td>
         <td>
-          1427
+          1212
           -
-          1446
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missile.destination
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          919
-        </td>
-        <td>
-          1427
-          -
-          1446
+          1231
         </td>
         <td>
           Select
@@ -390,39 +386,39 @@
         </td>
       </tr><tr>
         <td>
-          41
+          36
         </td>
         <td>
-          923
+          899
         </td>
         <td>
-          1478
+          1290
           -
-          1512
+          1309
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          *
+          destination
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          missile.direction * distanceToMove
+        <td style="background: #F0ADAD">
+          missile.destination
         </td>
       </tr><tr>
         <td>
-          41
+          36
         </td>
         <td>
-          926
+          900
         </td>
         <td>
-          1456
+          1290
           -
-          1519
+          1309
         </td>
         <td>
           Block
@@ -433,20 +429,20 @@
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          missile.position --&gt; (missile.direction * distanceToMove * (-1)
+        <td style="background: #F0ADAD">
+          missile.destination
         </td>
       </tr><tr>
         <td>
-          41
+          37
         </td>
         <td>
-          922
+          902
         </td>
         <td>
-          1478
+          1341
           -
-          1495
+          1358
         </td>
         <td>
           Select
@@ -462,15 +458,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          37
         </td>
         <td>
-          925
+          905
         </td>
         <td>
-          1456
+          1319
           -
-          1519
+          1382
         </td>
         <td>
           Apply
@@ -486,15 +482,39 @@
         </td>
       </tr><tr>
         <td>
-          41
+          37
         </td>
         <td>
-          921
+          904
         </td>
         <td>
-          1456
+          1341
           -
-          1472
+          1381
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.direction * distanceToMove * (-1
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          901
+        </td>
+        <td>
+          1319
+          -
+          1335
         </td>
         <td>
           Select
@@ -510,15 +530,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          37
         </td>
         <td>
-          924
+          903
         </td>
         <td>
-          1478
+          1341
           -
-          1518
+          1375
         </td>
         <td>
           Apply
@@ -530,7 +550,31 @@
           
         </td>
         <td style="background: #AEF1AE">
-          missile.direction * distanceToMove * (-1
+          missile.direction * distanceToMove
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          906
+        </td>
+        <td>
+          1319
+          -
+          1382
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missile.position --&gt; (missile.direction * distanceToMove * (-1)
         </td>
       </tr>
     </table>

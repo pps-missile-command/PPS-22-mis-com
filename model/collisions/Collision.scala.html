@@ -27,45 +27,57 @@
 </span>3 <span style=''>import model.collisions
 </span>4 <span style=''>
 </span>5 <span style=''>/**
-</span>6 <span style=''> * Companion object for the [[Collision]] type.
+</span>6 <span style=''> * Companion object for the [[Collision]] class.
 </span>7 <span style=''> */
 </span>8 <span style=''>object Collision:
 </span>9 <span style=''>
 </span>10 <span style=''>  /**
-</span>11 <span style=''>   * Creates a new [[Collision]] from multiple [[Collisionable]]s
+</span>11 <span style=''>   * Creates a new [[Collision]] from multiple collisionables
 </span>12 <span style=''>   *
 </span>13 <span style=''>   * @param collisionables the collisionables that collide
-</span>14 <span style=''>   * @return a new [[Collision]] from the [[Collisionable]]s
+</span>14 <span style=''>   * @return a new [[Collision]] from the collisionables
 </span>15 <span style=''>   */
 </span>16 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(collisionables: Collisionable*): Collision =
-</span>17 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.toSet</span><span style=''>
+</span>17 <span style=''>    Collision(</span><span style='background: #AEF1AE'>collisionables.toSet</span><span style=''>)
 </span>18 <span style=''>
-</span>19 <span style=''>  /**
-</span>20 <span style=''>   * Creates a new [[Collision]] from a [[Set]] of [[Collisionable]]s
-</span>21 <span style=''>   *
-</span>22 <span style=''>   * @param collisionables the collisionables that collide
-</span>23 <span style=''>   * @return a new [[Collision]] from the [[Collisionable]]s
-</span>24 <span style=''>   */
-</span>25 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(collisionables: Set[Collisionable]): Collision =
-</span>26 <span style=''>    collisionables
-</span>27 <span style=''>
-</span>28 <span style=''>/**
-</span>29 <span style=''> * A collision is a set of [[Collisionable]]s that collide
-</span>30 <span style=''> */
-</span>31 <span style=''>type Collision = Set[Collisionable]
-</span>32 <span style=''>
-</span>33 <span style=''>extension (collision: Collision)
-</span>34 <span style=''>  /**
-</span>35 <span style=''>   * Given a [[Collisionable]], returns the other collisionable in the collision or empty if the collisionable is not in the collision
-</span>36 <span style=''>   *
-</span>37 <span style=''>   * @param collisionable the [[Collisionable]] to check
-</span>38 <span style=''>   * @return the other [[Collisionable]] in the collision or empty if the collisionable is not in the collision
-</span>39 <span style=''>   */
-</span>40 <span style=''>
-</span>41 <span style=''>  </span><span style='background: #AEF1AE'>def otherElementsOfCollision</span><span style=''>(collisionable: Collisionable): Set[Collisionable] =
-</span>42 <span style=''>    collision match
-</span>43 <span style=''>      </span><span style='background: #AEF1AE'>case _ if collision.contains(collisionable)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>collision - collisionable</span><span style=''>
-</span>44 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Set.empty</span><span style=''>
+</span>19 <span style=''>/**
+</span>20 <span style=''> * A collision is a set of [[Collisionable]]s that collide
+</span>21 <span style=''> *
+</span>22 <span style=''> * @param involvedCollisionables the collisionables that collide
+</span>23 <span style=''> */
+</span>24 <span style=''>case class Collision(involvedCollisionables: Set[Collisionable]):
+</span>25 <span style=''>
+</span>26 <span style=''>  /**
+</span>27 <span style=''>   * Checks if the collision contains a specific collisionable
+</span>28 <span style=''>   *
+</span>29 <span style=''>   * @param collisionable the collisionable to check
+</span>30 <span style=''>   * @return true if the collision contains the collisionable, false otherwise
+</span>31 <span style=''>   */
+</span>32 <span style=''>  </span><span style='background: #AEF1AE'>def contains</span><span style=''>(collisionable: Collisionable): Boolean =
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>involvedCollisionables
+</span>34 <span style=''></span><span style='background: #AEF1AE'>      .contains(collisionable)</span><span style=''>
+</span>35 <span style=''>
+</span>36 <span style=''>  /**
+</span>37 <span style=''>   * Checks if one of the collisonable  in the collision has a specific property
+</span>38 <span style=''>   *
+</span>39 <span style=''>   * @param p the property to check
+</span>40 <span style=''>   * @return true if one of the collisionable has the property, false otherwise
+</span>41 <span style=''>   */
+</span>42 <span style=''>  </span><span style='background: #F0ADAD'>def exists</span><span style=''>(p: Collisionable =&gt; Boolean): Boolean =
+</span>43 <span style=''>    </span><span style='background: #F0ADAD'>involvedCollisionables
+</span>44 <span style=''></span><span style='background: #F0ADAD'>      .exists(p)</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>  /**
+</span>47 <span style=''>   * Given a collisionable, returns the other collisionable in the collision or empty if the collisionable is not in the collision
+</span>48 <span style=''>   *
+</span>49 <span style=''>   * @param collisionable the collisionable to check
+</span>50 <span style=''>   * @return the other collisionable in the collision or empty if the collisionable is not in the collision
+</span>51 <span style=''>   */
+</span>52 <span style=''>
+</span>53 <span style=''>  </span><span style='background: #AEF1AE'>def otherElementsOfCollision</span><span style=''>(collisionable: Collisionable): Set[Collisionable] =
+</span>54 <span style=''>    involvedCollisionables match
+</span>55 <span style=''>      </span><span style='background: #AEF1AE'>case _ if contains(collisionable)</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>involvedCollisionables - collisionable</span><span style=''>
+</span>56 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Set.empty</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -83,12 +95,12 @@
           15
         </td>
         <td>
-          178
+          161
         </td>
         <td>
-          331
+          324
           -
-          340
+          333
         </td>
         <td>
           DefDef
@@ -107,12 +119,12 @@
           16
         </td>
         <td>
-          177
+          160
         </td>
         <td>
-          390
+          393
           -
-          410
+          413
         </td>
         <td>
           Select
@@ -128,39 +140,113 @@
         </td>
       </tr><tr>
         <td>
-          24
+          31
         </td>
         <td>
-          179
+          163
         </td>
         <td>
-          621
+          832
           -
-          630
+          844
         </td>
         <td>
           DefDef
         </td>
         <td>
-          apply
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def contains
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          162
+        </td>
+        <td>
+          890
+          -
+          943
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          involvedCollisionables
+      .contains(collisionable)
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          165
+        </td>
+        <td>
+          1161
+          -
+          1171
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          exists
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def apply
+          def exists
         </td>
       </tr><tr>
         <td>
-          40
+          43
         </td>
         <td>
-          186
+          164
         </td>
         <td>
-          1161
+          1216
           -
-          1189
+          1255
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          exists
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          involvedCollisionables
+      .exists(p)
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          172
+        </td>
+        <td>
+          1569
+          -
+          1597
         </td>
         <td>
           DefDef
@@ -176,39 +262,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          54
         </td>
         <td>
-          182
+          167
         </td>
         <td>
-          1278
+          1689
           -
-          1311
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collision.contains(collisionable)
-        </td>
-      </tr><tr>
-        <td>
-          42
-        </td>
-        <td>
-          181
-        </td>
-        <td>
-          1268
-          -
-          1311
+          1722
         </td>
         <td>
           Block
@@ -220,19 +282,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          case _ if collision.contains(collisionable)
+          case _ if contains(collisionable)
         </td>
       </tr><tr>
         <td>
-          42
+          54
         </td>
         <td>
-          180
+          166
         </td>
         <td>
-          1315
+          1726
           -
-          1340
+          1764
         </td>
         <td>
           Apply
@@ -244,19 +306,67 @@
           
         </td>
         <td style="background: #AEF1AE">
-          collision - collisionable
+          involvedCollisionables - collisionable
         </td>
       </tr><tr>
         <td>
-          43
+          54
         </td>
         <td>
-          185
+          168
         </td>
         <td>
-          1347
+          1699
           -
-          1353
+          1722
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          contains(collisionable)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          169
+        </td>
+        <td>
+          1781
+          -
+          1784
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          Set
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          171
+        </td>
+        <td>
+          1771
+          -
+          1777
         </td>
         <td>
           Block
@@ -272,15 +382,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          55
         </td>
         <td>
-          184
+          170
         </td>
         <td>
-          1357
+          1781
           -
-          1366
+          1790
         </td>
         <td>
           Select
@@ -293,30 +403,6 @@
         </td>
         <td style="background: #AEF1AE">
           Set.empty
-        </td>
-      </tr><tr>
-        <td>
-          43
-        </td>
-        <td>
-          183
-        </td>
-        <td>
-          1357
-          -
-          1360
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          Set
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Set
         </td>
       </tr>
     </table>

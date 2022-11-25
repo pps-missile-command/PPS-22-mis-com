@@ -30,111 +30,57 @@
 </span>6 <span style=''>import model.collisions.{Affiliation, Collisionable, Damager, HitBox, LifePoint}
 </span>7 <span style=''>import model.elements2d.Point2D
 </span>8 <span style=''>
-</span>9 <span style=''>/**
-</span>10 <span style=''> * Trait that defines the model of an Explosion, that is damager because it
-</span>11 <span style=''> * causes damage to other entities and timeable, to manage the time passing
-</span>12 <span style=''> */
-</span>13 <span style=''>trait Explosion extends Damager, Timeable:
+</span>9 <span style=''>trait Explosion extends Damager, Timeable:
+</span>10 <span style=''>
+</span>11 <span style=''>  def position: Point2D
+</span>12 <span style=''>
+</span>13 <span style=''>  def radius: Double
 </span>14 <span style=''>
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * Function that return the position of the explosion
-</span>17 <span style=''>   * @return the position of the explosion
-</span>18 <span style=''>   */
-</span>19 <span style=''>  def position: Point2D
+</span>15 <span style=''>  def terminated: Boolean
+</span>16 <span style=''>
+</span>17 <span style=''>  override def timeElapsed(dt: DeltaTime): Explosion
+</span>18 <span style=''>
+</span>19 <span style=''>object Explosion:
 </span>20 <span style=''>
-</span>21 <span style=''>  /**
-</span>22 <span style=''>   * Function that models the radius of the explosion
-</span>23 <span style=''>   * @return the radius of the explosion
-</span>24 <span style=''>   */
-</span>25 <span style=''>  def radius: Double
+</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(damageToInflict: LifePoint, hitboxRadius: Double, myPosition: Point2D, dt: DeltaTime = 0)(using maxTime: MaxTime, parentAffiliation: Affiliation): Explosion = new Explosion {
+</span>22 <span style=''>
+</span>23 <span style=''>    (damageToInflict, hitboxRadius) match
+</span>24 <span style=''>      </span><span style='background: #AEF1AE'>case (n, m) if n == 0 || m == 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>throw new IllegalArgumentException()</span><span style=''>
+</span>25 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; ()
 </span>26 <span style=''>
-</span>27 <span style=''>  /**
-</span>28 <span style=''>   * Function that models the termination state of the explosion
-</span>29 <span style=''>   * @return true if the explosion has been expired and false if explosion has not terminated yet
-</span>30 <span style=''>   */
-</span>31 <span style=''>  def terminated: Boolean
+</span>27 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = myPosition
+</span>28 <span style=''>
+</span>29 <span style=''>    </span><span style='background: #AEF1AE'>override def radius</span><span style=''>: Double = hitboxRadius match
+</span>30 <span style=''>      </span><span style='background: #F0ADAD'>case n if n &gt;= 0</span><span style=''> =&gt; hitboxRadius
+</span>31 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(hitboxRadius)</span><span style=''>
 </span>32 <span style=''>
-</span>33 <span style=''>  /**
-</span>34 <span style=''>   * Override of the timeElapsed method, that defines the time passing
-</span>35 <span style=''>   * @param dt It is the virtual time passed
-</span>36 <span style=''>   * @return The new explosion with the delta time updated
-</span>37 <span style=''>   */
-</span>38 <span style=''>  override def timeElapsed(dt: DeltaTime): Explosion
-</span>39 <span style=''>
-</span>40 <span style=''>/**
-</span>41 <span style=''> * Companion object for [[Explosion]]
-</span>42 <span style=''> */
-</span>43 <span style=''>object Explosion:
-</span>44 <span style=''>
-</span>45 <span style=''>  /**
-</span>46 <span style=''>   * Factory method used to create a new Explosion
-</span>47 <span style=''>   * @param damageToInflict Damage to inflict against all the damageable that enters within the radius
-</span>48 <span style=''>   * @param hitboxRadius The radius of the explosion and of its hitbox
-</span>49 <span style=''>   * @param position Position of the explosion
-</span>50 <span style=''>   * @param dt Current virtual delta time
-</span>51 <span style=''>   * @param maxTime Time to wait for the explosion to be terminated, until this time does not expire the explosion could still inflict damages
-</span>52 <span style=''>   * @param parentAffiliation The same parent affiliation
-</span>53 <span style=''>   * @return The new explosion
-</span>54 <span style=''>   */
-</span>55 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(damageToInflict: LifePoint, hitboxRadius: Double = </span><span style='background: #AEF1AE'>standardRadius</span><span style=''>, expPosition: Point2D, dt: DeltaTime = 0, maxTime: DeltaTime = maxTimeExplosion)(using parentAffiliation: Affiliation): Explosion = new Explosion {
-</span>56 <span style=''>
-</span>57 <span style=''>    /**
-</span>58 <span style=''>     * Check of the damageToInflict and hitboxRadius validity
-</span>59 <span style=''>     */
-</span>60 <span style=''>    (damageToInflict, hitboxRadius) match
-</span>61 <span style=''>      </span><span style='background: #AEF1AE'>case (n, m) if n == 0 || m == 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>throw new IllegalArgumentException()</span><span style=''>
-</span>62 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; ()
-</span>63 <span style=''>
-</span>64 <span style=''>    /**
-</span>65 <span style=''>     * 
-</span>66 <span style=''>     *  @return the position of the explosion
-</span>67 <span style=''>     */
-</span>68 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = expPosition
-</span>69 <span style=''>
-</span>70 <span style=''>    /**
-</span>71 <span style=''>     * 
-</span>72 <span style=''>     *  @return the radius of the explosion
-</span>73 <span style=''>     */
-</span>74 <span style=''>    </span><span style='background: #AEF1AE'>override def radius</span><span style=''>: Double = hitboxRadius match
-</span>75 <span style=''>      </span><span style='background: #F0ADAD'>case n if n &gt;= 0</span><span style=''> =&gt; hitboxRadius
-</span>76 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(hitboxRadius)</span><span style=''>
-</span>77 <span style=''>
-</span>78 <span style=''>    /**
-</span>79 <span style=''>     *
-</span>80 <span style=''>     * @param _dt Delta time elapsed
-</span>81 <span style=''>     *  @return The new explosion with the delta time updated
-</span>82 <span style=''>     */
-</span>83 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Explosion = </span><span style='background: #AEF1AE'>apply(damageToInflict, hitboxRadius, position, dt + _dt)</span><span style=''>
-</span>84 <span style=''>
-</span>85 <span style=''>    /**
-</span>86 <span style=''>     * 
-</span>87 <span style=''>     *  @return true if the explosion has been expired and false if explosion has not terminated yet
-</span>88 <span style=''>     */
-</span>89 <span style=''>    </span><span style='background: #AEF1AE'>override def terminated</span><span style=''>: Boolean = dt &gt;= maxTime
-</span>90 <span style=''>
-</span>91 <span style=''>    /**
-</span>92 <span style=''>     * The damage inflicted by this object.
-</span>93 <span style=''>     *
-</span>94 <span style=''>     * @return the damage inflicted by this object.
-</span>95 <span style=''>     */
-</span>96 <span style=''>    </span><span style='background: #AEF1AE'>override def damageInflicted</span><span style=''>: LifePoint = damageToInflict match
-</span>97 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &gt; 0</span><span style=''> =&gt; damageToInflict
-</span>98 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(damageToInflict)</span><span style=''>
-</span>99 <span style=''>
-</span>100 <span style=''>    /**
-</span>101 <span style=''>     * Return the hit box of the object.
-</span>102 <span style=''>     *
-</span>103 <span style=''>     * @return the hit box of the object.
-</span>104 <span style=''>     */
-</span>105 <span style=''>    </span><span style='background: #AEF1AE'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #AEF1AE'>HitBoxCircular(position, hitboxRadius)</span><span style=''>
-</span>106 <span style=''>
-</span>107 <span style=''>    /**
-</span>108 <span style=''>     * Return the affiliation of the object.
-</span>109 <span style=''>     *
-</span>110 <span style=''>     * @return the affiliation of the object.
-</span>111 <span style=''>     */
-</span>112 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = parentAffiliation
-</span>113 <span style=''>  }
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): Explosion = </span><span style='background: #AEF1AE'>apply(damageToInflict, hitboxRadius, myPosition, dt + _dt)</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>    </span><span style='background: #AEF1AE'>override def terminated</span><span style=''>: Boolean = dt &gt;= maxTime
+</span>36 <span style=''>
+</span>37 <span style=''>    /**
+</span>38 <span style=''>     * The damage inflicted by this object.
+</span>39 <span style=''>     *
+</span>40 <span style=''>     * @return the damage inflicted by this object.
+</span>41 <span style=''>     */
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>override def damageInflicted</span><span style=''>: LifePoint = damageToInflict match
+</span>43 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &gt; 0</span><span style=''> =&gt; damageToInflict
+</span>44 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Math.abs(damageToInflict)</span><span style=''>
+</span>45 <span style=''>
+</span>46 <span style=''>    /**
+</span>47 <span style=''>     * Return the hit box of the object.
+</span>48 <span style=''>     *
+</span>49 <span style=''>     * @return the hit box of the object.
+</span>50 <span style=''>     */
+</span>51 <span style=''>    </span><span style='background: #AEF1AE'>override protected def hitBox</span><span style=''>: HitBox = </span><span style='background: #AEF1AE'>HitBoxCircular(position, hitboxRadius)</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>    /**
+</span>54 <span style=''>     * Return the affiliation of the object.
+</span>55 <span style=''>     *
+</span>56 <span style=''>     * @return the affiliation of the object.
+</span>57 <span style=''>     */
+</span>58 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = parentAffiliation
+</span>59 <span style=''>  }
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -149,111 +95,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          54
+          20
         </td>
         <td>
-          690
+          672
         </td>
         <td>
-          1837
+          432
           -
-          1837
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          
-        </td>
-      </tr><tr>
-        <td>
-          54
-        </td>
-        <td>
-          692
-        </td>
-        <td>
-          1915
-          -
-          1915
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply$default$5
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          
-        </td>
-      </tr><tr>
-        <td>
-          54
-        </td>
-        <td>
-          689
-        </td>
-        <td>
-          1837
-          -
-          1851
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          standardRadius
-        </td>
-      </tr><tr>
-        <td>
-          54
-        </td>
-        <td>
-          691
-        </td>
-        <td>
-          1891
-          -
-          1891
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply$default$4
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          
-        </td>
-      </tr><tr>
-        <td>
-          54
-        </td>
-        <td>
-          688
-        </td>
-        <td>
-          1776
-          -
-          1785
+          441
         </td>
         <td>
           DefDef
@@ -269,39 +119,39 @@
         </td>
       </tr><tr>
         <td>
-          60
+          20
         </td>
         <td>
-          666
+          673
         </td>
         <td>
-          2168
+          529
           -
-          2198
+          529
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          &lt;init&gt;
+          apply$default$4
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          new IllegalArgumentException()
+          
         </td>
       </tr><tr>
         <td>
-          60
+          23
         </td>
         <td>
-          668
+          654
         </td>
         <td>
-          2127
+          666
           -
-          2158
+          697
         </td>
         <td>
           Block
@@ -317,15 +167,15 @@
         </td>
       </tr><tr>
         <td>
-          60
+          23
         </td>
         <td>
-          667
+          653
         </td>
         <td>
-          2162
+          701
           -
-          2198
+          737
         </td>
         <td>
           Apply
@@ -341,15 +191,39 @@
         </td>
       </tr><tr>
         <td>
-          61
+          23
         </td>
         <td>
-          669
+          652
         </td>
         <td>
-          2205
+          707
           -
-          2211
+          737
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          new IllegalArgumentException()
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          655
+        </td>
+        <td>
+          744
+          -
+          750
         </td>
         <td>
           Block
@@ -365,15 +239,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          26
         </td>
         <td>
-          670
+          656
         </td>
         <td>
-          2293
+          762
           -
-          2314
+          783
         </td>
         <td>
           DefDef
@@ -389,15 +263,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          28
         </td>
         <td>
-          674
+          660
         </td>
         <td>
-          2411
+          811
           -
-          2430
+          830
         </td>
         <td>
           DefDef
@@ -413,15 +287,15 @@
         </td>
       </tr><tr>
         <td>
-          74
+          29
         </td>
         <td>
-          671
+          657
         </td>
         <td>
-          2466
+          866
           -
-          2482
+          882
         </td>
         <td>
           Block
@@ -437,15 +311,39 @@
         </td>
       </tr><tr>
         <td>
-          75
+          30
         </td>
         <td>
-          672
+          659
         </td>
         <td>
-          2524
+          905
           -
-          2546
+          920
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case n if n &lt; 0
+        </td>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          658
+        </td>
+        <td>
+          924
+          -
+          946
         </td>
         <td>
           Apply
@@ -461,39 +359,15 @@
         </td>
       </tr><tr>
         <td>
-          75
+          32
         </td>
         <td>
-          673
+          662
         </td>
         <td>
-          2505
+          952
           -
-          2520
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case n if n &lt; 0
-        </td>
-      </tr><tr>
-        <td>
-          82
-        </td>
-        <td>
-          678
-        </td>
-        <td>
-          2674
-          -
-          2698
+          976
         </td>
         <td>
           DefDef
@@ -509,39 +383,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          32
         </td>
         <td>
-          675
+          661
         </td>
         <td>
-          2765
+          1006
           -
-          2773
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          position
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          position
-        </td>
-      </tr><tr>
-        <td>
-          82
-        </td>
-        <td>
-          677
-        </td>
-        <td>
-          2728
-          -
-          2784
+          1064
         </td>
         <td>
           Apply
@@ -553,43 +403,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          apply(damageToInflict, hitboxRadius, position, dt + _dt)
+          apply(damageToInflict, hitboxRadius, myPosition, dt + _dt)
         </td>
       </tr><tr>
         <td>
-          82
+          34
         </td>
         <td>
-          676
+          663
         </td>
         <td>
-          2728
+          1070
           -
-          2733
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          apply$default$5
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          apply
-        </td>
-      </tr><tr>
-        <td>
-          88
-        </td>
-        <td>
-          679
-        </td>
-        <td>
-          2915
-          -
-          2938
+          1093
         </td>
         <td>
           DefDef
@@ -605,15 +431,15 @@
         </td>
       </tr><tr>
         <td>
-          95
+          41
         </td>
         <td>
-          683
+          667
         </td>
         <td>
-          3088
+          1243
           -
-          3116
+          1271
         </td>
         <td>
           DefDef
@@ -629,15 +455,15 @@
         </td>
       </tr><tr>
         <td>
-          96
+          42
         </td>
         <td>
-          680
+          664
         </td>
         <td>
-          3158
+          1313
           -
-          3173
+          1328
         </td>
         <td>
           Block
@@ -653,39 +479,15 @@
         </td>
       </tr><tr>
         <td>
-          97
+          43
         </td>
         <td>
-          681
+          666
         </td>
         <td>
-          3218
+          1354
           -
-          3243
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          abs
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Math.abs(damageToInflict)
-        </td>
-      </tr><tr>
-        <td>
-          97
-        </td>
-        <td>
-          682
-        </td>
-        <td>
-          3199
-          -
-          3214
+          1369
         </td>
         <td>
           Block
@@ -701,63 +503,39 @@
         </td>
       </tr><tr>
         <td>
-          104
+          43
         </td>
         <td>
-          684
+          665
         </td>
         <td>
-          3410
+          1373
           -
-          3418
+          1398
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          position
+          abs
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          position
+          Math.abs(damageToInflict)
         </td>
       </tr><tr>
         <td>
-          104
+          50
         </td>
         <td>
-          686
+          669
         </td>
         <td>
-          3355
+          1550
           -
-          3384
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          hitBox
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override protected def hitBox
-        </td>
-      </tr><tr>
-        <td>
-          104
-        </td>
-        <td>
-          685
-        </td>
-        <td>
-          3395
-          -
-          3433
+          1588
         </td>
         <td>
           Apply
@@ -773,15 +551,63 @@
         </td>
       </tr><tr>
         <td>
-          111
+          50
         </td>
         <td>
-          687
+          668
         </td>
         <td>
-          3553
+          1565
           -
-          3577
+          1573
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          position
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          position
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          670
+        </td>
+        <td>
+          1510
+          -
+          1539
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          hitBox
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          override protected def hitBox
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          671
+        </td>
+        <td>
+          1708
+          -
+          1732
         </td>
         <td>
           DefDef

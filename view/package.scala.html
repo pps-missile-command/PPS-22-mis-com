@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/Game.scala.html
+          view/package.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,33 +22,15 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>import model.World
 </span>2 <span style=''>
-</span>3 <span style=''>import model.World.{height, width}
-</span>4 <span style=''>import model.spawner.GenericSpawner
-</span>5 <span style=''>import model.missile.Missile
-</span>6 <span style=''>import scala.util.Random
-</span>7 <span style=''>
-</span>8 <span style=''>/**
-</span>9 <span style=''> * Class representing the game
-</span>10 <span style=''> *
-</span>11 <span style=''> * @param player  the player of the game
-</span>12 <span style=''> * @param spawner the spawner in the game
-</span>13 <span style=''> * @param world   the world of the game
-</span>14 <span style=''> */
-</span>15 <span style=''>case class Game(player: Player, spawner: GenericSpawner[Missile], world: World)
-</span>16 <span style=''>
-</span>17 <span style=''>/**
-</span>18 <span style=''> * Companion object of the game
-</span>19 <span style=''> */
-</span>20 <span style=''>object Game:
-</span>21 <span style=''>  /**
-</span>22 <span style=''>   * The initial state of the game
-</span>23 <span style=''>   *
-</span>24 <span style=''>   * @return the initial state of the game
-</span>25 <span style=''>   */
-</span>26 <span style=''>  </span><span style='background: #AEF1AE'>def initialGame</span><span style=''>: Game =
-</span>27 <span style=''>    Game(</span><span style='background: #AEF1AE'>Player.initialPlayer</span><span style=''>, </span><span style='background: #AEF1AE'>model.spawner.standardSpawner(using Random())</span><span style=''>, </span><span style='background: #AEF1AE'>World.initialWorld</span><span style=''>)
+</span>3 <span style=''>package object view:
+</span>4 <span style=''>  given </span><span style='background: #F0ADAD'>Conversion[Double, Int]</span><span style=''> with
+</span>5 <span style=''>    </span><span style='background: #F0ADAD'>override def apply</span><span style=''>(x: Double): Int = x.toInt
+</span>6 <span style=''>
+</span>7 <span style=''>  val viewMapper: (Double) =&gt; Double = _ * (ViewConstants.GUI_width / model.World.width)
+</span>8 <span style=''>  val ratioWidth: Double = </span><span style='background: #F0ADAD'>ViewConstants.GUI_width / World.width</span><span style=''>
+</span>9 <span style=''>  val ratioHeight: Double = </span><span style='background: #F0ADAD'>ViewConstants.GUI_height / World.height</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -63,87 +45,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          25
+          3
         </td>
         <td>
-          153
+          1478
         </td>
         <td>
-          537
+          49
           -
-          552
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          initialGame
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def initialGame
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          149
-        </td>
-        <td>
-          570
-          -
-          590
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          initialPlayer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Player.initialPlayer
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          151
-        </td>
-        <td>
-          592
-          -
-          637
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          standardSpawner
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          model.spawner.standardSpawner(using Random())
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          150
-        </td>
-        <td>
-          628
-          -
-          636
+          72
         </td>
         <td>
           Apply
@@ -154,32 +64,80 @@
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          Random()
+        <td style="background: #F0ADAD">
+          Conversion[Double, Int]
         </td>
       </tr><tr>
         <td>
-          26
+          4
         </td>
         <td>
-          152
+          1479
         </td>
         <td>
-          639
+          82
           -
-          657
+          100
         </td>
         <td>
-          Select
+          DefDef
         </td>
         <td>
-          initialWorld
+          apply
         </td>
         <td>
           
         </td>
-        <td style="background: #AEF1AE">
-          World.initialWorld
+        <td style="background: #F0ADAD">
+          override def apply
+        </td>
+      </tr><tr>
+        <td>
+          7
+        </td>
+        <td>
+          1480
+        </td>
+        <td>
+          244
+          -
+          281
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ViewConstants.GUI_width / World.width
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1481
+        </td>
+        <td>
+          310
+          -
+          349
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ViewConstants.GUI_height / World.height
         </td>
       </tr>
     </table>

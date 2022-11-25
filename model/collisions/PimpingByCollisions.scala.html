@@ -38,7 +38,7 @@
 </span>14 <span style=''>     */
 </span>15 <span style=''>    </span><span style='background: #AEF1AE'>def allScorableDestroyedThatCollide</span><span style=''>: Set[Collisionable] =
 </span>16 <span style=''>      </span><span style='background: #AEF1AE'>collisions
-</span>17 <span style=''></span><span style='background: #AEF1AE'>        .flatten
+</span>17 <span style=''></span><span style='background: #AEF1AE'>        .flatMap(_.involvedCollisionables)
 </span>18 <span style=''></span><span style='background: #AEF1AE'>        .filter(_.isScorable)
 </span>19 <span style=''></span><span style='background: #AEF1AE'>        .filter(_.isDestroyed)</span><span style=''>
 </span>20 <span style=''>
@@ -110,12 +110,15 @@
 </span>86 <span style=''>    </span><span style='background: #AEF1AE'>def updateCollisionablesContained</span><span style=''>(mapping: Map[Collisionable, Collisionable]): Set[Collision] =
 </span>87 <span style=''>      </span><span style='background: #AEF1AE'>collisions
 </span>88 <span style=''></span><span style='background: #AEF1AE'>        .map(collision =&gt;
-</span>89 <span style=''></span><span style='background: #AEF1AE'>            collision
-</span>90 <span style=''></span><span style='background: #AEF1AE'>              .map(collisonable =&gt;
-</span>91 <span style=''></span><span style='background: #AEF1AE'>                mapping
-</span>92 <span style=''></span><span style='background: #AEF1AE'>                  .getOrElse(collisonable, collisonable)
-</span>93 <span style=''></span><span style='background: #AEF1AE'>              )
-</span>94 <span style=''></span><span style='background: #AEF1AE'>        )</span><span style=''>
+</span>89 <span style=''></span><span style='background: #AEF1AE'>          Collision(
+</span>90 <span style=''></span><span style='background: #AEF1AE'>            collision
+</span>91 <span style=''></span><span style='background: #AEF1AE'>              .involvedCollisionables
+</span>92 <span style=''></span><span style='background: #AEF1AE'>              .map(collisonable =&gt;
+</span>93 <span style=''></span><span style='background: #AEF1AE'>                mapping
+</span>94 <span style=''></span><span style='background: #AEF1AE'>                  .getOrElse(collisonable, collisonable)
+</span>95 <span style=''></span><span style='background: #AEF1AE'>              )
+</span>96 <span style=''></span><span style='background: #AEF1AE'>          )
+</span>97 <span style=''></span><span style='background: #AEF1AE'>        )</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -133,7 +136,7 @@
           14
         </td>
         <td>
-          268
+          254
         </td>
         <td>
           370
@@ -154,66 +157,40 @@
         </td>
       </tr><tr>
         <td>
-          15
+          16
         </td>
         <td>
-          263
+          249
         </td>
         <td>
           434
           -
-          461
+          487
         </td>
         <td>
           Apply
         </td>
         <td>
-          flatten
+          flatMap
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
           collisions
-        .flatten
+        .flatMap(_.involvedCollisionables)
         </td>
       </tr><tr>
         <td>
           17
         </td>
         <td>
-          265
+          250
         </td>
         <td>
-          434
+          504
           -
-          491
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          filter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisions
-        .flatten
-        .filter(_.isScorable)
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          264
-        </td>
-        <td>
-          478
-          -
-          490
+          516
         </td>
         <td>
           Apply
@@ -229,15 +206,15 @@
         </td>
       </tr><tr>
         <td>
-          18
+          17
         </td>
         <td>
-          267
+          251
         </td>
         <td>
           434
           -
-          522
+          517
         </td>
         <td>
           Apply
@@ -250,7 +227,33 @@
         </td>
         <td style="background: #AEF1AE">
           collisions
-        .flatten
+        .flatMap(_.involvedCollisionables)
+        .filter(_.isScorable)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          253
+        </td>
+        <td>
+          434
+          -
+          548
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisions
+        .flatMap(_.involvedCollisionables)
         .filter(_.isScorable)
         .filter(_.isDestroyed)
         </td>
@@ -259,12 +262,12 @@
           18
         </td>
         <td>
-          266
+          252
         </td>
         <td>
-          508
+          534
           -
-          521
+          547
         </td>
         <td>
           Apply
@@ -283,12 +286,12 @@
           27
         </td>
         <td>
-          273
+          259
         </td>
         <td>
-          740
+          766
           -
-          768
+          794
         </td>
         <td>
           DefDef
@@ -307,12 +310,12 @@
           29
         </td>
         <td>
-          270
+          256
         </td>
         <td>
-          831
+          857
           -
-          905
+          931
         </td>
         <td>
           Apply
@@ -332,12 +335,12 @@
           29
         </td>
         <td>
-          269
+          255
         </td>
         <td>
-          859
+          885
           -
-          904
+          930
         </td>
         <td>
           Apply
@@ -356,36 +359,12 @@
           30
         </td>
         <td>
-          271
+          258
         </td>
         <td>
-          922
+          857
           -
-          933
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          isDamager
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.isDamager
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          272
-        </td>
-        <td>
-          831
-          -
-          934
+          960
         </td>
         <td>
           Apply
@@ -403,15 +382,39 @@
         </td>
       </tr><tr>
         <td>
+          30
+        </td>
+        <td>
+          257
+        </td>
+        <td>
+          948
+          -
+          959
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isDamager
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.isDamager
+        </td>
+      </tr><tr>
+        <td>
           38
         </td>
         <td>
-          276
+          262
         </td>
         <td>
-          1166
+          1192
           -
-          1195
+          1221
         </td>
         <td>
           DefDef
@@ -430,36 +433,12 @@
           40
         </td>
         <td>
-          274
+          261
         </td>
         <td>
-          1277
+          1276
           -
-          1302
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.contains(collisionable)
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          275
-        </td>
-        <td>
-          1250
-          -
-          1303
+          1329
         </td>
         <td>
           Apply
@@ -476,15 +455,39 @@
         </td>
       </tr><tr>
         <td>
+          40
+        </td>
+        <td>
+          260
+        </td>
+        <td>
+          1303
+          -
+          1328
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.contains(collisionable)
+        </td>
+      </tr><tr>
+        <td>
           48
         </td>
         <td>
-          280
+          266
         </td>
         <td>
-          1566
+          1592
           -
-          1602
+          1628
         </td>
         <td>
           DefDef
@@ -503,12 +506,12 @@
           50
         </td>
         <td>
-          277
+          263
         </td>
         <td>
-          1661
+          1687
           -
-          1721
+          1747
         </td>
         <td>
           Apply
@@ -528,12 +531,12 @@
           51
         </td>
         <td>
-          279
+          265
         </td>
         <td>
-          1661
+          1687
           -
-          1801
+          1827
         </td>
         <td>
           Apply
@@ -556,12 +559,12 @@
           52
         </td>
         <td>
-          278
+          264
         </td>
         <td>
-          1739
+          1765
           -
-          1791
+          1817
         </td>
         <td>
           Apply
@@ -581,12 +584,12 @@
           62
         </td>
         <td>
-          283
+          269
         </td>
         <td>
-          2212
+          2238
           -
-          2248
+          2274
         </td>
         <td>
           DefDef
@@ -605,12 +608,12 @@
           64
         </td>
         <td>
-          282
+          268
         </td>
         <td>
-          2313
+          2339
           -
-          2453
+          2479
         </td>
         <td>
           Apply
@@ -633,12 +636,12 @@
           66
         </td>
         <td>
-          281
+          267
         </td>
         <td>
-          2372
+          2398
           -
-          2443
+          2469
         </td>
         <td>
           Apply
@@ -658,12 +661,12 @@
           76
         </td>
         <td>
-          287
+          273
         </td>
         <td>
-          2869
+          2895
           -
-          2911
+          2937
         </td>
         <td>
           DefDef
@@ -682,36 +685,12 @@
           77
         </td>
         <td>
-          286
+          271
         </td>
         <td>
-          3000
+          3051
           -
-          3083
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          all.filter(_ != null) -- collisions.allCollisionablesThatCollideWith(doesntCollide)
-        </td>
-      </tr><tr>
-        <td>
-          77
-        </td>
-        <td>
-          285
-        </td>
-        <td>
-          3025
-          -
-          3083
+          3109
         </td>
         <td>
           Apply
@@ -730,12 +709,12 @@
           77
         </td>
         <td>
-          284
+          270
         </td>
         <td>
-          3000
+          3026
           -
-          3021
+          3047
         </td>
         <td>
           Apply
@@ -751,15 +730,39 @@
         </td>
       </tr><tr>
         <td>
+          77
+        </td>
+        <td>
+          272
+        </td>
+        <td>
+          3026
+          -
+          3109
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          all.filter(_ != null) -- collisions.allCollisionablesThatCollideWith(doesntCollide)
+        </td>
+      </tr><tr>
+        <td>
           85
         </td>
         <td>
-          291
+          277
         </td>
         <td>
-          3311
+          3337
           -
-          3344
+          3370
         </td>
         <td>
           DefDef
@@ -778,12 +781,12 @@
           87
         </td>
         <td>
-          290
+          276
         </td>
         <td>
-          3413
+          3439
           -
-          3613
+          3710
         </td>
         <td>
           Apply
@@ -797,24 +800,27 @@
         <td style="background: #AEF1AE">
           collisions
         .map(collision =&gt;
+          Collision(
             collision
+              .involvedCollisionables
               .map(collisonable =&gt;
                 mapping
                   .getOrElse(collisonable, collisonable)
               )
+          )
         )
         </td>
       </tr><tr>
         <td>
-          89
+          91
         </td>
         <td>
-          289
+          275
         </td>
         <td>
-          3462
+          3509
           -
-          3603
+          3688
         </td>
         <td>
           Apply
@@ -827,6 +833,7 @@
         </td>
         <td style="background: #AEF1AE">
           collision
+              .involvedCollisionables
               .map(collisonable =&gt;
                 mapping
                   .getOrElse(collisonable, collisonable)
@@ -834,15 +841,15 @@
         </td>
       </tr><tr>
         <td>
-          91
+          93
         </td>
         <td>
-          288
+          274
         </td>
         <td>
-          3523
+          3608
           -
-          3587
+          3672
         </td>
         <td>
           Apply

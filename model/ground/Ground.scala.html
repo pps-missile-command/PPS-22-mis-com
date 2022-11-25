@@ -24,13 +24,13 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.ground
 </span>2 <span style=''>
-</span>3 <span style=''>import model.DeltaTime
+</span>3 <span style=''>import model.{DeltaTime, World}
 </span>4 <span style=''>import model.collisions.{Damageable, LifePoint}
 </span>5 <span style=''>import model.elements2d.Point2D
 </span>6 <span style=''>import model.ground.City
 </span>7 <span style=''>import model.missile.Missile
 </span>8 <span style=''>import view.ViewConstants
-</span>9 <span style=''>import utilities._
+</span>9 <span style=''>import utilities.*
 </span>10 <span style=''>
 </span>11 <span style=''>
 </span>12 <span style=''>
@@ -40,14 +40,14 @@
 </span>16 <span style=''>        val cities =
 </span>17 <span style=''>            </span><span style='background: #AEF1AE'>for y &lt;- List.range(0, 2) //generate all cities in 2 waves.
 </span>18 <span style=''></span><span style='background: #AEF1AE'>                x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-</span>19 <span style=''></span><span style='background: #AEF1AE'>                    yield City(Point2D(missileBatteryBaseSize + 2* turretSpacer +
+</span>19 <span style=''></span><span style='background: #AEF1AE'>                    yield City(Point2D(missileBattery_BaseSize + 2* turretSpacer +
 </span>20 <span style=''></span><span style='background: #AEF1AE'>                                (cityBaseSize + citySpacer) * x +
-</span>21 <span style=''></span><span style='background: #AEF1AE'>                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
-</span>22 <span style=''></span><span style='background: #AEF1AE'>                        ViewConstants.GUI_height - cityHeightSize))</span><span style=''>
+</span>21 <span style=''></span><span style='background: #AEF1AE'>                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y,
+</span>22 <span style=''></span><span style='background: #AEF1AE'>                        World.height - cityHeightSize))</span><span style=''>
 </span>23 <span style=''>        val turrets =
 </span>24 <span style=''>            </span><span style='background: #AEF1AE'>for x &lt;- List.range(0, 3)
-</span>25 <span style=''></span><span style='background: #AEF1AE'>                yield MissileBattery(Point2D(turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
-</span>26 <span style=''></span><span style='background: #AEF1AE'>                    ,ViewConstants.GUI_height - missileBatteryHeightSize))</span><span style=''>
+</span>25 <span style=''></span><span style='background: #AEF1AE'>                yield MissileBattery(Point2D(turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x,
+</span>26 <span style=''></span><span style='background: #AEF1AE'>                    World.height - missileBatteryHeightSize))</span><span style=''>
 </span>27 <span style=''>        </span><span style='background: #AEF1AE'>Ground(cities, turrets)</span><span style=''>
 </span>28 <span style=''>
 </span>29 <span style=''>case class Ground(cities: List[City], turrets: List[MissileBattery]):
@@ -152,12 +152,36 @@
           13
         </td>
         <td>
-          714
+          696
         </td>
         <td>
-          317
+          255
           -
-          344
+          264
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          695
+        </td>
+        <td>
+          326
+          -
+          353
         </td>
         <td>
           Apply
@@ -173,39 +197,15 @@
         </td>
       </tr><tr>
         <td>
-          13
-        </td>
-        <td>
-          715
-        </td>
-        <td>
-          246
-          -
-          255
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def apply
-        </td>
-      </tr><tr>
-        <td>
           14
         </td>
         <td>
-          732
+          713
         </td>
         <td>
-          349
-          -
           358
+          -
+          367
         </td>
         <td>
           DefDef
@@ -224,12 +224,12 @@
           16
         </td>
         <td>
-          723
+          704
         </td>
         <td>
-          404
+          413
           -
-          913
+          912
         </td>
         <td>
           Apply
@@ -243,22 +243,22 @@
         <td style="background: #AEF1AE">
           for y &lt;- List.range(0, 2) //generate all cities in 2 waves.
                 x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-                    yield City(Point2D(missileBatteryBaseSize + 2* turretSpacer +
+                    yield City(Point2D(missileBattery_BaseSize + 2* turretSpacer +
                                 (cityBaseSize + citySpacer) * x +
-                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
-                        ViewConstants.GUI_height - cityHeightSize))
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y,
+                        World.height - cityHeightSize))
         </td>
       </tr><tr>
         <td>
           16
         </td>
         <td>
-          716
+          697
         </td>
         <td>
-          413
+          422
           -
-          429
+          438
         </td>
         <td>
           Apply
@@ -277,12 +277,12 @@
           17
         </td>
         <td>
-          717
+          698
         </td>
         <td>
-          485
+          494
           -
-          501
+          510
         </td>
         <td>
           Apply
@@ -301,12 +301,12 @@
           17
         </td>
         <td>
-          722
+          703
         </td>
         <td>
-          480
+          489
           -
-          913
+          912
         </td>
         <td>
           Apply
@@ -319,49 +319,22 @@
         </td>
         <td style="background: #AEF1AE">
           x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-                    yield City(Point2D(missileBatteryBaseSize + 2* turretSpacer +
+                    yield City(Point2D(missileBattery_BaseSize + 2* turretSpacer +
                                 (cityBaseSize + citySpacer) * x +
-                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
-                        ViewConstants.GUI_height - cityHeightSize))
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y,
+                        World.height - cityHeightSize))
         </td>
       </tr><tr>
         <td>
           18
         </td>
         <td>
-          720
+          699
         </td>
         <td>
-          612
+          629
           -
-          912
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Point2D(missileBatteryBaseSize + 2* turretSpacer +
-                                (cityBaseSize + citySpacer) * x +
-                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
-                        ViewConstants.GUI_height - cityHeightSize)
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          718
-        </td>
-        <td>
-          620
-          -
-          844
+          855
         </td>
         <td>
           Apply
@@ -373,21 +346,21 @@
           
         </td>
         <td style="background: #AEF1AE">
-          missileBatteryBaseSize + 2* turretSpacer +
+          missileBattery_BaseSize + 2* turretSpacer +
                                 (cityBaseSize + citySpacer) * x +
-                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y
         </td>
       </tr><tr>
         <td>
           18
         </td>
         <td>
-          721
+          702
         </td>
         <td>
-          607
+          616
           -
-          611
+          620
         </td>
         <td>
           Select
@@ -403,15 +376,42 @@
         </td>
       </tr><tr>
         <td>
+          18
+        </td>
+        <td>
+          701
+        </td>
+        <td>
+          621
+          -
+          911
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Point2D(missileBattery_BaseSize + 2* turretSpacer +
+                                (cityBaseSize + citySpacer) * x +
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y,
+                        World.height - cityHeightSize)
+        </td>
+      </tr><tr>
+        <td>
           21
         </td>
         <td>
-          719
+          700
         </td>
         <td>
-          870
+          881
           -
-          911
+          910
         </td>
         <td>
           Apply
@@ -423,19 +423,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          ViewConstants.GUI_height - cityHeightSize
+          World.height - cityHeightSize
         </td>
       </tr><tr>
         <td>
           23
         </td>
         <td>
-          724
+          705
         </td>
         <td>
-          957
+          956
           -
-          973
+          972
         </td>
         <td>
           Apply
@@ -454,12 +454,12 @@
           23
         </td>
         <td>
-          730
+          711
         </td>
         <td>
-          948
+          947
           -
-          1192
+          1180
         </td>
         <td>
           Apply
@@ -472,20 +472,45 @@
         </td>
         <td style="background: #AEF1AE">
           for x &lt;- List.range(0, 3)
-                yield MissileBattery(Point2D(turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
-                    ,ViewConstants.GUI_height - missileBatteryHeightSize))
+                yield MissileBattery(Point2D(turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x,
+                    World.height - missileBatteryHeightSize))
         </td>
       </tr><tr>
         <td>
           24
         </td>
         <td>
-          729
+          708
         </td>
         <td>
-          996
-          -
           1010
+          -
+          1179
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Point2D(turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x,
+                    World.height - missileBatteryHeightSize)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          710
+        </td>
+        <td>
+          995
+          -
+          1009
         </td>
         <td>
           Select
@@ -504,12 +529,36 @@
           24
         </td>
         <td>
-          728
+          706
         </td>
         <td>
-          996
+          1018
           -
-          1010
+          1117
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          709
+        </td>
+        <td>
+          995
+          -
+          1009
         </td>
         <td>
           Select
@@ -525,64 +574,15 @@
         </td>
       </tr><tr>
         <td>
-          24
-        </td>
-        <td>
-          725
-        </td>
-        <td>
-          1019
-          -
-          1117
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          727
-        </td>
-        <td>
-          1011
-          -
-          1191
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Point2D(turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
-                    ,ViewConstants.GUI_height - missileBatteryHeightSize)
-        </td>
-      </tr><tr>
-        <td>
           25
         </td>
         <td>
-          726
+          707
         </td>
         <td>
           1139
           -
-          1190
+          1178
         </td>
         <td>
           Apply
@@ -594,19 +594,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          ViewConstants.GUI_height - missileBatteryHeightSize
+          World.height - missileBatteryHeightSize
         </td>
       </tr><tr>
         <td>
           26
         </td>
         <td>
-          731
+          712
         </td>
         <td>
-          1201
+          1189
           -
-          1224
+          1212
         </td>
         <td>
           Apply
@@ -625,12 +625,12 @@
           33
         </td>
         <td>
-          736
+          717
         </td>
         <td>
-          1376
+          1364
           -
-          1391
+          1379
         </td>
         <td>
           DefDef
@@ -649,12 +649,36 @@
           34
         </td>
         <td>
-          735
+          714
         </td>
         <td>
-          1402
+          1412
           -
-          1467
+          1428
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          currentLife
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          city.currentLife
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          716
+        </td>
+        <td>
+          1390
+          -
+          1455
         </td>
         <td>
           Apply
@@ -674,12 +698,12 @@
           34
         </td>
         <td>
-          734
+          715
         </td>
         <td>
-          1406
+          1394
           -
-          1444
+          1432
         </td>
         <td>
           Apply
@@ -695,39 +719,39 @@
         </td>
       </tr><tr>
         <td>
-          34
+          40
         </td>
         <td>
-          733
+          720
         </td>
         <td>
-          1424
+          1542
           -
-          1440
+          1565
         </td>
         <td>
-          Select
+          DefDef
         </td>
         <td>
-          currentLife
+          numberOfCitiesAlive
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          city.currentLife
+          def numberOfCitiesAlive
         </td>
       </tr><tr>
         <td>
           40
         </td>
         <td>
-          738
+          719
         </td>
         <td>
-          1585
+          1573
           -
-          1603
+          1591
         </td>
         <td>
           Select
@@ -746,12 +770,12 @@
           40
         </td>
         <td>
-          737
+          718
         </td>
         <td>
-          1585
+          1573
           -
-          1596
+          1584
         </td>
         <td>
           Select
@@ -767,39 +791,15 @@
         </td>
       </tr><tr>
         <td>
-          40
-        </td>
-        <td>
-          739
-        </td>
-        <td>
-          1554
-          -
-          1577
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          numberOfCitiesAlive
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def numberOfCitiesAlive
-        </td>
-      </tr><tr>
-        <td>
           45
         </td>
         <td>
-          743
+          724
         </td>
         <td>
-          1695
+          1683
           -
-          1718
+          1706
         </td>
         <td>
           DefDef
@@ -818,12 +818,37 @@
           46
         </td>
         <td>
-          741
+          723
         </td>
         <td>
-          1733
+          1717
           -
-          1778
+          1792
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for battery &lt;- turrets if battery.currentLife &gt; 0
+            yield battery
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          722
+        </td>
+        <td>
+          1721
+          -
+          1766
         </td>
         <td>
           Apply
@@ -842,12 +867,12 @@
           46
         </td>
         <td>
-          740
+          721
         </td>
         <td>
-          1755
+          1743
           -
-          1774
+          1762
         </td>
         <td>
           Select
@@ -863,88 +888,15 @@
         </td>
       </tr><tr>
         <td>
-          46
-        </td>
-        <td>
-          742
-        </td>
-        <td>
-          1729
-          -
-          1804
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          for battery &lt;- turrets if battery.currentLife &gt; 0
-            yield battery
-        </td>
-      </tr><tr>
-        <td>
           52
         </td>
         <td>
-          744
+          726
         </td>
         <td>
-          1941
+          1929
           -
-          1960
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          missileBatteryAlive
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missileBatteryAlive
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          746
-        </td>
-        <td>
-          1902
-          -
-          1933
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          numberOfMissileBatteryAlive
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def numberOfMissileBatteryAlive
-        </td>
-      </tr><tr>
-        <td>
-          52
-        </td>
-        <td>
-          745
-        </td>
-        <td>
-          1941
-          -
-          1967
+          1955
         </td>
         <td>
           Select
@@ -960,39 +912,63 @@
         </td>
       </tr><tr>
         <td>
-          58
+          52
         </td>
         <td>
-          747
+          725
         </td>
         <td>
-          2129
+          1929
           -
-          2148
+          1948
         </td>
         <td>
           Select
         </td>
         <td>
-          numberOfCitiesAlive
+          missileBatteryAlive
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          numberOfCitiesAlive
+          missileBatteryAlive
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          727
+        </td>
+        <td>
+          1890
+          -
+          1921
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          numberOfMissileBatteryAlive
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def numberOfMissileBatteryAlive
         </td>
       </tr><tr>
         <td>
           58
         </td>
         <td>
-          748
+          729
         </td>
         <td>
-          2103
+          2091
           -
-          2117
+          2105
         </td>
         <td>
           DefDef
@@ -1008,15 +984,39 @@
         </td>
       </tr><tr>
         <td>
+          58
+        </td>
+        <td>
+          728
+        </td>
+        <td>
+          2117
+          -
+          2136
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          numberOfCitiesAlive
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          numberOfCitiesAlive
+        </td>
+      </tr><tr>
+        <td>
           65
         </td>
         <td>
-          772
+          753
         </td>
         <td>
-          2438
+          2426
           -
-          2454
+          2442
         </td>
         <td>
           DefDef
@@ -1035,12 +1035,12 @@
           66
         </td>
         <td>
-          754
+          735
         </td>
         <td>
-          2517
+          2505
           -
-          2539
+          2527
         </td>
         <td>
           DefDef
@@ -1059,12 +1059,36 @@
           67
         </td>
         <td>
-          750
+          732
         </td>
         <td>
-          2630
+          2584
           -
-          2653
+          2641
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withFilter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          battery &lt;- missileBatteryAlive if battery.isReadyForShoot
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          731
+        </td>
+        <td>
+          2618
+          -
+          2641
         </td>
         <td>
           Select
@@ -1083,12 +1107,12 @@
           67
         </td>
         <td>
-          753
+          734
         </td>
         <td>
-          2592
+          2580
           -
-          2727
+          2715
         </td>
         <td>
           Apply
@@ -1108,12 +1132,12 @@
           67
         </td>
         <td>
-          749
+          730
         </td>
         <td>
-          2607
+          2595
           -
-          2626
+          2614
         </td>
         <td>
           Select
@@ -1129,39 +1153,15 @@
         </td>
       </tr><tr>
         <td>
-          67
-        </td>
-        <td>
-          751
-        </td>
-        <td>
-          2596
-          -
-          2653
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          withFilter
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          battery &lt;- missileBatteryAlive if battery.isReadyForShoot
-        </td>
-      </tr><tr>
-        <td>
           68
         </td>
         <td>
-          752
+          733
         </td>
         <td>
-          2677
+          2665
           -
-          2717
+          2705
         </td>
         <td>
           Apply
@@ -1180,12 +1180,12 @@
           70
         </td>
         <td>
-          755
+          736
         </td>
         <td>
-          2766
+          2754
           -
-          2784
+          2772
         </td>
         <td>
           Ident
@@ -1204,12 +1204,12 @@
           71
         </td>
         <td>
-          756
+          737
         </td>
         <td>
-          2796
+          2784
           -
-          2825
+          2813
         </td>
         <td>
           Select
@@ -1228,60 +1228,12 @@
           72
         </td>
         <td>
-          759
+          738
         </td>
         <td>
-          2963
+          2951
           -
-          3022
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          shootRocket
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint)
-        </td>
-      </tr><tr>
-        <td>
-          72
-        </td>
-        <td>
-          758
-        </td>
-        <td>
-          2963
-          -
-          3000
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          _2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          batteriesReadyForShoot.minBy(_._1)._2
-        </td>
-      </tr><tr>
-        <td>
-          72
-        </td>
-        <td>
-          757
-        </td>
-        <td>
-          2963
-          -
-          2997
+          2985
         </td>
         <td>
           Apply
@@ -1300,12 +1252,12 @@
           72
         </td>
         <td>
-          760
+          741
         </td>
         <td>
-          2963
+          2951
           -
-          3026
+          3014
         </td>
         <td>
           Select
@@ -1324,12 +1276,12 @@
           72
         </td>
         <td>
-          769
+          750
         </td>
         <td>
-          2929
+          2917
           -
-          3240
+          3228
         </td>
         <td>
           Block
@@ -1347,39 +1299,39 @@
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
-          765
+          740
         </td>
         <td>
-          3158
+          2951
           -
-          3159
+          3010
         </td>
         <td>
-          Ident
+          Apply
         </td>
         <td>
-          t
+          shootRocket
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          t
+          batteriesReadyForShoot.minBy(_._1)._2.shootRocket(endPoint)
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
-          762
+          739
         </td>
         <td>
-          3083
+          2951
           -
-          3120
+          2988
         </td>
         <td>
           Select
@@ -1398,60 +1350,12 @@
           73
         </td>
         <td>
-          761
+          747
         </td>
         <td>
-          3083
+          3044
           -
-          3117
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          minBy
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          batteriesReadyForShoot.minBy(_._1)
-        </td>
-      </tr><tr>
-        <td>
-          73
-        </td>
-        <td>
-          764
-        </td>
-        <td>
-          3122
-          -
-          3152
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missilesBatteryInformations._1
-        </td>
-      </tr><tr>
-        <td>
-          73
-        </td>
-        <td>
-          766
-        </td>
-        <td>
-          3056
-          -
-          3160
+          3148
         </td>
         <td>
           Apply
@@ -1470,12 +1374,12 @@
           73
         </td>
         <td>
-          763
+          744
         </td>
         <td>
-          3122
+          3110
           -
-          3152
+          3140
         </td>
         <td>
           Select
@@ -1491,15 +1395,111 @@
         </td>
       </tr><tr>
         <td>
+          73
+        </td>
+        <td>
+          743
+        </td>
+        <td>
+          3071
+          -
+          3108
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          batteriesReadyForShoot.minBy(_._1)._2
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          746
+        </td>
+        <td>
+          3146
+          -
+          3147
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          t
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          t
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          742
+        </td>
+        <td>
+          3071
+          -
+          3105
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          minBy
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          batteriesReadyForShoot.minBy(_._1)
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          745
+        </td>
+        <td>
+          3110
+          -
+          3140
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missilesBatteryInformations._1
+        </td>
+      </tr><tr>
+        <td>
           74
         </td>
         <td>
-          768
+          749
         </td>
         <td>
-          3208
+          3196
           -
-          3238
+          3226
         </td>
         <td>
           Select
@@ -1518,12 +1518,12 @@
           74
         </td>
         <td>
-          767
+          748
         </td>
         <td>
-          3174
+          3162
           -
-          3200
+          3188
         </td>
         <td>
           Apply
@@ -1542,12 +1542,12 @@
           76
         </td>
         <td>
-          771
+          752
         </td>
         <td>
-          3266
+          3254
           -
-          3297
+          3285
         </td>
         <td>
           Apply
@@ -1566,12 +1566,12 @@
           76
         </td>
         <td>
-          770
+          751
         </td>
         <td>
-          3267
+          3255
           -
-          3290
+          3278
         </td>
         <td>
           Apply
@@ -1590,12 +1590,12 @@
           84
         </td>
         <td>
-          786
+          767
         </td>
         <td>
-          3673
+          3661
           -
-          3673
+          3661
         </td>
         <td>
           DefDef
@@ -1614,12 +1614,12 @@
           84
         </td>
         <td>
-          785
+          766
         </td>
         <td>
-          3593
+          3581
           -
-          3607
+          3595
         </td>
         <td>
           DefDef
@@ -1638,12 +1638,60 @@
           85
         </td>
         <td>
-          774
+          756
         </td>
         <td>
-          3780
+          3800
           -
-          3806
+          3801
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          o
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          o
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          759
+        </td>
+        <td>
+          3701
+          -
+          3713
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case c: City
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          755
+        </td>
+        <td>
+          3768
+          -
+          3794
         </td>
         <td>
           Block
@@ -1662,36 +1710,12 @@
           85
         </td>
         <td>
-          773
+          757
         </td>
         <td>
-          3780
+          3733
           -
-          3806
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          takeDamage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          o.takeDamage(damageDealed)
-        </td>
-      </tr><tr>
-        <td>
-          85
-        </td>
-        <td>
-          776
-        </td>
-        <td>
-          3745
-          -
-          3814
+          3802
         </td>
         <td>
           Apply
@@ -1710,60 +1734,36 @@
           85
         </td>
         <td>
-          775
+          754
         </td>
         <td>
-          3812
+          3768
           -
-          3813
+          3794
         </td>
         <td>
-          Ident
+          Apply
         </td>
         <td>
-          o
+          takeDamage
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          o
-        </td>
-      </tr><tr>
-        <td>
-          85
-        </td>
-        <td>
-          778
-        </td>
-        <td>
-          3713
-          -
-          3725
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case c: City
+          o.takeDamage(damageDealed)
         </td>
       </tr><tr>
         <td>
           86
         </td>
         <td>
-          777
+          758
         </td>
         <td>
-          3827
+          3815
           -
-          3860
+          3848
         </td>
         <td>
           Apply
@@ -1782,60 +1782,12 @@
           87
         </td>
         <td>
-          779
+          765
         </td>
         <td>
-          3948
+          3857
           -
-          3974
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          takeDamage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          o.takeDamage(damageDealed)
-        </td>
-      </tr><tr>
-        <td>
-          87
-        </td>
-        <td>
-          782
-        </td>
-        <td>
-          3912
-          -
-          3982
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          ground.turrets.map(o =&gt; if (o == m) o.takeDamage(damageDealed) else o)
-        </td>
-      </tr><tr>
-        <td>
-          87
-        </td>
-        <td>
-          784
-        </td>
-        <td>
-          3869
-          -
-          3891
+          3879
         </td>
         <td>
           Block
@@ -1854,12 +1806,12 @@
           87
         </td>
         <td>
-          781
+          762
         </td>
         <td>
-          3980
+          3968
           -
-          3981
+          3969
         </td>
         <td>
           Ident
@@ -1878,12 +1830,12 @@
           87
         </td>
         <td>
-          780
+          761
         </td>
         <td>
-          3948
+          3936
           -
-          3974
+          3962
         </td>
         <td>
           Block
@@ -1899,15 +1851,63 @@
         </td>
       </tr><tr>
         <td>
+          87
+        </td>
+        <td>
+          760
+        </td>
+        <td>
+          3936
+          -
+          3962
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          takeDamage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          o.takeDamage(damageDealed)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          763
+        </td>
+        <td>
+          3900
+          -
+          3970
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ground.turrets.map(o =&gt; if (o == m) o.takeDamage(damageDealed) else o)
+        </td>
+      </tr><tr>
+        <td>
           88
         </td>
         <td>
-          783
+          764
         </td>
         <td>
-          3995
+          3983
           -
-          4028
+          4016
         </td>
         <td>
           Apply
@@ -1926,12 +1926,12 @@
           96
         </td>
         <td>
-          789
+          770
         </td>
         <td>
-          4328
+          4316
           -
-          4342
+          4330
         </td>
         <td>
           DefDef
@@ -1950,36 +1950,12 @@
           99
         </td>
         <td>
-          788
+          768
         </td>
         <td>
-          4548
+          4569
           -
-          4621
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          structures.map( s =&gt; newGround = dealDamage(s, damageDealed, newGround) )
-        </td>
-      </tr><tr>
-        <td>
-          99
-        </td>
-        <td>
-          787
-        </td>
-        <td>
-          4581
-          -
-          4619
+          4607
         </td>
         <td>
           Apply
@@ -1995,15 +1971,39 @@
         </td>
       </tr><tr>
         <td>
+          99
+        </td>
+        <td>
+          769
+        </td>
+        <td>
+          4536
+          -
+          4609
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          structures.map( s =&gt; newGround = dealDamage(s, damageDealed, newGround) )
+        </td>
+      </tr><tr>
+        <td>
           108
         </td>
         <td>
-          796
+          777
         </td>
         <td>
-          4954
+          4942
           -
-          4968
+          4956
         </td>
         <td>
           DefDef
@@ -2022,12 +2022,36 @@
           110
         </td>
         <td>
-          792
+          771
         </td>
         <td>
-          5077
+          5089
           -
-          5124
+          5111
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          zip
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          structures zip damages
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          773
+        </td>
+        <td>
+          5065
+          -
+          5112
         </td>
         <td>
           Apply
@@ -2046,12 +2070,12 @@
           110
         </td>
         <td>
-          795
+          776
         </td>
         <td>
-          5072
+          5060
           -
-          5190
+          5178
         </td>
         <td>
           Apply
@@ -2071,36 +2095,12 @@
           110
         </td>
         <td>
-          791
+          775
         </td>
         <td>
-          5077
+          5065
           -
-          5096
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (structure, damage)
-        </td>
-      </tr><tr>
-        <td>
-          110
-        </td>
-        <td>
-          794
-        </td>
-        <td>
-          5077
-          -
-          5096
+          5084
         </td>
         <td>
           Assign
@@ -2119,36 +2119,36 @@
           110
         </td>
         <td>
-          790
+          772
         </td>
         <td>
-          5101
+          5065
           -
-          5123
+          5084
         </td>
         <td>
-          Apply
+          Literal
         </td>
         <td>
-          zip
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          structures zip damages
+          (structure, damage)
         </td>
       </tr><tr>
         <td>
           111
         </td>
         <td>
-          793
+          774
         </td>
         <td>
-          5150
+          5138
           -
-          5190
+          5178
         </td>
         <td>
           Apply
