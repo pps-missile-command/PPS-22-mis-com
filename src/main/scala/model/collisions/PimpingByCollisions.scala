@@ -75,7 +75,7 @@ object PimpingByCollisions:
      * @return a set of collisionables that doesn't collide with the given set of collisionables form all
      */
     def allCollisionablesThatDoesntCollideWith(all: Set[Collisionable], doesntCollide: Set[Collisionable]): Set[Collisionable] =
-      all.filter(_ != null) -- collisions.allCollisionablesThatCollideWith(doesntCollide)
+      all.filter(_ != null) -- collisions.allCollisionablesThatCollideWith(doesntCollide) -- doesntCollide
 
     /**
      * Return the collisions with the new values of the collisionables
