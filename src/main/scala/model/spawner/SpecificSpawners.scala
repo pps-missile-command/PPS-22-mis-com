@@ -6,13 +6,10 @@ import model.missile.Missile
 import model.missile.zigzag
 import model.missile.zigzag.ZigZagMissile.*
 import model.spawner.LazySpawner.Spawnable
+import model.spawner.PimpingByRandom.*
+import model.vehicle.Plane
 
 import scala.util.Random
-
-extension(r: Random)
-  def randomPosition(maxWidth: Double, maxHeight: Double): Point2D = Point2D(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight)
-  def randomX(maxWidth: Double, y: Double): Point2D = Point2D(r.nextDouble() * maxWidth, y)
-  def randomY(maxHeight: Double, x: Double): Point2D = Point2D(x, r.nextDouble() * maxHeight)
 
 /**
  * Specific spawners strategies to spawn objects
@@ -22,8 +19,10 @@ extension(r: Random)
 object SpecificSpawners:
 
   def MissileStrategy(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
-    () => Missile.enemyMissile(position = r.randomX(maxWidth, 0), finalPosition = r.randomX(maxWidth, maxHeight))
+    () => Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))
 
   def ZigZagStrategy(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
-    () => missile.zigzag.ZigZagMissile(r.randomX(maxWidth, 0), r.randomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)
-    
+    () => missile.zigzag.ZigZagMissile(r.nextRandomX(maxWidth, 0), r.nextRandomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)
+
+  def PlaneStrategy(maxHeight: Double)(using r: Random): Spawnable[Plane] =
+    () => Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)
