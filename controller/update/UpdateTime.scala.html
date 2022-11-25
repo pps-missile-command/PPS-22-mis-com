@@ -26,26 +26,38 @@
 </span>2 <span style=''>
 </span>3 <span style=''>import controller.Event
 </span>4 <span style=''>import monix.eval.Task
-</span>5 <span style=''>import controller.Event._
-</span>6 <span style=''>import model.Game
-</span>7 <span style=''>import controller.update.Update._
-</span>8 <span style=''>
-</span>9 <span style=''>
-</span>10 <span style=''>/**
-</span>11 <span style=''> * Object that return an update function for the world to update the time of its components
-</span>12 <span style=''> */
-</span>13 <span style=''>object UpdateTime:
-</span>14 <span style=''>
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * Apply function used to update the time of the game components
-</span>17 <span style=''>   *
-</span>18 <span style=''>   * @return An Update that update the time of the game components
-</span>19 <span style=''>   */
-</span>20 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (event: TimePassed, game: Game) =&gt;
-</span>21 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>22 <span style=''></span><span style='background: #F0ADAD'>      game.timeElapsed(event.deltaTime)
-</span>23 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>24 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>5 <span style=''>import controller.Event.*
+</span>6 <span style=''>import model.*
+</span>7 <span style=''>import controller.update.Update.*
+</span>8 <span style=''>import model.behavior.Timeable
+</span>9 <span style=''>import model.collisions.Collisionable
+</span>10 <span style=''>import model.ground.Ground
+</span>11 <span style=''>
+</span>12 <span style=''>
+</span>13 <span style=''>/**
+</span>14 <span style=''> * Object that return an update function for the world to update the time of its components
+</span>15 <span style=''> */
+</span>16 <span style=''>object UpdateTime:
+</span>17 <span style=''>
+</span>18 <span style=''>  extension (collisionable: Collisionable)
+</span>19 <span style=''>    </span><span style='background: #F0ADAD'>private def updateTimebleTime</span><span style=''>(elapsedTime: DeltaTime): Collisionable = collisionable match
+</span>20 <span style=''>      </span><span style='background: #F0ADAD'>case timeable: Timeable</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>timeable.timeElapsed(elapsedTime)</span><span style=''>.asInstanceOf[Collisionable]
+</span>21 <span style=''>      </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; collisionable
+</span>22 <span style=''>
+</span>23 <span style=''>  /**
+</span>24 <span style=''>   * Apply function used to update the time of the game components
+</span>25 <span style=''>   *
+</span>26 <span style=''>   * @return An Update that update the time of the game components
+</span>27 <span style=''>   */
+</span>28 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[TimePassed] { (event: TimePassed, game: Game) =&gt;
+</span>29 <span style=''></span><span style='background: #F0ADAD'>    Task {
+</span>30 <span style=''></span><span style='background: #F0ADAD'>      val collisionables = game.world.collisionables.map(_.updateTimebleTime(event.deltaTime))
+</span>31 <span style=''></span><span style='background: #F0ADAD'>      val spawner = game.spawner.timeElapsed(event.deltaTime)
+</span>32 <span style=''></span><span style='background: #F0ADAD'>      val ground = Ground(game.world.ground.cities, game.world.ground.turrets.map(_.timeElapsed(event.deltaTime)))
+</span>33 <span style=''></span><span style='background: #F0ADAD'>      val player = game.player.copy(timer = game.player.timer.timeElapsed(event.deltaTime))
+</span>34 <span style=''></span><span style='background: #F0ADAD'>      Game(player, spawner, World(ground, collisionables))
+</span>35 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>36 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -60,15 +72,135 @@
         <th>Code</th>
       </tr><tr>
         <td>
+          18
+        </td>
+        <td>
+          146
+        </td>
+        <td>
+          414
+          -
+          443
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateTimebleTime
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          private def updateTimebleTime
+        </td>
+      </tr><tr>
+        <td>
           19
         </td>
         <td>
-          77
+          144
         </td>
         <td>
-          449
+          511
           -
-          561
+          534
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case timeable: Timeable
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          143
+        </td>
+        <td>
+          538
+          -
+          571
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          timeable.timeElapsed(elapsedTime)
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          145
+        </td>
+        <td>
+          606
+          -
+          612
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          148
+        </td>
+        <td>
+          784
+          -
+          793
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def apply
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          147
+        </td>
+        <td>
+          806
+          -
+          1301
         </td>
         <td>
           Apply
@@ -82,33 +214,13 @@
         <td style="background: #F0ADAD">
           on[TimePassed] { (event: TimePassed, game: Game) =&gt;
     Task {
-      game.timeElapsed(event.deltaTime)
+      val collisionables = game.world.collisionables.map(_.updateTimebleTime(event.deltaTime))
+      val spawner = game.spawner.timeElapsed(event.deltaTime)
+      val ground = Ground(game.world.ground.cities, game.world.ground.turrets.map(_.timeElapsed(event.deltaTime)))
+      val player = game.player.copy(timer = game.player.timer.timeElapsed(event.deltaTime))
+      Game(player, spawner, World(ground, collisionables))
     }
   }
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          78
-        </td>
-        <td>
-          427
-          -
-          436
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def apply
         </td>
       </tr>
     </table>
