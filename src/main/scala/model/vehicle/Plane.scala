@@ -3,10 +3,11 @@ package model.vehicle
 import model.World.{height, width}
 import model.{DeltaTime, World}
 import model.behavior.Moveable
+import model.collisions.hitbox.HitBoxRectangular
 import model.collisions.{Affiliation, Damageable, HitBox, LifePoint, lifePointDeath}
 import model.elements2d.{Point2D, Vector2D}
 import model.explosion.{Explosion, standardRadius}
-import model.missile.{Missile, basicHitBox, given_Conversion_Point2D_Point2D_Vector2D}
+import model.missile.{Missile, given_Conversion_Point2D_Point2D_Vector2D, hitboxBase, hitboxHeight}
 import model.spawner.{GenericSpawner, SpecificSpawners}
 
 import scala.util.Random
@@ -91,7 +92,7 @@ case class PlaneImpl(actualPosition: Point2D,
      *
      * @return the hit box of the object.
      */
-    override protected def hitBox: HitBox = basicHitBox(position, (destination <--> position).direction)
+    override protected def hitBox: HitBox = HitBoxRectangular(position, hitboxBase, hitboxHeight, (destination <--> position).direction.get)
 
     /**
      * Return the affiliation of the object.
