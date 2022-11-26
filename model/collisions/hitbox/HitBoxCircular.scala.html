@@ -36,29 +36,31 @@
 </span>12 <span style=''>
 </span>13 <span style=''>  /**
 </span>14 <span style=''>   * Returns a new hit box that has the shape of a circle.
-</span>15 <span style=''>   *
-</span>16 <span style=''>   * @param center the center of the circle
-</span>17 <span style=''>   * @param radius the radius of the circle
-</span>18 <span style=''>   * @return a new hit box that has the shape of a circle
-</span>19 <span style=''>   */
-</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(center: Point2D, radius: Double): HitBox =
-</span>21 <span style=''>    if (radius &lt;= 0)
-</span>22 <span style=''>      </span><span style='background: #AEF1AE'>HitBoxEmpty</span><span style=''>
-</span>23 <span style=''>    else
-</span>24 <span style=''>      </span><span style='background: #AEF1AE'>HitBoxCircular(center, radius)</span><span style=''>
-</span>25 <span style=''>
-</span>26 <span style=''>  private case class HitBoxCircular(center: Point2D, radius: Double) extends HitBoxSymmetric :
+</span>15 <span style=''>   * If the radius is negative, the hit box is empty.
+</span>16 <span style=''>   * If the radius is zero, the hit box is a point.
+</span>17 <span style=''>   *
+</span>18 <span style=''>   * @param center the center of the circle
+</span>19 <span style=''>   * @param radius the radius of the circle
+</span>20 <span style=''>   * @return a new hit box that has the shape of a circle
+</span>21 <span style=''>   */
+</span>22 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(center: Point2D, radius: Double): HitBox =
+</span>23 <span style=''>    radius match
+</span>24 <span style=''>      </span><span style='background: #AEF1AE'>case 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>HitBoxPoint(center)</span><span style=''>
+</span>25 <span style=''>      </span><span style='background: #AEF1AE'>case _ if radius &lt; 0</span><span style=''> =&gt; HitBoxEmpty
+</span>26 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; HitBoxCircular(center, radius)
 </span>27 <span style=''>
-</span>28 <span style=''>    </span><span style='background: #AEF1AE'>protected def max</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>Option(values.head + radius)</span><span style=''>
+</span>28 <span style=''>  private case class HitBoxCircular(center: Point2D, radius: Double) extends HitBoxSymmetric :
 </span>29 <span style=''>
-</span>30 <span style=''>    </span><span style='background: #AEF1AE'>protected def min</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>Option(values.head - radius)</span><span style=''>
+</span>30 <span style=''>    </span><span style='background: #AEF1AE'>protected def max</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>Option(values.head + radius)</span><span style=''>
 </span>31 <span style=''>
-</span>32 <span style=''>    </span><span style='background: #AEF1AE'>protected def x</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(center.x)</span><span style=''>
+</span>32 <span style=''>    </span><span style='background: #AEF1AE'>protected def min</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>Option(values.head - radius)</span><span style=''>
 </span>33 <span style=''>
-</span>34 <span style=''>    </span><span style='background: #AEF1AE'>protected def y</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(center.y)</span><span style=''>
+</span>34 <span style=''>    </span><span style='background: #AEF1AE'>protected def x</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(center.x)</span><span style=''>
 </span>35 <span style=''>
-</span>36 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean =
-</span>37 <span style=''>      </span><span style='background: #AEF1AE'>(point &lt;-&gt; center) &lt;== radius</span><span style=''>
+</span>36 <span style=''>    </span><span style='background: #AEF1AE'>protected def y</span><span style=''>: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(center.y)</span><span style=''>
+</span>37 <span style=''>
+</span>38 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean =
+</span>39 <span style=''>      </span><span style='background: #AEF1AE'>(point &lt;-&gt; center) &lt;== radius</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -73,15 +75,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          19
+          21
         </td>
         <td>
-          411
+          413
         </td>
         <td>
-          472
+          578
           -
-          481
+          587
         </td>
         <td>
           DefDef
@@ -97,39 +99,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          23
         </td>
         <td>
           409
         </td>
         <td>
-          552
+          664
           -
-          563
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          HitBoxEmpty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          HitBoxEmpty
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          410
-        </td>
-        <td>
-          579
-          -
-          609
+          683
         </td>
         <td>
           Apply
@@ -141,67 +119,91 @@
           
         </td>
         <td style="background: #AEF1AE">
-          HitBoxCircular(center, radius)
+          HitBoxPoint(center)
         </td>
       </tr><tr>
         <td>
-          27
+          23
+        </td>
+        <td>
+          410
+        </td>
+        <td>
+          654
+          -
+          660
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case 0
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          411
+        </td>
+        <td>
+          690
+          -
+          710
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _ if radius &lt; 0
+        </td>
+      </tr><tr>
+        <td>
+          25
         </td>
         <td>
           412
         </td>
         <td>
-          780
+          732
           -
-          791
+          738
         </td>
         <td>
-          Select
+          Block
         </td>
         <td>
-          head
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          values.head
+          case _
         </td>
       </tr><tr>
         <td>
-          27
+          29
         </td>
         <td>
-          414
+          415
         </td>
         <td>
-          711
+          936
           -
-          728
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          max
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def max
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          413
-        </td>
-        <td>
-          773
-          -
-          801
+          964
         </td>
         <td>
           Apply
@@ -220,12 +222,12 @@
           29
         </td>
         <td>
-          415
+          414
         </td>
         <td>
-          876
+          943
           -
-          887
+          954
         </td>
         <td>
           Select
@@ -244,36 +246,36 @@
           29
         </td>
         <td>
-          417
+          416
         </td>
         <td>
-          807
+          874
           -
-          824
+          891
         </td>
         <td>
           DefDef
         </td>
         <td>
-          min
+          max
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          protected def min
+          protected def max
         </td>
       </tr><tr>
         <td>
-          29
+          31
         </td>
         <td>
-          416
+          418
         </td>
         <td>
-          869
+          1032
           -
-          897
+          1060
         </td>
         <td>
           Apply
@@ -292,48 +294,24 @@
           31
         </td>
         <td>
-          418
+          417
         </td>
         <td>
-          948
+          1039
           -
-          956
+          1050
         </td>
         <td>
           Select
         </td>
         <td>
-          x
+          head
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          center.x
-        </td>
-      </tr><tr>
-        <td>
-          31
-        </td>
-        <td>
-          420
-        </td>
-        <td>
-          903
-          -
-          918
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          x
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def x
+          values.head
         </td>
       </tr><tr>
         <td>
@@ -343,9 +321,33 @@
           419
         </td>
         <td>
-          939
+          970
           -
-          957
+          987
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          min
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          protected def min
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          421
+        </td>
+        <td>
+          1102
+          -
+          1120
         </td>
         <td>
           Apply
@@ -364,48 +366,24 @@
           33
         </td>
         <td>
-          421
+          420
         </td>
         <td>
-          1008
+          1111
           -
-          1016
+          1119
         </td>
         <td>
           Select
         </td>
         <td>
-          y
+          x
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          center.y
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          423
-        </td>
-        <td>
-          963
-          -
-          978
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          y
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def y
+          center.x
         </td>
       </tr><tr>
         <td>
@@ -415,9 +393,33 @@
           422
         </td>
         <td>
-          999
+          1066
           -
-          1017
+          1081
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          protected def x
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          424
+        </td>
+        <td>
+          1162
+          -
+          1180
         </td>
         <td>
           Apply
@@ -436,12 +438,60 @@
           35
         </td>
         <td>
-          427
+          423
         </td>
         <td>
-          1023
+          1171
           -
-          1044
+          1179
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          center.y
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          425
+        </td>
+        <td>
+          1126
+          -
+          1141
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          protected def y
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          429
+        </td>
+        <td>
+          1186
+          -
+          1207
         </td>
         <td>
           DefDef
@@ -457,15 +507,39 @@
         </td>
       </tr><tr>
         <td>
-          36
+          38
         </td>
         <td>
-          424
+          427
         </td>
         <td>
-          1113
+          1276
           -
-          1129
+          1292
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          convertToEqualizer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          point &lt;-&gt; center
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          426
+        </td>
+        <td>
+          1276
+          -
+          1292
         </td>
         <td>
           Apply
@@ -481,15 +555,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          38
         </td>
         <td>
-          426
+          428
         </td>
         <td>
-          1112
+          1275
           -
-          1141
+          1304
         </td>
         <td>
           Apply
@@ -502,30 +576,6 @@
         </td>
         <td style="background: #AEF1AE">
           (point &lt;-&gt; center) &lt;== radius
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          425
-        </td>
-        <td>
-          1113
-          -
-          1129
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point &lt;-&gt; center
         </td>
       </tr>
     </table>
