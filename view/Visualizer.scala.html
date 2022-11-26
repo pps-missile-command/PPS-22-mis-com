@@ -24,55 +24,62 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view
 </span>2 <span style=''>
-</span>3 <span style=''>import java.awt.{Image, Toolkit}
-</span>4 <span style=''>import model.collisions.{Collisionable, Damageable}
-</span>5 <span style=''>import model.elements2d.Point2D
-</span>6 <span style=''>import model.ground.{City, Ground, MissileBattery}
-</span>7 <span style=''>import model.missile.{Missile, hitboxBase, hitboxHeight}
-</span>8 <span style=''>import utilities._
-</span>9 <span style=''>
-</span>10 <span style=''>
+</span>3 <span style=''>import model.World
+</span>4 <span style=''>
+</span>5 <span style=''>import java.awt.{Image, Toolkit}
+</span>6 <span style=''>import model.collisions.{Collisionable, Damageable}
+</span>7 <span style=''>import model.elements2d.Point2D
+</span>8 <span style=''>import model.ground.{City, Ground, MissileBattery}
+</span>9 <span style=''>import model.missile.{Missile, hitboxBase, hitboxHeight}
+</span>10 <span style=''>import utilities.*
 </span>11 <span style=''>
 </span>12 <span style=''>import javax.imageio.ImageIO
 </span>13 <span style=''>
-</span>14 <span style=''>object Visualizer:
-</span>15 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
+</span>14 <span style=''>extension(i: Int)
+</span>15 <span style=''>    </span><span style='background: #F0ADAD'>def use</span><span style=''>(f: (Int) =&gt; Int) = </span><span style='background: #F0ADAD'>f(i)</span><span style=''>
 </span>16 <span style=''>
-</span>17 <span style=''>    /***
-</span>18 <span style=''>     * Method used for preparing the ImageView of a city.
-</span>19 <span style=''>     * @param structure City to be used.
-</span>20 <span style=''>     * @return ImageView of the city passed.
-</span>21 <span style=''>     */
-</span>22 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
-</span>23 <span style=''>        (
-</span>24 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>25 <span style=''>            structure.position,
-</span>26 <span style=''>            cityBaseSize,
-</span>27 <span style=''>            cityHeightSize
-</span>28 <span style=''>        )
-</span>29 <span style=''>
-</span>30 <span style=''>    /***
-</span>31 <span style=''>     * Method used for preparing the ImageView of a missile turret.
-</span>32 <span style=''>     * @param structure Missile turret to be used.
-</span>33 <span style=''>     * @return ImageView of the missile turret passed
-</span>34 <span style=''>     */
-</span>35 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
-</span>36 <span style=''>        (
-</span>37 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>38 <span style=''>            structure.bottomLeft_Position,
-</span>39 <span style=''>            missileBatteryBaseSize,
-</span>40 <span style=''>            missileBatteryHeightSize
-</span>41 <span style=''>        )
-</span>42 <span style=''>
-</span>43 <span style=''>    /***
-</span>44 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
-</span>45 <span style=''>     * @param ground Ground to be used.
-</span>46 <span style=''>     * @return List of ImageView of all the structures in the ground.
-</span>47 <span style=''>     */
-</span>48 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
-</span>49 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
-</span>50 <span style=''></span><span style='background: #F0ADAD'>            ++
-</span>51 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
+</span>17 <span style=''>object Visualizer:
+</span>18 <span style=''>    private val convertPosition: (Point2D) =&gt; Point2D = (p) =&gt; </span><span style='background: #F0ADAD'>Point2D((p.x * ViewConstants.GUI_width) / World.width, (p.y * ViewConstants.GUI_height) / World.height)</span><span style=''>
+</span>19 <span style=''>    private val convertWidth: (Int) =&gt; Int = (i) =&gt; (i * ViewConstants.GUI_width) / World.width
+</span>20 <span style=''>    private val convertHeight: (Int) =&gt; Int = (i) =&gt; (i * ViewConstants.GUI_height) / World.height
+</span>21 <span style=''>
+</span>22 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
+</span>23 <span style=''>
+</span>24 <span style=''>    /***
+</span>25 <span style=''>     * Method used for preparing the ImageView of a city.
+</span>26 <span style=''>     * @param structure City to be used.
+</span>27 <span style=''>     * @return ImageView of the city passed.
+</span>28 <span style=''>     */
+</span>29 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
+</span>30 <span style=''>        (
+</span>31 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
+</span>32 <span style=''>            </span><span style='background: #F0ADAD'>structure.position map convertPosition</span><span style=''>,
+</span>33 <span style=''>            </span><span style='background: #F0ADAD'>cityBaseSize use convertWidth</span><span style=''>,
+</span>34 <span style=''>            </span><span style='background: #F0ADAD'>cityHeightSize use convertHeight</span><span style=''>
+</span>35 <span style=''>        )
+</span>36 <span style=''>
+</span>37 <span style=''>    /***
+</span>38 <span style=''>     * Method used for preparing the ImageView of a missile turret.
+</span>39 <span style=''>     * @param structure Missile turret to be used.
+</span>40 <span style=''>     * @return ImageView of the missile turret passed
+</span>41 <span style=''>     */
+</span>42 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
+</span>43 <span style=''>        (
+</span>44 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
+</span>45 <span style=''>            </span><span style='background: #F0ADAD'>structure.bottomLeft_Position map convertPosition</span><span style=''>,
+</span>46 <span style=''>            </span><span style='background: #F0ADAD'>missileBattery_BaseSize use convertWidth</span><span style=''>,
+</span>47 <span style=''>            </span><span style='background: #F0ADAD'>missileBatteryHeightSize use convertHeight</span><span style=''>
+</span>48 <span style=''>        )
+</span>49 <span style=''>
+</span>50 <span style=''>    /***
+</span>51 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
+</span>52 <span style=''>     * @param ground Ground to be used.
+</span>53 <span style=''>     * @return List of ImageView of all the structures in the ground.
+</span>54 <span style=''>     */
+</span>55 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
+</span>56 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
+</span>57 <span style=''></span><span style='background: #F0ADAD'>            ++
+</span>58 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -90,60 +97,132 @@
           14
         </td>
         <td>
-          1375
+          1515
         </td>
         <td>
-          348
+          331
           -
-          378
+          338
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          getProperty
+          use
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;)
+          def use
         </td>
       </tr><tr>
         <td>
           14
         </td>
         <td>
-          1377
+          1514
         </td>
         <td>
-          348
+          358
           -
-          416
+          362
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
+          f(i)
         </td>
       </tr><tr>
         <td>
-          14
+          17
         </td>
         <td>
-          1376
+          1483
         </td>
         <td>
-          348
+          446
           -
-          387
+          549
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D((p.x * ViewConstants.GUI_width) / World.width, (p.y * ViewConstants.GUI_height) / World.height)
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1482
+        </td>
+        <td>
+          502
+          -
+          505
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          p.y
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1481
+        </td>
+        <td>
+          455
+          -
+          458
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          p.x
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1485
+        </td>
+        <td>
+          784
+          -
+          823
         </td>
         <td>
           Apply
@@ -162,12 +241,60 @@
           21
         </td>
         <td>
-          1383
+          1484
         </td>
         <td>
-          584
+          784
           -
-          604
+          814
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getProperty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          System.getProperty(&quot;user.dir&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1486
+        </td>
+        <td>
+          784
+          -
+          852
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          1495
+        </td>
+        <td>
+          1020
+          -
+          1040
         </td>
         <td>
           DefDef
@@ -183,87 +310,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          30
         </td>
         <td>
-          1378
+          1488
         </td>
         <td>
-          725
+          1150
           -
-          746
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          currentLife
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          structure.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          1381
-        </td>
-        <td>
-          693
-          -
-          756
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getResource
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          1380
-        </td>
-        <td>
-          714
-          -
-          755
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife + &quot;.png&quot;
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          1379
-        </td>
-        <td>
-          714
-          -
-          746
+          1182
         </td>
         <td>
           Apply
@@ -279,15 +334,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          30
         </td>
         <td>
-          1382
+          1491
         </td>
         <td>
-          680
+          1116
           -
-          757
+          1193
         </td>
         <td>
           Apply
@@ -303,63 +358,39 @@
         </td>
       </tr><tr>
         <td>
-          34
+          30
         </td>
         <td>
-          1392
+          1490
         </td>
         <td>
-          1049
+          1129
           -
-          1079
+          1192
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          prepareBatteryMissileImage
+          getResource
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def prepareBatteryMissileImage
+          getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;)
         </td>
       </tr><tr>
         <td>
-          36
+          30
         </td>
         <td>
-          1384
+          1487
         </td>
         <td>
-          1210
+          1161
           -
-          1235
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isReadyForShoot
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          structure.isReadyForShoot
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          1387
-        </td>
-        <td>
-          1244
-          -
-          1265
+          1182
         </td>
         <td>
           Select
@@ -375,39 +406,135 @@
         </td>
       </tr><tr>
         <td>
-          36
+          30
         </td>
         <td>
-          1390
+          1489
         </td>
         <td>
-          1178
+          1150
           -
-          1275
+          1191
         </td>
         <td>
           Apply
         </td>
         <td>
-          getResource
+          +
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)
+          &quot;/city_&quot; + structure.currentLife + &quot;.png&quot;
         </td>
       </tr><tr>
         <td>
-          36
+          31
         </td>
         <td>
-          1389
+          1492
         </td>
         <td>
-          1199
+          1207
           -
-          1274
+          1245
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          structure.position map convertPosition
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          1493
+        </td>
+        <td>
+          1259
+          -
+          1288
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          use
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          cityBaseSize use convertWidth
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          1494
+        </td>
+        <td>
+          1302
+          -
+          1334
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          use
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          cityHeightSize use convertHeight
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          1507
+        </td>
+        <td>
+          1540
+          -
+          1570
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          prepareBatteryMissileImage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def prepareBatteryMissileImage
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          1501
+        </td>
+        <td>
+          1690
+          -
+          1765
         </td>
         <td>
           Apply
@@ -423,39 +550,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          43
         </td>
         <td>
-          1386
+          1500
         </td>
         <td>
-          1199
+          1690
           -
-          1241
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot;
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          1388
-        </td>
-        <td>
-          1199
-          -
-          1265
+          1756
         </td>
         <td>
           Apply
@@ -471,15 +574,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          43
         </td>
         <td>
-          1391
+          1503
         </td>
         <td>
-          1165
+          1656
           -
-          1276
+          1767
         </td>
         <td>
           Apply
@@ -495,15 +598,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          43
         </td>
         <td>
-          1385
+          1497
         </td>
         <td>
-          1199
+          1690
           -
-          1235
+          1726
         </td>
         <td>
           Apply
@@ -519,15 +622,183 @@
         </td>
       </tr><tr>
         <td>
-          47
+          43
         </td>
         <td>
-          1398
+          1499
         </td>
         <td>
-          1608
+          1735
           -
-          1623
+          1756
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          currentLife
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          structure.currentLife
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          1502
+        </td>
+        <td>
+          1669
+          -
+          1766
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getResource
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          1496
+        </td>
+        <td>
+          1701
+          -
+          1726
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isReadyForShoot
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          structure.isReadyForShoot
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          1498
+        </td>
+        <td>
+          1690
+          -
+          1732
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot;
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          1504
+        </td>
+        <td>
+          1781
+          -
+          1830
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          structure.bottomLeft_Position map convertPosition
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          1505
+        </td>
+        <td>
+          1844
+          -
+          1884
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          use
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missileBattery_BaseSize use convertWidth
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          1506
+        </td>
+        <td>
+          1898
+          -
+          1940
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          use
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missileBatteryHeightSize use convertHeight
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1513
+        </td>
+        <td>
+          2155
+          -
+          2170
         </td>
         <td>
           DefDef
@@ -543,39 +814,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          55
         </td>
         <td>
-          1393
+          1509
         </td>
         <td>
-          1728
+          2238
           -
-          1755
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          prepareCityImage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          prepareCityImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          1394
-        </td>
-        <td>
-          1691
-          -
-          1755
+          2302
         </td>
         <td>
           Apply
@@ -591,15 +838,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          55
         </td>
         <td>
-          1397
+          1512
         </td>
         <td>
-          1690
+          2237
           -
-          1860
+          2407
         </td>
         <td>
           Apply
@@ -617,39 +864,39 @@
         </td>
       </tr><tr>
         <td>
-          50
+          55
         </td>
         <td>
-          1396
+          1508
         </td>
         <td>
-          1785
+          2275
           -
-          1860
+          2302
         </td>
         <td>
           Apply
         </td>
         <td>
-          map
+          prepareCityImage
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)
+          prepareCityImage(structure)
         </td>
       </tr><tr>
         <td>
-          50
+          57
         </td>
         <td>
-          1395
+          1510
         </td>
         <td>
-          1823
+          2370
           -
-          1860
+          2407
         </td>
         <td>
           Apply
@@ -662,6 +909,30 @@
         </td>
         <td style="background: #F0ADAD">
           prepareBatteryMissileImage(structure)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          1511
+        </td>
+        <td>
+          2332
+          -
+          2407
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)
         </td>
       </tr>
     </table>

@@ -24,13 +24,13 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.ground
 </span>2 <span style=''>
-</span>3 <span style=''>import model.DeltaTime
+</span>3 <span style=''>import model.{DeltaTime, World}
 </span>4 <span style=''>import model.collisions.{Damageable, LifePoint}
 </span>5 <span style=''>import model.elements2d.Point2D
 </span>6 <span style=''>import model.ground.City
 </span>7 <span style=''>import model.missile.Missile
 </span>8 <span style=''>import view.ViewConstants
-</span>9 <span style=''>import utilities._
+</span>9 <span style=''>import utilities.*
 </span>10 <span style=''>
 </span>11 <span style=''>
 </span>12 <span style=''>
@@ -40,14 +40,14 @@
 </span>16 <span style=''>        val cities =
 </span>17 <span style=''>            </span><span style='background: #AEF1AE'>for y &lt;- List.range(0, 2) //generate all cities in 2 waves.
 </span>18 <span style=''></span><span style='background: #AEF1AE'>                x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-</span>19 <span style=''></span><span style='background: #AEF1AE'>                    yield City(Point2D(missileBatteryBaseSize + 2* turretSpacer +
+</span>19 <span style=''></span><span style='background: #AEF1AE'>                    yield City(Point2D(missileBattery_BaseSize + 2* turretSpacer +
 </span>20 <span style=''></span><span style='background: #AEF1AE'>                                (cityBaseSize + citySpacer) * x +
-</span>21 <span style=''></span><span style='background: #AEF1AE'>                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
-</span>22 <span style=''></span><span style='background: #AEF1AE'>                        ViewConstants.GUI_height - cityHeightSize))</span><span style=''>
+</span>21 <span style=''></span><span style='background: #AEF1AE'>                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y,
+</span>22 <span style=''></span><span style='background: #AEF1AE'>                        World.height - cityHeightSize))</span><span style=''>
 </span>23 <span style=''>        val turrets =
 </span>24 <span style=''>            </span><span style='background: #AEF1AE'>for x &lt;- List.range(0, 3)
-</span>25 <span style=''></span><span style='background: #AEF1AE'>                yield MissileBattery(Point2D(turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
-</span>26 <span style=''></span><span style='background: #AEF1AE'>                    ,ViewConstants.GUI_height - missileBatteryHeightSize))</span><span style=''>
+</span>25 <span style=''></span><span style='background: #AEF1AE'>                yield MissileBattery(Point2D(turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x,
+</span>26 <span style=''></span><span style='background: #AEF1AE'>                    World.height - missileBatteryHeightSize))</span><span style=''>
 </span>27 <span style=''>        </span><span style='background: #AEF1AE'>Ground(cities, turrets)</span><span style=''>
 </span>28 <span style=''>
 </span>29 <span style=''>case class Ground(cities: List[City], turrets: List[MissileBattery]):
@@ -155,9 +155,9 @@
           844
         </td>
         <td>
-          246
-          -
           255
+          -
+          264
         </td>
         <td>
           DefDef
@@ -179,9 +179,9 @@
           843
         </td>
         <td>
-          317
+          326
           -
-          344
+          353
         </td>
         <td>
           Apply
@@ -203,9 +203,9 @@
           861
         </td>
         <td>
-          349
-          -
           358
+          -
+          367
         </td>
         <td>
           DefDef
@@ -227,9 +227,9 @@
           845
         </td>
         <td>
-          413
+          422
           -
-          429
+          438
         </td>
         <td>
           Apply
@@ -251,9 +251,9 @@
           852
         </td>
         <td>
-          404
+          413
           -
-          913
+          912
         </td>
         <td>
           Apply
@@ -267,10 +267,10 @@
         <td style="background: #AEF1AE">
           for y &lt;- List.range(0, 2) //generate all cities in 2 waves.
                 x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-                    yield City(Point2D(missileBatteryBaseSize + 2* turretSpacer +
+                    yield City(Point2D(missileBattery_BaseSize + 2* turretSpacer +
                                 (cityBaseSize + citySpacer) * x +
-                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
-                        ViewConstants.GUI_height - cityHeightSize))
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y,
+                        World.height - cityHeightSize))
         </td>
       </tr><tr>
         <td>
@@ -280,9 +280,9 @@
           846
         </td>
         <td>
-          485
+          494
           -
-          501
+          510
         </td>
         <td>
           Apply
@@ -304,9 +304,9 @@
           851
         </td>
         <td>
-          480
+          489
           -
-          913
+          912
         </td>
         <td>
           Apply
@@ -319,10 +319,10 @@
         </td>
         <td style="background: #AEF1AE">
           x &lt;- List.range(0, 3) //1° wave it generate all left side cities. 2° waves all the right side cities
-                    yield City(Point2D(missileBatteryBaseSize + 2* turretSpacer +
+                    yield City(Point2D(missileBattery_BaseSize + 2* turretSpacer +
                                 (cityBaseSize + citySpacer) * x +
-                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
-                        ViewConstants.GUI_height - cityHeightSize))
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y,
+                        World.height - cityHeightSize))
         </td>
       </tr><tr>
         <td>
@@ -332,9 +332,9 @@
           847
         </td>
         <td>
-          620
+          629
           -
-          844
+          855
         </td>
         <td>
           Apply
@@ -346,9 +346,9 @@
           
         </td>
         <td style="background: #AEF1AE">
-          missileBatteryBaseSize + 2* turretSpacer +
+          missileBattery_BaseSize + 2* turretSpacer +
                                 (cityBaseSize + citySpacer) * x +
-                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y
         </td>
       </tr><tr>
         <td>
@@ -358,9 +358,9 @@
           850
         </td>
         <td>
-          607
+          616
           -
-          611
+          620
         </td>
         <td>
           Select
@@ -382,9 +382,9 @@
           849
         </td>
         <td>
-          612
+          621
           -
-          912
+          911
         </td>
         <td>
           Apply
@@ -396,10 +396,10 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Point2D(missileBatteryBaseSize + 2* turretSpacer +
+          Point2D(missileBattery_BaseSize + 2* turretSpacer +
                                 (cityBaseSize + citySpacer) * x +
-                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBatteryBaseSize) * y,
-                        ViewConstants.GUI_height - cityHeightSize)
+                                (3 * cityBaseSize + 2 * citySpacer + 2 * turretSpacer + missileBattery_BaseSize) * y,
+                        World.height - cityHeightSize)
         </td>
       </tr><tr>
         <td>
@@ -409,9 +409,9 @@
           848
         </td>
         <td>
-          870
+          881
           -
-          911
+          910
         </td>
         <td>
           Apply
@@ -423,7 +423,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          ViewConstants.GUI_height - cityHeightSize
+          World.height - cityHeightSize
         </td>
       </tr><tr>
         <td>
@@ -433,9 +433,9 @@
           853
         </td>
         <td>
-          957
+          956
           -
-          973
+          972
         </td>
         <td>
           Apply
@@ -457,9 +457,9 @@
           859
         </td>
         <td>
-          948
+          947
           -
-          1192
+          1180
         </td>
         <td>
           Apply
@@ -472,8 +472,8 @@
         </td>
         <td style="background: #AEF1AE">
           for x &lt;- List.range(0, 3)
-                yield MissileBattery(Point2D(turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
-                    ,ViewConstants.GUI_height - missileBatteryHeightSize))
+                yield MissileBattery(Point2D(turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x,
+                    World.height - missileBatteryHeightSize))
         </td>
       </tr><tr>
         <td>
@@ -483,9 +483,9 @@
           857
         </td>
         <td>
-          996
+          995
           -
-          1010
+          1009
         </td>
         <td>
           Select
@@ -507,7 +507,7 @@
           854
         </td>
         <td>
-          1019
+          1018
           -
           1117
         </td>
@@ -521,7 +521,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
+          turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
         </td>
       </tr><tr>
         <td>
@@ -531,9 +531,9 @@
           856
         </td>
         <td>
-          1011
+          1010
           -
-          1191
+          1179
         </td>
         <td>
           Apply
@@ -545,8 +545,8 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Point2D(turretSpacer + (missileBatteryBaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x
-                    ,ViewConstants.GUI_height - missileBatteryHeightSize)
+          Point2D(turretSpacer + (missileBattery_BaseSize + 2 * turretSpacer + 3 * cityBaseSize + 2 * citySpacer) * x,
+                    World.height - missileBatteryHeightSize)
         </td>
       </tr><tr>
         <td>
@@ -556,9 +556,9 @@
           858
         </td>
         <td>
-          996
+          995
           -
-          1010
+          1009
         </td>
         <td>
           Select
@@ -582,7 +582,7 @@
         <td>
           1139
           -
-          1190
+          1178
         </td>
         <td>
           Apply
@@ -594,7 +594,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          ViewConstants.GUI_height - missileBatteryHeightSize
+          World.height - missileBatteryHeightSize
         </td>
       </tr><tr>
         <td>
@@ -604,9 +604,9 @@
           860
         </td>
         <td>
-          1201
+          1189
           -
-          1224
+          1212
         </td>
         <td>
           Apply
@@ -628,9 +628,9 @@
           865
         </td>
         <td>
-          1376
+          1364
           -
-          1391
+          1379
         </td>
         <td>
           DefDef
@@ -652,9 +652,9 @@
           864
         </td>
         <td>
-          1402
+          1390
           -
-          1467
+          1455
         </td>
         <td>
           Apply
@@ -677,9 +677,9 @@
           863
         </td>
         <td>
-          1406
+          1394
           -
-          1444
+          1432
         </td>
         <td>
           Apply
@@ -701,9 +701,9 @@
           862
         </td>
         <td>
-          1424
+          1412
           -
-          1440
+          1428
         </td>
         <td>
           Select
@@ -725,9 +725,9 @@
           866
         </td>
         <td>
-          1585
+          1573
           -
-          1596
+          1584
         </td>
         <td>
           Select
@@ -749,9 +749,9 @@
           868
         </td>
         <td>
-          1554
+          1542
           -
-          1577
+          1565
         </td>
         <td>
           DefDef
@@ -773,9 +773,9 @@
           867
         </td>
         <td>
-          1585
+          1573
           -
-          1603
+          1591
         </td>
         <td>
           Select
@@ -797,9 +797,9 @@
           872
         </td>
         <td>
-          1695
+          1683
           -
-          1718
+          1706
         </td>
         <td>
           DefDef
@@ -821,9 +821,9 @@
           869
         </td>
         <td>
-          1755
+          1743
           -
-          1774
+          1762
         </td>
         <td>
           Select
@@ -845,9 +845,9 @@
           871
         </td>
         <td>
-          1729
+          1717
           -
-          1804
+          1792
         </td>
         <td>
           Apply
@@ -870,9 +870,9 @@
           870
         </td>
         <td>
-          1733
+          1721
           -
-          1778
+          1766
         </td>
         <td>
           Apply
@@ -894,9 +894,9 @@
           873
         </td>
         <td>
-          1941
+          1929
           -
-          1960
+          1948
         </td>
         <td>
           Select
@@ -918,9 +918,9 @@
           875
         </td>
         <td>
-          1902
+          1890
           -
-          1933
+          1921
         </td>
         <td>
           DefDef
@@ -942,9 +942,9 @@
           874
         </td>
         <td>
-          1941
+          1929
           -
-          1967
+          1955
         </td>
         <td>
           Select
@@ -966,9 +966,9 @@
           877
         </td>
         <td>
-          2103
+          2091
           -
-          2117
+          2105
         </td>
         <td>
           DefDef
@@ -990,9 +990,9 @@
           876
         </td>
         <td>
-          2129
+          2117
           -
-          2148
+          2136
         </td>
         <td>
           Select
@@ -1014,9 +1014,9 @@
           901
         </td>
         <td>
-          2438
+          2426
           -
-          2454
+          2442
         </td>
         <td>
           DefDef
@@ -1038,9 +1038,9 @@
           883
         </td>
         <td>
-          2517
+          2505
           -
-          2539
+          2527
         </td>
         <td>
           DefDef
@@ -1062,9 +1062,9 @@
           882
         </td>
         <td>
-          2592
+          2580
           -
-          2727
+          2715
         </td>
         <td>
           Apply
@@ -1087,9 +1087,9 @@
           878
         </td>
         <td>
-          2607
+          2595
           -
-          2626
+          2614
         </td>
         <td>
           Select
@@ -1111,9 +1111,9 @@
           880
         </td>
         <td>
-          2596
+          2584
           -
-          2653
+          2641
         </td>
         <td>
           Apply
@@ -1135,9 +1135,9 @@
           879
         </td>
         <td>
-          2630
+          2618
           -
-          2653
+          2641
         </td>
         <td>
           Select
@@ -1159,9 +1159,9 @@
           881
         </td>
         <td>
-          2677
+          2665
           -
-          2717
+          2705
         </td>
         <td>
           Apply
@@ -1183,9 +1183,9 @@
           884
         </td>
         <td>
-          2766
+          2754
           -
-          2784
+          2772
         </td>
         <td>
           Ident
@@ -1207,9 +1207,9 @@
           885
         </td>
         <td>
-          2796
+          2784
           -
-          2825
+          2813
         </td>
         <td>
           Select
@@ -1231,9 +1231,9 @@
           887
         </td>
         <td>
-          2963
+          2951
           -
-          3000
+          2988
         </td>
         <td>
           Select
@@ -1255,9 +1255,9 @@
           886
         </td>
         <td>
-          2963
+          2951
           -
-          2997
+          2985
         </td>
         <td>
           Apply
@@ -1279,9 +1279,9 @@
           889
         </td>
         <td>
-          2963
+          2951
           -
-          3026
+          3014
         </td>
         <td>
           Select
@@ -1303,9 +1303,9 @@
           898
         </td>
         <td>
-          2929
+          2917
           -
-          3240
+          3228
         </td>
         <td>
           Block
@@ -1329,9 +1329,9 @@
           888
         </td>
         <td>
-          2963
+          2951
           -
-          3022
+          3010
         </td>
         <td>
           Apply
@@ -1353,9 +1353,9 @@
           891
         </td>
         <td>
-          3083
+          3071
           -
-          3120
+          3108
         </td>
         <td>
           Select
@@ -1377,9 +1377,9 @@
           890
         </td>
         <td>
-          3083
+          3071
           -
-          3117
+          3105
         </td>
         <td>
           Apply
@@ -1401,9 +1401,9 @@
           893
         </td>
         <td>
-          3122
+          3110
           -
-          3152
+          3140
         </td>
         <td>
           Block
@@ -1425,9 +1425,9 @@
           895
         </td>
         <td>
-          3056
+          3044
           -
-          3160
+          3148
         </td>
         <td>
           Apply
@@ -1449,9 +1449,9 @@
           892
         </td>
         <td>
-          3122
+          3110
           -
-          3152
+          3140
         </td>
         <td>
           Select
@@ -1473,9 +1473,9 @@
           894
         </td>
         <td>
-          3158
+          3146
           -
-          3159
+          3147
         </td>
         <td>
           Ident
@@ -1497,9 +1497,9 @@
           896
         </td>
         <td>
-          3174
+          3162
           -
-          3200
+          3188
         </td>
         <td>
           Apply
@@ -1521,9 +1521,9 @@
           897
         </td>
         <td>
-          3208
+          3196
           -
-          3238
+          3226
         </td>
         <td>
           Select
@@ -1545,9 +1545,9 @@
           899
         </td>
         <td>
-          3267
+          3255
           -
-          3290
+          3278
         </td>
         <td>
           Apply
@@ -1569,9 +1569,9 @@
           900
         </td>
         <td>
-          3266
+          3254
           -
-          3297
+          3285
         </td>
         <td>
           Apply
@@ -1593,9 +1593,9 @@
           914
         </td>
         <td>
-          3593
+          3581
           -
-          3607
+          3595
         </td>
         <td>
           DefDef
@@ -1617,9 +1617,9 @@
           915
         </td>
         <td>
-          3673
+          3661
           -
-          3673
+          3661
         </td>
         <td>
           DefDef
@@ -1641,9 +1641,9 @@
           902
         </td>
         <td>
-          3780
+          3768
           -
-          3806
+          3794
         </td>
         <td>
           Apply
@@ -1665,9 +1665,9 @@
           905
         </td>
         <td>
-          3745
+          3733
           -
-          3814
+          3802
         </td>
         <td>
           Apply
@@ -1689,9 +1689,9 @@
           904
         </td>
         <td>
-          3812
+          3800
           -
-          3813
+          3801
         </td>
         <td>
           Ident
@@ -1713,9 +1713,9 @@
           907
         </td>
         <td>
-          3713
+          3701
           -
-          3725
+          3713
         </td>
         <td>
           Block
@@ -1737,9 +1737,9 @@
           903
         </td>
         <td>
-          3780
+          3768
           -
-          3806
+          3794
         </td>
         <td>
           Block
@@ -1761,9 +1761,9 @@
           906
         </td>
         <td>
-          3827
+          3815
           -
-          3860
+          3848
         </td>
         <td>
           Apply
@@ -1785,9 +1785,9 @@
           908
         </td>
         <td>
-          3948
+          3936
           -
-          3974
+          3962
         </td>
         <td>
           Apply
@@ -1809,9 +1809,9 @@
           911
         </td>
         <td>
-          3912
+          3900
           -
-          3982
+          3970
         </td>
         <td>
           Apply
@@ -1833,9 +1833,9 @@
           913
         </td>
         <td>
-          3869
+          3857
           -
-          3891
+          3879
         </td>
         <td>
           Block
@@ -1857,9 +1857,9 @@
           910
         </td>
         <td>
-          3980
+          3968
           -
-          3981
+          3969
         </td>
         <td>
           Ident
@@ -1881,9 +1881,9 @@
           909
         </td>
         <td>
-          3948
+          3936
           -
-          3974
+          3962
         </td>
         <td>
           Block
@@ -1905,9 +1905,9 @@
           912
         </td>
         <td>
-          3995
+          3983
           -
-          4028
+          4016
         </td>
         <td>
           Apply
@@ -1929,9 +1929,9 @@
           918
         </td>
         <td>
-          4328
+          4316
           -
-          4342
+          4330
         </td>
         <td>
           DefDef
@@ -1953,9 +1953,9 @@
           917
         </td>
         <td>
-          4548
+          4536
           -
-          4621
+          4609
         </td>
         <td>
           Apply
@@ -1977,9 +1977,9 @@
           916
         </td>
         <td>
-          4581
+          4569
           -
-          4619
+          4607
         </td>
         <td>
           Apply
@@ -2001,9 +2001,9 @@
           925
         </td>
         <td>
-          4954
+          4942
           -
-          4968
+          4956
         </td>
         <td>
           DefDef
@@ -2025,9 +2025,9 @@
           923
         </td>
         <td>
-          5077
+          5065
           -
-          5096
+          5084
         </td>
         <td>
           Assign
@@ -2049,9 +2049,9 @@
           920
         </td>
         <td>
-          5077
+          5065
           -
-          5096
+          5084
         </td>
         <td>
           Literal
@@ -2073,9 +2073,9 @@
           919
         </td>
         <td>
-          5101
+          5089
           -
-          5123
+          5111
         </td>
         <td>
           Apply
@@ -2097,9 +2097,9 @@
           921
         </td>
         <td>
-          5077
+          5065
           -
-          5124
+          5112
         </td>
         <td>
           Apply
@@ -2121,9 +2121,9 @@
           924
         </td>
         <td>
-          5072
+          5060
           -
-          5190
+          5178
         </td>
         <td>
           Apply
@@ -2146,9 +2146,9 @@
           922
         </td>
         <td>
-          5150
+          5138
           -
-          5190
+          5178
         </td>
         <td>
           Apply

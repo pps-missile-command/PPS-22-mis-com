@@ -30,27 +30,26 @@
 </span>6 <span style=''>import model.missile.zigzag
 </span>7 <span style=''>import model.missile.zigzag.ZigZagMissile.*
 </span>8 <span style=''>import model.spawner.LazySpawner.Spawnable
-</span>9 <span style=''>
-</span>10 <span style=''>import scala.util.Random
+</span>9 <span style=''>import model.spawner.PimpingByRandom.*
+</span>10 <span style=''>import model.vehicle.Plane
 </span>11 <span style=''>
-</span>12 <span style=''>extension(r: Random)
-</span>13 <span style=''>  </span><span style='background: #F0ADAD'>def randomPosition</span><span style=''>(maxWidth: Double, maxHeight: Double): Point2D = </span><span style='background: #F0ADAD'>Point2D(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight)</span><span style=''>
-</span>14 <span style=''>  </span><span style='background: #AEF1AE'>def randomX</span><span style=''>(maxWidth: Double, y: Double): Point2D = </span><span style='background: #AEF1AE'>Point2D(r.nextDouble() * maxWidth, y)</span><span style=''>
-</span>15 <span style=''>  </span><span style='background: #F0ADAD'>def randomY</span><span style=''>(maxHeight: Double, x: Double): Point2D = </span><span style='background: #F0ADAD'>Point2D(x, r.nextDouble() * maxHeight)</span><span style=''>
-</span>16 <span style=''>
-</span>17 <span style=''>/**
-</span>18 <span style=''> * Specific spawners strategies to spawn objects
-</span>19 <span style=''> * missili, plane
-</span>20 <span style=''> * plane spawnabile in un range witdh1 e width2
-</span>21 <span style=''> */
-</span>22 <span style=''>object SpecificSpawners:
+</span>12 <span style=''>import scala.util.Random
+</span>13 <span style=''>
+</span>14 <span style=''>/**
+</span>15 <span style=''> * Specific spawners strategies to spawn objects
+</span>16 <span style=''> * missili, plane
+</span>17 <span style=''> * plane spawnabile in un range witdh1 e width2
+</span>18 <span style=''> */
+</span>19 <span style=''>object SpecificSpawners:
+</span>20 <span style=''>
+</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def MissileStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
+</span>22 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))</span><span style=''>
 </span>23 <span style=''>
-</span>24 <span style=''>  </span><span style='background: #AEF1AE'>def MissileStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
-</span>25 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Missile.enemyMissile(position = r.randomX(maxWidth, 0), finalPosition = r.randomX(maxWidth, maxHeight))</span><span style=''>
+</span>24 <span style=''>  </span><span style='background: #AEF1AE'>def ZigZagStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
+</span>25 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>missile.zigzag.ZigZagMissile(r.nextRandomX(maxWidth, 0), r.nextRandomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)</span><span style=''>
 </span>26 <span style=''>
-</span>27 <span style=''>  </span><span style='background: #AEF1AE'>def ZigZagStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
-</span>28 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>missile.zigzag.ZigZagMissile(r.randomX(maxWidth, 0), r.randomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)</span><span style=''>
-</span>29 <span style=''>    
+</span>27 <span style=''>  </span><span style='background: #AEF1AE'>def PlaneStrategy</span><span style=''>(maxHeight: Double)(using r: Random): Spawnable[Plane] =
+</span>28 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -65,255 +64,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          12
-        </td>
-        <td>
-          1270
-        </td>
-        <td>
-          372
-          -
-          386
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          r.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          12
-        </td>
-        <td>
-          1269
-        </td>
-        <td>
-          345
-          -
-          359
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          r.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          12
-        </td>
-        <td>
-          1272
-        </td>
-        <td>
-          270
-          -
-          288
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          randomPosition
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def randomPosition
-        </td>
-      </tr><tr>
-        <td>
-          12
-        </td>
-        <td>
-          1271
-        </td>
-        <td>
-          337
-          -
-          399
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          1273
-        </td>
-        <td>
-          462
-          -
-          476
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          1275
-        </td>
-        <td>
-          402
-          -
-          413
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          randomX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def randomX
-        </td>
-      </tr><tr>
-        <td>
-          13
-        </td>
-        <td>
-          1274
-        </td>
-        <td>
-          454
-          -
-          491
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Point2D(r.nextDouble() * maxWidth, y)
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1276
-        </td>
-        <td>
-          558
-          -
-          572
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          r.nextDouble()
-        </td>
-      </tr><tr>
-        <td>
-          14
+          20
         </td>
         <td>
           1278
         </td>
         <td>
-          494
+          464
           -
-          505
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          randomY
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def randomY
-        </td>
-      </tr><tr>
-        <td>
-          14
-        </td>
-        <td>
-          1277
-        </td>
-        <td>
-          547
-          -
-          585
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(x, r.nextDouble() * maxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          1264
-        </td>
-        <td>
-          738
-          -
-          757
+          483
         </td>
         <td>
           DefDef
@@ -329,135 +88,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          21
         </td>
         <td>
-          1258
+          1273
         </td>
         <td>
-          916
+          570
           -
-          946
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          randomX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.randomX(maxWidth, maxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1261
-        </td>
-        <td>
-          844
-          -
-          864
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          enemyMissile$default$3
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1260
-        </td>
-        <td>
-          844
-          -
-          864
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          enemyMissile$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1263
-        </td>
-        <td>
-          844
-          -
-          947
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          enemyMissile
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile(position = r.randomX(maxWidth, 0), finalPosition = r.randomX(maxWidth, maxHeight))
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1257
-        </td>
-        <td>
-          876
-          -
-          898
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          randomX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.randomX(maxWidth, 0)
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1259
-        </td>
-        <td>
-          844
-          -
-          864
+          590
         </td>
         <td>
           Select
@@ -473,15 +112,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          21
         </td>
         <td>
-          1262
+          1276
         </td>
         <td>
-          844
+          570
           -
-          864
+          590
         </td>
         <td>
           Select
@@ -497,15 +136,135 @@
         </td>
       </tr><tr>
         <td>
-          26
+          21
         </td>
         <td>
-          1268
+          1272
         </td>
         <td>
-          951
+          646
           -
-          969
+          680
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextRandomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.nextRandomX(maxWidth, maxHeight)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1275
+        </td>
+        <td>
+          570
+          -
+          590
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1277
+        </td>
+        <td>
+          570
+          -
+          681
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          enemyMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1271
+        </td>
+        <td>
+          602
+          -
+          628
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextRandomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.nextRandomX(maxWidth, 0)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1274
+        </td>
+        <td>
+          570
+          -
+          590
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1282
+        </td>
+        <td>
+          685
+          -
+          703
         </td>
         <td>
           DefDef
@@ -521,15 +280,39 @@
         </td>
       </tr><tr>
         <td>
-          27
+          24
         </td>
         <td>
-          1267
+          1279
         </td>
         <td>
-          1056
+          819
           -
-          1164
+          845
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextRandomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.nextRandomX(maxWidth, 0)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1281
+        </td>
+        <td>
+          790
+          -
+          906
         </td>
         <td>
           Apply
@@ -541,55 +324,127 @@
           
         </td>
         <td style="background: #AEF1AE">
-          missile.zigzag.ZigZagMissile(r.randomX(maxWidth, 0), r.randomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)
+          missile.zigzag.ZigZagMissile(r.nextRandomX(maxWidth, 0), r.nextRandomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1280
+        </td>
+        <td>
+          847
+          -
+          881
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextRandomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.nextRandomX(maxWidth, maxHeight)
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          1286
+        </td>
+        <td>
+          910
+          -
+          927
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          PlaneStrategy
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def PlaneStrategy
         </td>
       </tr><tr>
         <td>
           27
         </td>
         <td>
-          1266
+          1285
         </td>
         <td>
-          1109
+          994
           -
-          1139
+          1066
         </td>
         <td>
           Apply
         </td>
         <td>
-          randomX
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          r.randomX(maxWidth, maxHeight)
+          Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)
         </td>
       </tr><tr>
         <td>
           27
         </td>
         <td>
-          1265
+          1284
         </td>
         <td>
-          1085
+          1025
           -
-          1107
+          1039
         </td>
         <td>
           Apply
         </td>
         <td>
-          randomX
+          nextDouble
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          r.randomX(maxWidth, 0)
+          r.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          1283
+        </td>
+        <td>
+          1000
+          -
+          1023
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextRandomDirection
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.nextRandomDirection()
         </td>
       </tr>
     </table>
