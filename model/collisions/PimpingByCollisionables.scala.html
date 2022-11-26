@@ -78,56 +78,50 @@
 </span>54 <span style=''>     * @return a List with all the [[City]]s
 </span>55 <span style=''>     */
 </span>56 <span style=''>    </span><span style='background: #AEF1AE'>def getCities</span><span style=''>: List[City] =
-</span>57 <span style=''>      </span><span style='background: #AEF1AE'>def isCity</span><span style=''>(collisionable: Collisionable): Boolean = collisionable match
-</span>58 <span style=''>        </span><span style='background: #AEF1AE'>case _: City</span><span style=''> =&gt; true
-</span>59 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; false
+</span>57 <span style=''>
+</span>58 <span style=''>      </span><span style='background: #AEF1AE'>def toCity</span><span style=''>(collisionable: Collisionable): City = collisionable match
+</span>59 <span style=''>        </span><span style='background: #AEF1AE'>case city: City</span><span style=''> =&gt; city
 </span>60 <span style=''>
-</span>61 <span style=''>      </span><span style='background: #AEF1AE'>def toCity</span><span style=''>(collisionable: Collisionable): City = collisionable match
-</span>62 <span style=''>        </span><span style='background: #AEF1AE'>case city: City</span><span style=''> =&gt; city
-</span>63 <span style=''>
-</span>64 <span style=''>      </span><span style='background: #AEF1AE'>collisionables
-</span>65 <span style=''></span><span style='background: #AEF1AE'>        .filter(isCity)
-</span>66 <span style=''></span><span style='background: #AEF1AE'>        .map(toCity)
-</span>67 <span style=''></span><span style='background: #AEF1AE'>        .toList</span><span style=''>
-</span>68 <span style=''>
-</span>69 <span style=''>    /**
-</span>70 <span style=''>     * Find all the [[Collsionable]]s that are missile batteries.
-</span>71 <span style=''>     *
-</span>72 <span style=''>     * @return a List with all the [[MissileBattery]]s
-</span>73 <span style=''>     */
-</span>74 <span style=''>    </span><span style='background: #AEF1AE'>def getMissileBattery</span><span style=''>: List[MissileBattery] =
-</span>75 <span style=''>      </span><span style='background: #AEF1AE'>def isMissileBattery</span><span style=''>(collisionable: Collisionable): Boolean = collisionable match
-</span>76 <span style=''>        </span><span style='background: #AEF1AE'>case _: MissileBattery</span><span style=''> =&gt; true
-</span>77 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; false
-</span>78 <span style=''>
-</span>79 <span style=''>      </span><span style='background: #AEF1AE'>def toMissileBattery</span><span style=''>(collisionable: Collisionable): MissileBattery = collisionable match
-</span>80 <span style=''>        </span><span style='background: #AEF1AE'>case missileBattery: MissileBattery</span><span style=''> =&gt; missileBattery
-</span>81 <span style=''>
-</span>82 <span style=''>      </span><span style='background: #AEF1AE'>collisionables
-</span>83 <span style=''></span><span style='background: #AEF1AE'>        .filter(isMissileBattery)
-</span>84 <span style=''></span><span style='background: #AEF1AE'>        .map(toMissileBattery)
-</span>85 <span style=''></span><span style='background: #AEF1AE'>        .toList</span><span style=''>
-</span>86 <span style=''>
-</span>87 <span style=''>    /**
-</span>88 <span style=''>     * Find all the [[Collsionable]]s that are part of ground and separate from the other.
-</span>89 <span style=''>     *
-</span>90 <span style=''>     * @return the ground and a set with all the other [[Collsionable]]s that aren't part of ground
-</span>91 <span style=''>     */
-</span>92 <span style=''>    </span><span style='background: #AEF1AE'>def splitGroundFromOther</span><span style=''>: (Ground, Set[Collisionable]) =
-</span>93 <span style=''>      val </span><span style='background: #AEF1AE'>(collisions, groundElements)</span><span style=''> =
-</span>94 <span style=''>        </span><span style='background: #AEF1AE'>collisionables
-</span>95 <span style=''></span><span style='background: #AEF1AE'>          .partition(_ match
-</span>96 <span style=''></span><span style='background: #AEF1AE'>            case _: MissileBattery =&gt; false
-</span>97 <span style=''></span><span style='background: #AEF1AE'>            case _: City =&gt; false
-</span>98 <span style=''></span><span style='background: #AEF1AE'>            case _ =&gt; true
+</span>61 <span style=''>      </span><span style='background: #AEF1AE'>collisionables
+</span>62 <span style=''></span><span style='background: #AEF1AE'>        .filter(isCity)
+</span>63 <span style=''></span><span style='background: #AEF1AE'>        .map(toCity)
+</span>64 <span style=''></span><span style='background: #AEF1AE'>        .toList</span><span style=''>
+</span>65 <span style=''>
+</span>66 <span style=''>    /**
+</span>67 <span style=''>     * Find all the [[Collsionable]]s that are missile batteries.
+</span>68 <span style=''>     *
+</span>69 <span style=''>     * @return a List with all the [[MissileBattery]]s
+</span>70 <span style=''>     */
+</span>71 <span style=''>    </span><span style='background: #AEF1AE'>def getMissileBattery</span><span style=''>: List[MissileBattery] =
+</span>72 <span style=''>
+</span>73 <span style=''>      </span><span style='background: #AEF1AE'>def toMissileBattery</span><span style=''>(collisionable: Collisionable): MissileBattery = collisionable match
+</span>74 <span style=''>        </span><span style='background: #AEF1AE'>case missileBattery: MissileBattery</span><span style=''> =&gt; missileBattery
+</span>75 <span style=''>
+</span>76 <span style=''>      </span><span style='background: #AEF1AE'>collisionables
+</span>77 <span style=''></span><span style='background: #AEF1AE'>        .filter(isMissileBattery)
+</span>78 <span style=''></span><span style='background: #AEF1AE'>        .map(toMissileBattery)
+</span>79 <span style=''></span><span style='background: #AEF1AE'>        .toList</span><span style=''>
+</span>80 <span style=''>
+</span>81 <span style=''>    /**
+</span>82 <span style=''>     * Find all the [[Collsionable]]s that are part of ground and separate from the other.
+</span>83 <span style=''>     *
+</span>84 <span style=''>     * @return the ground and a set with all the other [[Collsionable]]s that aren't part of ground
+</span>85 <span style=''>     */
+</span>86 <span style=''>    </span><span style='background: #AEF1AE'>def splitGroundFromOther</span><span style=''>: (Ground, Set[Collisionable]) =
+</span>87 <span style=''>      val </span><span style='background: #AEF1AE'>(collisions, groundElements)</span><span style=''> =
+</span>88 <span style=''>        </span><span style='background: #AEF1AE'>collisionables
+</span>89 <span style=''></span><span style='background: #AEF1AE'>          .partition(_ match
+</span>90 <span style=''></span><span style='background: #AEF1AE'>            case _: MissileBattery =&gt; false
+</span>91 <span style=''></span><span style='background: #AEF1AE'>            case _: City =&gt; false
+</span>92 <span style=''></span><span style='background: #AEF1AE'>            case _ =&gt; true
+</span>93 <span style=''></span><span style='background: #AEF1AE'>          )</span><span style=''>
+</span>94 <span style=''>      val </span><span style='background: #AEF1AE'>(missileBatteries, cities)</span><span style=''> =
+</span>95 <span style=''>        </span><span style='background: #AEF1AE'>groundElements
+</span>96 <span style=''></span><span style='background: #AEF1AE'>          .partition(_ match
+</span>97 <span style=''></span><span style='background: #AEF1AE'>            case _: MissileBattery =&gt; true
+</span>98 <span style=''></span><span style='background: #AEF1AE'>            case _: City =&gt; false
 </span>99 <span style=''></span><span style='background: #AEF1AE'>          )</span><span style=''>
-</span>100 <span style=''>      val </span><span style='background: #AEF1AE'>(missileBatteries, cities)</span><span style=''> =
-</span>101 <span style=''>        </span><span style='background: #AEF1AE'>groundElements
-</span>102 <span style=''></span><span style='background: #AEF1AE'>          .partition(_ match
-</span>103 <span style=''></span><span style='background: #AEF1AE'>            case _: MissileBattery =&gt; true
-</span>104 <span style=''></span><span style='background: #AEF1AE'>            case _: City =&gt; false
-</span>105 <span style=''></span><span style='background: #AEF1AE'>          )</span><span style=''>
-</span>106 <span style=''>      (</span><span style='background: #AEF1AE'>Ground(cities.getCities, missileBatteries.getMissileBattery)</span><span style=''>, collisions)
+</span>100 <span style=''>      (</span><span style='background: #AEF1AE'>Ground(cities.getCities, missileBatteries.getMissileBattery)</span><span style=''>, collisions)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -145,7 +139,7 @@
           21
         </td>
         <td>
-          340
+          348
         </td>
         <td>
           641
@@ -169,7 +163,7 @@
           22
         </td>
         <td>
-          327
+          335
         </td>
         <td>
           696
@@ -193,7 +187,31 @@
           24
         </td>
         <td>
-          325
+          331
+        </td>
+        <td>
+          869
+          -
+          884
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          explode
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          missile.explode
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          333
         </td>
         <td>
           839
@@ -217,7 +235,7 @@
           24
         </td>
         <td>
-          324
+          332
         </td>
         <td>
           814
@@ -238,34 +256,10 @@
         </td>
       </tr><tr>
         <td>
-          24
-        </td>
-        <td>
-          323
-        </td>
-        <td>
-          869
-          -
-          884
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          explode
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missile.explode
-        </td>
-      </tr><tr>
-        <td>
           25
         </td>
         <td>
-          326
+          334
         </td>
         <td>
           895
@@ -289,7 +283,7 @@
           27
         </td>
         <td>
-          335
+          343
         </td>
         <td>
           926
@@ -313,7 +307,7 @@
           29
         </td>
         <td>
-          332
+          340
         </td>
         <td>
           1055
@@ -337,31 +331,7 @@
           30
         </td>
         <td>
-          328
-        </td>
-        <td>
-          1149
-          -
-          1164
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          spawn
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          spawner.spawn()
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          329
+          337
         </td>
         <td>
           1125
@@ -382,10 +352,34 @@
         </td>
       </tr><tr>
         <td>
+          30
+        </td>
+        <td>
+          336
+        </td>
+        <td>
+          1149
+          -
+          1164
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          spawn
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          spawner.spawn()
+        </td>
+      </tr><tr>
+        <td>
           31
         </td>
         <td>
-          331
+          339
         </td>
         <td>
           1177
@@ -409,7 +403,7 @@
           31
         </td>
         <td>
-          330
+          338
         </td>
         <td>
           1177
@@ -433,7 +427,7 @@
           32
         </td>
         <td>
-          334
+          342
         </td>
         <td>
           1257
@@ -457,7 +451,7 @@
           32
         </td>
         <td>
-          333
+          341
         </td>
         <td>
           1267
@@ -481,7 +475,7 @@
           35
         </td>
         <td>
-          337
+          345
         </td>
         <td>
           1293
@@ -506,7 +500,7 @@
           35
         </td>
         <td>
-          336
+          344
         </td>
         <td>
           1321
@@ -530,7 +524,31 @@
           36
         </td>
         <td>
-          339
+          346
+        </td>
+        <td>
+          1368
+          -
+          1402
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          activateSpecialAbilityToCollective
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          activateSpecialAbilityToCollective
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          347
         </td>
         <td>
           1293
@@ -553,34 +571,10 @@
         </td>
       </tr><tr>
         <td>
-          36
-        </td>
-        <td>
-          338
-        </td>
-        <td>
-          1368
-          -
-          1402
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          activateSpecialAbilityToCollective
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          activateSpecialAbilityToCollective
-        </td>
-      </tr><tr>
-        <td>
           44
         </td>
         <td>
-          347
+          355
         </td>
         <td>
           1556
@@ -604,7 +598,31 @@
           46
         </td>
         <td>
-          342
+          349
+        </td>
+        <td>
+          1642
+          -
+          1656
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          explodeMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          explodeMissile
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          350
         </td>
         <td>
           1614
@@ -626,58 +644,10 @@
         </td>
       </tr><tr>
         <td>
-          46
-        </td>
-        <td>
-          341
-        </td>
-        <td>
-          1642
-          -
-          1656
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          explodeMissile
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          explodeMissile
-        </td>
-      </tr><tr>
-        <td>
           47
         </td>
         <td>
-          343
-        </td>
-        <td>
-          1674
-          -
-          1685
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isDefined
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.isDefined
-        </td>
-      </tr><tr>
-        <td>
-          47
-        </td>
-        <td>
-          344
+          352
         </td>
         <td>
           1614
@@ -700,10 +670,34 @@
         </td>
       </tr><tr>
         <td>
+          47
+        </td>
+        <td>
+          351
+        </td>
+        <td>
+          1674
+          -
+          1685
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          isDefined
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.isDefined
+        </td>
+      </tr><tr>
+        <td>
           48
         </td>
         <td>
-          346
+          354
         </td>
         <td>
           1614
@@ -730,7 +724,7 @@
           48
         </td>
         <td>
-          345
+          353
         </td>
         <td>
           1700
@@ -754,7 +748,7 @@
           55
         </td>
         <td>
-          358
+          363
         </td>
         <td>
           1835
@@ -775,87 +769,15 @@
         </td>
       </tr><tr>
         <td>
-          56
-        </td>
-        <td>
-          350
-        </td>
-        <td>
-          1869
-          -
-          1879
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          isCity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def isCity
-        </td>
-      </tr><tr>
-        <td>
           57
         </td>
         <td>
-          348
+          357
         </td>
         <td>
-          1949
+          1870
           -
-          1961
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _: City
-        </td>
-      </tr><tr>
-        <td>
-          58
-        </td>
-        <td>
-          349
-        </td>
-        <td>
-          1978
-          -
-          1984
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          352
-        </td>
-        <td>
-          2001
-          -
-          2011
+          1880
         </td>
         <td>
           DefDef
@@ -871,15 +793,15 @@
         </td>
       </tr><tr>
         <td>
-          61
+          58
         </td>
         <td>
-          351
+          356
         </td>
         <td>
-          2078
+          1947
           -
-          2093
+          1962
         </td>
         <td>
           Block
@@ -895,15 +817,39 @@
         </td>
       </tr><tr>
         <td>
-          64
+          61
         </td>
         <td>
-          354
+          358
         </td>
         <td>
-          2109
+          2009
           -
-          2147
+          2015
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isCity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          isCity
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          359
+        </td>
+        <td>
+          1978
+          -
+          2016
         </td>
         <td>
           Apply
@@ -920,63 +866,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          62
         </td>
         <td>
-          353
+          361
         </td>
         <td>
-          2140
+          1978
           -
-          2146
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          isCity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          isCity
-        </td>
-      </tr><tr>
-        <td>
-          65
-        </td>
-        <td>
-          355
-        </td>
-        <td>
-          2161
-          -
-          2167
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          toCity
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          toCity
-        </td>
-      </tr><tr>
-        <td>
-          65
-        </td>
-        <td>
-          356
-        </td>
-        <td>
-          2109
-          -
-          2168
+          2037
         </td>
         <td>
           Apply
@@ -994,15 +892,39 @@
         </td>
       </tr><tr>
         <td>
-          66
+          62
         </td>
         <td>
-          357
+          360
         </td>
         <td>
-          2109
+          2030
           -
-          2184
+          2036
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          toCity
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          toCity
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          362
+        </td>
+        <td>
+          1978
+          -
+          2053
         </td>
         <td>
           Select
@@ -1021,15 +943,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          70
         </td>
         <td>
-          369
+          371
         </td>
         <td>
-          2334
+          2203
           -
-          2355
+          2224
         </td>
         <td>
           DefDef
@@ -1045,87 +967,15 @@
         </td>
       </tr><tr>
         <td>
-          74
+          72
         </td>
         <td>
-          361
+          365
         </td>
         <td>
-          2386
+          2256
           -
-          2406
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          isMissileBattery
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def isMissileBattery
-        </td>
-      </tr><tr>
-        <td>
-          75
-        </td>
-        <td>
-          359
-        </td>
-        <td>
-          2476
-          -
-          2498
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _: MissileBattery
-        </td>
-      </tr><tr>
-        <td>
-          76
-        </td>
-        <td>
-          360
-        </td>
-        <td>
-          2515
-          -
-          2521
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          78
-        </td>
-        <td>
-          363
-        </td>
-        <td>
-          2538
-          -
-          2558
+          2276
         </td>
         <td>
           DefDef
@@ -1141,15 +991,15 @@
         </td>
       </tr><tr>
         <td>
-          79
+          73
         </td>
         <td>
-          362
+          364
         </td>
         <td>
-          2635
+          2353
           -
-          2670
+          2388
         </td>
         <td>
           Block
@@ -1165,39 +1015,15 @@
         </td>
       </tr><tr>
         <td>
-          82
+          76
         </td>
         <td>
-          364
+          367
         </td>
         <td>
-          2727
+          2414
           -
-          2743
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          isMissileBattery
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          isMissileBattery
-        </td>
-      </tr><tr>
-        <td>
-          82
-        </td>
-        <td>
-          365
-        </td>
-        <td>
-          2696
-          -
-          2744
+          2462
         </td>
         <td>
           Apply
@@ -1214,15 +1040,39 @@
         </td>
       </tr><tr>
         <td>
-          83
+          76
         </td>
         <td>
-          367
+          366
         </td>
         <td>
-          2696
+          2445
           -
-          2775
+          2461
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isMissileBattery
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          isMissileBattery
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          369
+        </td>
+        <td>
+          2414
+          -
+          2493
         </td>
         <td>
           Apply
@@ -1240,15 +1090,15 @@
         </td>
       </tr><tr>
         <td>
-          83
+          77
         </td>
         <td>
-          366
+          368
         </td>
         <td>
-          2758
+          2476
           -
-          2774
+          2492
         </td>
         <td>
           Apply
@@ -1264,15 +1114,15 @@
         </td>
       </tr><tr>
         <td>
-          84
+          78
         </td>
         <td>
-          368
+          370
         </td>
         <td>
-          2696
+          2414
           -
-          2791
+          2509
         </td>
         <td>
           Select
@@ -1291,15 +1141,15 @@
         </td>
       </tr><tr>
         <td>
-          91
+          85
         </td>
         <td>
-          382
+          384
         </td>
         <td>
-          3011
+          2729
           -
-          3035
+          2753
         </td>
         <td>
           DefDef
@@ -1315,15 +1165,15 @@
         </td>
       </tr><tr>
         <td>
-          92
+          86
         </td>
         <td>
-          374
+          376
         </td>
         <td>
-          3078
+          2796
           -
-          3106
+          2824
         </td>
         <td>
           Apply
@@ -1339,15 +1189,15 @@
         </td>
       </tr><tr>
         <td>
-          94
+          88
         </td>
         <td>
-          373
+          375
         </td>
         <td>
-          3117
+          2835
           -
-          3277
+          2995
         </td>
         <td>
           Apply
@@ -1368,15 +1218,15 @@
         </td>
       </tr><tr>
         <td>
-          95
+          89
         </td>
         <td>
-          370
+          372
         </td>
         <td>
-          3173
+          2891
           -
-          3195
+          2913
         </td>
         <td>
           Block
@@ -1392,15 +1242,15 @@
         </td>
       </tr><tr>
         <td>
-          96
+          90
         </td>
         <td>
-          371
+          373
         </td>
         <td>
-          3217
+          2935
           -
-          3229
+          2947
         </td>
         <td>
           Block
@@ -1416,15 +1266,15 @@
         </td>
       </tr><tr>
         <td>
-          97
+          91
         </td>
         <td>
-          372
+          374
         </td>
         <td>
-          3251
+          2969
           -
-          3257
+          2975
         </td>
         <td>
           Block
@@ -1440,15 +1290,15 @@
         </td>
       </tr><tr>
         <td>
-          99
+          93
         </td>
         <td>
-          378
+          380
         </td>
         <td>
-          3288
+          3006
           -
-          3314
+          3032
         </td>
         <td>
           Apply
@@ -1464,15 +1314,15 @@
         </td>
       </tr><tr>
         <td>
-          101
+          95
         </td>
         <td>
-          377
+          379
         </td>
         <td>
-          3325
+          3043
           -
-          3457
+          3175
         </td>
         <td>
           Apply
@@ -1492,15 +1342,15 @@
         </td>
       </tr><tr>
         <td>
-          102
+          96
         </td>
         <td>
-          375
+          377
         </td>
         <td>
-          3381
+          3099
           -
-          3403
+          3121
         </td>
         <td>
           Block
@@ -1516,15 +1366,15 @@
         </td>
       </tr><tr>
         <td>
-          103
+          97
         </td>
         <td>
-          376
+          378
         </td>
         <td>
-          3424
+          3142
           -
-          3436
+          3154
         </td>
         <td>
           Block
@@ -1540,15 +1390,39 @@
         </td>
       </tr><tr>
         <td>
-          105
+          99
         </td>
         <td>
-          379
+          382
         </td>
         <td>
-          3472
+          3208
           -
-          3488
+          3242
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getMissileBattery
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          missileBatteries.getMissileBattery
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          381
+        </td>
+        <td>
+          3190
+          -
+          3206
         </td>
         <td>
           Apply
@@ -1564,15 +1438,15 @@
         </td>
       </tr><tr>
         <td>
-          105
+          99
         </td>
         <td>
-          381
+          383
         </td>
         <td>
-          3465
+          3183
           -
-          3525
+          3243
         </td>
         <td>
           Apply
@@ -1585,30 +1459,6 @@
         </td>
         <td style="background: #AEF1AE">
           Ground(cities.getCities, missileBatteries.getMissileBattery)
-        </td>
-      </tr><tr>
-        <td>
-          105
-        </td>
-        <td>
-          380
-        </td>
-        <td>
-          3490
-          -
-          3524
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getMissileBattery
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          missileBatteries.getMissileBattery
         </td>
       </tr>
     </table>
