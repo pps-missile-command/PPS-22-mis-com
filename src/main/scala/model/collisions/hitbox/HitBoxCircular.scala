@@ -18,10 +18,10 @@ object HitBoxCircular:
    * @return a new hit box that has the shape of a circle
    */
   def apply(center: Point2D, radius: Double): HitBox =
-    if (radius <= 0)
-      HitBoxEmpty
-    else
-      HitBoxCircular(center, radius)
+    radius match
+      case 0 => HitBoxPoint(center)
+      case _ if radius < 0 => HitBoxEmpty
+      case _ => HitBoxCircular(center, radius)
 
   private case class HitBoxCircular(center: Point2D, radius: Double) extends HitBoxSymmetric :
 
