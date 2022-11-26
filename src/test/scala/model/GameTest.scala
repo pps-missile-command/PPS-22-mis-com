@@ -23,36 +23,37 @@ class GameTest extends AnyFunSpec :
       val position = Point2D(0, 0)
       val world = World.initialWorld
       val newWorld =
-        world.copy(
-          world.ground,
-          world.collisionables +
-            DamageableTest(position = position, life = 1, affiliation = Affiliation.Enemy)
-        )
+        world
+          .updateGround(world.ground)
+          .updateCollisionables(
+            world.collisionables +
+              DamageableTest(position = position, life = 1, affiliation = Affiliation.Enemy)
+          )
       assert(newWorld.collisionables.size == 1)
     }
   }
 
   describe("A player") {
     it("in its initial state should be created with score and timer 0") {
-     val player = Player.initialPlayer
+      val player = Player.initialPlayer
       assert(player.score == 0)
       assert(player.timer.time == 0)
     }
 
     it("should be able to have a new score") {
       val player = Player.initialPlayer
-      val newPlayer = player.copy(score = 1)
+      val newPlayer = player.updateScore(score = 1)
       assert(newPlayer.score == 1)
     }
 
     it("should be able to have a new timer") {
       val player = Player.initialPlayer
-      val newPlayer = player.copy(timer = Timer.Timer(1))
+      val newPlayer = player.updateTimer(timer = Timer.Timer(1))
       assert(newPlayer.timer.time == 1)
     }
   }
 
-  describe("A game"){
+  describe("A game") {
     it("in its initial state should be created with a world (in its initial state), a player (in its initial state) and a spawner") {
       val game = Game.initialGame
       val initialWorld = World.initialWorld
@@ -66,19 +67,20 @@ class GameTest extends AnyFunSpec :
       val game = Game.initialGame
       val position = Point2D(0, 0)
       val newWorld =
-        game.world.copy(
-          game.world.ground,
-          game.world.collisionables +
-            DamageableTest(position = position, life = 1, affiliation = Affiliation.Enemy)
-        )
-      val newGame = game.copy(world = newWorld)
+        game.world
+          .updateGround(game.world.ground)
+          .updateCollisionables(
+            game.world.collisionables +
+              DamageableTest(position = position, life = 1, affiliation = Affiliation.Enemy)
+          )
+      val newGame = game.updateWorld(newWorld)
       assert(newGame.world.collisionables.size == 1)
     }
 
     it("should be able to have a new player") {
       val game = Game.initialGame
-      val newPlayer = game.player.copy(score = 1)
-      val newGame = game.copy(player = newPlayer)
+      val newPlayer = game.player.updateScore(score = 1)
+      val newGame = game.updatePlayer(newPlayer)
       assert(newGame.player.score == 1)
     }
   }

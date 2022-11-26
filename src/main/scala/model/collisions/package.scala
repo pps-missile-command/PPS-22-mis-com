@@ -26,7 +26,8 @@ package object collisions:
    * Alias for the distance between points in the hit box area
    */
   type Distance = Double
-  extension(collisionables: Set[Collisionable])
+  
+  extension (collisionables: Set[Collisionable])
     private def totalDamageFor(collisionable: Collisionable): LifePoint =
       collisionables
         .filter(_.affiliation != collisionable.affiliation)
@@ -37,10 +38,11 @@ package object collisions:
     /**
      * Apply the damage to the damageable object in the set.
      *
-     * @param collisions a set with all the detected collisions
+     * @param collisions    a set with all the detected collisions
+     * @param oldCollisions a set with all the old collisions
      * @return a tuple with the updated collisionables and the collisions
      */
-    def applyDamagesBasedOn(collisions: Set[Collision]): (Set[Collisionable], Set[Collision]) =
+    def applyDamagesBasedOnWithOld(collisions: Set[Collision], oldCollisions: Set[Collision]): (Set[Collisionable], Set[Collision]) =
       val mapping: Map[Collisionable, Collisionable] =
         (for
           collisionable <- collisionables
@@ -52,7 +54,16 @@ package object collisions:
           collisionable -> newCollisionable)
           .toMap
       val unUpdateCollisionables = collisions.allCollisionablesThatDoesntCollideWith(collisionables, mapping.keySet)
-      (mapping.values.toSet ++ unUpdateCollisionables, collisions updateCollisionablesContained mapping)
+      (mapping.values.toSet ++ unUpdateCollisionables, (collisions ++ oldCollisions) updateCollisionablesContained mapping)
+
+    /**
+     * Apply the damage to the damageable object in the set.
+     *
+     * @param collisions a set with all the detected collisions
+     * @return a tuple with the updated collisionables and the collisions
+     */
+    def applyDamagesBasedOn(collisions: Set[Collision]): (Set[Collisionable], Set[Collision]) =
+      applyDamagesBasedOnWithOld(collisions, Set.empty[Collision])
 
     /**
      * Check the collision between the set of collisionables,
