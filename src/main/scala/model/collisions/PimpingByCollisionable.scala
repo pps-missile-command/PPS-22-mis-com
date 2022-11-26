@@ -4,6 +4,7 @@ import model.behavior.{Moveable, Timeable}
 import model.explosion.Explosion
 import model.{DeltaTime, Scorable, ScorePoint}
 import model.missile.Missile
+import model.ground.{City, MissileBattery}
 
 object PimpingByCollisionable:
 
@@ -126,9 +127,30 @@ object PimpingByCollisionable:
 
     /**
      * Return an [[Option]] with an [[Explosion]] if the [[Collisionable]] is an [[Missile]] and it is destroyed, otherwise return an empty [[Option]].
+     *
      * @return
      */
     def explodeMissile: Option[Explosion] =
       collisionable match
         case missile: Missile if missile.isDestroyed => Option(missile.explode)
         case _ => Option.empty
+
+    /**
+     * Check if the [[Collisionable]] is an [[City]].
+     *
+     * @return true if the [[Collisionable]] is an [[City]], false otherwise
+     */
+    def isCity: Boolean =
+      collisionable match
+        case _: City => true
+        case _ => false
+
+    /**
+     * Check if the [[Collisionable]] is an [[MissileBattery]].
+     *
+     * @return true if the [[Collisionable]] is an [[MissileBattery]], false otherwise
+     */
+    def isMissileBattery: Boolean =
+      collisionable match
+        case _: MissileBattery => true
+        case _ => false

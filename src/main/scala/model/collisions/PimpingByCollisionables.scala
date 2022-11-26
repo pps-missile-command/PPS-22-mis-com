@@ -54,9 +54,6 @@ object PimpingByCollisionables:
      * @return a List with all the [[City]]s
      */
     def getCities: List[City] =
-      def isCity(collisionable: Collisionable): Boolean = collisionable match
-        case _: City => true
-        case _ => false
 
       def toCity(collisionable: Collisionable): City = collisionable match
         case city: City => city
@@ -72,9 +69,6 @@ object PimpingByCollisionables:
      * @return a List with all the [[MissileBattery]]s
      */
     def getMissileBattery: List[MissileBattery] =
-      def isMissileBattery(collisionable: Collisionable): Boolean = collisionable match
-        case _: MissileBattery => true
-        case _ => false
 
       def toMissileBattery(collisionable: Collisionable): MissileBattery = collisionable match
         case missileBattery: MissileBattery => missileBattery

@@ -71,11 +71,15 @@ private object PimpingByCollisionsResults:
 
     /**
      * From a tuple of a set of [[Collisionable]]s, a set of [[Collision]]s and a set of [[Explosion]]s,
-     * it remove the destroyed elements from the set of [[Collisionable]]s.
+     * it remove the destroyed elements from the set of [[Collisionable]]s but keep the missiles batteries and the cities.
      */
     def removeDestroyedCollisionables(): CollisionablesCollisionsExplosionsResult =
       val (collisionables, collisions, explosions) = result
-      val notDestroyed = collisionables.filterNot(isDestroyed)
+      val notDestroyed =
+        collisionables
+          .filter(collisionable =>
+            !collisionable.isDestroyed || collisionable.isCity || collisionable.isMissileBattery
+          )
       (notDestroyed, collisions, explosions)
 
     /**
