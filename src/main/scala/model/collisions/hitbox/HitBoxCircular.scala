@@ -12,6 +12,8 @@ object HitBoxCircular:
 
   /**
    * Returns a new hit box that has the shape of a circle.
+   * If the radius is negative, the hit box is empty.
+   * If the radius is zero, the hit box is a point.
    *
    * @param center the center of the circle
    * @param radius the radius of the circle
