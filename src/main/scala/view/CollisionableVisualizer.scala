@@ -63,9 +63,10 @@ object CollisionableVisualizer:
         CollisionableElement(bi, diameter, diameter, e.position map convertPosition)
       case p: Plane => CollisionableElement(
         ImageIO.read(getClass.getResource("/Plane_" + p.planeDirection.toString + ".png")),
-        hitboxBase use convertWidth,
-        hitboxHeight use convertHeight,
-        p.position map convertPosition
+        model.vehicle.hitboxBase use convertWidth,
+        model.vehicle.hitboxHeight use convertHeight,
+        p.position map convertPosition,
+        Angle.Degree(90)
       )
 
     collisionables.map(conversion)
