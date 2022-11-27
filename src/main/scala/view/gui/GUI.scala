@@ -1,6 +1,6 @@
 package view.gui
 
-import controller.{Event, Controller}
+import controller.{Controller, Event}
 import monix.eval.Task
 import monix.reactive.Observable
 import monix.reactive.subjects.PublishSubject
@@ -9,8 +9,9 @@ import view.gui.UI
 import model.elements2d.Point2D
 import controller.Event
 import model.{Game, World}
-import view.Main
+import view.{Main, ViewConstants}
 import view.gui.WorldPane
+
 import java.awt.event.MouseMotionListener
 import java.awt.{BorderLayout, Color, Dimension, FlowLayout, Graphics, event}
 import java.awt.event.ActionEvent
@@ -36,7 +37,7 @@ class GUI(width: Int, height: Int) extends UI:
 
     override def events: Observable[Event] = frame.getContentPane
       .mouseObservable()
-      .map(p => Event.LaunchMissileTo(Point2D((p.x * World.width) / width, (p.y * World.height) / height )) )
+      .map(p => Event.LaunchMissileTo(Point2D((p.x.toDouble * World.width.toDouble) / ViewConstants.GUI_width.toDouble, (p.y.toDouble * World.height.toDouble) / ViewConstants.GUI_height.toDouble )) )
 
     override def gameOver(game: Game): Task[Unit] = Task {
         SwingUtilities.invokeLater { () =>
