@@ -7,6 +7,8 @@ import model.collisions.{Affiliation, Collisionable}
 import model.elements2d.{Angle, Point2D}
 import model.explosion.Explosion
 import model.missile.{Missile, MissileDamageable, MissileImpl, hitboxBase, hitboxHeight}
+import model.vehicle.Plane
+import model.vehicle.vehicleTypes
 
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
@@ -31,10 +33,6 @@ case class CollisionableElement(image: BufferedImage, baseWidth: Int, baseHeight
                                 position: Point2D, angle: Angle = Angle.Degree(0))
 
 object CollisionableVisualizer:
-  /**
-   * Lambda value that return a gui mapped Point2D given a logical one
-   */
-  private val convertPosition: (Point2D) => Point2D = (p) => Point2D((p.x * ViewConstants.GUI_width) / World.width, (p.y * ViewConstants.GUI_height) / World.height)
 
   /**
    * Method that creates a graphic set of [[CollisionableElement]] from a set of [[Collisionable]]
@@ -54,15 +52,21 @@ object CollisionableVisualizer:
         } catch {
           case e: Exception => throw new FileNotFoundException()
         }
-        CollisionableElement(optImage.getOrElse(null), hitboxBase, hitboxHeight, m.position map convertPosition, m.angle.getOrElse(Angle.Degree(0)))
+        CollisionableElement(optImage.get, hitboxBase use convertWidth, hitboxHeight use convertHeight, m.position map convertPosition, m.angle.getOrElse(Angle.Degree(0)))
       case e: Explosion =>
-        val diameter = e.radius * 2
+        val diameter = e.radius * 2 use convertWidth
         val bi = new BufferedImage(diameter,diameter, BufferedImage.TYPE_INT_ARGB)
         val g2d = bi.createGraphics()
         g2d.setColor(Color.RED)
         g2d.drawOval(0, 0, diameter, diameter)
         g2d.dispose()
         CollisionableElement(bi, diameter, diameter, e.position map convertPosition)
+      case p: Plane => CollisionableElement(
+        ImageIO.read(getClass.getResource("/Plane_" + p.planeDirection.toString + ".png")),
+        hitboxBase use convertWidth,
+        hitboxHeight use convertHeight,
+        p.position map convertPosition
+      )
 
     collisionables.map(conversion)
 
