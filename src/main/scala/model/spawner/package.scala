@@ -18,17 +18,11 @@ package object spawner:
    */
   def standardSpawner(using Random): GenericSpawner[Collisionable] = SpawnerAggregatorImpl(
     List(
-      //GenericSpawner(3, SpecificSpawners.MissileStrategy(width, height)),
-      //GenericSpawner(6, SpecificSpawners.ZigZagStrategy(width, height)),
+      GenericSpawner(3, SpecificSpawners.MissileStrategy(width, height)),
+      GenericSpawner(6, SpecificSpawners.ZigZagStrategy(width, height)),
       GenericSpawner(3, spawnable = SpecificSpawners.PlaneStrategy(height))
     ):_*
   )
-
-  /**
-   * Extension method that permits to pop n elements from a generic LazyList
-   */
-  extension[A](list: LazyList[A])
-    def popN(n: Int): (Set[A], LazyList[A]) = (list.take(n).toSet, list.drop(n))
 
   /**
    * Extension methods for DeltaTime
