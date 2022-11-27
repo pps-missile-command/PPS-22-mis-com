@@ -13,7 +13,7 @@ trait MissileDamageable(lifePoint: LifePoint, position: Point2D, finalPosition: 
    *
    *  @return the hit box of the object.
    */
-  override protected def hitBox: HitBox = HitBoxRectangular(position, hitboxBase, hitboxHeight, angle.get)
+  override protected def hitBox: HitBox = HitBoxRectangular(position, hitboxBase, hitboxHeight, angle.getOrElse(Angle.Degree(0)))
 
   /**
    *
