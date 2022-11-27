@@ -8,7 +8,8 @@ import model.collisions.{Affiliation, Damageable, HitBox, LifePoint, lifePointDe
 import model.elements2d.{Point2D, Vector2D}
 import model.explosion.{Explosion, standardRadius}
 import model.missile.{Missile, given_Conversion_Point2D_Point2D_Vector2D, hitboxBase, hitboxHeight}
-import model.spawner.{GenericSpawner, SpecificSpawners}
+import model.spawner.GenericSpawnerImpl
+import model.spawner.{GenericSpawner, GenericSpawnerImpl, SpecificSpawners}
 
 import scala.util.Random
 
@@ -26,8 +27,8 @@ case class PlaneImpl(actualPosition: Point2D,
                      choosedDirection: vehicleTypes,
                      lifePoint: LifePoint = planeInitialLife,
                      deltaTime: DeltaTime = 0,
-                     missileSpawner: GenericSpawner[Missile] =
-                     GenericSpawner[Missile](1, spawnable = SpecificSpawners.MissileStrategy(width, height)(using Random)))(using Random)
+                     missileSpawner: GenericSpawnerImpl[Missile] =
+                     GenericSpawner[Missile](1, SpecificSpawners.MissileStrategy(width, height)(using Random))(using Random))(using Random)
                     extends Plane:
 
     override def planeDirection: vehicleTypes = choosedDirection
@@ -37,7 +38,7 @@ case class PlaneImpl(actualPosition: Point2D,
         case v if(v.isDestroyed) => this.copy(lifePoint = lifePointDeath)
         case _ => this.copy(actualPosition = moveVehicle(this), deltaTime = 0)
 
-
+    println("ZIOBRICCO")
 
     /***
      * Calculate the new position of the vehicle
@@ -57,7 +58,9 @@ case class PlaneImpl(actualPosition: Point2D,
      * @return Tuple containing a set with missiles and the new plane
      */
     override def spawn(): Tuple2[Set[Missile], Plane] =
+        println("PRE SPAWN")
         val spawnerInfos = missileSpawner.spawn()
+        println("POST SPAWN")
         Tuple2(
             spawnerInfos._1,
             this.copy(missileSpawner = spawnerInfos._2)
