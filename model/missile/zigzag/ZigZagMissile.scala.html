@@ -28,74 +28,73 @@
 </span>4 <span style=''>import model.collisions.{Affiliation, Collisionable, LifePoint, lifePointDeath}
 </span>5 <span style=''>import model.elements2d.{Point2D, Vector2D}
 </span>6 <span style=''>import model.missile.*
-</span>7 <span style=''>import model.missile.given_Conversion_Point2D_Point2D_Vector2D
-</span>8 <span style=''>
-</span>9 <span style=''>import scala.util.Random
-</span>10 <span style=''>
-</span>11 <span style=''>/**
-</span>12 <span style=''> * This trait models a variation of the normal [[Missile]], that is the ZigZagMissile: the difference is
-</span>13 <span style=''> * that in this case the path is not linear from the start point towards the destination point, but a sequence
-</span>14 <span style=''> * subdestinations to reach, and when one is reached change the direction accordingly
-</span>15 <span style=''> */
-</span>16 <span style=''>trait ZigZagMissile(step: Int = 5, positions: LazyList[Point2D], to: Point2D):
-</span>17 <span style=''>    missile: MissileImpl =&gt;
-</span>18 <span style=''>  /**
-</span>19 <span style=''>   * This method check if the position is equals to the sub destination: the sub destination
-</span>20 <span style=''>   * change every time the ZigZagMissile reach it, taking the next destination available into the list
-</span>21 <span style=''>   * @return a boolean value true or false to models the equivalency
-</span>22 <span style=''>   */
-</span>23 <span style=''>    </span><span style='background: #AEF1AE'>def subDestinationReached</span><span style=''>: Boolean = </span><span style='background: #AEF1AE'>position ~= destination</span><span style=''>
-</span>24 <span style=''>
-</span>25 <span style=''>  /**
-</span>26 <span style=''>   * This method overrides the same method defined in [[Missile]]: in this case we check if the current position is
-</span>27 <span style=''>   * equal to the last position of the path, that is the final destination
-</span>28 <span style=''>   * @return a boolean true or false
-</span>29 <span style=''>   */
-</span>30 <span style=''>    </span><span style='background: #AEF1AE'>override def destinationReached</span><span style=''>: Boolean = </span><span style='background: #AEF1AE'>position ~= to</span><span style=''>
-</span>31 <span style=''>
-</span>32 <span style=''>  /**
-</span>33 <span style=''>   * Copy method that creates a new ZigZagMissile with the new properties specified
-</span>34 <span style=''>   * @param life The new life of the missile
-</span>35 <span style=''>   * @param pos The updated position
-</span>36 <span style=''>   * @param _dt The updated virtual delta time
-</span>37 <span style=''>   * @return the new ZigZagMissile
-</span>38 <span style=''>   */
-</span>39 <span style=''>    </span><span style='background: #AEF1AE'>override def newMissile</span><span style=''>(life: LifePoint = missile.lifePoint, pos: Point2D = missile.position, _dt: DeltaTime = missile.dt): MissileImpl &amp; ZigZagMissile &amp; Scorable =
-</span>40 <span style=''>      </span><span style='background: #AEF1AE'>subDestinationReached</span><span style=''> match
-</span>41 <span style=''>        </span><span style='background: #AEF1AE'>case true</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>ZigZagMissile.apply(missile, pos, step, positions.pop()._2, _dt, to)</span><span style=''>
-</span>42 <span style=''>        </span><span style='background: #AEF1AE'>case false</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>ZigZagMissile.apply(missile, pos, step, positions, _dt, to)</span><span style=''>
-</span>43 <span style=''>
-</span>44 <span style=''>/**
-</span>45 <span style=''> * Companion object of [[ZigZagMissile]]
-</span>46 <span style=''> */
-</span>47 <span style=''>object ZigZagMissile:
-</span>48 <span style=''>
-</span>49 <span style=''>  /**
-</span>50 <span style=''>   * Factory method that generates the ZigZagMissile, using mixins
-</span>51 <span style=''>   * @param from The starting point
-</span>52 <span style=''>   * @param to The final destination
-</span>53 <span style=''>   * @param step The number of direction changes
-</span>54 <span style=''>   * @param maxWidth The max width after which a missile should not go over
-</span>55 <span style=''>   * @param Random Random object to generate
-</span>56 <span style=''>   * @return the new ZigZagMissile
-</span>57 <span style=''>   */
-</span>58 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(from: Point2D, to: Point2D, step: Int, maxWidth: Double): ZigZagMissile &amp; Scorable &amp; MissileImpl =
-</span>59 <span style=''>    val list = </span><span style='background: #AEF1AE'>DirectionList(from, to, step, maxWidth = maxWidth)</span><span style=''>
-</span>60 <span style=''>    new </span><span style='background: #AEF1AE'>MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy)</span><span style=''> with </span><span style='background: #AEF1AE'>Scorable(1)</span><span style=''> with </span><span style='background: #AEF1AE'>ZigZagMissile(step, list, to)</span><span style=''>
-</span>61 <span style=''>
-</span>62 <span style=''>  /**
-</span>63 <span style=''>   * This private method changes its signature
-</span>64 <span style=''>   * @param missile The missile that should change its position
-</span>65 <span style=''>   * @param newPosition The final destination
-</span>66 <span style=''>   * @param step The step represents the n sub destinations
-</span>67 <span style=''>   * @param positions Current position
-</span>68 <span style=''>   * @param deltaTime Virtual delta time
-</span>69 <span style=''>   * @param to Fixed destination point
-</span>70 <span style=''>   * @return the newZigZag midssile created
-</span>71 <span style=''>   */
-</span>72 <span style=''>  </span><span style='background: #AEF1AE'>private def apply</span><span style=''>(missile: Missile, newPosition: Point2D, step: Int, positions: LazyList[Point2D], deltaTime: DeltaTime, to: Point2D): ZigZagMissile &amp; Scorable &amp; MissileImpl = </span><span style='background: #AEF1AE'>positions.size</span><span style=''> match
-</span>73 <span style=''>    </span><span style='background: #AEF1AE'>case 0</span><span style=''> =&gt; new </span><span style='background: #AEF1AE'>MissileImpl(missile.initialLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)</span><span style=''> with </span><span style='background: #AEF1AE'>Scorable(1)</span><span style=''> with </span><span style='background: #AEF1AE'>ZigZagMissile(step, positions, to)</span><span style=''>
-</span>74 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; new </span><span style='background: #AEF1AE'>MissileImpl(missile.initialLife, newPosition, positions.head, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)</span><span style=''> with </span><span style='background: #AEF1AE'>Scorable(1)</span><span style=''> with </span><span style='background: #AEF1AE'>ZigZagMissile(step, positions, to)</span><span style=''>
+</span>7 <span style=''>
+</span>8 <span style=''>import scala.util.Random
+</span>9 <span style=''>
+</span>10 <span style=''>/**
+</span>11 <span style=''> * This trait models a variation of the normal [[Missile]], that is the ZigZagMissile: the difference is
+</span>12 <span style=''> * that in this case the path is not linear from the start point towards the destination point, but a sequence
+</span>13 <span style=''> * subdestinations to reach, and when one is reached change the direction accordingly
+</span>14 <span style=''> */
+</span>15 <span style=''>trait ZigZagMissile(step: Int = 5, positions: LazyList[Point2D], to: Point2D):
+</span>16 <span style=''>    missile: MissileImpl =&gt;
+</span>17 <span style=''>  /**
+</span>18 <span style=''>   * This method check if the position is equals to the sub destination: the sub destination
+</span>19 <span style=''>   * change every time the ZigZagMissile reach it, taking the next destination available into the list
+</span>20 <span style=''>   * @return a boolean value true or false to models the equivalency
+</span>21 <span style=''>   */
+</span>22 <span style=''>    </span><span style='background: #AEF1AE'>def subDestinationReached</span><span style=''>: Boolean = </span><span style='background: #AEF1AE'>position ~= destination</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  /**
+</span>25 <span style=''>   * This method overrides the same method defined in [[Missile]]: in this case we check if the current position is
+</span>26 <span style=''>   * equal to the last position of the path, that is the final destination
+</span>27 <span style=''>   * @return a boolean true or false
+</span>28 <span style=''>   */
+</span>29 <span style=''>    </span><span style='background: #AEF1AE'>override def destinationReached</span><span style=''>: Boolean = </span><span style='background: #AEF1AE'>position ~= to</span><span style=''>
+</span>30 <span style=''>
+</span>31 <span style=''>  /**
+</span>32 <span style=''>   * Copy method that creates a new ZigZagMissile with the new properties specified
+</span>33 <span style=''>   * @param life The new life of the missile
+</span>34 <span style=''>   * @param pos The updated position
+</span>35 <span style=''>   * @param _dt The updated virtual delta time
+</span>36 <span style=''>   * @return the new ZigZagMissile
+</span>37 <span style=''>   */
+</span>38 <span style=''>    </span><span style='background: #AEF1AE'>override def newMissile</span><span style=''>(life: LifePoint = missile.lifePoint, pos: Point2D = missile.position, _dt: DeltaTime = missile.dt): MissileImpl &amp; ZigZagMissile &amp; Scorable =
+</span>39 <span style=''>      </span><span style='background: #AEF1AE'>subDestinationReached</span><span style=''> match
+</span>40 <span style=''>        </span><span style='background: #AEF1AE'>case true</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>ZigZagMissile.apply(missile, pos, step, positions.pop()._2, _dt, to)</span><span style=''>
+</span>41 <span style=''>        </span><span style='background: #AEF1AE'>case false</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>ZigZagMissile.apply(missile, pos, step, positions, _dt, to)</span><span style=''>
+</span>42 <span style=''>
+</span>43 <span style=''>/**
+</span>44 <span style=''> * Companion object of [[ZigZagMissile]]
+</span>45 <span style=''> */
+</span>46 <span style=''>object ZigZagMissile:
+</span>47 <span style=''>
+</span>48 <span style=''>  /**
+</span>49 <span style=''>   * Factory method that generates the ZigZagMissile, using mixins
+</span>50 <span style=''>   * @param from The starting point
+</span>51 <span style=''>   * @param to The final destination
+</span>52 <span style=''>   * @param step The number of direction changes
+</span>53 <span style=''>   * @param maxWidth The max width after which a missile should not go over
+</span>54 <span style=''>   * @param Random Random object to generate
+</span>55 <span style=''>   * @return the new ZigZagMissile
+</span>56 <span style=''>   */
+</span>57 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(from: Point2D, to: Point2D, step: Int, maxWidth: Double): ZigZagMissile &amp; Scorable &amp; MissileImpl =
+</span>58 <span style=''>    val list = </span><span style='background: #AEF1AE'>DirectionList(from, to, step, maxWidth = maxWidth)</span><span style=''>
+</span>59 <span style=''>    new </span><span style='background: #AEF1AE'>MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy)</span><span style=''> with </span><span style='background: #AEF1AE'>Scorable(1)</span><span style=''> with </span><span style='background: #AEF1AE'>ZigZagMissile(step, list, to)</span><span style=''>
+</span>60 <span style=''>
+</span>61 <span style=''>  /**
+</span>62 <span style=''>   * This private method changes its signature
+</span>63 <span style=''>   * @param missile The missile that should change its position
+</span>64 <span style=''>   * @param newPosition The final destination
+</span>65 <span style=''>   * @param step The step represents the n sub destinations
+</span>66 <span style=''>   * @param positions Current position
+</span>67 <span style=''>   * @param deltaTime Virtual delta time
+</span>68 <span style=''>   * @param to Fixed destination point
+</span>69 <span style=''>   * @return the newZigZag midssile created
+</span>70 <span style=''>   */
+</span>71 <span style=''>  </span><span style='background: #AEF1AE'>private def apply</span><span style=''>(missile: Missile, newPosition: Point2D, step: Int, positions: LazyList[Point2D], deltaTime: DeltaTime, to: Point2D): ZigZagMissile &amp; Scorable &amp; MissileImpl = </span><span style='background: #AEF1AE'>positions.size</span><span style=''> match
+</span>72 <span style=''>    </span><span style='background: #AEF1AE'>case 0</span><span style=''> =&gt; new </span><span style='background: #AEF1AE'>MissileImpl(missile.initialLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)</span><span style=''> with </span><span style='background: #AEF1AE'>Scorable(1)</span><span style=''> with </span><span style='background: #AEF1AE'>ZigZagMissile(step, positions, to)</span><span style=''>
+</span>73 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; new </span><span style='background: #AEF1AE'>MissileImpl(missile.initialLife, newPosition, positions.head, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)</span><span style=''> with </span><span style='background: #AEF1AE'>Scorable(1)</span><span style=''> with </span><span style='background: #AEF1AE'>ZigZagMissile(step, positions, to)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -110,15 +109,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          15
+          14
         </td>
         <td>
           1121
         </td>
         <td>
-          674
+          611
           -
-          674
+          611
         </td>
         <td>
           DefDef
@@ -134,15 +133,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          21
         </td>
         <td>
           1106
         </td>
         <td>
-          1067
+          1004
           -
-          1090
+          1027
         </td>
         <td>
           Apply
@@ -158,15 +157,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          21
         </td>
         <td>
           1107
         </td>
         <td>
-          1030
+          967
           -
-          1055
+          992
         </td>
         <td>
           DefDef
@@ -182,15 +181,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          28
         </td>
         <td>
           1109
         </td>
         <td>
-          1336
+          1273
           -
-          1367
+          1304
         </td>
         <td>
           DefDef
@@ -206,15 +205,15 @@
         </td>
       </tr><tr>
         <td>
-          29
+          28
         </td>
         <td>
           1108
         </td>
         <td>
-          1379
+          1316
           -
-          1393
+          1330
         </td>
         <td>
           Apply
@@ -230,15 +229,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          37
         </td>
         <td>
           1118
         </td>
         <td>
-          1701
+          1638
           -
-          1701
+          1638
         </td>
         <td>
           DefDef
@@ -254,15 +253,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          37
         </td>
         <td>
           1117
         </td>
         <td>
-          1659
+          1596
           -
-          1682
+          1619
         </td>
         <td>
           DefDef
@@ -278,15 +277,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          37
         </td>
         <td>
           1120
         </td>
         <td>
-          1770
+          1707
           -
-          1770
+          1707
         </td>
         <td>
           DefDef
@@ -302,15 +301,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          37
         </td>
         <td>
           1119
         </td>
         <td>
-          1735
+          1672
           -
-          1735
+          1672
         </td>
         <td>
           DefDef
@@ -326,15 +325,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          38
         </td>
         <td>
           1110
         </td>
         <td>
-          1830
+          1767
           -
-          1851
+          1788
         </td>
         <td>
           Select
@@ -350,15 +349,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          39
         </td>
         <td>
           1111
         </td>
         <td>
-          1919
+          1856
           -
-          1934
+          1871
         </td>
         <td>
           Apply
@@ -374,15 +373,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          39
         </td>
         <td>
           1114
         </td>
         <td>
-          1866
+          1803
           -
-          1875
+          1812
         </td>
         <td>
           Block
@@ -398,15 +397,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          39
         </td>
         <td>
           1113
         </td>
         <td>
-          1879
+          1816
           -
-          1947
+          1884
         </td>
         <td>
           Apply
@@ -422,15 +421,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          39
         </td>
         <td>
           1112
         </td>
         <td>
-          1919
+          1856
           -
-          1937
+          1874
         </td>
         <td>
           Select
@@ -446,15 +445,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          40
         </td>
         <td>
           1115
         </td>
         <td>
-          1970
+          1907
           -
-          2029
+          1966
         </td>
         <td>
           Apply
@@ -470,15 +469,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          40
         </td>
         <td>
           1116
         </td>
         <td>
-          1956
+          1893
           -
-          1966
+          1903
         </td>
         <td>
           Block
@@ -494,15 +493,15 @@
         </td>
       </tr><tr>
         <td>
-          57
+          56
         </td>
         <td>
           1132
         </td>
         <td>
-          2462
+          2399
           -
-          2471
+          2408
         </td>
         <td>
           DefDef
@@ -518,15 +517,15 @@
         </td>
       </tr><tr>
         <td>
-          58
+          57
         </td>
         <td>
           1123
         </td>
         <td>
-          2586
+          2523
           -
-          2636
+          2573
         </td>
         <td>
           Apply
@@ -542,15 +541,15 @@
         </td>
       </tr><tr>
         <td>
-          58
+          57
         </td>
         <td>
           1122
         </td>
         <td>
-          2586
+          2523
           -
-          2599
+          2536
         </td>
         <td>
           Select
@@ -566,15 +565,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          58
         </td>
         <td>
           1124
         </td>
         <td>
-          2688
+          2625
           -
-          2697
+          2634
         </td>
         <td>
           Select
@@ -590,15 +589,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          58
         </td>
         <td>
           1127
         </td>
         <td>
-          2645
+          2582
           -
-          2656
+          2593
         </td>
         <td>
           Select
@@ -614,15 +613,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          58
         </td>
         <td>
           1126
         </td>
         <td>
-          2645
+          2582
           -
-          2656
+          2593
         </td>
         <td>
           Select
@@ -638,15 +637,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          58
         </td>
         <td>
           1129
         </td>
         <td>
-          2645
+          2582
           -
-          2731
+          2668
         </td>
         <td>
           Apply
@@ -662,15 +661,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          58
         </td>
         <td>
           1125
         </td>
         <td>
-          2645
+          2582
           -
-          2656
+          2593
         </td>
         <td>
           Select
@@ -686,15 +685,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          58
         </td>
         <td>
           1128
         </td>
         <td>
-          2645
+          2582
           -
-          2656
+          2593
         </td>
         <td>
           Select
@@ -710,15 +709,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          58
         </td>
         <td>
           1131
         </td>
         <td>
-          2754
+          2691
           -
-          2783
+          2720
         </td>
         <td>
           Apply
@@ -734,15 +733,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          58
         </td>
         <td>
           1130
         </td>
         <td>
-          2737
+          2674
           -
-          2748
+          2685
         </td>
         <td>
           Apply
@@ -758,15 +757,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          70
         </td>
         <td>
           1133
         </td>
         <td>
-          3355
+          3292
           -
-          3369
+          3306
         </td>
         <td>
           Select
@@ -782,15 +781,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          70
         </td>
         <td>
           1149
         </td>
         <td>
-          3179
+          3116
           -
-          3196
+          3133
         </td>
         <td>
           DefDef
@@ -806,15 +805,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          71
         </td>
         <td>
           1136
         </td>
         <td>
-          3490
+          3427
           -
-          3506
+          3443
         </td>
         <td>
           Select
@@ -830,15 +829,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          71
         </td>
         <td>
           1135
         </td>
         <td>
-          3474
+          3411
           -
-          3488
+          3425
         </td>
         <td>
           Select
@@ -854,15 +853,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          71
         </td>
         <td>
           1138
         </td>
         <td>
-          3513
+          3450
           -
-          3524
+          3461
         </td>
         <td>
           Apply
@@ -878,15 +877,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          71
         </td>
         <td>
           1140
         </td>
         <td>
-          3380
+          3317
           -
-          3386
+          3323
         </td>
         <td>
           Block
@@ -902,15 +901,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          71
         </td>
         <td>
           1134
         </td>
         <td>
-          3406
+          3343
           -
-          3425
+          3362
         </td>
         <td>
           Select
@@ -926,15 +925,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          71
         </td>
         <td>
           1137
         </td>
         <td>
-          3394
+          3331
           -
-          3507
+          3444
         </td>
         <td>
           Apply
@@ -950,15 +949,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          71
         </td>
         <td>
           1139
         </td>
         <td>
-          3530
+          3467
           -
-          3564
+          3501
         </td>
         <td>
           Apply
@@ -974,15 +973,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
           1142
         </td>
         <td>
-          3629
+          3566
           -
-          3643
+          3580
         </td>
         <td>
           Select
@@ -998,15 +997,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
           1145
         </td>
         <td>
-          3583
+          3520
           -
-          3708
+          3645
         </td>
         <td>
           Apply
@@ -1022,15 +1021,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
           1144
         </td>
         <td>
-          3691
+          3628
           -
-          3707
+          3644
         </td>
         <td>
           Select
@@ -1046,15 +1045,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
           1147
         </td>
         <td>
-          3731
+          3668
           -
-          3765
+          3702
         </td>
         <td>
           Apply
@@ -1070,15 +1069,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
           1141
         </td>
         <td>
-          3595
+          3532
           -
-          3614
+          3551
         </td>
         <td>
           Select
@@ -1094,15 +1093,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
           1143
         </td>
         <td>
-          3675
+          3612
           -
-          3689
+          3626
         </td>
         <td>
           Select
@@ -1118,15 +1117,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
           1146
         </td>
         <td>
-          3714
+          3651
           -
-          3725
+          3662
         </td>
         <td>
           Apply
@@ -1142,15 +1141,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          72
         </td>
         <td>
           1148
         </td>
         <td>
-          3569
+          3506
           -
-          3575
+          3512
         </td>
         <td>
           Block

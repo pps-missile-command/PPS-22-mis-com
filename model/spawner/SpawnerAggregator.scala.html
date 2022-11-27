@@ -30,24 +30,25 @@
 </span>6 <span style=''>
 </span>7 <span style=''>import scala.util.Random
 </span>8 <span style=''>
-</span>9 <span style=''>trait SpawnerAggregator[A &lt;: Collisionable] extends GenericSpawner[A]:
-</span>10 <span style=''>
-</span>11 <span style=''>  override def spawn(): (Set[A], SpawnerAggregator[A])
-</span>12 <span style=''>
-</span>13 <span style=''>  override def timeElapsed(dt: DeltaTime): SpawnerAggregator[A]
-</span>14 <span style=''>
-</span>15 <span style=''>case class SpawnerAggregatorImpl[R &lt;: Collisionable](genericSpawners: GenericSpawner[R]*)(using Random) extends SpawnerAggregator[R]:
-</span>16 <span style=''>
-</span>17 <span style=''>  </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): (Set[R], SpawnerAggregator[R]) =
-</span>18 <span style=''>    val list = </span><span style='background: #AEF1AE'>(genericSpawners map { i =&gt; i.spawn() }).toSet</span><span style=''>
-</span>19 <span style=''>    val v = </span><span style='background: #AEF1AE'>(list map { i =&gt; i._1 } flatMap { i =&gt; i }).toSet</span><span style=''>
-</span>20 <span style=''>    val spawners = </span><span style='background: #AEF1AE'>(list map { i =&gt; i._2 }).toList</span><span style=''>
-</span>21 <span style=''>    (v, SpawnerAggregatorImpl(spawners:_*))
-</span>22 <span style=''>
-</span>23 <span style=''>  </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): SpawnerAggregator[R] =
-</span>24 <span style=''>    SpawnerAggregatorImpl(
-</span>25 <span style=''>      </span><span style='background: #AEF1AE'>(genericSpawners map { i =&gt; i.timeElapsed(dt) }).toList</span><span style=''>:_*
-</span>26 <span style=''>    )
+</span>9 <span style=''>object SpawnerAggregator:
+</span>10 <span style=''>  trait SpawnerAggregator[A &lt;: Collisionable] extends GenericSpawner[A]:
+</span>11 <span style=''>  
+</span>12 <span style=''>    override def spawn(): (Set[A], SpawnerAggregator[A])
+</span>13 <span style=''>  
+</span>14 <span style=''>    override def timeElapsed(dt: DeltaTime): SpawnerAggregator[A]
+</span>15 <span style=''>  
+</span>16 <span style=''>  case class SpawnerAggregatorImpl[R &lt;: Collisionable](genericSpawners: GenericSpawner[R]*)(using Random) extends SpawnerAggregator[R]:
+</span>17 <span style=''>    
+</span>18 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): (Set[R], SpawnerAggregator[R]) =
+</span>19 <span style=''>      val list = </span><span style='background: #AEF1AE'>(genericSpawners map { i =&gt; i.spawn() }).toSet</span><span style=''>
+</span>20 <span style=''>      val v = </span><span style='background: #AEF1AE'>(list map { i =&gt; i._1 } flatMap { i =&gt; i }).toSet</span><span style=''>
+</span>21 <span style=''>      val spawners = </span><span style='background: #AEF1AE'>(list map { i =&gt; i._2 }).toList</span><span style=''>
+</span>22 <span style=''>      (v, SpawnerAggregatorImpl(spawners:_*))
+</span>23 <span style=''>  
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): SpawnerAggregator[R] =
+</span>25 <span style=''>      SpawnerAggregatorImpl(
+</span>26 <span style=''>        </span><span style='background: #AEF1AE'>(genericSpawners map { i =&gt; i.timeElapsed(dt) }).toList</span><span style=''>:_*
+</span>27 <span style=''>      )
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -62,15 +63,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          16
+          17
         </td>
         <td>
-          1268
+          1260
         </td>
         <td>
-          472
+          518
           -
-          490
+          536
         </td>
         <td>
           DefDef
@@ -86,39 +87,15 @@
         </td>
       </tr><tr>
         <td>
-          17
+          18
         </td>
         <td>
-          1258
+          1252
         </td>
         <td>
-          570
+          590
           -
-          579
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          spawn
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          i.spawn()
-        </td>
-      </tr><tr>
-        <td>
-          17
-        </td>
-        <td>
-          1260
-        </td>
-        <td>
-          542
-          -
-          588
+          636
         </td>
         <td>
           Select
@@ -134,15 +111,15 @@
         </td>
       </tr><tr>
         <td>
-          17
+          18
         </td>
         <td>
-          1259
+          1251
         </td>
         <td>
-          543
+          591
           -
-          581
+          629
         </td>
         <td>
           Apply
@@ -161,60 +138,36 @@
           18
         </td>
         <td>
-          1264
-        </td>
-        <td>
-          601
-          -
-          650
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          toSet
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (list map { i =&gt; i._1 } flatMap { i =&gt; i }).toSet
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          1261
+          1250
         </td>
         <td>
           618
           -
-          622
+          627
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          _1
+          spawn
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          i._1
+          i.spawn()
         </td>
       </tr><tr>
         <td>
-          18
+          19
         </td>
         <td>
-          1263
+          1255
         </td>
         <td>
-          602
+          652
           -
-          643
+          693
         </td>
         <td>
           Apply
@@ -230,15 +183,15 @@
         </td>
       </tr><tr>
         <td>
-          18
+          19
         </td>
         <td>
-          1262
+          1254
         </td>
         <td>
-          602
+          652
           -
-          624
+          674
         </td>
         <td>
           Apply
@@ -257,36 +210,60 @@
           19
         </td>
         <td>
-          1267
+          1253
         </td>
         <td>
-          670
+          668
           -
-          701
+          672
         </td>
         <td>
           Select
         </td>
         <td>
-          toList
+          _1
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          (list map { i =&gt; i._2 }).toList
+          i._1
         </td>
       </tr><tr>
         <td>
           19
         </td>
         <td>
-          1266
+          1256
         </td>
         <td>
-          671
+          651
           -
-          693
+          700
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toSet
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (list map { i =&gt; i._1 } flatMap { i =&gt; i }).toSet
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1258
+        </td>
+        <td>
+          723
+          -
+          745
         </td>
         <td>
           Apply
@@ -302,15 +279,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          20
         </td>
         <td>
-          1265
+          1257
         </td>
         <td>
-          687
+          739
           -
-          691
+          743
         </td>
         <td>
           Select
@@ -326,15 +303,39 @@
         </td>
       </tr><tr>
         <td>
-          22
+          20
         </td>
         <td>
-          1272
+          1259
         </td>
         <td>
-          749
+          722
           -
-          773
+          753
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toList
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (list map { i =&gt; i._2 }).toList
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1264
+        </td>
+        <td>
+          807
+          -
+          831
         </td>
         <td>
           DefDef
@@ -350,39 +351,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          25
         </td>
         <td>
-          1270
+          1261
         </td>
         <td>
-          847
+          936
           -
-          893
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          genericSpawners map { i =&gt; i.timeElapsed(dt) }
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1269
-        </td>
-        <td>
-          874
-          -
-          891
+          953
         </td>
         <td>
           Apply
@@ -398,15 +375,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          25
         </td>
         <td>
-          1271
+          1263
         </td>
         <td>
-          846
+          908
           -
-          901
+          963
         </td>
         <td>
           Select
@@ -419,6 +396,30 @@
         </td>
         <td style="background: #AEF1AE">
           (genericSpawners map { i =&gt; i.timeElapsed(dt) }).toList
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1262
+        </td>
+        <td>
+          909
+          -
+          955
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          genericSpawners map { i =&gt; i.timeElapsed(dt) }
         </td>
       </tr>
     </table>

@@ -25,7 +25,7 @@
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model
 </span>2 <span style=''>
 </span>3 <span style=''>import model.World.{height, width}
-</span>4 <span style=''>import model.collisions.Collision
+</span>4 <span style=''>import model.collisions.{Collision, Collisionable}
 </span>5 <span style=''>import model.spawner.GenericSpawner
 </span>6 <span style=''>import model.missile.Missile
 </span>7 <span style=''>import model.elements2d.Point2D
@@ -44,7 +44,7 @@
 </span>20 <span style=''>  /**
 </span>21 <span style=''>   * The spawner of the game
 </span>22 <span style=''>   */
-</span>23 <span style=''>  val spawner: GenericSpawner[Missile]
+</span>23 <span style=''>  val spawner: GenericSpawner[Collisionable]
 </span>24 <span style=''>  /**
 </span>25 <span style=''>   * The world of the game
 </span>26 <span style=''>   */
@@ -88,7 +88,7 @@
 </span>64 <span style=''>   * @param spawner the new spawner instance
 </span>65 <span style=''>   * @return a game with the new spawner
 </span>66 <span style=''>   */
-</span>67 <span style=''>  def updateSpawner(spawner: GenericSpawner[Missile]): Game
+</span>67 <span style=''>  def updateSpawner(spawner: GenericSpawner[Collisionable]): Game
 </span>68 <span style=''>
 </span>69 <span style=''>/**
 </span>70 <span style=''> * Companion object of the game
@@ -110,8 +110,8 @@
 </span>86 <span style=''>   * @param world   the world of the game
 </span>87 <span style=''>   * @return a new game with the given player, spawner and world
 </span>88 <span style=''>   */
-</span>89 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(player: Player, spawner: GenericSpawner[Missile], world: World): Game =
-</span>90 <span style=''>    case class GameImpl(player: Player, spawner: GenericSpawner[Missile], world: World) extends Game :
+</span>89 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(player: Player, spawner: GenericSpawner[Collisionable], world: World): Game =
+</span>90 <span style=''>    case class GameImpl(player: Player, spawner: GenericSpawner[Collisionable], world: World) extends Game :
 </span>91 <span style=''>      </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Game =
 </span>92 <span style=''>        val newWorld = </span><span style='background: #AEF1AE'>world.timeElapsed(dt)</span><span style=''>
 </span>93 <span style=''>        val newSpawner = </span><span style='background: #AEF1AE'>spawner.timeElapsed(dt)</span><span style=''>
@@ -143,7 +143,7 @@
 </span>119 <span style=''>      </span><span style='background: #AEF1AE'>override def updatePlayer</span><span style=''>(player: Player): Game =
 </span>120 <span style=''>        GameImpl(player, spawner, world)
 </span>121 <span style=''>
-</span>122 <span style=''>      </span><span style='background: #AEF1AE'>override def updateSpawner</span><span style=''>(spawner: GenericSpawner[Missile]): Game =
+</span>122 <span style=''>      </span><span style='background: #AEF1AE'>override def updateSpawner</span><span style=''>(spawner: GenericSpawner[Collisionable]): Game =
 </span>123 <span style=''>        GameImpl(player, spawner, world)
 </span>124 <span style=''>
 </span>125 <span style=''>    GameImpl(player, spawner, world)
@@ -177,9 +177,9 @@
           80
         </td>
         <td>
-          955
+          978
           -
-          981
+          1004
         </td>
         <td>
           Apply
@@ -201,9 +201,9 @@
           79
         </td>
         <td>
-          967
+          990
           -
-          980
+          1003
         </td>
         <td>
           Apply
@@ -225,9 +225,9 @@
           81
         </td>
         <td>
-          907
+          930
           -
-          922
+          945
         </td>
         <td>
           DefDef
@@ -249,9 +249,9 @@
           83
         </td>
         <td>
-          1440
+          1463
           -
-          1468
+          1491
         </td>
         <td>
           Apply
@@ -273,9 +273,9 @@
           82
         </td>
         <td>
-          1453
+          1476
           -
-          1467
+          1490
         </td>
         <td>
           Apply
@@ -297,9 +297,9 @@
           84
         </td>
         <td>
-          1389
+          1412
           -
-          1405
+          1428
         </td>
         <td>
           DefDef
@@ -321,9 +321,9 @@
           90
         </td>
         <td>
-          1888
+          1917
           -
-          1903
+          1932
         </td>
         <td>
           DefDef
@@ -345,9 +345,9 @@
           86
         </td>
         <td>
-          1979
+          2008
           -
-          1987
+          2016
         </td>
         <td>
           Apply
@@ -369,9 +369,9 @@
           89
         </td>
         <td>
-          1916
+          1945
           -
-          2009
+          2038
         </td>
         <td>
           Apply
@@ -393,9 +393,9 @@
           85
         </td>
         <td>
-          1921
+          1950
           -
-          1941
+          1970
         </td>
         <td>
           Select
@@ -417,9 +417,9 @@
           88
         </td>
         <td>
-          1990
+          2019
           -
-          2008
+          2037
         </td>
         <td>
           Select
@@ -441,9 +441,9 @@
           87
         </td>
         <td>
-          1943
+          1972
           -
-          1988
+          2017
         </td>
         <td>
           Apply
@@ -465,9 +465,9 @@
           120
         </td>
         <td>
-          2288
+          2317
           -
-          2297
+          2326
         </td>
         <td>
           DefDef
@@ -489,9 +489,9 @@
           95
         </td>
         <td>
-          2479
+          2520
           -
-          2503
+          2544
         </td>
         <td>
           DefDef
@@ -513,9 +513,9 @@
           91
         </td>
         <td>
-          2550
+          2591
           -
-          2571
+          2612
         </td>
         <td>
           Apply
@@ -537,9 +537,9 @@
           92
         </td>
         <td>
-          2597
+          2638
           -
-          2620
+          2661
         </td>
         <td>
           Apply
@@ -561,9 +561,9 @@
           94
         </td>
         <td>
-          2645
+          2686
           -
-          2693
+          2734
         </td>
         <td>
           Apply
@@ -585,9 +585,9 @@
           93
         </td>
         <td>
-          2664
+          2705
           -
-          2692
+          2733
         </td>
         <td>
           Apply
@@ -609,9 +609,9 @@
           96
         </td>
         <td>
-          2751
+          2792
           -
-          2775
+          2816
         </td>
         <td>
           DefDef
@@ -633,9 +633,9 @@
           99
         </td>
         <td>
-          2846
+          2887
           -
-          2871
+          2912
         </td>
         <td>
           DefDef
@@ -657,9 +657,9 @@
           98
         </td>
         <td>
-          2888
+          2929
           -
-          2919
+          2960
         </td>
         <td>
           Apply
@@ -681,9 +681,9 @@
           97
         </td>
         <td>
-          2900
+          2941
           -
-          2918
+          2959
         </td>
         <td>
           Select
@@ -705,9 +705,9 @@
           103
         </td>
         <td>
-          2927
+          2968
           -
-          2955
+          2996
         </td>
         <td>
           DefDef
@@ -729,9 +729,9 @@
           101
         </td>
         <td>
-          2994
+          3035
           -
-          3016
+          3057
         </td>
         <td>
           Apply
@@ -753,9 +753,9 @@
           100
         </td>
         <td>
-          3019
+          3060
           -
-          3040
+          3081
         </td>
         <td>
           Select
@@ -777,9 +777,9 @@
           102
         </td>
         <td>
-          3050
+          3091
           -
-          3071
+          3112
         </td>
         <td>
           Apply
@@ -801,9 +801,9 @@
           111
         </td>
         <td>
-          3092
+          3133
           -
-          3127
+          3168
         </td>
         <td>
           DefDef
@@ -825,9 +825,9 @@
           104
         </td>
         <td>
-          3176
+          3217
           -
-          3191
+          3232
         </td>
         <td>
           Apply
@@ -849,9 +849,9 @@
           105
         </td>
         <td>
-          3148
+          3189
           -
-          3173
+          3214
         </td>
         <td>
           Apply
@@ -873,9 +873,9 @@
           107
         </td>
         <td>
-          3200
+          3241
           -
-          3237
+          3278
         </td>
         <td>
           Apply
@@ -897,9 +897,9 @@
           106
         </td>
         <td>
-          3212
+          3253
           -
-          3236
+          3277
         </td>
         <td>
           Select
@@ -921,9 +921,9 @@
           108
         </td>
         <td>
-          3200
+          3241
           -
-          3274
+          3315
         </td>
         <td>
           Apply
@@ -946,9 +946,9 @@
           110
         </td>
         <td>
-          3200
+          3241
           -
-          3331
+          3372
         </td>
         <td>
           Apply
@@ -972,9 +972,9 @@
           109
         </td>
         <td>
-          3298
+          3339
           -
-          3330
+          3371
         </td>
         <td>
           Apply
@@ -996,9 +996,9 @@
           114
         </td>
         <td>
-          3339
+          3380
           -
-          3364
+          3405
         </td>
         <td>
           DefDef
@@ -1020,9 +1020,9 @@
           113
         </td>
         <td>
-          3403
+          3444
           -
-          3443
+          3484
         </td>
         <td>
           Apply
@@ -1044,9 +1044,9 @@
           112
         </td>
         <td>
-          3415
+          3456
           -
-          3442
+          3483
         </td>
         <td>
           Apply
@@ -1068,9 +1068,9 @@
           117
         </td>
         <td>
-          3451
+          3492
           -
-          3487
+          3528
         </td>
         <td>
           DefDef
@@ -1092,9 +1092,9 @@
           116
         </td>
         <td>
-          3532
+          3573
           -
-          3587
+          3628
         </td>
         <td>
           Apply
@@ -1116,9 +1116,9 @@
           115
         </td>
         <td>
-          3545
-          -
           3586
+          -
+          3627
         </td>
         <td>
           Apply
@@ -1140,9 +1140,9 @@
           118
         </td>
         <td>
-          3595
+          3636
           -
-          3620
+          3661
         </td>
         <td>
           DefDef
@@ -1164,9 +1164,9 @@
           119
         </td>
         <td>
-          3693
+          3734
           -
-          3719
+          3760
         </td>
         <td>
           DefDef
@@ -1188,9 +1188,9 @@
           124
         </td>
         <td>
-          4026
+          4073
           -
-          4041
+          4088
         </td>
         <td>
           DefDef
@@ -1212,9 +1212,9 @@
           122
         </td>
         <td>
-          4092
+          4139
           -
-          4101
+          4148
         </td>
         <td>
           Select
@@ -1236,9 +1236,9 @@
           121
         </td>
         <td>
-          4058
+          4105
           -
-          4067
+          4114
         </td>
         <td>
           Select
@@ -1260,9 +1260,9 @@
           123
         </td>
         <td>
-          4058
+          4105
           -
-          4102
+          4149
         </td>
         <td>
           Apply

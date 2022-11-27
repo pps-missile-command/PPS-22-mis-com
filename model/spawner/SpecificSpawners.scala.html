@@ -29,27 +29,55 @@
 </span>5 <span style=''>import model.missile.Missile
 </span>6 <span style=''>import model.missile.zigzag
 </span>7 <span style=''>import model.missile.zigzag.ZigZagMissile.*
-</span>8 <span style=''>import model.spawner.LazySpawner.Spawnable
-</span>9 <span style=''>import model.spawner.PimpingByRandom.*
+</span>8 <span style=''>import model.spawner.PimpingByRandom.*
+</span>9 <span style=''>import model.spawner.Spawnable.Spawnable
 </span>10 <span style=''>import model.vehicle.Plane
 </span>11 <span style=''>
 </span>12 <span style=''>import scala.util.Random
 </span>13 <span style=''>
 </span>14 <span style=''>/**
-</span>15 <span style=''> * Specific spawners strategies to spawn objects
-</span>16 <span style=''> * missili, plane
-</span>17 <span style=''> * plane spawnabile in un range witdh1 e width2
-</span>18 <span style=''> */
-</span>19 <span style=''>object SpecificSpawners:
-</span>20 <span style=''>
-</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def MissileStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
-</span>22 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))</span><span style=''>
-</span>23 <span style=''>
-</span>24 <span style=''>  </span><span style='background: #AEF1AE'>def ZigZagStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
-</span>25 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>missile.zigzag.ZigZagMissile(r.nextRandomX(maxWidth, 0), r.nextRandomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)</span><span style=''>
-</span>26 <span style=''>
-</span>27 <span style=''>  </span><span style='background: #AEF1AE'>def PlaneStrategy</span><span style=''>(maxHeight: Double)(using r: Random): Spawnable[Plane] =
-</span>28 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)</span><span style=''>
+</span>15 <span style=''> * Strategies for spawning a specific entity as a library of Spawnable factories
+</span>16 <span style=''> */
+</span>17 <span style=''>object SpecificSpawners:
+</span>18 <span style=''>  /**
+</span>19 <span style=''>   * Factory method to spawn linear missiles
+</span>20 <span style=''>   * @param maxWidth The max width starting from 0 to generate the missile
+</span>21 <span style=''>   * @param maxHeight The max height for the destination point
+</span>22 <span style=''>   * @param r The random object to generate random coordinates
+</span>23 <span style=''>   * @return the new linear missile random generated
+</span>24 <span style=''>   */
+</span>25 <span style=''>  </span><span style='background: #AEF1AE'>def MissileStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
+</span>26 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))</span><span style=''>
+</span>27 <span style=''>
+</span>28 <span style=''>  /**
+</span>29 <span style=''>   * Factory method to spawn a missile in a given position and a random destination position
+</span>30 <span style=''>   * @param maxWidth The max width starting from 0 to generate the missile
+</span>31 <span style=''>   * @param maxHeight The max height for the destination point
+</span>32 <span style=''>   * @param spawnPosition The position where to spawn the missile
+</span>33 <span style=''>   * @param r The random object to generate random coordinates
+</span>34 <span style=''>   * @return the new missile
+</span>35 <span style=''>   */
+</span>36 <span style=''>  </span><span style='background: #AEF1AE'>def FixedMissileStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double, spawnPosition: Point2D)(using r: Random): Spawnable[Missile] =
+</span>37 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Missile.enemyMissile(position = spawnPosition, finalPosition = r.nextRandomX(maxWidth, maxHeight))</span><span style=''>
+</span>38 <span style=''>
+</span>39 <span style=''>  /**
+</span>40 <span style=''>   * Factory method to generate a zigzag missile
+</span>41 <span style=''>   * @param maxWidth The max width starting from 0 to generate the missile
+</span>42 <span style=''>   * @param maxHeight The max height for the destination point
+</span>43 <span style=''>   * @param r The random object to generate random coordinates
+</span>44 <span style=''>   * @return the new zig zag missile
+</span>45 <span style=''>   */
+</span>46 <span style=''>  </span><span style='background: #AEF1AE'>def ZigZagStrategy</span><span style=''>(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
+</span>47 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>missile.zigzag.ZigZagMissile(r.nextRandomX(maxWidth, 0), r.nextRandomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)</span><span style=''>
+</span>48 <span style=''>
+</span>49 <span style=''>  /**
+</span>50 <span style=''>   * Factory method for a plane generator
+</span>51 <span style=''>   * @param maxHeight The max height where to spawn the new plane starting from 0
+</span>52 <span style=''>   * @param r The random object to generate random coordinates
+</span>53 <span style=''>   * @return the new plane
+</span>54 <span style=''>   */
+</span>55 <span style=''>  </span><span style='background: #AEF1AE'>def PlaneStrategy</span><span style=''>(maxHeight: Double)(using r: Random): Spawnable[Plane] =
+</span>56 <span style=''>    () =&gt; </span><span style='background: #AEF1AE'>Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -64,15 +92,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          24
         </td>
         <td>
-          1280
+          1272
         </td>
         <td>
-          464
+          738
           -
-          483
+          757
         </td>
         <td>
           DefDef
@@ -88,111 +116,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          25
         </td>
         <td>
-          1273
+          1267
         </td>
         <td>
-          602
+          844
           -
-          628
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextRandomX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.nextRandomX(maxWidth, 0)
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1276
-        </td>
-        <td>
-          570
-          -
-          590
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          enemyMissile$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1279
-        </td>
-        <td>
-          570
-          -
-          681
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          enemyMissile
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1278
-        </td>
-        <td>
-          570
-          -
-          590
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          enemyMissile$default$6
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Missile.enemyMissile
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1275
-        </td>
-        <td>
-          570
-          -
-          590
+          864
         </td>
         <td>
           Select
@@ -208,15 +140,39 @@
         </td>
       </tr><tr>
         <td>
-          21
+          25
         </td>
         <td>
-          1277
+          1270
         </td>
         <td>
-          570
+          844
           -
-          590
+          864
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$6
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          1269
+        </td>
+        <td>
+          844
+          -
+          864
         </td>
         <td>
           Select
@@ -232,15 +188,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          25
         </td>
         <td>
-          1274
+          1266
         </td>
         <td>
-          646
+          920
           -
-          680
+          954
         </td>
         <td>
           Apply
@@ -256,63 +212,63 @@
         </td>
       </tr><tr>
         <td>
-          23
+          25
         </td>
         <td>
-          1284
+          1268
         </td>
         <td>
-          685
+          844
           -
-          703
+          864
         </td>
         <td>
-          DefDef
+          Select
         </td>
         <td>
-          ZigZagStrategy
+          enemyMissile$default$2
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def ZigZagStrategy
+          Missile.enemyMissile
         </td>
       </tr><tr>
         <td>
-          24
+          25
         </td>
         <td>
-          1282
+          1271
         </td>
         <td>
-          847
+          844
           -
-          881
+          955
         </td>
         <td>
           Apply
         </td>
         <td>
-          nextRandomX
+          enemyMissile
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          r.nextRandomX(maxWidth, maxHeight)
+          Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))
         </td>
       </tr><tr>
         <td>
-          24
+          25
         </td>
         <td>
-          1281
+          1265
         </td>
         <td>
-          819
+          876
           -
-          845
+          902
         </td>
         <td>
           Apply
@@ -328,15 +284,207 @@
         </td>
       </tr><tr>
         <td>
-          24
+          35
+        </td>
+        <td>
+          1279
+        </td>
+        <td>
+          1360
+          -
+          1384
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          FixedMissileStrategy
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def FixedMissileStrategy
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          1273
+        </td>
+        <td>
+          1558
+          -
+          1592
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextRandomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.nextRandomX(maxWidth, maxHeight)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          1276
+        </td>
+        <td>
+          1495
+          -
+          1515
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          1278
+        </td>
+        <td>
+          1495
+          -
+          1593
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          enemyMissile
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile(position = spawnPosition, finalPosition = r.nextRandomX(maxWidth, maxHeight))
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          1275
+        </td>
+        <td>
+          1495
+          -
+          1515
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          1277
+        </td>
+        <td>
+          1495
+          -
+          1515
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$6
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          1274
+        </td>
+        <td>
+          1495
+          -
+          1515
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          enemyMissile$default$1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Missile.enemyMissile
+        </td>
+      </tr><tr>
+        <td>
+          45
         </td>
         <td>
           1283
         </td>
         <td>
-          790
+          1896
           -
-          906
+          1914
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          ZigZagStrategy
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def ZigZagStrategy
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          1282
+        </td>
+        <td>
+          2001
+          -
+          2117
         </td>
         <td>
           Apply
@@ -352,15 +500,63 @@
         </td>
       </tr><tr>
         <td>
-          26
+          46
         </td>
         <td>
-          1288
+          1281
         </td>
         <td>
-          910
+          2058
           -
-          927
+          2092
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextRandomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.nextRandomX(maxWidth, maxHeight)
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          1280
+        </td>
+        <td>
+          2030
+          -
+          2056
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextRandomX
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.nextRandomX(maxWidth, 0)
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          1287
+        </td>
+        <td>
+          2347
+          -
+          2364
         </td>
         <td>
           DefDef
@@ -376,15 +572,39 @@
         </td>
       </tr><tr>
         <td>
-          27
+          55
         </td>
         <td>
           1285
         </td>
         <td>
-          1000
+          2462
           -
-          1023
+          2476
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1284
+        </td>
+        <td>
+          2437
+          -
+          2460
         </td>
         <td>
           Apply
@@ -400,15 +620,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          55
         </td>
         <td>
-          1287
+          1286
         </td>
         <td>
-          994
+          2431
           -
-          1066
+          2503
         </td>
         <td>
           Apply
@@ -421,30 +641,6 @@
         </td>
         <td style="background: #AEF1AE">
           Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          1286
-        </td>
-        <td>
-          1025
-          -
-          1039
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          nextDouble
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          r.nextDouble()
         </td>
       </tr>
     </table>
