@@ -14,11 +14,10 @@ package object missile:
   val initialLife: LifePoint = 1
   val velocity: Double = 100
   val damage: Int = 1
-  val hitboxBase: Double = 10.0
-  val hitboxHeight: Double = 30.0
+  val hitboxBase: Double = 5.0
+  val hitboxHeight: Double = 10.0
   val maxHeight: Int = 100
   val maxWidth: Int = 50
-  val angle: Angle = Angle.Degree(90)
 
   /**
    * Given conversion that converts a pair of [[Point2D]] into a [[Vector2D]]
