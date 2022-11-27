@@ -21,6 +21,9 @@ object SpecificSpawners:
   def MissileStrategy(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
     () => Missile.enemyMissile(position = r.nextRandomX(maxWidth, 0), finalPosition = r.nextRandomX(maxWidth, maxHeight))
 
+  def FixedMissileStrategy(maxWidth: Double, maxHeight: Double, newPosition: Point2D)(using r: Random): Spawnable[Missile] =
+    () => Missile.enemyMissile(position = newPosition, finalPosition = r.nextRandomX(maxWidth, maxHeight))
+
   def ZigZagStrategy(maxWidth: Double, maxHeight: Double)(using r: Random): Spawnable[Missile] =
     () => missile.zigzag.ZigZagMissile(r.nextRandomX(maxWidth, 0), r.nextRandomX(maxWidth, maxHeight), 5, maxWidth = maxWidth)
 
