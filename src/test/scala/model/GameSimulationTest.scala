@@ -40,12 +40,11 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       val dt = 10
       Given("An initial game")
       val initialGame = Game.initialGame
-      When("The game executes a game loop")
+      When("The game executes a game loop, without special ability")
       val (_, collisions) =
         initialGame
           .timeElapsed(dt)
           .moveElements()
-          .activateSpecialAbility()
           .checkCollisions()
 
       Then("The collisions should be empty")
