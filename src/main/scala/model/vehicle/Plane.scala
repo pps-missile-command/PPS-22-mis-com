@@ -96,7 +96,7 @@ case class PlaneImpl(actualPosition: Point2D,
      *
      * @return the hit box of the object.
      */
-    override protected def hitBox: HitBox = HitBoxRectangular(position, hitboxBase, hitboxHeight, (destination <--> position).direction.get)
+    override protected def hitBox: HitBox = HitBoxRectangular(position, planeBaseSize, planeHeightSize, (destination <--> position).direction.get)
 
     /**
      * Return the affiliation of the object.
