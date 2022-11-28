@@ -80,7 +80,7 @@
 </span>56 <span style=''>   * @param update function that allow to compute the new player from the actual
 </span>57 <span style=''>   * @return a game with the new player
 </span>58 <span style=''>   */
-</span>59 <span style=''>  </span><span style='background: #F0ADAD'>def updatePlayer</span><span style=''>(update: Player =&gt; Player): Game = </span><span style='background: #F0ADAD'>updatePlayer(update(player))</span><span style=''>
+</span>59 <span style=''>  </span><span style='background: #AEF1AE'>def updatePlayer</span><span style=''>(update: Player =&gt; Player): Game = </span><span style='background: #AEF1AE'>updatePlayer(update(player))</span><span style=''>
 </span>60 <span style=''>
 </span>61 <span style=''>  /**
 </span>62 <span style=''>   * Change the actual [[GenericSpawner]] with the given one
@@ -90,73 +90,81 @@
 </span>66 <span style=''>   */
 </span>67 <span style=''>  def updateSpawner(spawner: GenericSpawner[Collisionable]): Game
 </span>68 <span style=''>
-</span>69 <span style=''>/**
-</span>70 <span style=''> * Companion object of the game
-</span>71 <span style=''> */
-</span>72 <span style=''>object Game:
-</span>73 <span style=''>  /**
-</span>74 <span style=''>   * The initial state of the game, with a initial player and a initial world
-</span>75 <span style=''>   *
-</span>76 <span style=''>   * @return the initial state of the game
-</span>77 <span style=''>   */
-</span>78 <span style=''>  </span><span style='background: #AEF1AE'>def initialGame</span><span style=''>: Game =
-</span>79 <span style=''>    </span><span style='background: #AEF1AE'>Game(Player.initialPlayer, model.spawner.standardSpawner(using Random()), World.initialWorld)</span><span style=''>
-</span>80 <span style=''>
-</span>81 <span style=''>  /**
-</span>82 <span style=''>   * Create a new game with the given player, spawner and world
-</span>83 <span style=''>   *
-</span>84 <span style=''>   * @param player  the player of the game
-</span>85 <span style=''>   * @param spawner the spawner of the game
-</span>86 <span style=''>   * @param world   the world of the game
-</span>87 <span style=''>   * @return a new game with the given player, spawner and world
-</span>88 <span style=''>   */
-</span>89 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(player: Player, spawner: GenericSpawner[Collisionable], world: World): Game =
-</span>90 <span style=''>    case class GameImpl(player: Player, spawner: GenericSpawner[Collisionable], world: World) extends Game :
-</span>91 <span style=''>      </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Game =
-</span>92 <span style=''>        val newWorld = </span><span style='background: #AEF1AE'>world.timeElapsed(dt)</span><span style=''>
-</span>93 <span style=''>        val newSpawner = </span><span style='background: #AEF1AE'>spawner.timeElapsed(dt)</span><span style=''>
-</span>94 <span style=''>        val newPlayer = </span><span style='background: #AEF1AE'>player.updateTimer(player.timer.timeElapsed(dt))</span><span style=''>
-</span>95 <span style=''>        GameImpl(newPlayer, newSpawner, newWorld)
-</span>96 <span style=''>
-</span>97 <span style=''>      </span><span style='background: #AEF1AE'>override def updateWorld</span><span style=''>(world: World): Game =
-</span>98 <span style=''>        GameImpl(player, spawner, world)
-</span>99 <span style=''>
-</span>100 <span style=''>      </span><span style='background: #AEF1AE'>override def moveElements</span><span style=''>: Game =
-</span>101 <span style=''>        </span><span style='background: #AEF1AE'>updateWorld(world.moveElements)</span><span style=''>
-</span>102 <span style=''>
-</span>103 <span style=''>      </span><span style='background: #AEF1AE'>override def checkCollisions</span><span style=''>: (Game, Set[Collision]) =
-</span>104 <span style=''>        val </span><span style='background: #AEF1AE'>(newWorld, collisions)</span><span style=''> = </span><span style='background: #AEF1AE'>world.checkCollisions</span><span style=''>
-</span>105 <span style=''>        (</span><span style='background: #AEF1AE'>updateWorld(newWorld)</span><span style=''>, collisions)
-</span>106 <span style=''>
-</span>107 <span style=''>      </span><span style='background: #AEF1AE'>override def activateSpecialAbility</span><span style=''>: Game =
-</span>108 <span style=''>        val </span><span style='background: #AEF1AE'>(newMissiles, newSpawner)</span><span style=''> = </span><span style='background: #AEF1AE'>spawner.spawn()</span><span style=''>
-</span>109 <span style=''>        </span><span style='background: #AEF1AE'>updateWorld(_.activateSpecialAbility)
-</span>110 <span style=''></span><span style='background: #AEF1AE'>          .updateSpawner(newSpawner)
-</span>111 <span style=''></span><span style='background: #AEF1AE'>          .updateWorld(_.addCollisionables(newMissiles))</span><span style=''>
-</span>112 <span style=''>
-</span>113 <span style=''>      </span><span style='background: #AEF1AE'>override def shootMissile</span><span style=''>(destination: Point2D): Game =
-</span>114 <span style=''>        </span><span style='background: #AEF1AE'>updateWorld(_.shootMissile(destination))</span><span style=''>
-</span>115 <span style=''>
-</span>116 <span style=''>      </span><span style='background: #AEF1AE'>override def updateScoreByCollisions</span><span style=''>(collisions: Set[Collision]): Game =
-</span>117 <span style=''>        </span><span style='background: #AEF1AE'>updatePlayer(player updateScoreByCollisions collisions)</span><span style=''>
-</span>118 <span style=''>
-</span>119 <span style=''>      </span><span style='background: #AEF1AE'>override def updatePlayer</span><span style=''>(player: Player): Game =
-</span>120 <span style=''>        GameImpl(player, spawner, world)
-</span>121 <span style=''>
-</span>122 <span style=''>      </span><span style='background: #AEF1AE'>override def updateSpawner</span><span style=''>(spawner: GenericSpawner[Collisionable]): Game =
-</span>123 <span style=''>        GameImpl(player, spawner, world)
-</span>124 <span style=''>
-</span>125 <span style=''>    GameImpl(player, spawner, world)
+</span>69 <span style=''>  /**
+</span>70 <span style=''>   * Update the actual [[GenericSpawner]] changing it from the update function
+</span>71 <span style=''>   *
+</span>72 <span style=''>   * @param update function that allow to compute the new spawner from the actual
+</span>73 <span style=''>   * @return a game with the new spawner
+</span>74 <span style=''>   */
+</span>75 <span style=''>  </span><span style='background: #AEF1AE'>def updateSpawner</span><span style=''>(update: GenericSpawner[Collisionable] =&gt; GenericSpawner[Collisionable]): Game =
+</span>76 <span style=''>    </span><span style='background: #AEF1AE'>updateSpawner(update(spawner))</span><span style=''>
+</span>77 <span style=''>
+</span>78 <span style=''>/**
+</span>79 <span style=''> * Companion object of the game
+</span>80 <span style=''> */
+</span>81 <span style=''>object Game:
+</span>82 <span style=''>  /**
+</span>83 <span style=''>   * The initial state of the game, with a initial player and a initial world
+</span>84 <span style=''>   *
+</span>85 <span style=''>   * @return the initial state of the game
+</span>86 <span style=''>   */
+</span>87 <span style=''>  </span><span style='background: #AEF1AE'>def initialGame</span><span style=''>: Game =
+</span>88 <span style=''>    </span><span style='background: #AEF1AE'>Game(Player.initialPlayer, model.spawner.standardSpawner(using Random()), World.initialWorld)</span><span style=''>
+</span>89 <span style=''>
+</span>90 <span style=''>  /**
+</span>91 <span style=''>   * Create a new game with the given player, spawner and world
+</span>92 <span style=''>   *
+</span>93 <span style=''>   * @param player  the player of the game
+</span>94 <span style=''>   * @param spawner the spawner of the game
+</span>95 <span style=''>   * @param world   the world of the game
+</span>96 <span style=''>   * @return a new game with the given player, spawner and world
+</span>97 <span style=''>   */
+</span>98 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(player: Player, spawner: GenericSpawner[Collisionable], world: World): Game =
+</span>99 <span style=''>    case class GameImpl(player: Player, spawner: GenericSpawner[Collisionable], world: World) extends Game :
+</span>100 <span style=''>      </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Game =
+</span>101 <span style=''>        </span><span style='background: #AEF1AE'>updateWorld(_.timeElapsed(dt))
+</span>102 <span style=''></span><span style='background: #AEF1AE'>          .updatePlayer(_.timeElapsed(dt))
+</span>103 <span style=''></span><span style='background: #AEF1AE'>          .updateSpawner(_.timeElapsed(dt))</span><span style=''>
+</span>104 <span style=''>
+</span>105 <span style=''>      </span><span style='background: #AEF1AE'>override def updateWorld</span><span style=''>(world: World): Game =
+</span>106 <span style=''>        GameImpl(player, spawner, world)
+</span>107 <span style=''>
+</span>108 <span style=''>      </span><span style='background: #AEF1AE'>override def moveElements</span><span style=''>: Game =
+</span>109 <span style=''>        </span><span style='background: #AEF1AE'>updateWorld(world.moveElements)</span><span style=''>
+</span>110 <span style=''>
+</span>111 <span style=''>      </span><span style='background: #AEF1AE'>override def checkCollisions</span><span style=''>: (Game, Set[Collision]) =
+</span>112 <span style=''>        val </span><span style='background: #AEF1AE'>(newWorld, collisions)</span><span style=''> = </span><span style='background: #AEF1AE'>world.checkCollisions</span><span style=''>
+</span>113 <span style=''>        (</span><span style='background: #AEF1AE'>updateWorld(newWorld)</span><span style=''>, collisions)
+</span>114 <span style=''>
+</span>115 <span style=''>      </span><span style='background: #AEF1AE'>override def activateSpecialAbility</span><span style=''>: Game =
+</span>116 <span style=''>        val </span><span style='background: #AEF1AE'>(newMissiles, newSpawner)</span><span style=''> = </span><span style='background: #AEF1AE'>spawner.spawn()</span><span style=''>
+</span>117 <span style=''>        </span><span style='background: #AEF1AE'>updateWorld(_.activateSpecialAbility)
+</span>118 <span style=''></span><span style='background: #AEF1AE'>          .updateSpawner(newSpawner)
+</span>119 <span style=''></span><span style='background: #AEF1AE'>          .updateWorld(_.addCollisionables(newMissiles))</span><span style=''>
+</span>120 <span style=''>
+</span>121 <span style=''>      </span><span style='background: #AEF1AE'>override def shootMissile</span><span style=''>(destination: Point2D): Game =
+</span>122 <span style=''>        </span><span style='background: #AEF1AE'>updateWorld(_.shootMissile(destination))</span><span style=''>
+</span>123 <span style=''>
+</span>124 <span style=''>      </span><span style='background: #AEF1AE'>override def updateScoreByCollisions</span><span style=''>(collisions: Set[Collision]): Game =
+</span>125 <span style=''>        </span><span style='background: #AEF1AE'>updatePlayer(player updateScoreByCollisions collisions)</span><span style=''>
 </span>126 <span style=''>
-</span>127 <span style=''>  extension (result: (Game, Set[Collision]))
-</span>128 <span style=''>
-</span>129 <span style=''>    /**
-</span>130 <span style=''>     * Update score in the game using the collisions in the tuple
-</span>131 <span style=''>     *
-</span>132 <span style=''>     * @return a game with the updated score
-</span>133 <span style=''>     */
-</span>134 <span style=''>    </span><span style='background: #AEF1AE'>def updateScore</span><span style=''>(): Game =
-</span>135 <span style=''>      </span><span style='background: #AEF1AE'>result._1.updateScoreByCollisions(result._2)</span><span style=''>
+</span>127 <span style=''>      </span><span style='background: #AEF1AE'>override def updatePlayer</span><span style=''>(player: Player): Game =
+</span>128 <span style=''>        GameImpl(player, spawner, world)
+</span>129 <span style=''>
+</span>130 <span style=''>      </span><span style='background: #AEF1AE'>override def updateSpawner</span><span style=''>(spawner: GenericSpawner[Collisionable]): Game =
+</span>131 <span style=''>        GameImpl(player, spawner, world)
+</span>132 <span style=''>
+</span>133 <span style=''>    GameImpl(player, spawner, world)
+</span>134 <span style=''>
+</span>135 <span style=''>  extension (result: (Game, Set[Collision]))
+</span>136 <span style=''>
+</span>137 <span style=''>    /**
+</span>138 <span style=''>     * Update score in the game using the collisions in the tuple
+</span>139 <span style=''>     *
+</span>140 <span style=''>     * @return a game with the updated score
+</span>141 <span style=''>     */
+</span>142 <span style=''>    </span><span style='background: #AEF1AE'>def updateScore</span><span style=''>(): Game =
+</span>143 <span style=''>      </span><span style='background: #AEF1AE'>result._1.updateScoreByCollisions(result._2)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -262,7 +270,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           updatePlayer(update(player))
         </td>
       </tr><tr>
@@ -286,7 +294,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           update(player)
         </td>
       </tr><tr>
@@ -310,20 +318,92 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           def updatePlayer
         </td>
       </tr><tr>
         <td>
-          77
+          74
         </td>
         <td>
-          90
+          87
         </td>
         <td>
-          1917
+          1945
           -
-          1932
+          1962
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateSpawner
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def updateSpawner
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          86
+        </td>
+        <td>
+          2047
+          -
+          2077
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateSpawner
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateSpawner(update(spawner))
+        </td>
+      </tr><tr>
+        <td>
+          75
+        </td>
+        <td>
+          85
+        </td>
+        <td>
+          2061
+          -
+          2076
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          update(spawner)
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          93
+        </td>
+        <td>
+          2272
+          -
+          2287
         </td>
         <td>
           DefDef
@@ -339,39 +419,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          87
         </td>
         <td>
-          86
+          92
         </td>
         <td>
-          2008
+          2300
           -
-          2016
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Random()
-        </td>
-      </tr><tr>
-        <td>
-          78
-        </td>
-        <td>
-          89
-        </td>
-        <td>
-          1945
-          -
-          2038
+          2393
         </td>
         <td>
           Apply
@@ -387,39 +443,39 @@
         </td>
       </tr><tr>
         <td>
-          78
+          87
         </td>
         <td>
-          85
+          89
         </td>
         <td>
-          1950
+          2363
           -
-          1970
+          2371
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          initialPlayer
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Player.initialPlayer
+          Random()
         </td>
       </tr><tr>
         <td>
-          78
+          87
         </td>
         <td>
-          88
+          91
         </td>
         <td>
-          2019
+          2374
           -
-          2037
+          2392
         </td>
         <td>
           Select
@@ -435,15 +491,39 @@
         </td>
       </tr><tr>
         <td>
-          78
+          87
         </td>
+        <td>
+          88
+        </td>
+        <td>
+          2305
+          -
+          2325
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          initialPlayer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Player.initialPlayer
+        </td>
+      </tr><tr>
         <td>
           87
         </td>
         <td>
-          1972
+          90
+        </td>
+        <td>
+          2327
           -
-          2017
+          2372
         </td>
         <td>
           Apply
@@ -459,15 +539,15 @@
         </td>
       </tr><tr>
         <td>
-          88
+          97
         </td>
         <td>
-          120
+          125
         </td>
         <td>
-          2317
+          2672
           -
-          2326
+          2681
         </td>
         <td>
           DefDef
@@ -483,15 +563,15 @@
         </td>
       </tr><tr>
         <td>
-          90
+          99
         </td>
         <td>
-          95
+          100
         </td>
         <td>
-          2520
+          2875
           -
-          2544
+          2899
         </td>
         <td>
           DefDef
@@ -507,87 +587,39 @@
         </td>
       </tr><tr>
         <td>
-          91
+          100
         </td>
         <td>
-          91
+          95
         </td>
         <td>
-          2591
+          2931
           -
-          2612
+          2961
         </td>
         <td>
           Apply
         </td>
         <td>
-          timeElapsed
+          updateWorld
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          world.timeElapsed(dt)
+          updateWorld(_.timeElapsed(dt))
         </td>
       </tr><tr>
         <td>
-          92
-        </td>
-        <td>
-          92
-        </td>
-        <td>
-          2638
-          -
-          2661
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          timeElapsed
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          spawner.timeElapsed(dt)
-        </td>
-      </tr><tr>
-        <td>
-          93
+          100
         </td>
         <td>
           94
         </td>
         <td>
-          2686
+          2943
           -
-          2734
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          updateTimer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          player.updateTimer(player.timer.timeElapsed(dt))
-        </td>
-      </tr><tr>
-        <td>
-          93
-        </td>
-        <td>
-          93
-        </td>
-        <td>
-          2705
-          -
-          2733
+          2960
         </td>
         <td>
           Apply
@@ -599,19 +631,118 @@
           
         </td>
         <td style="background: #AEF1AE">
-          player.timer.timeElapsed(dt)
+          _.timeElapsed(dt)
         </td>
       </tr><tr>
         <td>
-          96
+          101
         </td>
         <td>
-          96
+          97
         </td>
         <td>
-          2792
+          2931
           -
-          2816
+          3004
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updatePlayer
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateWorld(_.timeElapsed(dt))
+          .updatePlayer(_.timeElapsed(dt))
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          96
+        </td>
+        <td>
+          2986
+          -
+          3003
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.timeElapsed(dt)
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          98
+        </td>
+        <td>
+          3030
+          -
+          3047
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          timeElapsed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.timeElapsed(dt)
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          99
+        </td>
+        <td>
+          2931
+          -
+          3048
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateSpawner
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateWorld(_.timeElapsed(dt))
+          .updatePlayer(_.timeElapsed(dt))
+          .updateSpawner(_.timeElapsed(dt))
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          101
+        </td>
+        <td>
+          3056
+          -
+          3080
         </td>
         <td>
           DefDef
@@ -627,15 +758,15 @@
         </td>
       </tr><tr>
         <td>
-          99
+          107
         </td>
         <td>
-          99
+          104
         </td>
         <td>
-          2887
+          3151
           -
-          2912
+          3176
         </td>
         <td>
           DefDef
@@ -651,15 +782,15 @@
         </td>
       </tr><tr>
         <td>
-          100
+          108
         </td>
         <td>
-          98
+          103
         </td>
         <td>
-          2929
+          3193
           -
-          2960
+          3224
         </td>
         <td>
           Apply
@@ -675,15 +806,15 @@
         </td>
       </tr><tr>
         <td>
-          100
+          108
         </td>
         <td>
-          97
+          102
         </td>
         <td>
-          2941
+          3205
           -
-          2959
+          3223
         </td>
         <td>
           Select
@@ -699,15 +830,15 @@
         </td>
       </tr><tr>
         <td>
-          102
+          110
         </td>
         <td>
-          103
+          108
         </td>
         <td>
-          2968
+          3232
           -
-          2996
+          3260
         </td>
         <td>
           DefDef
@@ -723,15 +854,15 @@
         </td>
       </tr><tr>
         <td>
-          103
+          111
         </td>
         <td>
-          101
+          106
         </td>
         <td>
-          3035
+          3299
           -
-          3057
+          3321
         </td>
         <td>
           Apply
@@ -747,15 +878,15 @@
         </td>
       </tr><tr>
         <td>
-          103
+          111
         </td>
         <td>
-          100
+          105
         </td>
         <td>
-          3060
+          3324
           -
-          3081
+          3345
         </td>
         <td>
           Select
@@ -771,15 +902,15 @@
         </td>
       </tr><tr>
         <td>
-          104
+          112
         </td>
         <td>
-          102
+          107
         </td>
         <td>
-          3091
+          3355
           -
-          3112
+          3376
         </td>
         <td>
           Apply
@@ -795,15 +926,15 @@
         </td>
       </tr><tr>
         <td>
-          106
+          114
         </td>
         <td>
-          111
+          116
         </td>
         <td>
-          3133
+          3397
           -
-          3168
+          3432
         </td>
         <td>
           DefDef
@@ -819,39 +950,15 @@
         </td>
       </tr><tr>
         <td>
-          107
+          115
         </td>
         <td>
-          104
+          110
         </td>
         <td>
-          3217
+          3453
           -
-          3232
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          spawn
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          spawner.spawn()
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
-          105
-        </td>
-        <td>
-          3189
-          -
-          3214
+          3478
         </td>
         <td>
           Apply
@@ -867,15 +974,39 @@
         </td>
       </tr><tr>
         <td>
-          108
+          115
         </td>
         <td>
-          107
+          109
         </td>
         <td>
-          3241
+          3481
           -
-          3278
+          3496
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          spawn
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          spawner.spawn()
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          112
+        </td>
+        <td>
+          3505
+          -
+          3542
         </td>
         <td>
           Apply
@@ -891,15 +1022,15 @@
         </td>
       </tr><tr>
         <td>
-          108
+          116
         </td>
         <td>
-          106
+          111
         </td>
         <td>
-          3253
+          3517
           -
-          3277
+          3541
         </td>
         <td>
           Select
@@ -915,15 +1046,15 @@
         </td>
       </tr><tr>
         <td>
-          109
+          117
         </td>
         <td>
-          108
+          113
         </td>
         <td>
-          3241
+          3505
           -
-          3315
+          3579
         </td>
         <td>
           Apply
@@ -940,15 +1071,15 @@
         </td>
       </tr><tr>
         <td>
-          110
+          118
         </td>
         <td>
-          110
+          115
         </td>
         <td>
-          3241
+          3505
           -
-          3372
+          3636
         </td>
         <td>
           Apply
@@ -966,15 +1097,15 @@
         </td>
       </tr><tr>
         <td>
-          110
+          118
         </td>
         <td>
-          109
+          114
         </td>
         <td>
-          3339
+          3603
           -
-          3371
+          3635
         </td>
         <td>
           Apply
@@ -990,15 +1121,15 @@
         </td>
       </tr><tr>
         <td>
-          112
+          120
         </td>
         <td>
-          114
+          119
         </td>
         <td>
-          3380
+          3644
           -
-          3405
+          3669
         </td>
         <td>
           DefDef
@@ -1014,15 +1145,15 @@
         </td>
       </tr><tr>
         <td>
-          113
+          121
         </td>
         <td>
-          113
+          118
         </td>
         <td>
-          3444
+          3708
           -
-          3484
+          3748
         </td>
         <td>
           Apply
@@ -1038,15 +1169,15 @@
         </td>
       </tr><tr>
         <td>
-          113
+          121
         </td>
         <td>
-          112
+          117
         </td>
         <td>
-          3456
+          3720
           -
-          3483
+          3747
         </td>
         <td>
           Apply
@@ -1062,15 +1193,15 @@
         </td>
       </tr><tr>
         <td>
-          115
+          123
         </td>
         <td>
-          117
+          122
         </td>
         <td>
-          3492
+          3756
           -
-          3528
+          3792
         </td>
         <td>
           DefDef
@@ -1086,15 +1217,15 @@
         </td>
       </tr><tr>
         <td>
-          116
+          124
         </td>
         <td>
-          116
+          121
         </td>
         <td>
-          3573
+          3837
           -
-          3628
+          3892
         </td>
         <td>
           Apply
@@ -1110,15 +1241,15 @@
         </td>
       </tr><tr>
         <td>
-          116
+          124
         </td>
         <td>
-          115
+          120
         </td>
         <td>
-          3586
+          3850
           -
-          3627
+          3891
         </td>
         <td>
           Apply
@@ -1134,15 +1265,15 @@
         </td>
       </tr><tr>
         <td>
-          118
+          126
         </td>
         <td>
-          118
+          123
         </td>
         <td>
-          3636
+          3900
           -
-          3661
+          3925
         </td>
         <td>
           DefDef
@@ -1158,15 +1289,15 @@
         </td>
       </tr><tr>
         <td>
-          121
+          129
         </td>
         <td>
-          119
+          124
         </td>
         <td>
-          3734
+          3998
           -
-          3760
+          4024
         </td>
         <td>
           DefDef
@@ -1182,15 +1313,15 @@
         </td>
       </tr><tr>
         <td>
-          133
+          141
         </td>
         <td>
-          124
+          129
         </td>
         <td>
-          4073
+          4337
           -
-          4088
+          4352
         </td>
         <td>
           DefDef
@@ -1206,15 +1337,39 @@
         </td>
       </tr><tr>
         <td>
-          134
+          142
         </td>
         <td>
-          122
+          128
         </td>
         <td>
-          4139
+          4369
           -
-          4148
+          4413
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateScoreByCollisions
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          result._1.updateScoreByCollisions(result._2)
+        </td>
+      </tr><tr>
+        <td>
+          142
+        </td>
+        <td>
+          127
+        </td>
+        <td>
+          4403
+          -
+          4412
         </td>
         <td>
           Select
@@ -1230,15 +1385,15 @@
         </td>
       </tr><tr>
         <td>
-          134
+          142
         </td>
         <td>
-          121
+          126
         </td>
         <td>
-          4105
+          4369
           -
-          4114
+          4378
         </td>
         <td>
           Select
@@ -1251,30 +1406,6 @@
         </td>
         <td style="background: #AEF1AE">
           result._1
-        </td>
-      </tr><tr>
-        <td>
-          134
-        </td>
-        <td>
-          123
-        </td>
-        <td>
-          4105
-          -
-          4149
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          updateScoreByCollisions
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          result._1.updateScoreByCollisions(result._2)
         </td>
       </tr>
     </table>
