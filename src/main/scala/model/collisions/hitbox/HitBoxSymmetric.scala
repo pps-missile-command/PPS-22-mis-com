@@ -12,14 +12,14 @@ trait HitBoxSymmetric extends HitBox :
    *
    * @return all the x coordinates that are needed to calculate the hit box interval
    */
-  protected def x: Iterable[Double]
+  protected val x: Iterable[Double]
 
   /**
    * Return all the y coordinates that are needed to calculate the hit box interval
    *
    * @return all the y coordinates that are needed to calculate the hit box interval
    */
-  protected def y: Iterable[Double]
+  protected val y: Iterable[Double]
 
   /**
    * Return the calculated max side of hit box from the values
