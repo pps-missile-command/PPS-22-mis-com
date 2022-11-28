@@ -66,6 +66,15 @@ trait Game extends WorldActions[Game], PlayerActions[Game] :
    */
   def updateSpawner(spawner: GenericSpawner[Collisionable]): Game
 
+  /**
+   * Update the actual [[GenericSpawner]] changing it from the update function
+   *
+   * @param update function that allow to compute the new spawner from the actual
+   * @return a game with the new spawner
+   */
+  def updateSpawner(update: GenericSpawner[Collisionable] => GenericSpawner[Collisionable]): Game =
+    updateSpawner(update(spawner))
+
 /**
  * Companion object of the game
  */
@@ -89,10 +98,9 @@ object Game:
   def apply(player: Player, spawner: GenericSpawner[Collisionable], world: World): Game =
     case class GameImpl(player: Player, spawner: GenericSpawner[Collisionable], world: World) extends Game :
       override def timeElapsed(dt: DeltaTime): Game =
-        val newWorld = world.timeElapsed(dt)
-        val newSpawner = spawner.timeElapsed(dt)
-        val newPlayer = player.updateTimer(player.timer.timeElapsed(dt))
-        GameImpl(newPlayer, newSpawner, newWorld)
+        updateWorld(_.timeElapsed(dt))
+          .updatePlayer(_.timeElapsed(dt))
+          .updateSpawner(_.timeElapsed(dt))
 
       override def updateWorld(world: World): Game =
         GameImpl(player, spawner, world)
