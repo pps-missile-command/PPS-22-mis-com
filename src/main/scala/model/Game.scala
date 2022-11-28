@@ -9,7 +9,7 @@ import model.elements2d.Point2D
 import scala.util.Random
 
 /**
- * Class representing the game
+ * Trait representing the game
  *
  */
 trait Game extends WorldActions[Game], PlayerActions[Game] :
