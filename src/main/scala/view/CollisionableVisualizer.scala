@@ -71,7 +71,7 @@ object CollisionableVisualizer:
         ImageIO.read(getClass.getResource("/Satellite.png")),
         model.vehicle.satelliteBaseSize use convertWidth,
         model.vehicle.satelliteHeightSize use convertHeight,
-        p.position map convertPosition,
+        s.position map convertPosition,
         Angle.Degree(90)
       )
 
