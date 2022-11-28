@@ -43,45 +43,57 @@
 </span>19 <span style=''>   */
 </span>20 <span style=''>  val timer: Timer
 </span>21 <span style=''>
-</span>22 <span style=''>  def updateScore(score: ScorePoint): Player
-</span>23 <span style=''>
-</span>24 <span style=''>  def updateTimer(timer: Timer): Player
-</span>25 <span style=''>
-</span>26 <span style=''>/**
-</span>27 <span style=''> * Companion object of the Player class.
-</span>28 <span style=''> */
-</span>29 <span style=''>object Player:
-</span>30 <span style=''>
-</span>31 <span style=''>  /**
-</span>32 <span style=''>   * The initial player of the game with a score of 0 and a timer of 0.
-</span>33 <span style=''>   *
-</span>34 <span style=''>   * @return the initial player
+</span>22 <span style=''>  /**
+</span>23 <span style=''>   * update the score of the player.
+</span>24 <span style=''>   *
+</span>25 <span style=''>   * @param score the new score of the player.
+</span>26 <span style=''>   * @return a new player with the new score.
+</span>27 <span style=''>   */
+</span>28 <span style=''>  def updateScore(score: ScorePoint): Player
+</span>29 <span style=''>
+</span>30 <span style=''>  /**
+</span>31 <span style=''>   * update the timer of the player.
+</span>32 <span style=''>   *
+</span>33 <span style=''>   * @param timer the new timer of the player.
+</span>34 <span style=''>   * @return a new player with the new timer.
 </span>35 <span style=''>   */
-</span>36 <span style=''>  </span><span style='background: #AEF1AE'>def initialPlayer</span><span style=''>: Player =
-</span>37 <span style=''>    </span><span style='background: #AEF1AE'>Player(0, Timer(0))</span><span style=''>
-</span>38 <span style=''>
-</span>39 <span style=''>  /**
-</span>40 <span style=''>   * Creates a new player with the given score and timer.
-</span>41 <span style=''>   *
-</span>42 <span style=''>   * @param score the score of the player
-</span>43 <span style=''>   * @param timer the survival timer of the player
-</span>44 <span style=''>   * @return a new player with the given score and timer
-</span>45 <span style=''>   */
-</span>46 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(score: ScorePoint, timer: Timer): Player =
-</span>47 <span style=''>    case class PlayerImpl(score: ScorePoint, timer: Timer) extends Player :
-</span>48 <span style=''>      </span><span style='background: #AEF1AE'>override def updateScore</span><span style=''>(score: ScorePoint): Player =
-</span>49 <span style=''>        PlayerImpl(score, timer)
+</span>36 <span style=''>  def updateTimer(timer: Timer): Player
+</span>37 <span style=''>
+</span>38 <span style=''>/**
+</span>39 <span style=''> * Companion object of the Player class.
+</span>40 <span style=''> */
+</span>41 <span style=''>object Player:
+</span>42 <span style=''>
+</span>43 <span style=''>  /**
+</span>44 <span style=''>   * The initial player of the game with a score of 0 and a timer of 0.
+</span>45 <span style=''>   *
+</span>46 <span style=''>   * @return the initial player
+</span>47 <span style=''>   */
+</span>48 <span style=''>  </span><span style='background: #AEF1AE'>def initialPlayer</span><span style=''>: Player =
+</span>49 <span style=''>    </span><span style='background: #AEF1AE'>Player(0, Timer(0))</span><span style=''>
 </span>50 <span style=''>
-</span>51 <span style=''>      </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Player =
-</span>52 <span style=''>        </span><span style='background: #F0ADAD'>updateTimer(timer.timeElapsed(dt))</span><span style=''>
-</span>53 <span style=''>
-</span>54 <span style=''>      </span><span style='background: #AEF1AE'>override def updateScoreByCollisions</span><span style=''>(collisions: Set[Collision]): Player =
-</span>55 <span style=''>        </span><span style='background: #AEF1AE'>updateScore(score calculateNewScoreBasedOn collisions)</span><span style=''>
-</span>56 <span style=''>
-</span>57 <span style=''>      </span><span style='background: #AEF1AE'>override def updateTimer</span><span style=''>(timer: Timer): Player =
-</span>58 <span style=''>        PlayerImpl(score, timer)
-</span>59 <span style=''>
-</span>60 <span style=''>    PlayerImpl(score, timer)
+</span>51 <span style=''>  /**
+</span>52 <span style=''>   * Creates a new player with the given score and timer.
+</span>53 <span style=''>   *
+</span>54 <span style=''>   * @param score the score of the player
+</span>55 <span style=''>   * @param timer the survival timer of the player
+</span>56 <span style=''>   * @return a new player with the given score and timer
+</span>57 <span style=''>   */
+</span>58 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(score: ScorePoint, timer: Timer): Player =
+</span>59 <span style=''>    case class PlayerImpl(score: ScorePoint, timer: Timer) extends Player :
+</span>60 <span style=''>      </span><span style='background: #AEF1AE'>override def updateScore</span><span style=''>(score: ScorePoint): Player =
+</span>61 <span style=''>        PlayerImpl(score, timer)
+</span>62 <span style=''>
+</span>63 <span style=''>      </span><span style='background: #F0ADAD'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Player =
+</span>64 <span style=''>        </span><span style='background: #F0ADAD'>updateTimer(timer.timeElapsed(dt))</span><span style=''>
+</span>65 <span style=''>
+</span>66 <span style=''>      </span><span style='background: #AEF1AE'>override def updateScoreByCollisions</span><span style=''>(collisions: Set[Collision]): Player =
+</span>67 <span style=''>        </span><span style='background: #AEF1AE'>updateScore(score calculateNewScoreBasedOn collisions)</span><span style=''>
+</span>68 <span style=''>
+</span>69 <span style=''>      </span><span style='background: #AEF1AE'>override def updateTimer</span><span style=''>(timer: Timer): Player =
+</span>70 <span style=''>        PlayerImpl(score, timer)
+</span>71 <span style=''>
+</span>72 <span style=''>    PlayerImpl(score, timer)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -96,15 +108,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          35
+          47
         </td>
         <td>
           153
         </td>
         <td>
-          583
+          877
           -
-          600
+          894
         </td>
         <td>
           DefDef
@@ -120,15 +132,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          48
         </td>
         <td>
           152
         </td>
         <td>
-          615
+          909
           -
-          634
+          928
         </td>
         <td>
           Apply
@@ -144,15 +156,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          57
         </td>
         <td>
           162
         </td>
         <td>
-          863
+          1157
           -
-          872
+          1166
         </td>
         <td>
           DefDef
@@ -168,15 +180,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          59
         </td>
         <td>
           154
         </td>
         <td>
-          998
+          1292
           -
-          1022
+          1316
         </td>
         <td>
           DefDef
@@ -192,15 +204,15 @@
         </td>
       </tr><tr>
         <td>
-          50
+          62
         </td>
         <td>
           157
         </td>
         <td>
-          1092
+          1386
           -
-          1116
+          1410
         </td>
         <td>
           DefDef
@@ -216,15 +228,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          63
         </td>
         <td>
           155
         </td>
         <td>
-          1162
+          1456
           -
-          1183
+          1477
         </td>
         <td>
           Apply
@@ -240,15 +252,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          63
         </td>
         <td>
           156
         </td>
         <td>
-          1150
+          1444
           -
-          1184
+          1478
         </td>
         <td>
           Apply
@@ -264,15 +276,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          65
         </td>
         <td>
           160
         </td>
         <td>
-          1192
+          1486
           -
-          1228
+          1522
         </td>
         <td>
           DefDef
@@ -288,15 +300,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          66
         </td>
         <td>
           158
         </td>
         <td>
-          1287
+          1581
           -
-          1328
+          1622
         </td>
         <td>
           Apply
@@ -312,15 +324,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          66
         </td>
         <td>
           159
         </td>
         <td>
-          1275
+          1569
           -
-          1329
+          1623
         </td>
         <td>
           Apply
@@ -336,15 +348,15 @@
         </td>
       </tr><tr>
         <td>
-          56
+          68
         </td>
         <td>
           161
         </td>
         <td>
-          1337
+          1631
           -
-          1361
+          1655
         </td>
         <td>
           DefDef
