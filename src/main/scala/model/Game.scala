@@ -105,18 +105,21 @@ object Game:
       override def updateWorld(world: World): Game =
         GameImpl(player, spawner, world)
 
-      override def moveElements: Game =
-        updateWorld(world.moveElements)
+      override def moveElements(): Game =
+        updateWorld(world.moveElements())
 
-      override def checkCollisions: (Game, Set[Collision]) =
-        val (newWorld, collisions) = world.checkCollisions
+      override def checkCollisions(): (Game, Set[Collision]) =
+        val (newWorld, collisions) = world.checkCollisions()
         (updateWorld(newWorld), collisions)
 
-      override def activateSpecialAbility: Game =
+      override def activateSpecialAbility(): Game =
         val (newMissiles, newSpawner) = spawner.spawn()
-        updateWorld(_.activateSpecialAbility)
+        updateWorld(_.activateSpecialAbility())
           .updateSpawner(newSpawner)
           .updateWorld(_.addCollisionables(newMissiles))
+
+      override def removeElementsThatReachedDestinations(): Game =
+        updateWorld(_.removeElementsThatReachedDestinations())
 
       override def shootMissile(destination: Point2D): Game =
         updateWorld(_.shootMissile(destination))
