@@ -63,6 +63,6 @@ case class SatelliteImpl(actualPosition: Point2D,
     override def affiliation: Affiliation = Affiliation.Friendly
     override def timeElapsed(dt: DeltaTime): Satellite = this.copy(missileSpawner = missileSpawner.timeElapsed(dt), deltaTime = deltaTime + dt)
 
-//object Satellite:
-//    def apply(xCoordinate: Double)(using Random) : Satellite = SatelliteImpl(Point2D(xCoordinate, height),
-//                                                                GenericSpawnerImpl[Missile])
+object Satellite:
+    def apply(xCoordinate: Double)(using Random) : Satellite = SatelliteImpl(Point2D(xCoordinate, height),
+        GenericSpawner[Missile](1, spawnable = SpecificSpawners.MissileStrategy(width, height)(using Random)))
