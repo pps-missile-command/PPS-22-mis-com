@@ -1,6 +1,7 @@
 package model
 
 import model.collisions.{Affiliation, DamageableTest, DamagerTest}
+import model.vehicle.Plane
 import model.elements2d.Point2D
 import model.explosion.Explosion
 import model.missile.*
@@ -9,6 +10,7 @@ import model.ground.MissileBattery
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import utilities.{missileHealth, reloadingTime}
+import scala.util.Random
 
 class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
 
@@ -42,9 +44,9 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       val (_, collisions) =
         initialGame
           .timeElapsed(dt)
-          .moveElements
-          .activateSpecialAbility
-          .checkCollisions
+          .moveElements()
+          .activateSpecialAbility()
+          .checkCollisions()
 
       Then("The collisions should be empty")
       assert(collisions == Set.empty)
@@ -58,9 +60,9 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       val updatedGame =
         initialGame
           .timeElapsed(dt)
-          .moveElements
-          .activateSpecialAbility
-          .checkCollisions
+          .moveElements()
+          .activateSpecialAbility()
+          .checkCollisions()
           .updateScore()
 
       Then("The score should be 0")
@@ -100,7 +102,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       val updatedGame =
         initialGame
           .timeElapsed(dt)
-          .moveElements
+          .moveElements()
 
       Then("The enemy missiles should be moving")
       val expectedMissile = missiles.map(m => m.timeElapsed(dt).move())
@@ -130,7 +132,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       When("The game executes collisions")
       val (updatedGame, collisions) =
         game
-          .checkCollisions
+          .checkCollisions()
       val gameScore = (updatedGame, collisions).updateScore()
 
       Then("The collisionables should be 3 explosion")
@@ -139,7 +141,31 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       assert(updatedGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 3)
       Then("The score should be 1")
       assert(gameScore.player.score == 1)
+    }
 
+    Scenario("In the game the elements that has reached the destinations are removed") {
+      val plane = Plane(vehicle.vehicleTypes.Right_To_Left, 20)(using Random())
+      Given("An initial game with a plane")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                plane
+              )
+            )
+          )
 
+      When("The game executes loop without special ability")
+      val newGame = game
+        .timeElapsed((World.width / vehicle.planeVelocity) + 1)
+        .moveElements()
+        .removeElementsThatReachedDestinations()
+        .checkCollisions()
+        .updateScore()
+
+      Then("The collisionables should be empty")
+      assert(newGame.world.collisionables.isEmpty)
     }
   }
