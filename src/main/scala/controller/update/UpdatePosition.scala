@@ -18,6 +18,6 @@ object UpdatePosition:
    */
   def apply(): Update = on[TimePassed] { (_: Event, game: Game) =>
     Task {
-      game.moveElements
+      game.moveElements()
     }
   }
