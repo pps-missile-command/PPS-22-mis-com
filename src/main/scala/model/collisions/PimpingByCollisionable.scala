@@ -1,6 +1,10 @@
 package model.collisions
 
-import model.{Scorable, ScorePoint}
+import model.behavior.{Moveable, Timeable}
+import model.explosion.Explosion
+import model.{DeltaTime, Scorable, ScorePoint}
+import model.missile.Missile
+import model.ground.{City, MissileBattery}
 
 object PimpingByCollisionable:
 
@@ -90,3 +94,63 @@ object PimpingByCollisionable:
       collisionable match
         case scorable: Scorable if scorable.isDestroyed => scorable.points
         case _ => 0
+
+    /**
+     * Increase the time of all [[Collisionable]] that are [[Timeable]].
+     *
+     * @param elapsedTime the elapsed time from last upadte
+     * @return a new [[Collisionable]] with the time increased or the same [[Collisionable]] if it is not [[Timeable]]
+     */
+    def updateTimebleTime(elapsedTime: DeltaTime): Collisionable = collisionable match
+      case timeable: Timeable => timeable.timeElapsed(elapsedTime).asInstanceOf[Collisionable]
+      case _ => collisionable
+
+    /**
+     * Update the position fo the [[Collisionable]] if it is [[Moveable]].
+     *
+     * @return a new [[Collisionable]] with the position updated or the same [[Collisionable]] if it is not [[Moveable]]
+     */
+    def updateMovablePosition(): Collisionable =
+      collisionable match
+        case moveable: Moveable => moveable.move().asInstanceOf[Collisionable]
+        case _ => collisionable
+
+    /**
+     * Check if the [[Collisionable]] is an [[Explosion]] and if it is terminated.
+     *
+     * @return true if the [[Collisionable]] is an [[Explosion]] and if it is terminated, false otherwise
+     */
+    def isExplosionTerminated: Boolean =
+      collisionable match
+        case explosion: Explosion => explosion.terminated
+        case _ => false
+
+    /**
+     * Return an [[Option]] with an [[Explosion]] if the [[Collisionable]] is an [[Missile]] and it is destroyed, otherwise return an empty [[Option]].
+     *
+     * @return
+     */
+    def explodeMissile: Option[Explosion] =
+      collisionable match
+        case missile: Missile if missile.isDestroyed => Option(missile.explode)
+        case _ => Option.empty
+
+    /**
+     * Check if the [[Collisionable]] is an [[City]].
+     *
+     * @return true if the [[Collisionable]] is an [[City]], false otherwise
+     */
+    def isCity: Boolean =
+      collisionable match
+        case _: City => true
+        case _ => false
+
+    /**
+     * Check if the [[Collisionable]] is an [[MissileBattery]].
+     *
+     * @return true if the [[Collisionable]] is an [[MissileBattery]], false otherwise
+     */
+    def isMissileBattery: Boolean =
+      collisionable match
+        case _: MissileBattery => true
+        case _ => false

@@ -10,4 +10,4 @@ package object explosion:
   /**
    * Stardard radius of an explosion
    */
-  val standardRadius: Int = 20
+  val standardRadius: Int = 15

@@ -4,7 +4,6 @@ import model.behavior.Moveable
 import model.collisions.{Affiliation, Collisionable, LifePoint, lifePointDeath}
 import model.elements2d.{Point2D, Vector2D}
 import model.missile.*
-import model.missile.given_Conversion_Point2D_Point2D_Vector2D
 
 import scala.util.Random
 

@@ -21,10 +21,10 @@ object HitBoxRectangular:
    * @return a new hit box that is a rectangle.
    */
   def apply(center: Point2D, base: Double, height: Double, rotation: Angle): HitBox =
-    if (base <= 0 || height <= 0 || rotation == null)
-      HitBoxEmpty
-    else
-      HitBoxRectangular(center, base, height, rotation)
+    rotation match
+      case null => HitBoxEmpty
+      case _ if base <= 0 || height <= 0 => HitBoxEmpty
+      case _ => HitBoxRectangular(center, base, height, rotation)
 
   private case class HitBoxRectangular(center: Point2D, base: Double, height: Double, rotation: Angle) extends HitBoxSymmetric :
     private val baseVector = Vector2D(base / 2, rotation)
@@ -36,15 +36,9 @@ object HitBoxRectangular:
       center --> (baseVector + -heightVector)
     )
 
-    /*override val xMax: Option[Double] = Option(vertices.map(_.x).max)
-
-    override val yMax: Option[Double] = Option(vertices.map(_.y).max)
-
-    override val xMin: Option[Double] = Option(vertices.map(_.x).min)
-
-    override val yMin: Option[Double] = Option(vertices.map(_.y).min)*/
     protected val x: Iterable[Double] =
       vertices.map(_.x)
+
     protected def y: Iterable[Double] =
       vertices.map(_.y)
 
