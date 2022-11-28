@@ -111,7 +111,7 @@
 </span>87 <span style=''>        </span><span style='background: #AEF1AE'>updateCollisionables(collisionables.map(_.updateTimebleTime(dt)))
 </span>88 <span style=''></span><span style='background: #AEF1AE'>          .updateGround(Ground(ground.cities, ground.turrets.map(_.timeElapsed(dt))))</span><span style=''>
 </span>89 <span style=''>
-</span>90 <span style=''>      </span><span style='background: #AEF1AE'>override def checkCollisions</span><span style=''>(): (World, Set[Collision]) =
+</span>90 <span style=''>      </span><span style='background: #AEF1AE'>override def checkCollisions</span><span style=''>: (World, Set[Collision]) =
 </span>91 <span style=''>
 </span>92 <span style=''>        </span><span style='background: #AEF1AE'>def checkCollisionWithExplosions</span><span style=''>[C &lt;: Collisionable]
 </span>93 <span style=''>        (allCollisionables: Set[Collisionable], collisionables: Set[C])
@@ -134,37 +134,30 @@
 </span>110 <span style=''></span><span style='background: #AEF1AE'>          .splitGroundFromCollisionables()
 </span>111 <span style=''></span><span style='background: #AEF1AE'>          .generateWorld()</span><span style=''>
 </span>112 <span style=''>
-</span>113 <span style=''>      </span><span style='background: #AEF1AE'>override def activateSpecialAbility</span><span style=''>(): World =
+</span>113 <span style=''>      </span><span style='background: #AEF1AE'>override def activateSpecialAbility</span><span style=''>: World =
 </span>114 <span style=''>        </span><span style='background: #AEF1AE'>updateCollisionables(
 </span>115 <span style=''></span><span style='background: #AEF1AE'>          collisionables
 </span>116 <span style=''></span><span style='background: #AEF1AE'>            .activateSpecialAbility
 </span>117 <span style=''></span><span style='background: #AEF1AE'>            .filterNot(</span><span style='background: #F0ADAD'>isExplosionTerminated</span><span style='background: #AEF1AE'>)
 </span>118 <span style=''></span><span style='background: #AEF1AE'>        )</span><span style=''>
 </span>119 <span style=''>
-</span>120 <span style=''>
-</span>121 <span style=''>      </span><span style='background: #AEF1AE'>override def removeElementsThatReachedDestinations</span><span style=''>(): World =
-</span>122 <span style=''>        </span><span style='background: #AEF1AE'>updateCollisionables(
-</span>123 <span style=''></span><span style='background: #AEF1AE'>          collisionables
-</span>124 <span style=''></span><span style='background: #AEF1AE'>            .filterNot(_.hasReachedTheDestination)
-</span>125 <span style=''></span><span style='background: #AEF1AE'>        )</span><span style=''>
+</span>120 <span style=''>      </span><span style='background: #AEF1AE'>override def shootMissile</span><span style=''>(destination: Point2D): World =
+</span>121 <span style=''>        </span><span style='background: #AEF1AE'>ground.shootMissile(destination)</span><span style=''> match
+</span>122 <span style=''>          </span><span style='background: #AEF1AE'>case (newGround, Some(missile))</span><span style=''> =&gt;
+</span>123 <span style=''>            </span><span style='background: #AEF1AE'>updateGround(newGround)
+</span>124 <span style=''></span><span style='background: #AEF1AE'>              .addCollisionables(Set(missile))</span><span style=''>
+</span>125 <span style=''>          </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; this
 </span>126 <span style=''>
-</span>127 <span style=''>      </span><span style='background: #AEF1AE'>override def shootMissile</span><span style=''>(destination: Point2D): World =
-</span>128 <span style=''>        </span><span style='background: #AEF1AE'>ground.shootMissile(destination)</span><span style=''> match
-</span>129 <span style=''>          </span><span style='background: #AEF1AE'>case (newGround, Some(missile))</span><span style=''> =&gt;
-</span>130 <span style=''>            </span><span style='background: #AEF1AE'>updateGround(newGround)
-</span>131 <span style=''></span><span style='background: #AEF1AE'>              .addCollisionables(Set(missile))</span><span style=''>
-</span>132 <span style=''>          </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; this
-</span>133 <span style=''>
-</span>134 <span style=''>      </span><span style='background: #AEF1AE'>override def moveElements</span><span style=''>(): World =
-</span>135 <span style=''>        </span><span style='background: #AEF1AE'>updateCollisionables(collisionables.map(_.updateMovablePosition()))</span><span style=''>
-</span>136 <span style=''>
-</span>137 <span style=''>      </span><span style='background: #AEF1AE'>def updateGround</span><span style=''>(newGround: Ground): World =
-</span>138 <span style=''>        WorldImpl(newGround, collisionables)
-</span>139 <span style=''>
-</span>140 <span style=''>      </span><span style='background: #AEF1AE'>def updateCollisionables</span><span style=''>(newCollisionables: Set[Collisionable]): World =
-</span>141 <span style=''>        WorldImpl(ground, newCollisionables)
-</span>142 <span style=''>
-</span>143 <span style=''>    WorldImpl(ground, collisionables)
+</span>127 <span style=''>      </span><span style='background: #AEF1AE'>override def moveElements</span><span style=''>: World =
+</span>128 <span style=''>        </span><span style='background: #AEF1AE'>updateCollisionables(collisionables.map(_.updateMovablePosition()))</span><span style=''>
+</span>129 <span style=''>
+</span>130 <span style=''>      </span><span style='background: #AEF1AE'>def updateGround</span><span style=''>(newGround: Ground): World =
+</span>131 <span style=''>        WorldImpl(newGround, collisionables)
+</span>132 <span style=''>
+</span>133 <span style=''>      </span><span style='background: #AEF1AE'>def updateCollisionables</span><span style=''>(newCollisionables: Set[Collisionable]): World =
+</span>134 <span style=''>        WorldImpl(ground, newCollisionables)
+</span>135 <span style=''>
+</span>136 <span style=''>    WorldImpl(ground, collisionables)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -182,7 +175,7 @@
           49
         </td>
         <td>
-          174
+          171
         </td>
         <td>
           1321
@@ -206,31 +199,7 @@
           50
         </td>
         <td>
-          173
-        </td>
-        <td>
-          1405
-          -
-          1464
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          updateCollisionables
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          updateCollisionables(collisionables ++ collisionablesToAdd)
-        </td>
-      </tr><tr>
-        <td>
-          50
-        </td>
-        <td>
-          172
+          169
         </td>
         <td>
           1426
@@ -251,10 +220,34 @@
         </td>
       </tr><tr>
         <td>
+          50
+        </td>
+        <td>
+          170
+        </td>
+        <td>
+          1405
+          -
+          1464
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateCollisionables
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateCollisionables(collisionables ++ collisionablesToAdd)
+        </td>
+      </tr><tr>
+        <td>
           73
         </td>
         <td>
-          176
+          173
         </td>
         <td>
           1816
@@ -278,31 +271,31 @@
           73
         </td>
         <td>
-          175
+          176
         </td>
         <td>
-          1806
+          1774
           -
-          1814
+          1790
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          apply
+          initialWorld
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Ground()
+          def initialWorld
         </td>
       </tr><tr>
         <td>
           73
         </td>
         <td>
-          178
+          175
         </td>
         <td>
           1800
@@ -326,7 +319,31 @@
           73
         </td>
         <td>
-          177
+          172
+        </td>
+        <td>
+          1806
+          -
+          1814
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Ground()
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          174
         </td>
         <td>
           1816
@@ -347,34 +364,10 @@
         </td>
       </tr><tr>
         <td>
-          73
-        </td>
-        <td>
-          179
-        </td>
-        <td>
-          1774
-          -
-          1790
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          initialWorld
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def initialWorld
-        </td>
-      </tr><tr>
-        <td>
           82
         </td>
         <td>
-          231
+          224
         </td>
         <td>
           2128
@@ -398,7 +391,7 @@
           85
         </td>
         <td>
-          187
+          184
         </td>
         <td>
           2299
@@ -422,31 +415,7 @@
           86
         </td>
         <td>
-          182
-        </td>
-        <td>
-          2356
-          -
-          2421
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          updateCollisionables
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          updateCollisionables(collisionables.map(_.updateTimebleTime(dt)))
-        </td>
-      </tr><tr>
-        <td>
-          86
-        </td>
-        <td>
-          181
+          178
         </td>
         <td>
           2377
@@ -470,7 +439,7 @@
           86
         </td>
         <td>
-          180
+          177
         </td>
         <td>
           2396
@@ -491,10 +460,34 @@
         </td>
       </tr><tr>
         <td>
+          86
+        </td>
+        <td>
+          179
+        </td>
+        <td>
+          2356
+          -
+          2421
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateCollisionables
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateCollisionables(collisionables.map(_.updateTimebleTime(dt)))
+        </td>
+      </tr><tr>
+        <td>
           87
         </td>
         <td>
-          185
+          182
         </td>
         <td>
           2446
@@ -518,7 +511,7 @@
           87
         </td>
         <td>
-          184
+          181
         </td>
         <td>
           2468
@@ -542,7 +535,7 @@
           87
         </td>
         <td>
-          183
+          180
         </td>
         <td>
           2487
@@ -566,7 +559,7 @@
           87
         </td>
         <td>
-          186
+          183
         </td>
         <td>
           2356
@@ -591,7 +584,7 @@
           89
         </td>
         <td>
-          208
+          205
         </td>
         <td>
           2515
@@ -615,12 +608,12 @@
           91
         </td>
         <td>
-          195
+          192
         </td>
         <td>
-          2582
+          2580
           -
-          2614
+          2612
         </td>
         <td>
           DefDef
@@ -639,12 +632,12 @@
           95
         </td>
         <td>
-          190
+          187
         </td>
         <td>
-          2832
+          2830
           -
-          3004
+          3002
         </td>
         <td>
           Apply
@@ -667,36 +660,12 @@
           96
         </td>
         <td>
-          189
+          185
         </td>
         <td>
-          2905
+          2903
           -
-          2961
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          allCollisionables calculateCollisionsWith collisionables
-        </td>
-      </tr><tr>
-        <td>
-          96
-        </td>
-        <td>
-          188
-        </td>
-        <td>
-          2905
-          -
-          2946
+          2944
         </td>
         <td>
           Apply
@@ -712,15 +681,39 @@
         </td>
       </tr><tr>
         <td>
+          96
+        </td>
+        <td>
+          186
+        </td>
+        <td>
+          2903
+          -
+          2959
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          allCollisionables calculateCollisionsWith collisionables
+        </td>
+      </tr><tr>
+        <td>
           99
         </td>
         <td>
-          191
+          188
         </td>
         <td>
-          2832
+          2830
           -
-          3043
+          3041
         </td>
         <td>
           Apply
@@ -744,12 +737,12 @@
           100
         </td>
         <td>
-          192
+          189
         </td>
         <td>
-          2832
+          2830
           -
-          3088
+          3086
         </td>
         <td>
           Apply
@@ -774,12 +767,12 @@
           101
         </td>
         <td>
-          194
+          191
         </td>
         <td>
-          2832
+          2830
           -
-          3178
+          3176
         </td>
         <td>
           Apply
@@ -805,12 +798,12 @@
           101
         </td>
         <td>
-          193
+          190
         </td>
         <td>
-          3149
+          3147
           -
-          3177
+          3175
         </td>
         <td>
           Apply
@@ -829,12 +822,12 @@
           103
         </td>
         <td>
-          202
+          199
         </td>
         <td>
-          3188
+          3186
           -
-          3206
+          3204
         </td>
         <td>
           DefDef
@@ -853,60 +846,12 @@
           104
         </td>
         <td>
-          200
+          194
         </td>
         <td>
-          3340
+          3402
           -
-          3447
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          checkCollisionWithExplosions
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          checkCollisionWithExplosions(allCollisionables, collisionables)(Set.empty[Collision], Set.empty[Explosion])
-        </td>
-      </tr><tr>
-        <td>
-          104
-        </td>
-        <td>
-          196
-        </td>
-        <td>
-          3404
-          -
-          3407
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          Set
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Set
-        </td>
-      </tr><tr>
-        <td>
-          104
-        </td>
-        <td>
-          199
-        </td>
-        <td>
-          3426
-          -
-          3435
+          3411
         </td>
         <td>
           Select
@@ -925,12 +870,60 @@
           104
         </td>
         <td>
-          198
+          193
         </td>
         <td>
-          3426
+          3402
           -
-          3429
+          3405
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          Set
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          196
+        </td>
+        <td>
+          3424
+          -
+          3433
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          empty
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set.empty
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          195
+        </td>
+        <td>
+          3424
+          -
+          3427
         </td>
         <td>
           Ident
@@ -952,33 +945,33 @@
           197
         </td>
         <td>
-          3404
+          3338
           -
-          3413
+          3445
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          empty
+          checkCollisionWithExplosions
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Set.empty
+          checkCollisionWithExplosions(allCollisionables, collisionables)(Set.empty[Collision], Set.empty[Explosion])
         </td>
       </tr><tr>
         <td>
           105
         </td>
         <td>
-          201
+          198
         </td>
         <td>
-          3340
+          3338
           -
-          3476
+          3474
         </td>
         <td>
           Apply
@@ -998,36 +991,12 @@
           107
         </td>
         <td>
-          204
+          200
         </td>
         <td>
-          3510
+          3508
           -
-          3559
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          ++
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisionables ++ ground.cities ++ ground.turrets
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
-          203
-        </td>
-        <td>
-          3510
-          -
-          3541
+          3539
         </td>
         <td>
           Apply
@@ -1043,15 +1012,39 @@
         </td>
       </tr><tr>
         <td>
+          107
+        </td>
+        <td>
+          201
+        </td>
+        <td>
+          3508
+          -
+          3557
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ++
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables ++ ground.cities ++ ground.turrets
+        </td>
+      </tr><tr>
+        <td>
           108
         </td>
         <td>
-          205
+          202
         </td>
         <td>
-          3568
+          3566
           -
-          3617
+          3615
         </td>
         <td>
           Apply
@@ -1070,12 +1063,12 @@
           109
         </td>
         <td>
-          206
+          203
         </td>
         <td>
-          3568
+          3566
           -
-          3660
+          3658
         </td>
         <td>
           Apply
@@ -1095,12 +1088,12 @@
           110
         </td>
         <td>
-          207
+          204
         </td>
         <td>
-          3568
+          3566
           -
-          3687
+          3685
         </td>
         <td>
           Apply
@@ -1121,12 +1114,12 @@
           112
         </td>
         <td>
-          213
+          210
         </td>
         <td>
-          3695
+          3693
           -
-          3730
+          3728
         </td>
         <td>
           DefDef
@@ -1145,12 +1138,12 @@
           113
         </td>
         <td>
-          212
+          209
         </td>
         <td>
-          3750
+          3746
           -
-          3888
+          3884
         </td>
         <td>
           Apply
@@ -1173,12 +1166,12 @@
           115
         </td>
         <td>
-          209
+          206
         </td>
         <td>
-          3782
+          3778
           -
-          3832
+          3828
         </td>
         <td>
           Apply
@@ -1198,12 +1191,12 @@
           116
         </td>
         <td>
-          211
+          208
         </td>
         <td>
-          3782
+          3778
           -
-          3878
+          3874
         </td>
         <td>
           Apply
@@ -1224,12 +1217,12 @@
           116
         </td>
         <td>
-          210
+          207
         </td>
         <td>
-          3856
+          3852
           -
-          3877
+          3873
         </td>
         <td>
           Apply
@@ -1245,115 +1238,15 @@
         </td>
       </tr><tr>
         <td>
-          120
+          119
         </td>
         <td>
           217
         </td>
         <td>
-          3897
+          3892
           -
-          3947
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          removeElementsThatReachedDestinations
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def removeElementsThatReachedDestinations
-        </td>
-      </tr><tr>
-        <td>
-          121
-        </td>
-        <td>
-          216
-        </td>
-        <td>
-          3967
-          -
-          4074
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          updateCollisionables
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          updateCollisionables(
-          collisionables
-            .filterNot(_.hasReachedTheDestination)
-        )
-        </td>
-      </tr><tr>
-        <td>
-          123
-        </td>
-        <td>
-          214
-        </td>
-        <td>
-          4037
-          -
-          4063
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          hasReachedTheDestination
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.hasReachedTheDestination
-        </td>
-      </tr><tr>
-        <td>
-          123
-        </td>
-        <td>
-          215
-        </td>
-        <td>
-          3999
-          -
-          4064
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          filterNot
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisionables
-            .filterNot(_.hasReachedTheDestination)
-        </td>
-      </tr><tr>
-        <td>
-          126
-        </td>
-        <td>
-          224
-        </td>
-        <td>
-          4082
-          -
-          4107
+          3917
         </td>
         <td>
           DefDef
@@ -1369,15 +1262,15 @@
         </td>
       </tr><tr>
         <td>
-          127
+          120
         </td>
         <td>
-          218
+          211
         </td>
         <td>
-          4147
+          3957
           -
-          4179
+          3989
         </td>
         <td>
           Apply
@@ -1393,15 +1286,15 @@
         </td>
       </tr><tr>
         <td>
-          128
+          121
         </td>
         <td>
-          222
+          215
         </td>
         <td>
-          4196
+          4006
           -
-          4227
+          4037
         </td>
         <td>
           Block
@@ -1417,15 +1310,15 @@
         </td>
       </tr><tr>
         <td>
-          129
+          122
         </td>
         <td>
-          219
+          212
         </td>
         <td>
-          4243
+          4053
           -
-          4266
+          4076
         </td>
         <td>
           Apply
@@ -1441,39 +1334,15 @@
         </td>
       </tr><tr>
         <td>
-          130
+          123
         </td>
         <td>
-          220
+          214
         </td>
         <td>
-          4300
+          4053
           -
-          4312
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Set(missile)
-        </td>
-      </tr><tr>
-        <td>
-          130
-        </td>
-        <td>
-          221
-        </td>
-        <td>
-          4243
-          -
-          4313
+          4123
         </td>
         <td>
           Apply
@@ -1490,15 +1359,39 @@
         </td>
       </tr><tr>
         <td>
-          131
+          123
         </td>
         <td>
-          223
+          213
         </td>
         <td>
-          4324
+          4110
           -
-          4330
+          4122
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set(missile)
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          216
+        </td>
+        <td>
+          4134
+          -
+          4140
         </td>
         <td>
           Block
@@ -1514,15 +1407,15 @@
         </td>
       </tr><tr>
         <td>
-          133
+          126
         </td>
         <td>
-          228
+          221
         </td>
         <td>
-          4346
+          4156
           -
-          4371
+          4181
         </td>
         <td>
           DefDef
@@ -1538,63 +1431,15 @@
         </td>
       </tr><tr>
         <td>
-          134
+          127
         </td>
         <td>
-          227
+          218
         </td>
         <td>
-          4391
+          4239
           -
-          4458
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          updateCollisionables
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          updateCollisionables(collisionables.map(_.updateMovablePosition()))
-        </td>
-      </tr><tr>
-        <td>
-          134
-        </td>
-        <td>
-          226
-        </td>
-        <td>
-          4412
-          -
-          4457
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          collisionables.map(_.updateMovablePosition())
-        </td>
-      </tr><tr>
-        <td>
-          134
-        </td>
-        <td>
-          225
-        </td>
-        <td>
-          4431
-          -
-          4456
+          4264
         </td>
         <td>
           Apply
@@ -1610,15 +1455,63 @@
         </td>
       </tr><tr>
         <td>
-          136
+          127
         </td>
         <td>
-          229
+          220
         </td>
         <td>
-          4466
+          4199
           -
-          4482
+          4266
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateCollisionables
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateCollisionables(collisionables.map(_.updateMovablePosition()))
+        </td>
+      </tr><tr>
+        <td>
+          127
+        </td>
+        <td>
+          219
+        </td>
+        <td>
+          4220
+          -
+          4265
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          collisionables.map(_.updateMovablePosition())
+        </td>
+      </tr><tr>
+        <td>
+          129
+        </td>
+        <td>
+          222
+        </td>
+        <td>
+          4274
+          -
+          4290
         </td>
         <td>
           DefDef
@@ -1634,15 +1527,15 @@
         </td>
       </tr><tr>
         <td>
-          139
+          132
         </td>
         <td>
-          230
+          223
         </td>
         <td>
-          4563
+          4371
           -
-          4587
+          4395
         </td>
         <td>
           DefDef
