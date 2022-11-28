@@ -1,31 +1,28 @@
 package model
 
 import model.World.{height, width}
+import model.collisions.Collisionable
 import view.ViewConstants
+import model.spawner.SpawnerAggregator.SpawnerAggregatorImpl
 
 import scala.util.Random
 
 package object spawner:
   
-  val threshold: Int = 50
+  val threshold: Int = 20
 
   /**
    * Aggregated spawner composed by a list of [[GenericSpawner]]
    * @param Random The Random instance
    * @return the new  [[SpawnerAggregator]]
    */
-  def standardSpawner(using Random) = SpawnerAggregatorImpl(
+  def standardSpawner(using Random): GenericSpawner[Collisionable] = SpawnerAggregatorImpl(
     List(
-      GenericSpawner(3, spawnable = SpecificSpawners.MissileStrategy(width, height)),
-      GenericSpawner(10, spawnable = SpecificSpawners.ZigZagStrategy(width, height))
+      GenericSpawner(3, SpecificSpawners.MissileStrategy(width, height)),
+      GenericSpawner(6, SpecificSpawners.ZigZagStrategy(width, height)),
+      GenericSpawner(3, spawnable = SpecificSpawners.PlaneStrategy(height))
     ):_*
   )
-
-  /**
-   * Extension method that permits to pop n elements from a generic LazyList
-   */
-  extension[A](list: LazyList[A])
-    def popN(n: Int): (Set[A], LazyList[A]) = (list.take(n).toSet, list.drop(n))
 
   /**
    * Extension methods for DeltaTime
@@ -33,9 +30,10 @@ package object spawner:
   extension(interval: DeltaTime)
 
     /**
-     * The hyperbole function that given a timePassed retun the updated missile
+     * The hyperbole function that given a timePassed return the updated missile
      */
-    def ~(timePassed: DeltaTime) : DeltaTime = interval - interval * (1 / ( 1 + Math.exp((-interval / 4) * timePassed)) - interval / 2)
+    def ~(timePassed: DeltaTime) : DeltaTime =
+      interval - ((interval * (1 / ( 1 + Math.exp(((-1 * timePassed) / 10))))) - (interval / 2))
     /**
      * Function that given a condition and a world può inficiare positivamente sulle lezaione.
      * @param condition The condition to which we can subscreibe

@@ -6,6 +6,7 @@ import model.missile.Missile
 import model.missile.zigzag.ZigZagMissile
 import model.missile.zigzag.ZigZagMissile.*
 import org.scalatest.funspec.AnyFunSpec
+import model.spawner.SpawnerAggregator.SpawnerAggregatorImpl
 
 import scala.util.Random
 
@@ -19,8 +20,8 @@ object SpawnerAggregatorTest:
   val maxWidth = 100
   val maxHeight = 200
   val timePassed: DeltaTime = 2
-  val missileSpawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
-  val zigzagSpawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.ZigZagStrategy(maxWidth, maxHeight))
+  val missileSpawner = GenericSpawner[Missile](interval, SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+  val zigzagSpawner = GenericSpawner[Missile](interval, SpecificSpawners.ZigZagStrategy(maxWidth, maxHeight))
   val listSpawners = List(missileSpawner, zigzagSpawner)
   val spawnerAggregator = SpawnerAggregatorImpl(listSpawners:_*)
 

@@ -6,7 +6,7 @@ import model.vehicle.Plane
 import org.scalatest.funspec.AnyFunSpec
 
 object SpecificSpawnersTest:
-  val genericSpawner = GenericSpawner(2,0,0,_)
+  val genericSpawner = GenericSpawner(2,_)
   val width: Double = 100
   val height: Double = 100
 

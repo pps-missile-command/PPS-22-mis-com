@@ -8,7 +8,8 @@ import model.collisions.{Affiliation, Damageable, HitBox, LifePoint, lifePointDe
 import model.elements2d.{Point2D, Vector2D}
 import model.explosion.{Explosion, standardRadius}
 import model.missile.{Missile, given_Conversion_Point2D_Point2D_Vector2D, hitboxBase, hitboxHeight}
-import model.spawner.{GenericSpawner, SpecificSpawners}
+import model.spawner.GenericSpawnerImpl
+import model.spawner.{GenericSpawner, GenericSpawnerImpl, SpecificSpawners}
 
 import scala.util.Random
 
@@ -26,9 +27,14 @@ case class PlaneImpl(actualPosition: Point2D,
                      choosedDirection: vehicleTypes,
                      lifePoint: LifePoint = planeInitialLife,
                      deltaTime: DeltaTime = 0,
-                     missileSpawner: GenericSpawner[Missile] =
-                     GenericSpawner[Missile](1, spawnable = SpecificSpawners.MissileStrategy(width, height)(using Random)))(using Random)
+                     missileSpawnerOpt: Option[GenericSpawnerImpl[Missile]] = Option.empty)(using Random)
                     extends Plane:
+
+    val spawnable = SpecificSpawners.FixedMissileStrategy(width, height, position)
+
+    val missileSpawner = missileSpawnerOpt match
+        case Some(value) => value.changeSpawnable(spawnable)
+        case _ => GenericSpawner(3, spawnable)
 
     override def planeDirection: vehicleTypes = choosedDirection
     override def position: Point2D = actualPosition
@@ -36,8 +42,6 @@ case class PlaneImpl(actualPosition: Point2D,
     override def move(): Plane = this match
         case v if(v.isDestroyed) => this.copy(lifePoint = lifePointDeath)
         case _ => this.copy(actualPosition = moveVehicle(this), deltaTime = 0)
-
-
 
     /***
      * Calculate the new position of the vehicle
@@ -60,7 +64,7 @@ case class PlaneImpl(actualPosition: Point2D,
         val spawnerInfos = missileSpawner.spawn()
         Tuple2(
             spawnerInfos._1,
-            this.copy(missileSpawner = spawnerInfos._2)
+            this.copy(missileSpawnerOpt = Option(spawnerInfos._2))
         )
 
     /**
@@ -100,7 +104,7 @@ case class PlaneImpl(actualPosition: Point2D,
      * @return the affiliation of the object.
      */
     override def affiliation: Affiliation = Affiliation.Friendly
-    override def timeElapsed(dt: DeltaTime): Plane = this.copy(deltaTime = deltaTime + dt, missileSpawner.timeElapsed(dt))
+    override def timeElapsed(dt: DeltaTime): Plane = this.copy(deltaTime = deltaTime + dt, Option(missileSpawner.timeElapsed(dt)))
     override def destinationReached: Boolean = position == destination
     override def destination: Point2D = finalPosition
 

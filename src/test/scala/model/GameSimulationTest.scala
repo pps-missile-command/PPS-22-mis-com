@@ -134,7 +134,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       val gameScore = (updatedGame, collisions).updateScore()
 
       Then("The collisionables should be 3 explosion")
-      assert(collisions.size == 4)
+      assert(collisions.size == 3)
       assert(updatedGame.world.collisionables.size == 3)
       assert(updatedGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 3)
       Then("The score should be 1")

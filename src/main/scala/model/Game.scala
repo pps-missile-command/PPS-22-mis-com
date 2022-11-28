@@ -1,7 +1,7 @@
 package model
 
 import model.World.{height, width}
-import model.collisions.Collision
+import model.collisions.{Collision, Collisionable}
 import model.spawner.GenericSpawner
 import model.missile.Missile
 import model.elements2d.Point2D
@@ -20,7 +20,7 @@ trait Game extends WorldActions[Game], PlayerActions[Game] :
   /**
    * The spawner of the game
    */
-  val spawner: GenericSpawner[Missile]
+  val spawner: GenericSpawner[Collisionable]
   /**
    * The world of the game
    */
@@ -64,7 +64,7 @@ trait Game extends WorldActions[Game], PlayerActions[Game] :
    * @param spawner the new spawner instance
    * @return a game with the new spawner
    */
-  def updateSpawner(spawner: GenericSpawner[Missile]): Game
+  def updateSpawner(spawner: GenericSpawner[Collisionable]): Game
 
 /**
  * Companion object of the game
@@ -86,8 +86,8 @@ object Game:
    * @param world   the world of the game
    * @return a new game with the given player, spawner and world
    */
-  def apply(player: Player, spawner: GenericSpawner[Missile], world: World): Game =
-    case class GameImpl(player: Player, spawner: GenericSpawner[Missile], world: World) extends Game :
+  def apply(player: Player, spawner: GenericSpawner[Collisionable], world: World): Game =
+    case class GameImpl(player: Player, spawner: GenericSpawner[Collisionable], world: World) extends Game :
       override def timeElapsed(dt: DeltaTime): Game =
         val newWorld = world.timeElapsed(dt)
         val newSpawner = spawner.timeElapsed(dt)
@@ -119,7 +119,7 @@ object Game:
       override def updatePlayer(player: Player): Game =
         GameImpl(player, spawner, world)
 
-      override def updateSpawner(spawner: GenericSpawner[Missile]): Game =
+      override def updateSpawner(spawner: GenericSpawner[Collisionable]): Game =
         GameImpl(player, spawner, world)
 
     GameImpl(player, spawner, world)

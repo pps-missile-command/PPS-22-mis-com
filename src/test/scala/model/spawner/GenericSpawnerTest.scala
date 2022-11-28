@@ -30,7 +30,7 @@ class GenericSpawnerTest extends AnyFunSpec :
     describe("of missiles") {
       describe("after a specific period of time") {
         it("should generate n missiles") {
-          val spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+          val spawner = GenericSpawner[Missile](interval, SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
           val newSpawner = spawner.timeElapsed(timePassed)
           val (missiles, _) = newSpawner.spawn()
           missiles.toList(0) match
@@ -39,14 +39,14 @@ class GenericSpawnerTest extends AnyFunSpec :
       }
       describe("after a specific amount of time that exceeds a fixed threshold") {
         it("should decrease the interval time between single spawns") {
-          val spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+          val spawner = GenericSpawner[Missile](interval, SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
           val newSpawner = spawner.timeElapsed(largeTimePassed)
           assert(newSpawner.spawn()._1.size > largeTimePassed)
         }
         it("should decrease the interval in a way based on the sigmoidal function") {
-          val spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+          val spawner = GenericSpawner[Missile](interval, SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
           val newSpawner = spawner.timeElapsed(largeTimePassed)
-          val newInterval: DeltaTime = interval - (interval * 1 / ( 1 + Math.exp((-interval / 4) * largeTimePassed)) - interval / 2)
+          val newInterval: DeltaTime = interval - ((interval * (1 / ( 1 + Math.exp(((-1 * largeTimePassed) / 10))))) - (interval / 2))
           val step: Int = (largeTimePassed / newInterval).toInt
           val size = newSpawner.spawn()._1.size
           assert(size equals step)
@@ -57,27 +57,27 @@ class GenericSpawnerTest extends AnyFunSpec :
   describe("A spawner of enemy missiles") {
     describe("with an interval of a missile per second") {
       it("should generate enemy missiles") {
-        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val old_spawner = GenericSpawner[Missile](interval, SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
         val spawner = old_spawner.timeElapsed(1)
         val missiles = spawner.spawn()._1
         if(!missiles.isEmpty)
           assert(missiles.toList(0).affiliation == Affiliation.Enemy)
       }
       it("should generate zigzag missiles") {
-        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.ZigZagStrategy(maxWidth, maxHeight))
+        val old_spawner = GenericSpawner[Missile](interval, SpecificSpawners.ZigZagStrategy(maxWidth, maxHeight))
         val spawner = old_spawner.timeElapsed(1)
         val missiles = spawner.spawn()._1
         if(!missiles.isEmpty)
           missiles.toList(0) shouldBe a[ZigZagMissile]
       }
       it("should generate empty list if no enough time is passed") {
-        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val old_spawner = GenericSpawner[Missile](interval, SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
         val spawner = old_spawner.timeElapsed(0.33)
         val missiles = spawner.spawn()._1
         assert(missiles.size == 0)
       }
       it("should generate a missile after 1 second of virtual time") {
-        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val old_spawner = GenericSpawner[Missile](interval, SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
         val spawner = old_spawner.timeElapsed(1)
         val missiles = spawner.spawn()._1
         assert(missiles.size == 1)
@@ -85,7 +85,7 @@ class GenericSpawnerTest extends AnyFunSpec :
       }
       it("should generate n missiles after n seconds of virtual time") {
         val timePassed = 10
-        val old_spawner = GenericSpawner[Missile](interval, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val old_spawner = GenericSpawner[Missile](interval, SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
         val spawner = old_spawner.timeElapsed(timePassed)
         val missiles = spawner.spawn()._1
         assert(missiles.size == timePassed)
@@ -94,7 +94,7 @@ class GenericSpawnerTest extends AnyFunSpec :
     describe("with an interval of a missile every 0.33 second") {
       it("should generate missiles after 1 second of virtual time") {
         val timePassed = 1
-        val old_spawner = GenericSpawner[Missile](0.33, spawnable = SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
+        val old_spawner = GenericSpawner[Missile](0.33, SpecificSpawners.MissileStrategy(maxWidth, maxHeight))
         val spawner = old_spawner.timeElapsed(timePassed)
         val missiles = spawner.spawn()._1
         assert(missiles.size == 3)

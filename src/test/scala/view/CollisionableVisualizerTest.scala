@@ -15,7 +15,7 @@ class CollisionableVisualizerTest extends AnyFunSpec :
     describe("that convert collisionable elements into graphic ones") {
       it("should return a view element of all missiles") {
         given Random()
-        val spawner = GenericSpawner(1, spawnable = SpecificSpawners.MissileStrategy(10,10))
+        val spawner = GenericSpawner(1, SpecificSpawners.MissileStrategy(10,10))
         val newSpawner = spawner.timeElapsed(10)
         val missiles = newSpawner.spawn()._1
         val visualElements = CollisionableVisualizer.printElements(missiles.toSet)

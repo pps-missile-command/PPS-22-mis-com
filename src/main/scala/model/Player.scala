@@ -19,8 +19,20 @@ trait Player extends PlayerActions[Player] :
    */
   val timer: Timer
 
+  /**
+   * update the score of the player.
+   *
+   * @param score the new score of the player.
+   * @return a new player with the new score.
+   */
   def updateScore(score: ScorePoint): Player
 
+  /**
+   * update the timer of the player.
+   *
+   * @param timer the new timer of the player.
+   * @return a new player with the new timer.
+   */
   def updateTimer(timer: Timer): Player
 
 /**

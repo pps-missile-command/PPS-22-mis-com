@@ -11,13 +11,7 @@ import utilities.*
 
 import javax.imageio.ImageIO
 
-extension(i: Int)
-    def use(f: (Int) => Int) = f(i)
-
 object Visualizer:
-    private val convertPosition: (Point2D) => Point2D = (p) => Point2D((p.x * ViewConstants.GUI_width) / World.width, (p.y * ViewConstants.GUI_height) / World.height)
-    private val convertWidth: (Int) => Int = (i) => (i * ViewConstants.GUI_width) / World.width
-    private val convertHeight: (Int) => Int = (i) => (i * ViewConstants.GUI_height) / World.height
 
     val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
 
