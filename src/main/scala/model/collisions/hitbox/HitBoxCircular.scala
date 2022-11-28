@@ -31,9 +31,9 @@ object HitBoxCircular:
 
     protected def min(values: Iterable[Double]): Option[Double] = Option(values.head - radius)
 
-    protected def x: Iterable[Double] = Iterable(center.x)
+    protected val x: Iterable[Double] = Iterable(center.x)
 
-    protected def y: Iterable[Double] = Iterable(center.y)
+    protected val y: Iterable[Double] = Iterable(center.y)
 
     override def contains(point: Point2D)(using equality: Equality[Double]): Boolean =
       (point <-> center) <== radius

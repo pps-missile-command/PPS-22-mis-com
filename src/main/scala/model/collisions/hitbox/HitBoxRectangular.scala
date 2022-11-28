@@ -39,7 +39,7 @@ object HitBoxRectangular:
     protected val x: Iterable[Double] =
       vertices.map(_.x)
 
-    protected def y: Iterable[Double] =
+    protected val y: Iterable[Double] =
       vertices.map(_.y)
 
     protected def max(values: Iterable[Double]): Option[Double] = Option(values.max)
