@@ -12,7 +12,7 @@ import model.elements2d.Point2D
 import model.explosion.Explosion
 
 /**
- * Class that represents the world.
+ * Trait that represents the world.
  *
  */
 trait World extends WorldActions[World] :
