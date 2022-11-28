@@ -10,7 +10,7 @@ import model.collisions.{Collision, Collisionable}
  * @tparam T the type of the object that execute the actions on the [[World]].
  */
 trait WorldActions[+T <: Timeable] extends Timeable :
-  
+
   /**
    * The time elapsed in the world on every [[Timeable]]
    *
@@ -24,21 +24,28 @@ trait WorldActions[+T <: Timeable] extends Timeable :
    *
    * @return the object that execute the actions on the world with the [[Moveable]] moved.
    */
-  def moveElements: T
+  def moveElements(): T
 
   /**
    * Check the collisions between the [[Collisionable]] in the world.
    *
    * @return the object that execute the actions on the world and the [[Collision]] checked.
    */
-  def checkCollisions: (T, Set[Collision])
+  def checkCollisions(): (T, Set[Collision])
 
   /**
    * Activate the special effects of the [[Collisionable]].
    *
    * @return the object that execute the actions on the world with the special effects activated.
    */
-  def activateSpecialAbility: T
+  def activateSpecialAbility(): T
+
+  /**
+   * Remove the elements that has reached the destination
+   *
+   * @return the object that execute the actions on the world without the elements have reached the destination
+   */
+  def removeElementsThatReachedDestinations(): T
 
   /**
    * Shoot a [[model.missile.Missile]] from the [[model.ground.Ground]]
