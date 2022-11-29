@@ -109,11 +109,11 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       assert(updatedGame.world.collisionables == expectedMissile)
     }
 
-    Scenario("In the game there are two friendly missile and one enemy missile that collides") {
+    Scenario("In the game there are one friendly missile, one friendly explosion and one enemy missile that collides") {
       val destination = Point2D(70, 0)
-      val enemyMissileObject = enemyMissile(position = Point2D(50, 50), finalPosition = destination)
+      val enemyMissile: Missile = Missile.enemyMissile(position = Point2D(50, 50), finalPosition = destination)
       val friendlyMissile = Missile(1, 1, velocity, Point2D(40, 50), destination)
-      val explosion = Explosion(damageToInflict = 1, expPosition = Point2D(60, 50), dt = 10)(using Affiliation.Friendly)
+      val friendlyExplosion = Explosion(damageToInflict = 1, expPosition = Point2D(60, 50), dt = 10)(using Affiliation.Friendly)
       Given("An initial game with some missile")
       val game =
         Game
@@ -121,9 +121,9 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
           .updateWorld(
             _.addCollisionables(
               Set(
-                enemyMissileObject,
+                enemyMissile,
                 friendlyMissile,
-                explosion
+                friendlyExplosion
               )
             )
           )
