@@ -4,6 +4,8 @@ import model.behavior.Moveable
 import model.collisions.{Affiliation, Collisionable, LifePoint, lifePointDeath}
 import model.elements2d.{Point2D, Vector2D}
 import model.missile.*
+import model.missile.zigzag.PimpingByPoint2D.~=
+import model.missile.zigzag.PimpingByLazyList.pop
 
 import scala.util.Random
 
