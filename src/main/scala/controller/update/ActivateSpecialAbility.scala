@@ -18,6 +18,6 @@ object ActivateSpecialAbility:
    */
   def apply(): Update = on[TimePassed] { (_: Event, game: Game) =>
     Task {
-      game.activateSpecialAbility
+      game.activateSpecialAbility()
     }
   }

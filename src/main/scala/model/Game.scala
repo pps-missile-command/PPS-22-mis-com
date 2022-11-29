@@ -9,7 +9,7 @@ import model.elements2d.Point2D
 import scala.util.Random
 
 /**
- * Class representing the game
+ * Trait representing the game
  *
  */
 trait Game extends WorldActions[Game], PlayerActions[Game] :
@@ -66,6 +66,15 @@ trait Game extends WorldActions[Game], PlayerActions[Game] :
    */
   def updateSpawner(spawner: GenericSpawner[Collisionable]): Game
 
+  /**
+   * Update the actual [[GenericSpawner]] changing it from the update function
+   *
+   * @param update function that allow to compute the new spawner from the actual
+   * @return a game with the new spawner
+   */
+  def updateSpawner(update: GenericSpawner[Collisionable] => GenericSpawner[Collisionable]): Game =
+    updateSpawner(update(spawner))
+
 /**
  * Companion object of the game
  */
@@ -89,26 +98,28 @@ object Game:
   def apply(player: Player, spawner: GenericSpawner[Collisionable], world: World): Game =
     case class GameImpl(player: Player, spawner: GenericSpawner[Collisionable], world: World) extends Game :
       override def timeElapsed(dt: DeltaTime): Game =
-        val newWorld = world.timeElapsed(dt)
-        val newSpawner = spawner.timeElapsed(dt)
-        val newPlayer = player.updateTimer(player.timer.timeElapsed(dt))
-        GameImpl(newPlayer, newSpawner, newWorld)
+        updateWorld(_.timeElapsed(dt))
+          .updatePlayer(_.timeElapsed(dt))
+          .updateSpawner(_.timeElapsed(dt))
 
       override def updateWorld(world: World): Game =
         GameImpl(player, spawner, world)
 
-      override def moveElements: Game =
-        updateWorld(world.moveElements)
+      override def moveElements(): Game =
+        updateWorld(world.moveElements())
 
-      override def checkCollisions: (Game, Set[Collision]) =
-        val (newWorld, collisions) = world.checkCollisions
+      override def checkCollisions(): (Game, Set[Collision]) =
+        val (newWorld, collisions) = world.checkCollisions()
         (updateWorld(newWorld), collisions)
 
-      override def activateSpecialAbility: Game =
+      override def activateSpecialAbility(): Game =
         val (newMissiles, newSpawner) = spawner.spawn()
-        updateWorld(_.activateSpecialAbility)
+        updateWorld(_.activateSpecialAbility())
           .updateSpawner(newSpawner)
           .updateWorld(_.addCollisionables(newMissiles))
+
+      override def removeElementsThatReachedDestinations(): Game =
+        updateWorld(_.removeElementsThatReachedDestinations())
 
       override def shootMissile(destination: Point2D): Game =
         updateWorld(_.shootMissile(destination))

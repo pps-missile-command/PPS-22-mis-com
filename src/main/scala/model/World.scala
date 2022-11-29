@@ -12,7 +12,7 @@ import model.elements2d.Point2D
 import model.explosion.Explosion
 
 /**
- * Class that represents the world.
+ * Trait that represents the world.
  *
  */
 trait World extends WorldActions[World] :
@@ -87,7 +87,7 @@ object World:
         updateCollisionables(collisionables.map(_.updateTimebleTime(dt)))
           .updateGround(Ground(ground.cities, ground.turrets.map(_.timeElapsed(dt))))
 
-      override def checkCollisions: (World, Set[Collision]) =
+      override def checkCollisions(): (World, Set[Collision]) =
 
         def checkCollisionWithExplosions[C <: Collisionable]
         (allCollisionables: Set[Collisionable], collisionables: Set[C])
@@ -110,11 +110,18 @@ object World:
           .splitGroundFromCollisionables()
           .generateWorld()
 
-      override def activateSpecialAbility: World =
+      override def activateSpecialAbility(): World =
         updateCollisionables(
           collisionables
             .activateSpecialAbility
             .filterNot(isExplosionTerminated)
+        )
+
+
+      override def removeElementsThatReachedDestinations(): World =
+        updateCollisionables(
+          collisionables
+            .filterNot(_.hasReachedTheDestination)
         )
 
       override def shootMissile(destination: Point2D): World =
@@ -124,7 +131,7 @@ object World:
               .addCollisionables(Set(missile))
           case _ => this
 
-      override def moveElements: World =
+      override def moveElements(): World =
         updateCollisionables(collisionables.map(_.updateMovablePosition()))
 
       def updateGround(newGround: Ground): World =

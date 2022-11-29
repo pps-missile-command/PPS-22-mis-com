@@ -26,9 +26,9 @@ object HitBoxPoint:
 
     protected def min(values: Iterable[Double]): Option[Double] = max(values)
 
-    protected def x: Iterable[Double] = Iterable(point.x)
+    protected val x: Iterable[Double] = Iterable(point.x)
 
-    protected def y: Iterable[Double] = Iterable(point.y)
+    protected val y: Iterable[Double] = Iterable(point.y)
 
     override def area(using step: Distance = 0): Iterator[Point2D] = Iterator(point)
 

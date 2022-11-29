@@ -13,13 +13,15 @@ object CollisionsDetection:
 
   /**
    * Apply function used to update the world to be update with the aftermath of its components collisions
+   * It also remove the elements that have reached their destination
    *
    * @return An Update that update the world to be update with the aftermath of its components collisions
    */
   def apply(): Update = on[TimePassed] { (_: Event, game: Game) =>
     Task {
       game
-        .checkCollisions
+        .removeElementsThatReachedDestinations()
+        .checkCollisions()
         .updateScore()
     }
   }

@@ -106,7 +106,7 @@ object PimpingByCollisionable:
       case _ => collisionable
 
     /**
-     * Update the position fo the [[Collisionable]] if it is [[Moveable]].
+     * Update the position for the [[Collisionable]] if it is [[Moveable]].
      *
      * @return a new [[Collisionable]] with the position updated or the same [[Collisionable]] if it is not [[Moveable]]
      */
@@ -114,6 +114,16 @@ object PimpingByCollisionable:
       collisionable match
         case moveable: Moveable => moveable.move().asInstanceOf[Collisionable]
         case _ => collisionable
+
+    /**
+     * Check if the [[Collisionable]] is a [[Moveable]] and has reached the destination.
+     *
+     * @return true if the [[Collisionable]] has reached the destination, false otherwise
+     */
+    def hasReachedTheDestination: Boolean =
+      collisionable match
+        case moveable: Moveable => moveable.destinationReached
+        case _ => false
 
     /**
      * Check if the [[Collisionable]] is an [[Explosion]] and if it is terminated.
