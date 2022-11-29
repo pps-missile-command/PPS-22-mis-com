@@ -6,6 +6,7 @@ import model.collisions.Collisionable
 import model.ground.*
 import model.elements2d.Point2D
 import model.spawner.Spawnable.*
+import PimpingByDeltaTime.*
 
 import scala.util.Random
 

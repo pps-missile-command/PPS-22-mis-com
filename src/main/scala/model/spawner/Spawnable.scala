@@ -13,12 +13,7 @@ object Spawnable:
    * A generic spawnable, that is a generator of a specified type of entities
    * @tparam A The type of element to generate
    */
-  trait Spawnable[+A]:
-    /**
-     * Generator method that creates a new A-typed element
-     * @return the new element created
-     */
-    def generate(): A
+  type Spawnable[+A] = () => A
 
   /**
    * Factory method to generate a set of n elements from the given spawnable
@@ -30,4 +25,4 @@ object Spawnable:
   def apply[A](spawnable: Spawnable[A])(n: Int): Set[A] =
     (for
       i <- 0 until n
-    yield spawnable.generate()).toSet
+    yield spawnable()).toSet
