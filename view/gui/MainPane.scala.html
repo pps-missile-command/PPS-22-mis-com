@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/Visualizer.scala.html
+          view/gui/MainPane.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,58 +22,41 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
 </span>2 <span style=''>
-</span>3 <span style=''>import model.World
-</span>4 <span style=''>
-</span>5 <span style=''>import java.awt.{Image, Toolkit}
-</span>6 <span style=''>import model.collisions.{Collisionable, Damageable}
-</span>7 <span style=''>import model.elements2d.Point2D
-</span>8 <span style=''>import model.ground.{City, Ground, MissileBattery}
-</span>9 <span style=''>import model.missile.{Missile, hitboxBase, hitboxHeight}
-</span>10 <span style=''>import utilities.*
-</span>11 <span style=''>
-</span>12 <span style=''>import javax.imageio.ImageIO
+</span>3 <span style=''>import java.awt.FlowLayout
+</span>4 <span style=''>import java.awt.event.{ActionEvent, ActionListener}
+</span>5 <span style=''>import javax.swing.{JButton, JFrame, JPanel, SwingUtilities, WindowConstants}
+</span>6 <span style=''>
+</span>7 <span style=''>class MainPane(start: () =&gt; _, width: Int, height: Int) extends </span><span style='background: #F0ADAD'>JFrame</span><span style=''>:
+</span>8 <span style=''>
+</span>9 <span style=''>  </span><span style='background: #F0ADAD'>this.setSize(width, height)</span><span style=''>
+</span>10 <span style=''>  </span><span style='background: #F0ADAD'>this.setVisible(true)</span><span style=''>
+</span>11 <span style=''>  </span><span style='background: #F0ADAD'>this.setLocationRelativeTo(null)</span><span style=''>
+</span>12 <span style=''>  </span><span style='background: #F0ADAD'>this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)</span><span style=''>
 </span>13 <span style=''>
-</span>14 <span style=''>object Visualizer:
+</span>14 <span style=''>  </span><span style='background: #F0ADAD'>this.initialPage()</span><span style=''>
 </span>15 <span style=''>
-</span>16 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
-</span>17 <span style=''>
-</span>18 <span style=''>    /***
-</span>19 <span style=''>     * Method used for preparing the ImageView of a city.
-</span>20 <span style=''>     * @param structure City to be used.
-</span>21 <span style=''>     * @return ImageView of the city passed.
-</span>22 <span style=''>     */
-</span>23 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
-</span>24 <span style=''>        (
-</span>25 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>26 <span style=''>            </span><span style='background: #F0ADAD'>structure.position map convertPosition</span><span style=''>,
-</span>27 <span style=''>            </span><span style='background: #F0ADAD'>cityBaseSize use convertWidth</span><span style=''>,
-</span>28 <span style=''>            </span><span style='background: #F0ADAD'>cityHeightSize use convertHeight</span><span style=''>
-</span>29 <span style=''>        )
-</span>30 <span style=''>
-</span>31 <span style=''>    /***
-</span>32 <span style=''>     * Method used for preparing the ImageView of a missile turret.
-</span>33 <span style=''>     * @param structure Missile turret to be used.
-</span>34 <span style=''>     * @return ImageView of the missile turret passed
-</span>35 <span style=''>     */
-</span>36 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
-</span>37 <span style=''>        (
-</span>38 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>39 <span style=''>            </span><span style='background: #F0ADAD'>structure.bottomLeft_Position map convertPosition</span><span style=''>,
-</span>40 <span style=''>            </span><span style='background: #F0ADAD'>missileBattery_BaseSize use convertWidth</span><span style=''>,
-</span>41 <span style=''>            </span><span style='background: #F0ADAD'>missileBatteryHeightSize use convertHeight</span><span style=''>
-</span>42 <span style=''>        )
-</span>43 <span style=''>
-</span>44 <span style=''>    /***
-</span>45 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
-</span>46 <span style=''>     * @param ground Ground to be used.
-</span>47 <span style=''>     * @return List of ImageView of all the structures in the ground.
-</span>48 <span style=''>     */
-</span>49 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
-</span>50 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
-</span>51 <span style=''></span><span style='background: #F0ADAD'>            ++
-</span>52 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
+</span>16 <span style=''>  </span><span style='background: #F0ADAD'>def initialPage</span><span style=''>(): Unit =
+</span>17 <span style=''>    </span><span style='background: #F0ADAD'>SwingUtilities.invokeLater { () =&gt;
+</span>18 <span style=''></span><span style='background: #F0ADAD'>      if (this.getContentPane.getComponentCount != 0)
+</span>19 <span style=''></span><span style='background: #F0ADAD'>        this.getContentPane.remove(0)
+</span>20 <span style=''></span><span style='background: #F0ADAD'>      val panel = new JPanel()
+</span>21 <span style=''></span><span style='background: #F0ADAD'>      panel.setSize(width, height)
+</span>22 <span style=''></span><span style='background: #F0ADAD'>      panel.setLayout(new FlowLayout())
+</span>23 <span style=''></span><span style='background: #F0ADAD'>      val button = new JButton(&quot;AVVIA PARTITA&quot;)
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      button.addActionListener(new ActionListener() {
+</span>25 <span style=''></span><span style='background: #F0ADAD'>        override def actionPerformed(e: ActionEvent): Unit = {
+</span>26 <span style=''></span><span style='background: #F0ADAD'>          dispose()
+</span>27 <span style=''></span><span style='background: #F0ADAD'>          start()
+</span>28 <span style=''></span><span style='background: #F0ADAD'>        }
+</span>29 <span style=''></span><span style='background: #F0ADAD'>      })
+</span>30 <span style=''></span><span style='background: #F0ADAD'>      panel.add(button)
+</span>31 <span style=''></span><span style='background: #F0ADAD'>
+</span>32 <span style=''></span><span style='background: #F0ADAD'>      this.getContentPane.add(panel)
+</span>33 <span style=''></span><span style='background: #F0ADAD'>      this.revalidate()
+</span>34 <span style=''></span><span style='background: #F0ADAD'>      this.repaint()
+</span>35 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -88,725 +71,698 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          15
+          6
         </td>
         <td>
-          1515
+          1568
         </td>
         <td>
-          367
+          240
           -
-          435
+          246
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
+          JFrame
+        </td>
+      </tr><tr>
+        <td>
+          8
+        </td>
+        <td>
+          1569
+        </td>
+        <td>
+          251
+          -
+          278
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setSize
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.setSize(width, height)
+        </td>
+      </tr><tr>
+        <td>
+          9
+        </td>
+        <td>
+          1570
+        </td>
+        <td>
+          281
+          -
+          302
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setVisible
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.setVisible(true)
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          1571
+        </td>
+        <td>
+          305
+          -
+          337
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setLocationRelativeTo
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.setLocationRelativeTo(null)
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1572
+        </td>
+        <td>
+          340
+          -
+          400
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setDefaultCloseOperation
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1573
+        </td>
+        <td>
+          404
+          -
+          422
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          initialPage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.initialPage()
         </td>
       </tr><tr>
         <td>
           15
         </td>
         <td>
-          1514
+          1595
         </td>
         <td>
-          367
+          426
           -
-          406
+          441
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          toString
+          initialPage
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString
+          def initialPage
         </td>
       </tr><tr>
         <td>
-          15
+          16
         </td>
         <td>
-          1513
+          1594
         </td>
         <td>
-          367
+          456
           -
-          397
+          1023
         </td>
         <td>
           Apply
         </td>
         <td>
-          getProperty
+          invokeLater
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;)
+          SwingUtilities.invokeLater { () =&gt;
+      if (this.getContentPane.getComponentCount != 0)
+        this.getContentPane.remove(0)
+      val panel = new JPanel()
+      panel.setSize(width, height)
+      panel.setLayout(new FlowLayout())
+      val button = new JButton(&quot;AVVIA PARTITA&quot;)
+      button.addActionListener(new ActionListener() {
+        override def actionPerformed(e: ActionEvent): Unit = {
+          dispose()
+          start()
+        }
+      })
+      panel.add(button)
+
+      this.getContentPane.add(panel)
+      this.revalidate()
+      this.repaint()
+    }
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1575
+        </td>
+        <td>
+          501
+          -
+          538
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getComponentCount
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.getContentPane.getComponentCount
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1574
+        </td>
+        <td>
+          501
+          -
+          520
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getContentPane
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.getContentPane
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1578
+        </td>
+        <td>
+          553
+          -
+          582
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.getContentPane.remove(0)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1577
+        </td>
+        <td>
+          553
+          -
+          582
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          remove
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.getContentPane.remove(0)
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1576
+        </td>
+        <td>
+          553
+          -
+          572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getContentPane
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          this.getContentPane
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          1579
+        </td>
+        <td>
+          601
+          -
+          613
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          new JPanel()
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1580
+        </td>
+        <td>
+          620
+          -
+          648
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setSize
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          panel.setSize(width, height)
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1581
+        </td>
+        <td>
+          671
+          -
+          687
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          new FlowLayout()
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1582
+        </td>
+        <td>
+          655
+          -
+          688
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setLayout
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          panel.setLayout(new FlowLayout())
         </td>
       </tr><tr>
         <td>
           22
         </td>
         <td>
-          1524
+          1583
         </td>
         <td>
-          603
+          708
           -
-          623
+          736
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          new JButton(&quot;AVVIA PARTITA&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1584
+        </td>
+        <td>
+          772
+          -
+          788
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ActionListener()
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1588
+        </td>
+        <td>
+          743
+          -
+          910
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          addActionListener
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          button.addActionListener(new ActionListener() {
+        override def actionPerformed(e: ActionEvent): Unit = {
+          dispose()
+          start()
+        }
+      })
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          1587
+        </td>
+        <td>
+          799
+          -
+          827
         </td>
         <td>
           DefDef
         </td>
         <td>
-          prepareCityImage
+          actionPerformed
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def prepareCityImage
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1519
-        </td>
-        <td>
-          712
-          -
-          775
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getResource
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1518
-        </td>
-        <td>
-          733
-          -
-          774
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife + &quot;.png&quot;
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1517
-        </td>
-        <td>
-          733
-          -
-          765
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1520
-        </td>
-        <td>
-          699
-          -
-          776
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          read
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1516
-        </td>
-        <td>
-          744
-          -
-          765
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          currentLife
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          structure.currentLife
+          override def actionPerformed
         </td>
       </tr><tr>
         <td>
           25
         </td>
         <td>
-          1521
+          1585
         </td>
         <td>
-          790
+          864
           -
-          828
+          873
         </td>
         <td>
           Apply
         </td>
         <td>
-          map
+          dispose
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          structure.position map convertPosition
+          dispose()
         </td>
       </tr><tr>
         <td>
           26
         </td>
         <td>
-          1522
+          1586
         </td>
         <td>
-          842
+          884
           -
-          871
+          891
         </td>
         <td>
           Apply
         </td>
         <td>
-          use
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          cityBaseSize use convertWidth
+          start()
         </td>
       </tr><tr>
         <td>
-          27
+          29
         </td>
         <td>
-          1523
+          1589
         </td>
         <td>
-          885
-          -
           917
+          -
+          934
         </td>
         <td>
           Apply
         </td>
         <td>
-          use
+          add
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          cityHeightSize use convertHeight
+          panel.add(button)
         </td>
       </tr><tr>
         <td>
-          35
+          31
         </td>
         <td>
-          1536
+          1590
         </td>
         <td>
-          1123
+          942
           -
-          1153
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          prepareBatteryMissileImage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def prepareBatteryMissileImage
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          1528
-        </td>
-        <td>
-          1318
-          -
-          1339
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          currentLife
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          structure.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          1527
-        </td>
-        <td>
-          1273
-          -
-          1315
+          961
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          getContentPane
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot;
+          this.getContentPane
         </td>
       </tr><tr>
         <td>
-          37
+          31
         </td>
         <td>
-          1530
+          1591
         </td>
         <td>
-          1273
+          942
           -
-          1348
+          972
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          add
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;
+          this.getContentPane.add(panel)
         </td>
       </tr><tr>
         <td>
-          37
+          32
         </td>
         <td>
-          1532
+          1592
         </td>
         <td>
-          1239
+          979
           -
-          1350
+          996
         </td>
         <td>
           Apply
         </td>
         <td>
-          read
+          revalidate
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))
+          this.revalidate()
         </td>
       </tr><tr>
         <td>
-          37
+          33
         </td>
         <td>
-          1526
+          1593
         </td>
         <td>
-          1273
+          1003
           -
-          1309
+          1017
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          repaint
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          1529
-        </td>
-        <td>
-          1273
-          -
-          1339
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          1531
-        </td>
-        <td>
-          1252
-          -
-          1349
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getResource
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          1525
-        </td>
-        <td>
-          1284
-          -
-          1309
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          isReadyForShoot
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          structure.isReadyForShoot
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          1533
-        </td>
-        <td>
-          1364
-          -
-          1413
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          structure.bottomLeft_Position map convertPosition
-        </td>
-      </tr><tr>
-        <td>
-          39
-        </td>
-        <td>
-          1534
-        </td>
-        <td>
-          1427
-          -
-          1467
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          use
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missileBattery_BaseSize use convertWidth
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          1535
-        </td>
-        <td>
-          1481
-          -
-          1523
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          use
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          missileBatteryHeightSize use convertHeight
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          1542
-        </td>
-        <td>
-          1738
-          -
-          1753
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          printGround
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def printGround
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          1541
-        </td>
-        <td>
-          1820
-          -
-          1990
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          ++
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          (for structure &lt;- ground.cities yield prepareCityImage(structure))
-            ++
-            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          1538
-        </td>
-        <td>
-          1821
-          -
-          1885
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          for structure &lt;- ground.cities yield prepareCityImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          1537
-        </td>
-        <td>
-          1858
-          -
-          1885
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          prepareCityImage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          prepareCityImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          1539
-        </td>
-        <td>
-          1953
-          -
-          1990
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          prepareBatteryMissileImage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          prepareBatteryMissileImage(structure)
-        </td>
-      </tr><tr>
-        <td>
-          51
-        </td>
-        <td>
-          1540
-        </td>
-        <td>
-          1915
-          -
-          1990
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)
+          this.repaint()
         </td>
       </tr>
     </table>

@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/gui/MouseHandler.scala.html
+          components/ViewModule.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,31 +22,37 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view.gui
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package components
 </span>2 <span style=''>
-</span>3 <span style=''>import model.elements2d.Point2D
-</span>4 <span style=''>
-</span>5 <span style=''>import java.awt.Component
-</span>6 <span style=''>import monix.execution.cancelables.SingleAssignCancelable
-</span>7 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
-</span>8 <span style=''>import monix.reactive.subjects.PublishSubject
+</span>3 <span style=''>import controller.Event
+</span>4 <span style=''>import model.Game
+</span>5 <span style=''>import monix.eval.Task
+</span>6 <span style=''>import monix.reactive.Observable
+</span>7 <span style=''>import view.ViewConstants
+</span>8 <span style=''>import view.gui.{GUI, MainPane, UI}
 </span>9 <span style=''>
-</span>10 <span style=''>import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
-</span>11 <span style=''>
-</span>12 <span style=''>/**
-</span>13 <span style=''> * Extension method that adds a new mouseObservable method to [[Component]].
-</span>14 <span style=''> * This method returns an Observable[Point2D] that adds a mouse clicked listener to the given
-</span>15 <span style=''> * component and generating new events as the click are listened
-</span>16 <span style=''> */
-</span>17 <span style=''>extension (component: Component)
-</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[Point2D] =
-</span>19 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-</span>20 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter:
-</span>21 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
-</span>22 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(Point2D(e.getX, e.getY))
-</span>23 <span style=''></span><span style='background: #F0ADAD'>      )
-</span>24 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
-</span>25 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>10 <span style=''>object ViewModule:
+</span>11 <span style=''>  trait View:
+</span>12 <span style=''>    def initialGame(): Unit
+</span>13 <span style=''>  trait Provider:
+</span>14 <span style=''>    val view: UI &amp; View
+</span>15 <span style=''>  type Requirements = ControllerModule.Provider
+</span>16 <span style=''>  trait Component:
+</span>17 <span style=''>    context: Requirements =&gt;
+</span>18 <span style=''>
+</span>19 <span style=''>    class ViewImpl extends UI with View:
+</span>20 <span style=''>
+</span>21 <span style=''>      private lazy val gui: GUI = </span><span style='background: #F0ADAD'>new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)</span><span style=''>
+</span>22 <span style=''>
+</span>23 <span style=''>      </span><span style='background: #F0ADAD'>override def initialGame</span><span style=''>(): Unit = </span><span style='background: #F0ADAD'>new MainPane(() =&gt; controller.startGame(), ViewConstants.GUI_width, ViewConstants.GUI_height)</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>      </span><span style='background: #F0ADAD'>override def render</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>gui.render(game)</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>      </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>gui.gameOver(game)</span><span style=''>
+</span>28 <span style=''>
+</span>29 <span style=''>      </span><span style='background: #F0ADAD'>override def events</span><span style=''>: Observable[Event] = </span><span style='background: #F0ADAD'>gui.events</span><span style=''>
+</span>30 <span style=''>  trait Interface extends Provider with Component:
+</span>31 <span style=''>    self: Requirements =&gt;
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -61,120 +67,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          17
+          20
         </td>
         <td>
-          1608
+          12
         </td>
         <td>
-          585
+          457
           -
-          604
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          mouseObservable
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def mouseObservable
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          1596
-        </td>
-        <td>
-          634
-          -
-          651
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          create$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable.create
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          1607
-        </td>
-        <td>
-          634
-          -
-          895
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          create
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-      component.addMouseListener(new MouseAdapter:
-        override def mouseClicked(e: MouseEvent): Unit =
-          subject.onNext(Point2D(e.getX, e.getY))
-      )
-      SingleAssignCancelable()
-    }
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          1605
-        </td>
-        <td>
-          699
-          -
-          858
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          addMouseListener
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          component.addMouseListener(new MouseAdapter:
-        override def mouseClicked(e: MouseEvent): Unit =
-          subject.onNext(Point2D(e.getX, e.getY))
-      )
-        </td>
-      </tr><tr>
-        <td>
-          19
-        </td>
-        <td>
-          1597
-        </td>
-        <td>
-          730
-          -
-          742
+          520
         </td>
         <td>
           Apply
@@ -186,199 +87,223 @@
           
         </td>
         <td style="background: #F0ADAD">
-          MouseAdapter
+          new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)
         </td>
       </tr><tr>
         <td>
-          20
+          22
         </td>
         <td>
-          1604
+          14
         </td>
         <td>
-          752
+          563
           -
-          777
+          656
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          new MainPane(() =&gt; controller.startGame(), ViewConstants.GUI_width, ViewConstants.GUI_height)
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          13
+        </td>
+        <td>
+          582
+          -
+          604
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          startGame
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          controller.startGame()
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          528
+          -
+          552
         </td>
         <td>
           DefDef
         </td>
         <td>
-          mouseClicked
+          initialGame
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def mouseClicked
+          override def initialGame
         </td>
       </tr><tr>
         <td>
-          21
+          24
         </td>
         <td>
-          1599
+          17
         </td>
         <td>
-          834
+          664
           -
-          840
+          683
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          render
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def render
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          16
+        </td>
+        <td>
+          710
+          -
+          726
         </td>
         <td>
           Apply
         </td>
         <td>
-          int2double
+          render
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          e.getX
+          gui.render(game)
         </td>
       </tr><tr>
         <td>
-          21
+          26
         </td>
         <td>
-          1602
+          19
         </td>
         <td>
-          826
+          734
           -
+          755
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          gameOver
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def gameOver
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          18
+        </td>
+        <td>
+          782
+          -
+          800
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          gameOver
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          gui.gameOver(game)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          20
+        </td>
+        <td>
           849
+          -
+          859
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          apply
+          events
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Point2D(e.getX, e.getY)
+          gui.events
         </td>
       </tr><tr>
+        <td>
+          28
+        </td>
         <td>
           21
         </td>
         <td>
-          1601
-        </td>
-        <td>
-          842
+          808
           -
-          848
+          827
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          int2double
+          events
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          e.getY
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1598
-        </td>
-        <td>
-          834
-          -
-          840
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getX
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          e.getX
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1600
-        </td>
-        <td>
-          842
-          -
-          848
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getY
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          e.getY
-        </td>
-      </tr><tr>
-        <td>
-          21
-        </td>
-        <td>
-          1603
-        </td>
-        <td>
-          811
-          -
-          850
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          onNext
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          subject.onNext(Point2D(e.getX, e.getY))
-        </td>
-      </tr><tr>
-        <td>
-          23
-        </td>
-        <td>
-          1606
-        </td>
-        <td>
-          865
-          -
-          889
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          SingleAssignCancelable()
+          override def events
         </td>
       </tr>
     </table>

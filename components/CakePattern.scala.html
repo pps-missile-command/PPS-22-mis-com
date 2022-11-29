@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          controller/update/LaunchNewMissile.scala.html
+          components/CakePattern.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,29 +22,21 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller.update
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package components
 </span>2 <span style=''>
-</span>3 <span style=''>import controller.Event
-</span>4 <span style=''>import controller.Event.LaunchMissileTo
-</span>5 <span style=''>import controller.update.Update.on
-</span>6 <span style=''>import model.Game
-</span>7 <span style=''>import monix.eval.Task
-</span>8 <span style=''>
-</span>9 <span style=''>/**
-</span>10 <span style=''> * Object that return an update function for the world to be updated when the user launch a missile.
-</span>11 <span style=''> */
-</span>12 <span style=''>object LaunchNewMissile:
+</span>3 <span style=''>import view.gui.UI
+</span>4 <span style=''>
+</span>5 <span style=''>object MVC
+</span>6 <span style=''>  extends ModelModule.Interface
+</span>7 <span style=''>  with ViewModule.Interface
+</span>8 <span style=''>  with ControllerModule.Interface:
+</span>9 <span style=''>
+</span>10 <span style=''>  override val model: ModelModule.Model = </span><span style='background: #F0ADAD'>new ModelImpl()</span><span style=''>
+</span>11 <span style=''>  override val view: UI &amp; ViewModule.View = </span><span style='background: #F0ADAD'>new ViewImpl()</span><span style=''>
+</span>12 <span style=''>  override val controller: ControllerModule.MainController = </span><span style='background: #F0ADAD'>new ControllerImpl()</span><span style=''>
 </span>13 <span style=''>
-</span>14 <span style=''>  /**
-</span>15 <span style=''>   * Apply function used to update the world to be updated when the user launch a missile.
-</span>16 <span style=''>   *
-</span>17 <span style=''>   * @return an update function for the world to be updated when the user launch a missile.
-</span>18 <span style=''>   */
-</span>19 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[LaunchMissileTo] { (event: LaunchMissileTo, game: Game) =&gt;
-</span>20 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>21 <span style=''></span><span style='background: #F0ADAD'>      game.shootMissile(event.position)
-</span>22 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>23 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>14 <span style=''>  </span><span style='background: #F0ADAD'>@main def main</span><span style=''>(): Unit =
+</span>15 <span style=''>    </span><span style='background: #F0ADAD'>controller.initializeGame()</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -59,55 +51,123 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          18
+          9
         </td>
         <td>
-          65
+          0
         </td>
         <td>
-          505
+          189
           -
-          514
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def apply
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          64
-        </td>
-        <td>
-          527
-          -
-          649
+          204
         </td>
         <td>
           Apply
         </td>
         <td>
-          on
+          &lt;init&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          on[LaunchMissileTo] { (event: LaunchMissileTo, game: Game) =&gt;
-    Task {
-      game.shootMissile(event.position)
-    }
-  }
+          new ModelImpl()
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          1
+        </td>
+        <td>
+          249
+          -
+          263
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          new ViewImpl()
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          2
+        </td>
+        <td>
+          325
+          -
+          345
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          new ControllerImpl()
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          4
+        </td>
+        <td>
+          349
+          -
+          363
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          main
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          @main def main
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          3
+        </td>
+        <td>
+          378
+          -
+          405
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          initializeGame
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          controller.initializeGame()
         </td>
       </tr>
     </table>

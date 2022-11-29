@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/collisions/hitbox/HitBoxPoint.scala.html
+          model/missile/zigzag/PimpingByVector2D.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,41 +22,24 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions.hitbox
-</span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.*
-</span>4 <span style=''>import model.collisions.hitbox.HitBoxSymmetric
-</span>5 <span style=''>import model.elements2d.Point2D
-</span>6 <span style=''>import model.elements2d.Point2D.GivenEquality.given
-</span>7 <span style=''>import org.scalactic.Equality
-</span>8 <span style=''>import org.scalactic.TripleEquals.*
-</span>9 <span style=''>
-</span>10 <span style=''>/**
-</span>11 <span style=''> * Factory for an hit box that is a point.
-</span>12 <span style=''> */
-</span>13 <span style=''>object HitBoxPoint:
-</span>14 <span style=''>
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * Returns a new hit box that contains only a point.
-</span>17 <span style=''>   *
-</span>18 <span style=''>   * @param point the point in the hit box
-</span>19 <span style=''>   * @return a new hit box that contains only a point
-</span>20 <span style=''>   */
-</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(point: Point2D): HitBox = HitBoxPoint(point)
-</span>22 <span style=''>
-</span>23 <span style=''>  private case class HitBoxPoint(point: Point2D) extends HitBoxSymmetric :
-</span>24 <span style=''>
-</span>25 <span style=''>    </span><span style='background: #AEF1AE'>protected def max</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>Option(values.head)</span><span style=''>
-</span>26 <span style=''>
-</span>27 <span style=''>    </span><span style='background: #AEF1AE'>protected def min</span><span style=''>(values: Iterable[Double]): Option[Double] = </span><span style='background: #AEF1AE'>max(values)</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>    protected val x: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(point.x)</span><span style=''>
-</span>30 <span style=''>
-</span>31 <span style=''>    protected val y: Iterable[Double] = </span><span style='background: #AEF1AE'>Iterable(point.y)</span><span style=''>
-</span>32 <span style=''>
-</span>33 <span style=''>    </span><span style='background: #AEF1AE'>override def area</span><span style=''>(using step: Distance = 0): Iterator[Point2D] = </span><span style='background: #AEF1AE'>Iterator(point)</span><span style=''>
-</span>34 <span style=''>
-</span>35 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean = </span><span style='background: #AEF1AE'>point === this.point</span><span style=''>
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile.zigzag
+</span>2 <span style=''>import model.missile.zigzag.PimpingByDouble.mapToSign
+</span>3 <span style=''>
+</span>4 <span style=''>import model.elements2d.{Angle, Vector2D}
+</span>5 <span style=''>
+</span>6 <span style=''>object PimpingByVector2D:
+</span>7 <span style=''>  /**
+</span>8 <span style=''>   * Extension method that define a 90 degree rotation of a given [[Vector2D]], taking the direction ([[Left]], [[Right]] or [[Rand]])
+</span>9 <span style=''>   * and return the vector rotated by 90° respectively to the left, to the right or a random one between the two types
+</span>10 <span style=''>   */
+</span>11 <span style=''>  extension(v: Vector2D)
+</span>12 <span style=''>    </span><span style='background: #AEF1AE'>def -|-</span><span style=''>(d: Direction, magnitude: Int = defaultMagnitude): Vector2D = d match
+</span>13 <span style=''>      </span><span style='background: #AEF1AE'>case Right</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Vector2D(magnitude, Angle.Degree(v.direction.get.degree + 90))</span><span style=''>
+</span>14 <span style=''>      </span><span style='background: #AEF1AE'>case Left</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Vector2D(magnitude, Angle.Degree(v.direction.get.degree - 90))</span><span style=''>
+</span>15 <span style=''>      </span><span style='background: #AEF1AE'>case Rand(rand)</span><span style=''> =&gt;
+</span>16 <span style=''>        val value = </span><span style='background: #AEF1AE'>rand.nextDouble()</span><span style=''>
+</span>17 <span style=''>        </span><span style='background: #AEF1AE'>Vector2D(1, Angle.Degree(v.direction.get.degree + 90 * value.mapToSign))</span><span style=''>
+</span>18 <span style=''>      </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; v
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -71,18 +54,162 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          10
         </td>
         <td>
-          533
+          1181
         </td>
         <td>
-          500
+          431
           -
-          509
+          431
         </td>
         <td>
           DefDef
+        </td>
+        <td>
+          -|-$default$3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1180
+        </td>
+        <td>
+          448
+          -
+          455
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          -|-
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def -|-
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1160
+        </td>
+        <td>
+          554
+          -
+          563
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          magnitude
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1162
+        </td>
+        <td>
+          578
+          -
+          593
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          v.direction.get
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1165
+        </td>
+        <td>
+          531
+          -
+          541
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case Right
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1161
+        </td>
+        <td>
+          578
+          -
+          589
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          v.direction
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          1164
+        </td>
+        <td>
+          545
+          -
+          607
+        </td>
+        <td>
+          Apply
         </td>
         <td>
           apply
@@ -91,67 +218,235 @@
           
         </td>
         <td style="background: #AEF1AE">
-          def apply
+          Vector2D(magnitude, Angle.Degree(v.direction.get.degree + 90))
         </td>
       </tr><tr>
         <td>
-          24
+          12
         </td>
         <td>
-          534
+          1163
         </td>
         <td>
-          705
+          578
           -
-          716
+          600
         </td>
         <td>
           Select
         </td>
         <td>
-          head
+          degree
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          values.head
+          v.direction.get.degree
         </td>
       </tr><tr>
         <td>
-          24
+          13
         </td>
         <td>
-          536
+          1169
+        </td>
+        <td>
+          660
+          -
+          682
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          degree
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          v.direction.get.degree
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1171
+        </td>
+        <td>
+          614
+          -
+          623
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case Left
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1168
+        </td>
+        <td>
+          660
+          -
+          675
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          get
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          v.direction.get
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1167
+        </td>
+        <td>
+          660
+          -
+          671
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          direction
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          v.direction
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1170
+        </td>
+        <td>
+          627
+          -
+          689
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Vector2D(magnitude, Angle.Degree(v.direction.get.degree - 90))
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1166
         </td>
         <td>
           636
           -
-          653
+          645
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          max
+          int2double
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          protected def max
+          magnitude
         </td>
       </tr><tr>
         <td>
-          24
+          14
         </td>
         <td>
-          535
+          1178
         </td>
         <td>
-          698
+          696
           -
-          717
+          711
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case Rand(rand)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1172
+        </td>
+        <td>
+          735
+          -
+          752
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          nextDouble
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          rand.nextDouble()
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          1177
+        </td>
+        <td>
+          761
+          -
+          833
         </td>
         <td>
           Apply
@@ -163,295 +458,127 @@
           
         </td>
         <td style="background: #AEF1AE">
-          Option(values.head)
+          Vector2D(1, Angle.Degree(v.direction.get.degree + 90 * value.mapToSign))
         </td>
       </tr><tr>
         <td>
-          26
+          16
         </td>
         <td>
-          537
+          1174
         </td>
         <td>
-          785
+          786
           -
-          796
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          max
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          max(values)
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          538
-        </td>
-        <td>
-          723
-          -
-          740
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          min
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def min
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          540
-        </td>
-        <td>
-          838
-          -
-          855
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Iterable(point.x)
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          539
-        </td>
-        <td>
-          847
-          -
-          854
+          801
         </td>
         <td>
           Select
         </td>
         <td>
-          x
+          get
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          point.x
+          v.direction.get
         </td>
       </tr><tr>
         <td>
-          30
+          16
         </td>
         <td>
-          541
+          1176
         </td>
         <td>
-          906
+          816
           -
-          913
+          831
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          mapToSign
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          value.mapToSign
+        </td>
+      </tr><tr>
+        <td>
+          16
+        </td>
+        <td>
+          1173
+        </td>
+        <td>
+          786
+          -
+          797
         </td>
         <td>
           Select
         </td>
         <td>
-          y
+          direction
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          point.y
+          v.direction
         </td>
       </tr><tr>
         <td>
-          30
+          16
         </td>
         <td>
-          542
+          1175
         </td>
         <td>
-          897
+          786
           -
-          914
+          808
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          apply
+          degree
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          Iterable(point.y)
+          v.direction.get.degree
         </td>
       </tr><tr>
         <td>
-          32
+          17
         </td>
         <td>
-          543
+          1179
         </td>
         <td>
-          985
+          840
           -
-          1000
+          846
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Iterator(point)
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          545
-        </td>
-        <td>
-          961
-          -
-          961
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          area$default$1
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          544
-        </td>
-        <td>
-          920
-          -
-          937
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          area
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def area
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          546
-        </td>
-        <td>
-          1089
-          -
-          1094
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          convertToEqualizer
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          548
-        </td>
-        <td>
-          1006
-          -
-          1027
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def contains
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          547
-        </td>
-        <td>
-          1089
-          -
-          1109
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          ===
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          point === this.point
+          case _
         </td>
       </tr>
     </table>
