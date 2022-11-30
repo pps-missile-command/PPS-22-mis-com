@@ -156,7 +156,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
             )
           )
 
-      When("The game executes loop without special ability")
+      When("The game executes loop with special ability")
       val newGame = game
         .timeElapsed((World.width / vehicle.planeVelocity) + 1)
         .moveElements()
@@ -166,6 +166,55 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
 
       Then("The collisionables should be empty")
       assert(newGame.world.collisionables.isEmpty)
+    }
+
+    Scenario("In the game the elements that have special ability used it plane") {
+      val plane = Plane(vehicle.vehicleTypes.Right_To_Left, 20)(using Random())
+      Given("An initial game with a plane")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                plane
+              )
+            )
+          )
+
+      When("The game executes loop without special ability")
+      val newGame = game
+        .timeElapsed(20)
+        .moveElements()
+        .activateSpecialAbility()
+
+      Then("The collisionables should be greater than 1")
+      assert(newGame.world.collisionables.size > 1)
+    }
+
+    Scenario("In the game the elements that have special ability used it missile") {
+      val destination = Point2D(70, 70)
+      val enemyMissile: Missile = Missile.enemyMissile(position = Point2D(50, 50), finalPosition = destination)
+      Given("An initial game with an enemy missile")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                enemyMissile
+              )
+            )
+          )
+
+      When("The game executes loop with special ability")
+      val newGame = game
+        .timeElapsed(20)
+        .moveElements()
+        .activateSpecialAbility()
+
+      Then("The collisionables should have an explosion")
+      assert(newGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 1)
     }
 
     Scenario("In the game there are one friendly explosion and one zigzag enemy missile that collides") {
@@ -198,5 +247,32 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       assert(updatedGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 2)
       Then("The score should be 1")
       assert(gameScore.player.score == 1)
+    }
+
+    Scenario("In the game there is an explosion that should terminate") {
+      val friendlyExplosion = Explosion(damageToInflict = 1, expPosition = Point2D(60, 50), dt = 10)(using Affiliation.Friendly)
+      Given("An initial game with some missile")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                friendlyExplosion
+              )
+            )
+          )
+
+      When("The game executes time elapsed, only for the world")
+      val updatedGame =
+        game
+          .updateWorld(
+            _.timeElapsed(10)
+          )
+          .moveElements()
+          .activateSpecialAbility()
+
+      Then("The collisionables should be empty, explosion terminated")
+      assert(updatedGame.world.collisionables.isEmpty)
     }
   }
