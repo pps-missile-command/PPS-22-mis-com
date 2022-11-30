@@ -1,5 +1,9 @@
 package components
 
+/**
+ * Object that implements all the cake pattern's interfaces and the relatives dependencies
+ * implicitly
+ */
 object MVC
   extends ModelModule.Interface
   with ViewModule.Interface

@@ -48,7 +48,7 @@ object ViewModule:
     context: Requirements =>
 
     class ViewImpl extends View :
-      private lazy val gui: View = new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)
+      private val gui: View = new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)
 
       override def initialGame(): Task[Unit] = gui.initialGame()
 
