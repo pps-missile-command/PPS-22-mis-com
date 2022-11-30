@@ -48,7 +48,7 @@ class GUI(width: Int, height: Int) extends UI:
             panel.setLayout(new FlowLayout())
             val button = new JButton("RIGIOCA")
             val score = new JLabel(s"SCORE FINALE: ${game.player.score}")
-            val time = new JLabel(s"TEMPO DI GIOCO: ${game.player.timer.time}")
+            val time = new JLabel(s"TEMPO DI GIOCO: ${BigDecimal(game.player.timer.time).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble}")
             button.addActionListener(new ActionListener() {
                 override def actionPerformed(e: ActionEvent): Unit = {
                     frame.dispose()
