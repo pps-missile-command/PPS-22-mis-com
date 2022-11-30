@@ -29,39 +29,24 @@
 </span>5 <span style=''>import java.awt.Component
 </span>6 <span style=''>import monix.execution.cancelables.SingleAssignCancelable
 </span>7 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
-</span>8 <span style=''>
-</span>9 <span style=''>import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
-</span>10 <span style=''>
-</span>11 <span style=''>/**
-</span>12 <span style=''> * Extension method that adds a new mouseObservable method to [[Component]].
-</span>13 <span style=''> * This method returns an Observable[Point2D] that adds a mouse clicked listener to the given
-</span>14 <span style=''> * component and generating new events as the click are listened
-</span>15 <span style=''> */
-</span>16 <span style=''>extension (component: Component)
-</span>17 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[Point2D] =
-</span>18 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-</span>19 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter :
-</span>20 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
-</span>21 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(Point2D(e.getX, e.getY))
-</span>22 <span style=''></span><span style='background: #F0ADAD'>      )
-</span>23 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
-</span>24 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
-</span>25 <span style=''>
-</span>26 <span style=''>extension (button: javax.swing.JButton)
-</span>27 <span style=''>
-</span>28 <span style=''>  /**
-</span>29 <span style=''>   * Extension method that emits a new event every time the [[javax.swing.JButton]] is clicked.
-</span>30 <span style=''>   *
-</span>31 <span style=''>   * @return an Observable[Unit] that emits a new event every time the button is clicked
-</span>32 <span style=''>   */
-</span>33 <span style=''>  </span><span style='background: #F0ADAD'>def clickObservable</span><span style=''>(): Observable[Unit] =
-</span>34 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-</span>35 <span style=''></span><span style='background: #F0ADAD'>      button.addActionListener(
-</span>36 <span style=''></span><span style='background: #F0ADAD'>        _ =&gt;
-</span>37 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(())
-</span>38 <span style=''></span><span style='background: #F0ADAD'>      )
-</span>39 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
-</span>40 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>8 <span style=''>import monix.reactive.subjects.PublishSubject
+</span>9 <span style=''>
+</span>10 <span style=''>import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
+</span>11 <span style=''>
+</span>12 <span style=''>/**
+</span>13 <span style=''> * Extension method that adds a new mouseObservable method to [[Component]].
+</span>14 <span style=''> * This method returns an Observable[Point2D] that adds a mouse clicked listener to the given
+</span>15 <span style=''> * component and generating new events as the click are listened
+</span>16 <span style=''> */
+</span>17 <span style=''>extension (component: Component)
+</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[Point2D] =
+</span>19 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
+</span>20 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter:
+</span>21 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
+</span>22 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(Point2D(e.getX, e.getY))
+</span>23 <span style=''></span><span style='background: #F0ADAD'>      )
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
+</span>25 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -76,15 +61,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          16
+          17
         </td>
         <td>
-          1602
+          1600
         </td>
         <td>
-          539
+          585
           -
-          558
+          604
         </td>
         <td>
           DefDef
@@ -100,15 +85,45 @@
         </td>
       </tr><tr>
         <td>
-          17
+          18
         </td>
         <td>
-          1590
+          1599
         </td>
         <td>
-          588
+          634
           -
-          605
+          895
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          create
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
+      component.addMouseListener(new MouseAdapter:
+        override def mouseClicked(e: MouseEvent): Unit =
+          subject.onNext(Point2D(e.getX, e.getY))
+      )
+      SingleAssignCancelable()
+    }
+        </td>
+      </tr><tr>
+        <td>
+          18
+        </td>
+        <td>
+          1588
+        </td>
+        <td>
+          634
+          -
+          651
         </td>
         <td>
           Select
@@ -124,72 +139,15 @@
         </td>
       </tr><tr>
         <td>
-          17
+          19
         </td>
         <td>
-          1601
+          1589
         </td>
         <td>
-          588
+          730
           -
-          850
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          create
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-      component.addMouseListener(new MouseAdapter :
-        override def mouseClicked(e: MouseEvent): Unit =
-          subject.onNext(Point2D(e.getX, e.getY))
-      )
-      SingleAssignCancelable()
-    }
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          1599
-        </td>
-        <td>
-          653
-          -
-          813
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          addMouseListener
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          component.addMouseListener(new MouseAdapter :
-        override def mouseClicked(e: MouseEvent): Unit =
-          subject.onNext(Point2D(e.getX, e.getY))
-      )
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          1591
-        </td>
-        <td>
-          684
-          -
-          696
+          742
         </td>
         <td>
           Apply
@@ -208,12 +166,39 @@
           19
         </td>
         <td>
-          1598
+          1597
         </td>
         <td>
-          707
+          699
           -
-          732
+          858
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          addMouseListener
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          component.addMouseListener(new MouseAdapter:
+        override def mouseClicked(e: MouseEvent): Unit =
+          subject.onNext(Point2D(e.getX, e.getY))
+      )
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          1596
+        </td>
+        <td>
+          752
+          -
+          777
         </td>
         <td>
           DefDef
@@ -229,63 +214,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
-          1596
+          1590
         </td>
         <td>
-          781
+          834
           -
-          804
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Point2D(e.getX, e.getY)
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          1593
-        </td>
-        <td>
-          789
-          -
-          795
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          int2double
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          e.getX
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          1592
-        </td>
-        <td>
-          789
-          -
-          795
+          840
         </td>
         <td>
           Apply
@@ -301,15 +238,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
-          1595
+          1593
         </td>
         <td>
-          797
+          842
           -
-          803
+          848
         </td>
         <td>
           Apply
@@ -325,39 +262,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
-          1597
+          1592
         </td>
         <td>
-          766
+          842
           -
-          805
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          onNext
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          subject.onNext(Point2D(e.getX, e.getY))
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          1594
-        </td>
-        <td>
-          797
-          -
-          803
+          848
         </td>
         <td>
           Apply
@@ -373,144 +286,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          21
         </td>
         <td>
-          1600
+          1595
         </td>
         <td>
-          820
+          811
           -
-          844
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          SingleAssignCancelable()
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          1608
-        </td>
-        <td>
-          1097
-          -
-          1116
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          clickObservable
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def clickObservable
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          1607
-        </td>
-        <td>
-          1143
-          -
-          1320
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          create
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-      button.addActionListener(
-        _ =&gt;
-          subject.onNext(())
-      )
-      SingleAssignCancelable()
-    }
-        </td>
-      </tr><tr>
-        <td>
-          33
-        </td>
-        <td>
-          1603
-        </td>
-        <td>
-          1143
-          -
-          1160
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          create$default$2
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Observable.create
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          1605
-        </td>
-        <td>
-          1208
-          -
-          1283
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          addActionListener
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          button.addActionListener(
-        _ =&gt;
-          subject.onNext(())
-      )
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          1604
-        </td>
-        <td>
-          1257
-          -
-          1275
+          850
         </td>
         <td>
           Apply
@@ -522,19 +306,67 @@
           
         </td>
         <td style="background: #F0ADAD">
-          subject.onNext(())
+          subject.onNext(Point2D(e.getX, e.getY))
         </td>
       </tr><tr>
         <td>
-          38
+          21
         </td>
         <td>
-          1606
+          1591
         </td>
         <td>
-          1290
+          834
           -
-          1314
+          840
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          int2double
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          e.getX
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          1594
+        </td>
+        <td>
+          826
+          -
+          849
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Point2D(e.getX, e.getY)
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1598
+        </td>
+        <td>
+          865
+          -
+          889
         </td>
         <td>
           Apply

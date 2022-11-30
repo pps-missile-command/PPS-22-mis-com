@@ -37,19 +37,24 @@
 </span>13 <span style=''>   * A generic spawnable, that is a generator of a specified type of entities
 </span>14 <span style=''>   * @tparam A The type of element to generate
 </span>15 <span style=''>   */
-</span>16 <span style=''>  type Spawnable[+A] = () =&gt; A
-</span>17 <span style=''>
-</span>18 <span style=''>  /**
-</span>19 <span style=''>   * Factory method to generate a set of n elements from the given spawnable
-</span>20 <span style=''>   * @param spawnable The spawnable that dictates how to generate the elements
-</span>21 <span style=''>   * @param n The number of elements to generate
-</span>22 <span style=''>   * @tparam A The type of elements to generate
-</span>23 <span style=''>   * @return the set of generated elements
-</span>24 <span style=''>   */
-</span>25 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[A](spawnable: Spawnable[A])(n: Int): Set[A] =
-</span>26 <span style=''>    </span><span style='background: #AEF1AE'>(for
-</span>27 <span style=''></span><span style='background: #AEF1AE'>      i &lt;- 0 until n
-</span>28 <span style=''></span><span style='background: #AEF1AE'>    yield spawnable()).toSet</span><span style=''>
+</span>16 <span style=''>  trait Spawnable[+A]:
+</span>17 <span style=''>    /**
+</span>18 <span style=''>     * Generator method that creates a new A-typed element
+</span>19 <span style=''>     * @return the new element created
+</span>20 <span style=''>     */
+</span>21 <span style=''>    def generate(): A
+</span>22 <span style=''>
+</span>23 <span style=''>  /**
+</span>24 <span style=''>   * Factory method to generate a set of n elements from the given spawnable
+</span>25 <span style=''>   * @param spawnable The spawnable that dictates how to generate the elements
+</span>26 <span style=''>   * @param n The number of elements to generate
+</span>27 <span style=''>   * @tparam A The type of elements to generate
+</span>28 <span style=''>   * @return the set of generated elements
+</span>29 <span style=''>   */
+</span>30 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[A](spawnable: Spawnable[A])(n: Int): Set[A] =
+</span>31 <span style=''>    </span><span style='background: #AEF1AE'>(for
+</span>32 <span style=''></span><span style='background: #AEF1AE'>      i &lt;- 0 until n
+</span>33 <span style=''></span><span style='background: #AEF1AE'>    yield spawnable.generate()).toSet</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -64,15 +69,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          24
+          29
         </td>
         <td>
-          1291
+          1245
         </td>
         <td>
-          767
+          895
           -
-          776
+          904
         </td>
         <td>
           DefDef
@@ -88,15 +93,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          30
         </td>
         <td>
-          1289
+          1243
         </td>
         <td>
-          828
+          956
           -
-          874
+          1011
         </td>
         <td>
           Apply
@@ -110,43 +115,19 @@
         <td style="background: #AEF1AE">
           for
       i &lt;- 0 until n
-    yield spawnable()
+    yield spawnable.generate()
         </td>
       </tr><tr>
         <td>
-          26
+          31
         </td>
         <td>
-          1287
+          1240
         </td>
         <td>
-          843
+          971
           -
-          852
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          until
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          0 until n
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          1286
-        </td>
-        <td>
-          843
-          -
-          844
+          972
         </td>
         <td>
           Apply
@@ -162,39 +143,63 @@
         </td>
       </tr><tr>
         <td>
-          27
+          31
         </td>
         <td>
-          1288
+          1241
         </td>
         <td>
-          863
+          971
           -
-          874
+          980
         </td>
         <td>
           Apply
         </td>
         <td>
-          apply
+          until
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          spawnable()
+          0 until n
         </td>
       </tr><tr>
         <td>
-          27
+          32
         </td>
         <td>
-          1290
+          1242
         </td>
         <td>
-          827
+          991
           -
-          881
+          1011
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          generate
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          spawnable.generate()
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          1244
+        </td>
+        <td>
+          955
+          -
+          1018
         </td>
         <td>
           Select
@@ -208,7 +213,7 @@
         <td style="background: #AEF1AE">
           (for
       i &lt;- 0 until n
-    yield spawnable()).toSet
+    yield spawnable.generate()).toSet
         </td>
       </tr>
     </table>

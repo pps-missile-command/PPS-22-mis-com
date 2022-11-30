@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          view/Visualizer.scala.html
+          controller/Controller.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,58 +22,64 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package view
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller
 </span>2 <span style=''>
-</span>3 <span style=''>import model.World
-</span>4 <span style=''>
-</span>5 <span style=''>import java.awt.{Image, Toolkit}
-</span>6 <span style=''>import model.collisions.{Collisionable, Damageable}
-</span>7 <span style=''>import model.elements2d.Point2D
-</span>8 <span style=''>import model.ground.{City, Ground, MissileBattery}
-</span>9 <span style=''>import model.missile.{Missile, hitboxBase, hitboxHeight}
-</span>10 <span style=''>import utilities.*
-</span>11 <span style=''>
-</span>12 <span style=''>import javax.imageio.ImageIO
-</span>13 <span style=''>
-</span>14 <span style=''>object Visualizer:
-</span>15 <span style=''>
-</span>16 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
+</span>3 <span style=''>import monix.eval.Task
+</span>4 <span style=''>import monix.execution.Ack
+</span>5 <span style=''>import monix.execution.Scheduler.Implicits.global
+</span>6 <span style=''>import monix.reactive.subjects.PublishSubject
+</span>7 <span style=''>import monix.reactive.{Observable, Observer, OverflowStrategy}
+</span>8 <span style=''>import org.reactivestreams.Subscriber
+</span>9 <span style=''>import view.gui.UI
+</span>10 <span style=''>import model.Game
+</span>11 <span style=''>import controller.update._
+</span>12 <span style=''>
+</span>13 <span style=''>import scala.concurrent.Future
+</span>14 <span style=''>import scala.concurrent.duration.DurationInt
+</span>15 <span style=''>import scala.language.postfixOps
+</span>16 <span style=''>import scala.util.Random
 </span>17 <span style=''>
-</span>18 <span style=''>    /***
-</span>19 <span style=''>     * Method used for preparing the ImageView of a city.
-</span>20 <span style=''>     * @param structure City to be used.
-</span>21 <span style=''>     * @return ImageView of the city passed.
-</span>22 <span style=''>     */
-</span>23 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
-</span>24 <span style=''>        (
-</span>25 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>26 <span style=''>            </span><span style='background: #F0ADAD'>structure.position map convertPosition</span><span style=''>,
-</span>27 <span style=''>            </span><span style='background: #F0ADAD'>cityBaseSize use convertWidth</span><span style=''>,
-</span>28 <span style=''>            </span><span style='background: #F0ADAD'>cityHeightSize use convertHeight</span><span style=''>
-</span>29 <span style=''>        )
-</span>30 <span style=''>
-</span>31 <span style=''>    /***
-</span>32 <span style=''>     * Method used for preparing the ImageView of a missile turret.
-</span>33 <span style=''>     * @param structure Missile turret to be used.
-</span>34 <span style=''>     * @return ImageView of the missile turret passed
-</span>35 <span style=''>     */
-</span>36 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
-</span>37 <span style=''>        (
-</span>38 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>39 <span style=''>            </span><span style='background: #F0ADAD'>structure.bottomLeft_Position map convertPosition</span><span style=''>,
-</span>40 <span style=''>            </span><span style='background: #F0ADAD'>missileBattery_BaseSize use convertWidth</span><span style=''>,
-</span>41 <span style=''>            </span><span style='background: #F0ADAD'>missileBatteryHeightSize use convertHeight</span><span style=''>
-</span>42 <span style=''>        )
-</span>43 <span style=''>
-</span>44 <span style=''>    /***
-</span>45 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
-</span>46 <span style=''>     * @param ground Ground to be used.
-</span>47 <span style=''>     * @return List of ImageView of all the structures in the ground.
-</span>48 <span style=''>     */
-</span>49 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
-</span>50 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
-</span>51 <span style=''></span><span style='background: #F0ADAD'>            ++
-</span>52 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
+</span>18 <span style=''>/**
+</span>19 <span style=''> * Object that represents the controller of the game.
+</span>20 <span style=''> */
+</span>21 <span style=''>object Controller:
+</span>22 <span style=''>  /**
+</span>23 <span style=''>   * The observable that will be used to schedule time in the game.
+</span>24 <span style=''>   */
+</span>25 <span style=''>  private val time: Observable[Event] = </span><span style='background: #F0ADAD'>TimeFlow
+</span>26 <span style=''></span><span style='background: #F0ADAD'>    .tickEach(50 milliseconds)
+</span>27 <span style=''></span><span style='background: #F0ADAD'>    .map(_.toDouble / 1000)
+</span>28 <span style=''></span><span style='background: #F0ADAD'>    .map(Event.TimePassed.apply)</span><span style=''>
+</span>29 <span style=''>
+</span>30 <span style=''>  /**
+</span>31 <span style=''>   * start the game loop.
+</span>32 <span style=''>   *
+</span>33 <span style=''>   * @param ui the ui that will be used to show the game.
+</span>34 <span style=''>   * @return a task that will execute the game.
+</span>35 <span style=''>   */
+</span>36 <span style=''>  </span><span style='background: #F0ADAD'>def start</span><span style=''>(ui: UI): Task[Unit] =
+</span>37 <span style=''>
+</span>38 <span style=''>    given OverflowStrategy[Event] = </span><span style='background: #F0ADAD'>OverflowStrategy.Default</span><span style=''>
+</span>39 <span style=''>
+</span>40 <span style=''>    val game = </span><span style='background: #F0ADAD'>Game.initialGame</span><span style=''>
+</span>41 <span style=''>    val controls: Update = </span><span style='background: #F0ADAD'>Update.combine(
+</span>42 <span style=''></span><span style='background: #F0ADAD'>      UpdateTime(),
+</span>43 <span style=''></span><span style='background: #F0ADAD'>      UpdatePosition(),
+</span>44 <span style=''></span><span style='background: #F0ADAD'>      ActivateSpecialAbility(),
+</span>45 <span style=''></span><span style='background: #F0ADAD'>      CollisionsDetection(),
+</span>46 <span style=''></span><span style='background: #F0ADAD'>      LaunchNewMissile()
+</span>47 <span style=''></span><span style='background: #F0ADAD'>    )</span><span style=''>
+</span>48 <span style=''>
+</span>49 <span style=''>    val init = </span><span style='background: #F0ADAD'>Task((game, controls))</span><span style=''>
+</span>50 <span style=''>    val events =
+</span>51 <span style=''>      </span><span style='background: #F0ADAD'>Observable(time, ui.events).merge</span><span style=''>
+</span>52 <span style=''>    </span><span style='background: #F0ADAD'>events
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
+</span>54 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (game, _) =&gt; ui.render(game) }
+</span>55 <span style=''></span><span style='background: #F0ADAD'>      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
+</span>56 <span style=''></span><span style='background: #F0ADAD'>      .last
+</span>57 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (game, _) =&gt; ui.gameOver(game) }
+</span>58 <span style=''></span><span style='background: #F0ADAD'>      .completedL</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -88,231 +94,64 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          15
+          25
         </td>
         <td>
-          1533
+          1
         </td>
         <td>
-          367
+          668
           -
-          397
+          707
         </td>
         <td>
           Apply
         </td>
         <td>
-          getProperty
+          tickEach
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          15
-        </td>
-        <td>
-          1535
-        </td>
-        <td>
-          367
-          -
-          435
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
-        </td>
-      </tr><tr>
-        <td>
-          15
-        </td>
-        <td>
-          1534
-        </td>
-        <td>
-          367
-          -
-          406
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          toString
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          1544
-        </td>
-        <td>
-          603
-          -
-          623
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          prepareCityImage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          def prepareCityImage
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1536
-        </td>
-        <td>
-          744
-          -
-          765
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          currentLife
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          structure.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1539
-        </td>
-        <td>
-          712
-          -
-          775
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getResource
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1538
-        </td>
-        <td>
-          733
-          -
-          774
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife + &quot;.png&quot;
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1537
-        </td>
-        <td>
-          733
-          -
-          765
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1540
-        </td>
-        <td>
-          699
-          -
-          776
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          read
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))
+          TimeFlow
+    .tickEach(50 milliseconds)
         </td>
       </tr><tr>
         <td>
           25
         </td>
         <td>
-          1541
+          0
         </td>
         <td>
-          790
+          691
           -
-          828
+          706
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          milliseconds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          50 milliseconds
+        </td>
+      </tr><tr>
+        <td>
+          26
+        </td>
+        <td>
+          2
+        </td>
+        <td>
+          668
+          -
+          735
         </td>
         <td>
           Apply
@@ -324,281 +163,388 @@
           
         </td>
         <td style="background: #F0ADAD">
-          structure.position map convertPosition
-        </td>
-      </tr><tr>
-        <td>
-          26
-        </td>
-        <td>
-          1542
-        </td>
-        <td>
-          842
-          -
-          871
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          use
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          cityBaseSize use convertWidth
+          TimeFlow
+    .tickEach(50 milliseconds)
+    .map(_.toDouble / 1000)
         </td>
       </tr><tr>
         <td>
           27
         </td>
         <td>
-          1543
+          3
         </td>
         <td>
-          885
+          668
           -
-          917
+          768
         </td>
         <td>
           Apply
         </td>
         <td>
-          use
+          map
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          cityHeightSize use convertHeight
+          TimeFlow
+    .tickEach(50 milliseconds)
+    .map(_.toDouble / 1000)
+    .map(Event.TimePassed.apply)
         </td>
       </tr><tr>
         <td>
           35
         </td>
         <td>
-          1556
+          30
         </td>
         <td>
-          1123
+          921
           -
-          1153
+          930
         </td>
         <td>
           DefDef
         </td>
         <td>
-          prepareBatteryMissileImage
+          start
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def prepareBatteryMissileImage
+          def start
         </td>
       </tr><tr>
         <td>
           37
         </td>
         <td>
-          1545
+          4
         </td>
         <td>
-          1284
+          990
           -
-          1309
+          1014
         </td>
         <td>
           Select
         </td>
         <td>
-          isReadyForShoot
+          Default
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          structure.isReadyForShoot
+          OverflowStrategy.Default
         </td>
       </tr><tr>
         <td>
-          37
+          39
         </td>
         <td>
-          1548
+          5
         </td>
         <td>
-          1318
+          1031
           -
-          1339
+          1047
         </td>
         <td>
           Select
         </td>
         <td>
-          currentLife
+          initialGame
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          structure.currentLife
+          Game.initialGame
         </td>
       </tr><tr>
         <td>
-          37
+          40
         </td>
         <td>
-          1551
+          11
         </td>
         <td>
-          1252
+          1075
           -
-          1349
+          1226
         </td>
         <td>
           Apply
         </td>
         <td>
-          getResource
+          combine
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)
+          Update.combine(
+      UpdateTime(),
+      UpdatePosition(),
+      ActivateSpecialAbility(),
+      CollisionsDetection(),
+      LaunchNewMissile()
+    )
         </td>
       </tr><tr>
         <td>
-          37
+          41
         </td>
         <td>
-          1550
+          6
         </td>
         <td>
-          1273
+          1097
           -
-          1348
+          1109
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;
+          UpdateTime()
         </td>
       </tr><tr>
         <td>
-          37
+          42
         </td>
         <td>
-          1547
+          7
         </td>
         <td>
-          1273
+          1117
+          -
+          1133
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          UpdatePosition()
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          8
+        </td>
+        <td>
+          1141
+          -
+          1165
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ActivateSpecialAbility()
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          9
+        </td>
+        <td>
+          1173
+          -
+          1194
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          CollisionsDetection()
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          10
+        </td>
+        <td>
+          1202
+          -
+          1220
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          LaunchNewMissile()
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          12
+        </td>
+        <td>
+          1243
+          -
+          1265
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Task((game, controls))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          1289
+          -
+          1316
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Observable(time, ui.events)
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          13
+        </td>
+        <td>
+          1306
           -
           1315
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          +
+          events
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot;
+          ui.events
         </td>
       </tr><tr>
         <td>
-          37
+          50
         </td>
         <td>
-          1546
+          15
         </td>
         <td>
-          1273
+          1289
           -
-          1309
+          1322
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          merge
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot
+          Observable(time, ui.events).merge
         </td>
       </tr><tr>
         <td>
-          37
+          52
         </td>
         <td>
-          1549
+          17
         </td>
         <td>
-          1273
+          1358
           -
-          1339
+          1388
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          1552
-        </td>
-        <td>
-          1239
-          -
-          1350
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          read
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))
+          case ((game, controls), event)
         </td>
       </tr><tr>
         <td>
-          38
+          52
         </td>
         <td>
-          1553
+          16
         </td>
         <td>
-          1364
+          1392
           -
           1413
         </td>
@@ -606,23 +552,72 @@
           Apply
         </td>
         <td>
-          map
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          structure.bottomLeft_Position map convertPosition
+          controls(event, game)
         </td>
       </tr><tr>
         <td>
-          39
+          52
         </td>
         <td>
-          1554
+          18
         </td>
         <td>
-          1427
+          1327
+          -
+          1415
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scanEval
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          events
+      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          20
+        </td>
+        <td>
+          1434
+          -
+          1448
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case (game, _)
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          1452
           -
           1467
         </td>
@@ -630,183 +625,249 @@
           Apply
         </td>
         <td>
-          use
+          render
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          missileBattery_BaseSize use convertWidth
+          ui.render(game)
         </td>
       </tr><tr>
         <td>
-          40
+          53
         </td>
         <td>
-          1555
+          21
         </td>
         <td>
-          1481
+          1327
           -
-          1523
+          1469
         </td>
         <td>
           Apply
         </td>
         <td>
-          use
+          doOnNext
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          missileBatteryHeightSize use convertHeight
+          events
+      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
+      .doOnNext { case (game, _) =&gt; ui.render(game) }
         </td>
       </tr><tr>
         <td>
-          48
+          54
         </td>
         <td>
-          1562
+          23
         </td>
         <td>
-          1738
+          1489
           -
-          1753
+          1503
         </td>
         <td>
-          DefDef
+          Block
         </td>
         <td>
-          printGround
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def printGround
+          case (game, _)
         </td>
       </tr><tr>
         <td>
-          49
+          54
         </td>
         <td>
-          1557
+          22
         </td>
         <td>
-          1858
+          1507
           -
-          1885
+          1535
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          stillAlive
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          game.world.ground.stillAlive
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          24
+        </td>
+        <td>
+          1327
+          -
+          1537
         </td>
         <td>
           Apply
         </td>
         <td>
-          prepareCityImage
+          takeWhile
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          prepareCityImage(structure)
+          events
+      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
+      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
         </td>
       </tr><tr>
         <td>
-          49
+          55
         </td>
         <td>
-          1558
+          25
         </td>
         <td>
-          1821
+          1327
           -
-          1885
+          1549
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          last
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          events
+      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
+      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
+      .last
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          26
+        </td>
+        <td>
+          1586
+          -
+          1603
         </td>
         <td>
           Apply
         </td>
         <td>
-          map
+          gameOver
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          for structure &lt;- ground.cities yield prepareCityImage(structure)
+          ui.gameOver(game)
         </td>
       </tr><tr>
         <td>
-          49
+          56
         </td>
         <td>
-          1561
+          28
         </td>
         <td>
-          1820
+          1327
           -
-          1990
+          1605
         </td>
         <td>
           Apply
         </td>
         <td>
-          ++
+          doOnNext
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          (for structure &lt;- ground.cities yield prepareCityImage(structure))
-            ++
-            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)
+          events
+      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
+      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
+      .last
+      .doOnNext { case (game, _) =&gt; ui.gameOver(game) }
         </td>
       </tr><tr>
         <td>
-          51
+          56
         </td>
         <td>
-          1560
+          27
         </td>
         <td>
-          1915
+          1568
           -
-          1990
+          1582
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          map
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)
+          case (game, _)
         </td>
       </tr><tr>
         <td>
-          51
+          57
         </td>
         <td>
-          1559
+          29
         </td>
         <td>
-          1953
+          1327
           -
-          1990
+          1623
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          prepareBatteryMissileImage
+          completedL
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          prepareBatteryMissileImage(structure)
+          events
+      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
+      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
+      .last
+      .doOnNext { case (game, _) =&gt; ui.gameOver(game) }
+      .completedL
         </td>
       </tr>
     </table>

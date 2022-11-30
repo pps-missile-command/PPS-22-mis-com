@@ -30,78 +30,77 @@
 </span>6 <span style=''>import model.ground.*
 </span>7 <span style=''>import model.elements2d.Point2D
 </span>8 <span style=''>import model.spawner.Spawnable.*
-</span>9 <span style=''>import PimpingByDeltaTime.*
-</span>10 <span style=''>
-</span>11 <span style=''>import scala.util.Random
-</span>12 <span style=''>
-</span>13 <span style=''>/**
-</span>14 <span style=''> * This Trait models a generic spawner of A elements, that must be at least Collisionables,
-</span>15 <span style=''> * that extends Timeable to be time aware
-</span>16 <span style=''> * @tparam A The type of elements to generate
-</span>17 <span style=''> */
-</span>18 <span style=''>trait GenericSpawner[A &lt;: Collisionable] extends Timeable:
-</span>19 <span style=''>  /**
-</span>20 <span style=''>   * Method that generates a set of A elements as the time pass through and the new GenericSpawner
-</span>21 <span style=''>   * @return
-</span>22 <span style=''>   */
-</span>23 <span style=''>  def spawn(): (Set[A], GenericSpawner[A])
-</span>24 <span style=''>
-</span>25 <span style=''>  /**
-</span>26 <span style=''>   *
-</span>27 <span style=''>   * @param dt This is the virtual delta time thas has been passed since the last update
-</span>28 <span style=''>   *  @return the new Timeable object with the current virtual time updated
-</span>29 <span style=''>   */
-</span>30 <span style=''>  override def timeElapsed(dt: DeltaTime): GenericSpawner[A]
-</span>31 <span style=''>
-</span>32 <span style=''>/**
-</span>33 <span style=''> * Case class that implements the GenericSpawner trait
-</span>34 <span style=''> * @param interval The initial interval that model the frequency of spawning (1 element each interval time)
-</span>35 <span style=''> * @param timeFromStart The total time passed since the creation of the spawner
-</span>36 <span style=''> * @param dt The delta time passed since the last spawn
-</span>37 <span style=''> * @param spawnable The spawner strategies: it dictates how the elements are generated and perform the generation
-</span>38 <span style=''> * @tparam R The type of elements to generate
-</span>39 <span style=''> */
-</span>40 <span style=''>case class GenericSpawnerImpl[R &lt;: Collisionable](interval: DeltaTime,
-</span>41 <span style=''>                                                  timeFromStart: DeltaTime = 0,
-</span>42 <span style=''>                                                  dt: DeltaTime = 0,
-</span>43 <span style=''>                                                  spawnable: Spawnable[R]) extends GenericSpawner[R]:
-</span>44 <span style=''>  /**
-</span>45 <span style=''>   * This is a &quot;shortcut&quot; method using Currying to generate elements specifying only the number
-</span>46 <span style=''>   * of elements to generate
-</span>47 <span style=''>   */
-</span>48 <span style=''>  val generator: (Int) =&gt; Set[R] = </span><span style='background: #AEF1AE'>Spawnable(spawnable)</span><span style=''>
-</span>49 <span style=''>
-</span>50 <span style=''>  </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): (Set[R], GenericSpawnerImpl[R]) = dt match
-</span>51 <span style=''>    </span><span style='background: #AEF1AE'>case n if n &gt;= currentInterval</span><span style=''> =&gt;
-</span>52 <span style=''>      val step: Int = (n / </span><span style='background: #AEF1AE'>currentInterval</span><span style=''>).toInt
-</span>53 <span style=''>      val elements = </span><span style='background: #AEF1AE'>generator(step)</span><span style=''>
-</span>54 <span style=''>      (elements, this.copy(dt = 0))
-</span>55 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; (</span><span style='background: #AEF1AE'>Set()</span><span style=''>, this)
-</span>56 <span style=''>
-</span>57 <span style=''>  /**
-</span>58 <span style=''>   * The current interval: it is a value based to the hypebolic function to increase the
-</span>59 <span style=''>   * difficulty decreasing the interval time over the time (as the time exceeds a threshold)
-</span>60 <span style=''>   * @return the interval mapped if a threshold of time is exceeded
-</span>61 <span style=''>   */
-</span>62 <span style=''>  </span><span style='background: #AEF1AE'>private def currentInterval</span><span style=''> = </span><span style='background: #AEF1AE'>(interval mapIf isThresholdExceeded) (
-</span>63 <span style=''></span><span style='background: #AEF1AE'>    _ ~ timeFromStart
-</span>64 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
-</span>65 <span style=''>
-</span>66 <span style=''>  private val isThresholdExceeded: () =&gt; Boolean = () =&gt; (timeFromStart) &gt;= threshold
-</span>67 <span style=''>
-</span>68 <span style=''>  </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): GenericSpawnerImpl[R] = this.copy(timeFromStart = this.timeFromStart + _dt, dt = this.dt + _dt)
-</span>69 <span style=''>
-</span>70 <span style=''>  /**
-</span>71 <span style=''>   * Method to create a new spawner changing its spawnable strategy
-</span>72 <span style=''>   * @param newSpawnable The new spawnable to use
-</span>73 <span style=''>   * @return the new spawner
-</span>74 <span style=''>   */
-</span>75 <span style=''>  </span><span style='background: #AEF1AE'>def changeSpawnable</span><span style=''>(newSpawnable: Spawnable[R]) = this.copy(spawnable = newSpawnable)
-</span>76 <span style=''>
-</span>77 <span style=''>object GenericSpawner:
-</span>78 <span style=''>
-</span>79 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[R &lt;: Collisionable](newInterval: DeltaTime,
-</span>80 <span style=''>                                spawnable: Spawnable[R])(using Random): GenericSpawnerImpl[R] = </span><span style='background: #AEF1AE'>GenericSpawnerImpl</span><span style=''>(interval = newInterval, spawnable = spawnable)
+</span>9 <span style=''>
+</span>10 <span style=''>import scala.util.Random
+</span>11 <span style=''>
+</span>12 <span style=''>/**
+</span>13 <span style=''> * This Trait models a generic spawner of A elements, that must be at least Collisionables,
+</span>14 <span style=''> * that extends Timeable to be time aware
+</span>15 <span style=''> * @tparam A The type of elements to generate
+</span>16 <span style=''> */
+</span>17 <span style=''>trait GenericSpawner[A &lt;: Collisionable] extends Timeable:
+</span>18 <span style=''>  /**
+</span>19 <span style=''>   * Method that generates a set of A elements as the time pass through and the new GenericSpawner
+</span>20 <span style=''>   * @return
+</span>21 <span style=''>   */
+</span>22 <span style=''>  def spawn(): (Set[A], GenericSpawner[A])
+</span>23 <span style=''>
+</span>24 <span style=''>  /**
+</span>25 <span style=''>   *
+</span>26 <span style=''>   * @param dt This is the virtual delta time thas has been passed since the last update
+</span>27 <span style=''>   *  @return the new Timeable object with the current virtual time updated
+</span>28 <span style=''>   */
+</span>29 <span style=''>  override def timeElapsed(dt: DeltaTime): GenericSpawner[A]
+</span>30 <span style=''>
+</span>31 <span style=''>/**
+</span>32 <span style=''> * Case class that implements the GenericSpawner trait
+</span>33 <span style=''> * @param interval The initial interval that model the frequency of spawning (1 element each interval time)
+</span>34 <span style=''> * @param timeFromStart The total time passed since the creation of the spawner
+</span>35 <span style=''> * @param dt The delta time passed since the last spawn
+</span>36 <span style=''> * @param spawnable The spawner strategies: it dictates how the elements are generated and perform the generation
+</span>37 <span style=''> * @tparam R The type of elements to generate
+</span>38 <span style=''> */
+</span>39 <span style=''>case class GenericSpawnerImpl[R &lt;: Collisionable](interval: DeltaTime,
+</span>40 <span style=''>                                                  timeFromStart: DeltaTime = 0,
+</span>41 <span style=''>                                                  dt: DeltaTime = 0,
+</span>42 <span style=''>                                                  spawnable: Spawnable[R]) extends GenericSpawner[R]:
+</span>43 <span style=''>  /**
+</span>44 <span style=''>   * This is a &quot;shortcut&quot; method using Currying to generate elements specifying only the number
+</span>45 <span style=''>   * of elements to generate
+</span>46 <span style=''>   */
+</span>47 <span style=''>  val generator: (Int) =&gt; Set[R] = </span><span style='background: #AEF1AE'>Spawnable(spawnable)</span><span style=''>
+</span>48 <span style=''>
+</span>49 <span style=''>  </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): (Set[R], GenericSpawnerImpl[R]) = dt match
+</span>50 <span style=''>    </span><span style='background: #AEF1AE'>case n if n &gt;= currentInterval</span><span style=''> =&gt;
+</span>51 <span style=''>      val step: Int = (n / </span><span style='background: #AEF1AE'>currentInterval</span><span style=''>).toInt
+</span>52 <span style=''>      val elements = </span><span style='background: #AEF1AE'>generator(step)</span><span style=''>
+</span>53 <span style=''>      (elements, this.copy(dt = 0))
+</span>54 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; (</span><span style='background: #AEF1AE'>Set()</span><span style=''>, this)
+</span>55 <span style=''>
+</span>56 <span style=''>  /**
+</span>57 <span style=''>   * The current interval: it is a value based to the hypebolic function to increase the
+</span>58 <span style=''>   * difficulty decreasing the interval time over the time (as the time exceeds a threshold)
+</span>59 <span style=''>   * @return the interval mapped if a threshold of time is exceeded
+</span>60 <span style=''>   */
+</span>61 <span style=''>  </span><span style='background: #AEF1AE'>private def currentInterval</span><span style=''> = </span><span style='background: #AEF1AE'>(interval mapIf isThresholdExceeded) (
+</span>62 <span style=''></span><span style='background: #AEF1AE'>    _ ~ timeFromStart
+</span>63 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>64 <span style=''>
+</span>65 <span style=''>  private val isThresholdExceeded: () =&gt; Boolean = () =&gt; (timeFromStart) &gt;= threshold
+</span>66 <span style=''>
+</span>67 <span style=''>  </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(_dt: DeltaTime): GenericSpawnerImpl[R] = this.copy(timeFromStart = this.timeFromStart + _dt, dt = this.dt + _dt)
+</span>68 <span style=''>
+</span>69 <span style=''>  /**
+</span>70 <span style=''>   * Method to create a new spawner changing its spawnable strategy
+</span>71 <span style=''>   * @param newSpawnable The new spawnable to use
+</span>72 <span style=''>   * @return the new spawner
+</span>73 <span style=''>   */
+</span>74 <span style=''>  </span><span style='background: #AEF1AE'>def changeSpawnable</span><span style=''>(newSpawnable: Spawnable[R]) = this.copy(spawnable = newSpawnable)
+</span>75 <span style=''>
+</span>76 <span style=''>object GenericSpawner:
+</span>77 <span style=''>
+</span>78 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[R &lt;: Collisionable](newInterval: DeltaTime,
+</span>79 <span style=''>                                spawnable: Spawnable[R])(using Random): GenericSpawnerImpl[R] = </span><span style='background: #AEF1AE'>GenericSpawnerImpl</span><span style=''>(interval = newInterval, spawnable = spawnable)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -116,15 +115,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          39
+          38
         </td>
         <td>
-          1261
+          1222
         </td>
         <td>
-          1413
+          1385
           -
-          1413
+          1385
         </td>
         <td>
           DefDef
@@ -140,15 +139,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          38
         </td>
         <td>
-          1260
+          1221
         </td>
         <td>
-          1413
+          1385
           -
-          1413
+          1385
         </td>
         <td>
           DefDef
@@ -164,15 +163,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          46
         </td>
         <td>
-          1247
+          1208
         </td>
         <td>
-          1877
+          1849
           -
-          1897
+          1869
         </td>
         <td>
           Apply
@@ -188,15 +187,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          48
         </td>
         <td>
-          1254
+          1215
         </td>
         <td>
-          1901
+          1873
           -
-          1919
+          1891
         </td>
         <td>
           DefDef
@@ -212,15 +211,15 @@
         </td>
       </tr><tr>
         <td>
-          50
+          49
         </td>
         <td>
-          1251
+          1212
         </td>
         <td>
-          1985
+          1957
           -
-          2000
+          1972
         </td>
         <td>
           Select
@@ -236,15 +235,15 @@
         </td>
       </tr><tr>
         <td>
-          50
+          49
         </td>
         <td>
-          1250
+          1211
         </td>
         <td>
-          1970
+          1942
           -
-          2000
+          1972
         </td>
         <td>
           Block
@@ -260,15 +259,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          50
         </td>
         <td>
-          1248
+          1209
         </td>
         <td>
-          2031
+          2003
           -
-          2046
+          2018
         </td>
         <td>
           Select
@@ -284,15 +283,15 @@
         </td>
       </tr><tr>
         <td>
-          52
+          51
         </td>
         <td>
-          1249
+          1210
         </td>
         <td>
-          2075
+          2047
           -
-          2090
+          2062
         </td>
         <td>
           Apply
@@ -308,39 +307,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          53
         </td>
         <td>
-          1252
+          1214
         </td>
         <td>
-          2142
+          2103
           -
-          2147
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          Set()
-        </td>
-      </tr><tr>
-        <td>
-          54
-        </td>
-        <td>
-          1253
-        </td>
-        <td>
-          2131
-          -
-          2137
+          2109
         </td>
         <td>
           Block
@@ -356,15 +331,39 @@
         </td>
       </tr><tr>
         <td>
-          61
+          53
         </td>
         <td>
-          1257
+          1213
         </td>
         <td>
-          2420
+          2114
           -
-          2447
+          2119
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Set()
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          1218
+        </td>
+        <td>
+          2392
+          -
+          2419
         </td>
         <td>
           DefDef
@@ -380,15 +379,15 @@
         </td>
       </tr><tr>
         <td>
-          61
+          60
         </td>
         <td>
-          1256
+          1217
         </td>
         <td>
-          2450
+          2422
           -
-          2514
+          2486
         </td>
         <td>
           Apply
@@ -406,15 +405,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          61
         </td>
         <td>
-          1255
+          1216
         </td>
         <td>
-          2493
+          2465
           -
-          2510
+          2482
         </td>
         <td>
           Apply
@@ -430,15 +429,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          66
         </td>
         <td>
-          1258
+          1219
         </td>
         <td>
-          2605
+          2577
           -
-          2629
+          2601
         </td>
         <td>
           DefDef
@@ -454,15 +453,15 @@
         </td>
       </tr><tr>
         <td>
-          74
+          73
         </td>
         <td>
-          1259
+          1220
         </td>
         <td>
-          2905
+          2877
           -
-          2924
+          2896
         </td>
         <td>
           DefDef
@@ -478,15 +477,15 @@
         </td>
       </tr><tr>
         <td>
-          78
+          77
         </td>
         <td>
-          1264
+          1225
         </td>
         <td>
-          3018
+          2990
           -
-          3027
+          2999
         </td>
         <td>
           DefDef
@@ -502,15 +501,15 @@
         </td>
       </tr><tr>
         <td>
-          79
+          78
         </td>
         <td>
-          1263
+          1224
         </td>
         <td>
-          3168
+          3140
           -
-          3186
+          3158
         </td>
         <td>
           Select
@@ -526,15 +525,15 @@
         </td>
       </tr><tr>
         <td>
-          79
+          78
         </td>
         <td>
-          1262
+          1223
         </td>
         <td>
-          3168
+          3140
           -
-          3186
+          3158
         </td>
         <td>
           Select

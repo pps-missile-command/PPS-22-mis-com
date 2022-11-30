@@ -26,73 +26,71 @@
 </span>2 <span style=''>
 </span>3 <span style=''>import model.World
 </span>4 <span style=''>import model.elements2d.{Angle, Point2D, Vector2D}
-</span>5 <span style=''>import model.missile.zigzag.PimpingByVector2D.-|-
-</span>6 <span style=''>import model.missile.zigzag.PimpingByPoint2D.*
+</span>5 <span style=''>
+</span>6 <span style=''>import scala.util.Random
 </span>7 <span style=''>
-</span>8 <span style=''>import scala.util.Random
-</span>9 <span style=''>
-</span>10 <span style=''>/**
-</span>11 <span style=''> * This object models the creation of a list composed by a sequence of points that represents an
-</span>12 <span style=''> * alternate path
-</span>13 <span style=''> */
-</span>14 <span style=''>object DirectionList:
-</span>15 <span style=''>  /**
-</span>16 <span style=''>   * This factory is used to create a generic LazyList starting from a determined element, specifying the successive
-</span>17 <span style=''>   * element of each one and the condition to filter some possible elements
-</span>18 <span style=''>   * @param start The starting point to iterate
-</span>19 <span style=''>   * @param next The next element to calculate
-</span>20 <span style=''>   * @param cond The condition used to filter elements
-</span>21 <span style=''>   * @param mapping Function that maps the iterated element into a new one
-</span>22 <span style=''>   * @tparam A Generic type of the LazyList
-</span>23 <span style=''>   * @return the LazyList created
-</span>24 <span style=''>   */
-</span>25 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[A](start: A)(next: (A) =&gt; A)(cond: (A) =&gt; Boolean)(mapping: (A) =&gt; A): LazyList[A] =
-</span>26 <span style=''>    </span><span style='background: #AEF1AE'>LazyList.iterate(start)(next) filter(cond) map(mapping</span><span style=''>)
-</span>27 <span style=''>
-</span>28 <span style=''>  /**
-</span>29 <span style=''>   * This method creates a list with random zigzag behavior, this means that the directions are not alternated but
-</span>30 <span style=''>   * generated randomically
-</span>31 <span style=''>   * @param from The starting point to create the path
-</span>32 <span style=''>   * @param to The destination point
-</span>33 <span style=''>   * @param step The number of direction changes to perform
-</span>34 <span style=''>   * @param Random The Random context element used to generate randomically the nth direction
-</span>35 <span style=''>   * @return the new LazyList
-</span>36 <span style=''>   */
-</span>37 <span style=''>  </span><span style='background: #AEF1AE'>def randomList</span><span style=''>(from: Point2D, to: Point2D, step: Int)(using Random): LazyList[Point2D] =
-</span>38 <span style=''>    val d = (</span><span style='background: #AEF1AE'>to &lt;-&gt; from</span><span style=''>) / step
-</span>39 <span style=''>    val v = </span><span style='background: #AEF1AE'>((to &lt;--&gt; from).normalize) * d</span><span style=''>
-</span>40 <span style=''>    </span><span style='background: #AEF1AE'>DirectionList(from) {
-</span>41 <span style=''></span><span style='background: #AEF1AE'>      i =&gt; i --&gt; (-v)
-</span>42 <span style=''></span><span style='background: #AEF1AE'>    } (_ != from) {
-</span>43 <span style=''></span><span style='background: #AEF1AE'>      i =&gt; i --&gt; (-v -|- Rand(Random))
-</span>44 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>  /**
-</span>47 <span style=''>   * This factory generates a LazyList with directions alternated (Right, Left, Right...), creating a zigzag path
-</span>48 <span style=''>   * between two points
-</span>49 <span style=''>   * @param from The starting point to create the path
-</span>50 <span style=''>   * @param to The destination point
-</span>51 <span style=''>   * @param step The number of direction changes to perform
-</span>52 <span style=''>   * @param magnitude The magnitude of the rotated vectors used to traslate (on the left or right) the subpoints of the path
-</span>53 <span style=''>   * @param maxWidth The max width whithin generate the path
-</span>54 <span style=''>   * @param Random The Random object used to
-</span>55 <span style=''>   * @return the new LazyList with the zigzag path
-</span>56 <span style=''>   */
-</span>57 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(from: Point2D, to: Point2D, step: Int, magnitude: Int = defaultMagnitude, maxWidth: Double): LazyList[Point2D] =
-</span>58 <span style=''>    val d = (</span><span style='background: #AEF1AE'>to &lt;-&gt; from</span><span style=''>) / step
-</span>59 <span style=''>    val v = </span><span style='background: #AEF1AE'>((to &lt;--&gt; from).normalize) * d</span><span style=''>
-</span>60 <span style=''>    val stream = </span><span style='background: #AEF1AE'>LazyList.iterate(0)(_ + 1)</span><span style=''>
-</span>61 <span style=''>    val pointsStream = </span><span style='background: #AEF1AE'>LazyList.iterate(from)( _ --&gt; (-v) )</span><span style=''>
-</span>62 <span style=''>    </span><span style='background: #AEF1AE'>for
-</span>63 <span style=''></span><span style='background: #AEF1AE'>      index &lt;- stream.take(step)
-</span>64 <span style=''></span><span style='background: #AEF1AE'>      if(index != 0)
-</span>65 <span style=''></span><span style='background: #AEF1AE'>      point = pointsStream.take(index + 1).toList.last
-</span>66 <span style=''></span><span style='background: #AEF1AE'>      direction = stream.take(index + 1).map {
-</span>67 <span style=''></span><span style='background: #AEF1AE'>        i =&gt; (i % 2) match
-</span>68 <span style=''></span><span style='background: #AEF1AE'>          case v if v == 0 =&gt; Right
-</span>69 <span style=''></span><span style='background: #AEF1AE'>          case _ =&gt; Left
-</span>70 <span style=''></span><span style='background: #AEF1AE'>      }.toList.last
-</span>71 <span style=''></span><span style='background: #AEF1AE'>    yield (point --&gt; (-v -|- (direction, magnitude))).filterMap(maxWidth)</span><span style=''>
+</span>8 <span style=''>/**
+</span>9 <span style=''> * This object models the creation of a list composed by a sequence of points that represents an
+</span>10 <span style=''> * alternate path
+</span>11 <span style=''> */
+</span>12 <span style=''>object DirectionList:
+</span>13 <span style=''>  /**
+</span>14 <span style=''>   * This factory is used to create a generic LazyList starting from a determined element, specifying the successive
+</span>15 <span style=''>   * element of each one and the condition to filter some possible elements
+</span>16 <span style=''>   * @param start The starting point to iterate
+</span>17 <span style=''>   * @param next The next element to calculate
+</span>18 <span style=''>   * @param cond The condition used to filter elements
+</span>19 <span style=''>   * @param mapping Function that maps the iterated element into a new one
+</span>20 <span style=''>   * @tparam A Generic type of the LazyList
+</span>21 <span style=''>   * @return the LazyList created
+</span>22 <span style=''>   */
+</span>23 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[A](start: A)(next: (A) =&gt; A)(cond: (A) =&gt; Boolean)(mapping: (A) =&gt; A): LazyList[A] =
+</span>24 <span style=''>    </span><span style='background: #AEF1AE'>LazyList.iterate(start)(next) filter(cond) map(mapping</span><span style=''>)
+</span>25 <span style=''>
+</span>26 <span style=''>  /**
+</span>27 <span style=''>   * This method creates a list with random zigzag behavior, this means that the directions are not alternated but
+</span>28 <span style=''>   * generated randomically
+</span>29 <span style=''>   * @param from The starting point to create the path
+</span>30 <span style=''>   * @param to The destination point
+</span>31 <span style=''>   * @param step The number of direction changes to perform
+</span>32 <span style=''>   * @param Random The Random context element used to generate randomically the nth direction
+</span>33 <span style=''>   * @return the new LazyList
+</span>34 <span style=''>   */
+</span>35 <span style=''>  </span><span style='background: #AEF1AE'>def randomList</span><span style=''>(from: Point2D, to: Point2D, step: Int)(using Random): LazyList[Point2D] =
+</span>36 <span style=''>    val d = (</span><span style='background: #AEF1AE'>to &lt;-&gt; from</span><span style=''>) / step
+</span>37 <span style=''>    val v = </span><span style='background: #AEF1AE'>((to &lt;--&gt; from).normalize) * d</span><span style=''>
+</span>38 <span style=''>    </span><span style='background: #AEF1AE'>DirectionList(from) {
+</span>39 <span style=''></span><span style='background: #AEF1AE'>      i =&gt; i --&gt; (-v)
+</span>40 <span style=''></span><span style='background: #AEF1AE'>    } (_ != from) {
+</span>41 <span style=''></span><span style='background: #AEF1AE'>      i =&gt; i --&gt; (-v -|- Rand(Random))
+</span>42 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>  /**
+</span>45 <span style=''>   * This factory generates a LazyList with directions alternated (Right, Left, Right...), creating a zigzag path
+</span>46 <span style=''>   * between two points
+</span>47 <span style=''>   * @param from The starting point to create the path
+</span>48 <span style=''>   * @param to The destination point
+</span>49 <span style=''>   * @param step The number of direction changes to perform
+</span>50 <span style=''>   * @param magnitude The magnitude of the rotated vectors used to traslate (on the left or right) the subpoints of the path
+</span>51 <span style=''>   * @param maxWidth The max width whithin generate the path
+</span>52 <span style=''>   * @param Random The Random object used to
+</span>53 <span style=''>   * @return the new LazyList with the zigzag path
+</span>54 <span style=''>   */
+</span>55 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(from: Point2D, to: Point2D, step: Int, magnitude: Int = defaultMagnitude, maxWidth: Double): LazyList[Point2D] =
+</span>56 <span style=''>    val d = (</span><span style='background: #AEF1AE'>to &lt;-&gt; from</span><span style=''>) / step
+</span>57 <span style=''>    val v = </span><span style='background: #AEF1AE'>((to &lt;--&gt; from).normalize) * d</span><span style=''>
+</span>58 <span style=''>    val stream = </span><span style='background: #AEF1AE'>LazyList.iterate(0)(_ + 1)</span><span style=''>
+</span>59 <span style=''>    val pointsStream = </span><span style='background: #AEF1AE'>LazyList.iterate(from)( _ --&gt; (-v) )</span><span style=''>
+</span>60 <span style=''>    </span><span style='background: #AEF1AE'>for
+</span>61 <span style=''></span><span style='background: #AEF1AE'>      index &lt;- stream.take(step)
+</span>62 <span style=''></span><span style='background: #AEF1AE'>      if(index != 0)
+</span>63 <span style=''></span><span style='background: #AEF1AE'>      point = pointsStream.take(index + 1).toList.last
+</span>64 <span style=''></span><span style='background: #AEF1AE'>      direction = stream.take(index + 1).map {
+</span>65 <span style=''></span><span style='background: #AEF1AE'>        i =&gt; (i % 2) match
+</span>66 <span style=''></span><span style='background: #AEF1AE'>          case v if v == 0 =&gt; Right
+</span>67 <span style=''></span><span style='background: #AEF1AE'>          case _ =&gt; Left
+</span>68 <span style=''></span><span style='background: #AEF1AE'>      }.toList.last
+</span>69 <span style=''></span><span style='background: #AEF1AE'>    yield (point --&gt; (-v -|- (direction, magnitude))).filterMap(maxWidth)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -107,15 +105,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          24
+          22
         </td>
         <td>
-          1098
+          1059
         </td>
         <td>
-          879
+          782
           -
-          888
+          791
         </td>
         <td>
           DefDef
@@ -131,39 +129,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          23
         </td>
         <td>
-          1097
+          1055
         </td>
         <td>
-          978
+          881
           -
-          1032
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          LazyList.iterate(start)(next) filter(cond) map(mapping
-        </td>
-      </tr><tr>
-        <td>
-          25
-        </td>
-        <td>
-          1094
-        </td>
-        <td>
-          978
-          -
-          986
+          889
         </td>
         <td>
           Ident
@@ -179,15 +153,39 @@
         </td>
       </tr><tr>
         <td>
-          25
+          23
         </td>
         <td>
-          1096
+          1058
         </td>
         <td>
-          978
+          881
           -
-          1019
+          935
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          LazyList.iterate(start)(next) filter(cond) map(mapping
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1057
+        </td>
+        <td>
+          881
+          -
+          922
         </td>
         <td>
           Apply
@@ -203,15 +201,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          23
         </td>
         <td>
-          1095
+          1056
         </td>
         <td>
-          978
+          881
           -
-          1007
+          910
         </td>
         <td>
           Apply
@@ -227,15 +225,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          34
         </td>
         <td>
-          1110
+          1071
         </td>
         <td>
-          1468
+          1371
           -
-          1482
+          1385
         </td>
         <td>
           DefDef
@@ -251,15 +249,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
-          1099
+          1060
         </td>
         <td>
-          1570
+          1473
           -
-          1581
+          1484
         </td>
         <td>
           Apply
@@ -275,15 +273,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          36
         </td>
         <td>
-          1100
+          1061
         </td>
         <td>
-          1604
+          1507
           -
-          1616
+          1519
         </td>
         <td>
           Apply
@@ -299,15 +297,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          36
         </td>
         <td>
-          1102
+          1063
         </td>
         <td>
-          1602
+          1505
           -
-          1632
+          1535
         </td>
         <td>
           Apply
@@ -323,15 +321,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          36
         </td>
         <td>
-          1101
+          1062
         </td>
         <td>
-          1603
+          1506
           -
-          1627
+          1530
         </td>
         <td>
           Select
@@ -347,39 +345,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          38
         </td>
         <td>
-          1104
+          1064
         </td>
         <td>
-          1670
+          1580
           -
-          1679
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          --&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          i --&gt; (-v
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          1103
-        </td>
-        <td>
-          1677
-          -
-          1679
+          1582
         </td>
         <td>
           Select
@@ -395,15 +369,39 @@
         </td>
       </tr><tr>
         <td>
-          41
+          38
         </td>
         <td>
-          1109
+          1065
         </td>
         <td>
-          1637
+          1573
           -
-          1745
+          1582
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          i --&gt; (-v
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          1070
+        </td>
+        <td>
+          1540
+          -
+          1648
         </td>
         <td>
           Apply
@@ -423,15 +421,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          40
         </td>
         <td>
-          1106
+          1067
         </td>
         <td>
-          1719
+          1622
           -
-          1725
+          1628
         </td>
         <td>
           Apply
@@ -447,15 +445,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          40
         </td>
         <td>
-          1105
+          1066
         </td>
         <td>
-          1719
+          1622
           -
-          1721
+          1624
         </td>
         <td>
           Select
@@ -471,15 +469,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          40
         </td>
         <td>
-          1108
+          1069
         </td>
         <td>
-          1712
+          1615
           -
-          1738
+          1641
         </td>
         <td>
           Apply
@@ -495,15 +493,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          40
         </td>
         <td>
-          1107
+          1068
         </td>
         <td>
-          1719
+          1622
           -
-          1738
+          1641
         </td>
         <td>
           Apply
@@ -519,39 +517,15 @@
         </td>
       </tr><tr>
         <td>
-          56
+          54
         </td>
         <td>
-          1140
+          1100
         </td>
         <td>
-          2399
+          2236
           -
-          2399
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          apply$default$4
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          1139
-        </td>
-        <td>
-          2333
-          -
-          2342
+          2245
         </td>
         <td>
           DefDef
@@ -567,15 +541,39 @@
         </td>
       </tr><tr>
         <td>
-          57
+          54
         </td>
         <td>
-          1111
+          1101
         </td>
         <td>
-          2469
+          2302
           -
-          2480
+          2302
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          1072
+        </td>
+        <td>
+          2372
+          -
+          2383
         </td>
         <td>
           Apply
@@ -591,63 +589,15 @@
         </td>
       </tr><tr>
         <td>
-          58
+          56
         </td>
         <td>
-          1114
+          1073
         </td>
         <td>
-          2501
+          2406
           -
-          2531
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          *
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          ((to &lt;--&gt; from).normalize) * d
-        </td>
-      </tr><tr>
-        <td>
-          58
-        </td>
-        <td>
-          1113
-        </td>
-        <td>
-          2502
-          -
-          2526
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          normalize
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          (to &lt;--&gt; from).normalize
-        </td>
-      </tr><tr>
-        <td>
-          58
-        </td>
-        <td>
-          1112
-        </td>
-        <td>
-          2503
-          -
-          2515
+          2418
         </td>
         <td>
           Apply
@@ -663,15 +613,63 @@
         </td>
       </tr><tr>
         <td>
-          59
+          56
         </td>
         <td>
-          1115
+          1075
         </td>
         <td>
-          2549
+          2404
           -
-          2557
+          2434
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ((to &lt;--&gt; from).normalize) * d
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          1074
+        </td>
+        <td>
+          2405
+          -
+          2429
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          normalize
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (to &lt;--&gt; from).normalize
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          1076
+        </td>
+        <td>
+          2452
+          -
+          2460
         </td>
         <td>
           Ident
@@ -687,15 +685,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          57
         </td>
         <td>
-          1116
+          1077
         </td>
         <td>
-          2549
+          2452
           -
-          2575
+          2478
         </td>
         <td>
           Apply
@@ -711,15 +709,15 @@
         </td>
       </tr><tr>
         <td>
-          60
+          58
         </td>
         <td>
-          1118
+          1079
         </td>
         <td>
-          2630
+          2533
           -
-          2632
+          2535
         </td>
         <td>
           Select
@@ -735,15 +733,15 @@
         </td>
       </tr><tr>
         <td>
-          60
+          58
         </td>
         <td>
-          1117
+          1078
         </td>
         <td>
-          2599
+          2502
           -
-          2607
+          2510
         </td>
         <td>
           Ident
@@ -759,15 +757,15 @@
         </td>
       </tr><tr>
         <td>
-          60
+          58
         </td>
         <td>
-          1120
+          1081
         </td>
         <td>
-          2599
+          2502
           -
-          2635
+          2538
         </td>
         <td>
           Apply
@@ -783,15 +781,15 @@
         </td>
       </tr><tr>
         <td>
-          60
+          58
         </td>
         <td>
-          1119
+          1080
         </td>
         <td>
-          2623
+          2526
           -
-          2632
+          2535
         </td>
         <td>
           Apply
@@ -807,15 +805,15 @@
         </td>
       </tr><tr>
         <td>
-          61
+          59
         </td>
         <td>
-          1138
+          1099
         </td>
         <td>
-          2640
+          2543
           -
-          2981
+          2884
         </td>
         <td>
           Apply
@@ -840,15 +838,39 @@
         </td>
       </tr><tr>
         <td>
-          62
+          60
         </td>
         <td>
-          1132
+          1082
         </td>
         <td>
-          2650
+          2562
           -
-          2907
+          2579
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          take
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          stream.take(step)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          1093
+        </td>
+        <td>
+          2553
+          -
+          2810
         </td>
         <td>
           Apply
@@ -871,15 +893,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          60
         </td>
         <td>
-          1137
+          1098
         </td>
         <td>
-          2650
+          2553
           -
-          2768
+          2671
         </td>
         <td>
           Block
@@ -898,15 +920,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          60
         </td>
         <td>
-          1122
+          1083
         </td>
         <td>
-          2650
+          2553
           -
-          2697
+          2600
         </td>
         <td>
           Apply
@@ -926,36 +948,12 @@
           62
         </td>
         <td>
-          1121
+          1085
         </td>
         <td>
-          2659
+          2615
           -
-          2676
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          take
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          stream.take(step)
-        </td>
-      </tr><tr>
-        <td>
-          64
-        </td>
-        <td>
-          1124
-        </td>
-        <td>
-          2712
-          -
-          2747
+          2650
         </td>
         <td>
           Select
@@ -971,15 +969,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          62
         </td>
         <td>
-          1123
+          1084
         </td>
         <td>
-          2712
+          2615
           -
-          2740
+          2643
         </td>
         <td>
           Apply
@@ -995,15 +993,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          62
         </td>
         <td>
-          1125
+          1086
         </td>
         <td>
-          2712
+          2615
           -
-          2752
+          2655
         </td>
         <td>
           Select
@@ -1019,15 +1017,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          63
         </td>
         <td>
-          1126
+          1087
         </td>
         <td>
-          2771
+          2674
           -
-          2793
+          2696
         </td>
         <td>
           Apply
@@ -1043,15 +1041,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          63
         </td>
         <td>
-          1129
+          1090
         </td>
         <td>
-          2771
+          2674
           -
-          2895
+          2798
         </td>
         <td>
           Apply
@@ -1071,15 +1069,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          65
         </td>
         <td>
-          1127
+          1088
         </td>
         <td>
-          2837
+          2740
           -
-          2853
+          2756
         </td>
         <td>
           Block
@@ -1095,15 +1093,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          66
         </td>
         <td>
-          1128
+          1089
         </td>
         <td>
-          2873
+          2776
           -
-          2879
+          2782
         </td>
         <td>
           Block
@@ -1119,43 +1117,15 @@
         </td>
       </tr><tr>
         <td>
-          69
+          67
         </td>
         <td>
-          1131
+          1091
         </td>
         <td>
-          2771
+          2674
           -
-          2907
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          last
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          stream.take(index + 1).map {
-        i =&gt; (i % 2) match
-          case v if v == 0 =&gt; Right
-          case _ =&gt; Left
-      }.toList.last
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          1130
-        </td>
-        <td>
-          2771
-          -
-          2902
+          2805
         </td>
         <td>
           Select
@@ -1175,39 +1145,43 @@
         </td>
       </tr><tr>
         <td>
-          70
+          67
         </td>
         <td>
-          1133
+          1092
         </td>
         <td>
-          2930
+          2674
           -
-          2932
+          2810
         </td>
         <td>
           Select
         </td>
         <td>
-          unary_-
+          last
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          -v
+          stream.take(index + 1).map {
+        i =&gt; (i % 2) match
+          case v if v == 0 =&gt; Right
+          case _ =&gt; Left
+      }.toList.last
         </td>
       </tr><tr>
         <td>
-          70
+          68
         </td>
         <td>
-          1136
+          1097
         </td>
         <td>
-          2918
+          2821
           -
-          2981
+          2884
         </td>
         <td>
           Apply
@@ -1223,15 +1197,39 @@
         </td>
       </tr><tr>
         <td>
-          70
+          68
         </td>
         <td>
-          1135
+          1094
         </td>
         <td>
-          2919
+          2833
           -
-          2959
+          2835
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          unary_-
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          -v
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          1096
+        </td>
+        <td>
+          2822
+          -
+          2862
         </td>
         <td>
           Apply
@@ -1247,15 +1245,15 @@
         </td>
       </tr><tr>
         <td>
-          70
+          68
         </td>
         <td>
-          1134
+          1095
         </td>
         <td>
-          2930
+          2833
           -
-          2959
+          2862
         </td>
         <td>
           Apply
