@@ -21,7 +21,6 @@ class GroundTest extends AnyFunSpec with BeforeAndAfterAll :
     describe("The ground") {
         it("should be generate the required number of cities and batteries") {
             assert(ground.numberOfCitiesAlive === 6)
-            println(ground.turrets)
             assert(ground.numberOfMissileBatteryAlive === 3)
         }
         it("should remove a turret if damaged") {
