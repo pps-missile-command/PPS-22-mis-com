@@ -68,7 +68,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       assert(updatedGame.player.score == 0)
     }
 
-    Scenario("The game should be able to create a friendly missile") {
+    Scenario("The game should be able to create a friendly missile when battery is reloaded") {
       val dt = reloadingTime
       val destination = Point2D(0, 0)
       Given("An initial game")
@@ -87,7 +87,22 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       Then("One missile battery should be reloading")
       assert(newGame.world.ground.turrets.count(!_.isReadyForShoot) == 1)
     }
+
+  Scenario("The game shouldn't be able to create a friendly missile at the beginning") {
+    val destination = Point2D(0, 0)
+    Given("An initial game")
+    val initialGame = Game.initialGame
+    When("The game, st the beginning, try to shoots a friendly missile, but fails")
+    val newGame =
+      initialGame
+        .shootMissile(destination)
+
+    Then("The collisionable should be empty")
+    assert(newGame.world.collisionables.isEmpty)
+    Then("No missile battery should be able to shoot")
+    assert(newGame.world.ground.turrets.count(!_.isReadyForShoot) == newGame.world.ground.turrets.size)
   }
+}
 
   Feature("Game going") {
     Scenario("In the game there are some enemy missile that are moving") {
