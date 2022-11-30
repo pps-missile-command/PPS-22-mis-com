@@ -10,6 +10,7 @@ import java.awt.image.{AffineTransformOp, BufferedImage}
 import javax.swing.{JButton, JPanel}
 import model.elements2d.Angle
 import view.given_Conversion_Double_Int
+import PimpingByDouble.roundTwoDecimals
 
 import java.io.File
 import javax.imageio.ImageIO
@@ -29,7 +30,7 @@ private class WorldPane(val game: Game, width: Int, height: Int) extends JPanel:
         val g2d: Graphics2D = graphics.asInstanceOf[Graphics2D]
         graphics.clearRect(0, 0, width, height)
         graphics.drawString("SCORE: " + game.player.score, 10, 10)
-        graphics.drawString("TIME: " + BigDecimal(game.player.timer.time).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble, 10, 20)
+        graphics.drawString("TIME: " + game.player.timer.time.roundTwoDecimals, 10, 20)
         Visualizer.printGround(game.world.ground).map(
             imageData => graphics.drawImage(imageData._1, imageData._2.x, imageData._2.y,
                 imageData._3,

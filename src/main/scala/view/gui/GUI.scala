@@ -10,6 +10,7 @@ import view.{Main, ViewConstants}
 import view.gui.WorldPane
 import java.awt.{BorderLayout, Color, Dimension, FlowLayout, Graphics, event}
 import javax.swing.*
+import PimpingByDouble.roundTwoDecimals
 
 /**
  * Class that represent the main interface that encapsulate the GUI events and the
@@ -106,7 +107,7 @@ class GUI(width: Int, height: Int) extends View :
       panel.setLayout(new FlowLayout())
       button.setText("RIGIOCA")
       val score = new JLabel(s"SCORE FINALE: ${game.player.score}")
-      val time = new JLabel(s"TEMPO DI GIOCO: ${game.player.timer.time}")
+      val time = new JLabel(s"TEMPO DI GIOCO: ${game.player.timer.time.roundTwoDecimals}")
       panel.add(button)
       panel.add(score)
       panel.add(time)
