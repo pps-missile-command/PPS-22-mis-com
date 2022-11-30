@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          controller/Controller.scala.html
+          controller/GameController.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -24,62 +24,68 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller
 </span>2 <span style=''>
-</span>3 <span style=''>import monix.eval.Task
-</span>4 <span style=''>import monix.execution.Ack
-</span>5 <span style=''>import monix.execution.Scheduler.Implicits.global
-</span>6 <span style=''>import monix.reactive.subjects.PublishSubject
-</span>7 <span style=''>import monix.reactive.{Observable, Observer, OverflowStrategy}
-</span>8 <span style=''>import org.reactivestreams.Subscriber
-</span>9 <span style=''>import view.gui.UI
-</span>10 <span style=''>import model.Game
-</span>11 <span style=''>import controller.update._
-</span>12 <span style=''>
-</span>13 <span style=''>import scala.concurrent.Future
-</span>14 <span style=''>import scala.concurrent.duration.DurationInt
-</span>15 <span style=''>import scala.language.postfixOps
-</span>16 <span style=''>import scala.util.Random
-</span>17 <span style=''>
-</span>18 <span style=''>/**
-</span>19 <span style=''> * Object that represents the controller of the game.
-</span>20 <span style=''> */
-</span>21 <span style=''>object Controller:
-</span>22 <span style=''>  /**
-</span>23 <span style=''>   * The observable that will be used to schedule time in the game.
-</span>24 <span style=''>   */
-</span>25 <span style=''>  private val time: Observable[Event] = </span><span style='background: #F0ADAD'>TimeFlow
-</span>26 <span style=''></span><span style='background: #F0ADAD'>    .tickEach(50 milliseconds)
-</span>27 <span style=''></span><span style='background: #F0ADAD'>    .map(_.toDouble / 1000)
-</span>28 <span style=''></span><span style='background: #F0ADAD'>    .map(Event.TimePassed.apply)</span><span style=''>
-</span>29 <span style=''>
-</span>30 <span style=''>  /**
-</span>31 <span style=''>   * start the game loop.
-</span>32 <span style=''>   *
-</span>33 <span style=''>   * @param ui the ui that will be used to show the game.
-</span>34 <span style=''>   * @return a task that will execute the game.
-</span>35 <span style=''>   */
-</span>36 <span style=''>  </span><span style='background: #F0ADAD'>def start</span><span style=''>(ui: UI): Task[Unit] =
-</span>37 <span style=''>
-</span>38 <span style=''>    given OverflowStrategy[Event] = </span><span style='background: #F0ADAD'>OverflowStrategy.Default</span><span style=''>
-</span>39 <span style=''>
-</span>40 <span style=''>    val game = </span><span style='background: #F0ADAD'>Game.initialGame</span><span style=''>
-</span>41 <span style=''>    val controls: Update = </span><span style='background: #F0ADAD'>Update.combine(
-</span>42 <span style=''></span><span style='background: #F0ADAD'>      UpdateTime(),
-</span>43 <span style=''></span><span style='background: #F0ADAD'>      UpdatePosition(),
-</span>44 <span style=''></span><span style='background: #F0ADAD'>      ActivateSpecialAbility(),
-</span>45 <span style=''></span><span style='background: #F0ADAD'>      CollisionsDetection(),
-</span>46 <span style=''></span><span style='background: #F0ADAD'>      LaunchNewMissile()
-</span>47 <span style=''></span><span style='background: #F0ADAD'>    )</span><span style=''>
-</span>48 <span style=''>
-</span>49 <span style=''>    val init = </span><span style='background: #F0ADAD'>Task((game, controls))</span><span style=''>
-</span>50 <span style=''>    val events =
-</span>51 <span style=''>      </span><span style='background: #F0ADAD'>Observable(time, ui.events).merge</span><span style=''>
-</span>52 <span style=''>    </span><span style='background: #F0ADAD'>events
-</span>53 <span style=''></span><span style='background: #F0ADAD'>      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-</span>54 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (game, _) =&gt; ui.render(game) }
-</span>55 <span style=''></span><span style='background: #F0ADAD'>      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
-</span>56 <span style=''></span><span style='background: #F0ADAD'>      .last
-</span>57 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (game, _) =&gt; ui.gameOver(game) }
-</span>58 <span style=''></span><span style='background: #F0ADAD'>      .completedL</span><span style=''>
+</span>3 <span style=''>import components.ModelModule.Model
+</span>4 <span style=''>import components.ViewModule.View
+</span>5 <span style=''>import monix.eval.Task
+</span>6 <span style=''>import monix.execution.Scheduler.Implicits.global
+</span>7 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
+</span>8 <span style=''>import model.Game
+</span>9 <span style=''>import controller.update.*
+</span>10 <span style=''>
+</span>11 <span style=''>import scala.concurrent.duration.DurationInt
+</span>12 <span style=''>import scala.language.postfixOps
+</span>13 <span style=''>
+</span>14 <span style=''>/**
+</span>15 <span style=''> * Case class that represents the controller of the game.
+</span>16 <span style=''> */
+</span>17 <span style=''>case class GameController(view: View, model: Model):
+</span>18 <span style=''>
+</span>19 <span style=''>  </span><span style='background: #F0ADAD'>private def attachListenerToViewEvents</span><span style=''>(): Unit =
+</span>20 <span style=''>    </span><span style='background: #F0ADAD'>view.events
+</span>21 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext {
+</span>22 <span style=''></span><span style='background: #F0ADAD'>      case Event.StartGame =&gt; gameLoop()
+</span>23 <span style=''></span><span style='background: #F0ADAD'>      case _ =&gt; Task.unit
+</span>24 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>25 <span style=''></span><span style='background: #F0ADAD'>      .completedL
+</span>26 <span style=''></span><span style='background: #F0ADAD'>      .runAsyncAndForget</span><span style=''>
+</span>27 <span style=''>
+</span>28 <span style=''>  </span><span style='background: #F0ADAD'>private def gameLoop</span><span style=''>(): Task[Unit] =
+</span>29 <span style=''>    given OverflowStrategy[Event] = </span><span style='background: #F0ADAD'>OverflowStrategy.Default</span><span style=''>
+</span>30 <span style=''>
+</span>31 <span style=''>    val time: Observable[Event] = </span><span style='background: #F0ADAD'>TimeFlow
+</span>32 <span style=''></span><span style='background: #F0ADAD'>      .tickEach(50 milliseconds)
+</span>33 <span style=''></span><span style='background: #F0ADAD'>      .map(_.toDouble / 1000)
+</span>34 <span style=''></span><span style='background: #F0ADAD'>      .map(Event.TimePassed.apply)</span><span style=''>
+</span>35 <span style=''>
+</span>36 <span style=''>    val game = </span><span style='background: #F0ADAD'>model.initializeGame()</span><span style=''>
+</span>37 <span style=''>    val controls: Update = </span><span style='background: #F0ADAD'>Update.combine(
+</span>38 <span style=''></span><span style='background: #F0ADAD'>      UpdateTime(),
+</span>39 <span style=''></span><span style='background: #F0ADAD'>      UpdatePosition(),
+</span>40 <span style=''></span><span style='background: #F0ADAD'>      ActivateSpecialAbility(),
+</span>41 <span style=''></span><span style='background: #F0ADAD'>      CollisionsDetection(),
+</span>42 <span style=''></span><span style='background: #F0ADAD'>      LaunchNewMissile()
+</span>43 <span style=''></span><span style='background: #F0ADAD'>    )</span><span style=''>
+</span>44 <span style=''>
+</span>45 <span style=''>    val init = </span><span style='background: #F0ADAD'>Task((game, controls))</span><span style=''>
+</span>46 <span style=''>    val events =
+</span>47 <span style=''>      </span><span style='background: #F0ADAD'>Observable(time, view.events).merge</span><span style=''>
+</span>48 <span style=''>    </span><span style='background: #F0ADAD'>events
+</span>49 <span style=''></span><span style='background: #F0ADAD'>      .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
+</span>50 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (game, _) =&gt; view.render(game) }
+</span>51 <span style=''></span><span style='background: #F0ADAD'>      .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
+</span>52 <span style=''></span><span style='background: #F0ADAD'>      .last
+</span>53 <span style=''></span><span style='background: #F0ADAD'>      .doOnNext { case (game, _) =&gt; view.gameOver(game) }
+</span>54 <span style=''></span><span style='background: #F0ADAD'>      .completedL</span><span style=''>
+</span>55 <span style=''>
+</span>56 <span style=''>
+</span>57 <span style=''>  /**
+</span>58 <span style=''>   * Attach the listener to the view events and start the game.
+</span>59 <span style=''>   *
+</span>60 <span style=''>   * @return a task that will execute the game.
+</span>61 <span style=''>   */
+</span>62 <span style=''>  </span><span style='background: #F0ADAD'>def start</span><span style=''>(): Task[Unit] =
+</span>63 <span style=''>    </span><span style='background: #F0ADAD'>attachListenerToViewEvents()</span><span style=''>
+</span>64 <span style=''>    </span><span style='background: #F0ADAD'>view.initialGame()</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -94,141 +100,246 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          25
-        </td>
-        <td>
-          23
-        </td>
-        <td>
-          668
-          -
-          707
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          tickEach
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          TimeFlow
-    .tickEach(50 milliseconds)
-        </td>
-      </tr><tr>
-        <td>
-          25
-        </td>
-        <td>
-          22
-        </td>
-        <td>
-          691
-          -
-          706
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          milliseconds
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          50 milliseconds
-        </td>
-      </tr><tr>
-        <td>
-          26
+          18
         </td>
         <td>
           24
         </td>
         <td>
-          668
+          463
           -
-          735
+          501
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          map
+          attachListenerToViewEvents
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          TimeFlow
-    .tickEach(50 milliseconds)
-    .map(_.toDouble / 1000)
+          private def attachListenerToViewEvents
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          23
+        </td>
+        <td>
+          516
+          -
+          661
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          runAsyncAndForget
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          view.events
+      .doOnNext {
+      case Event.StartGame =&gt; gameLoop()
+      case _ =&gt; Task.unit
+    }
+      .completedL
+      .runAsyncAndForget
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          17
+        </td>
+        <td>
+          516
+          -
+          527
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          events
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          view.events
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          21
+        </td>
+        <td>
+          516
+          -
+          618
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          doOnNext
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          view.events
+      .doOnNext {
+      case Event.StartGame =&gt; gameLoop()
+      case _ =&gt; Task.unit
+    }
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          552
+          -
+          572
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case Event.StartGame
+        </td>
+      </tr><tr>
+        <td>
+          21
+        </td>
+        <td>
+          18
+        </td>
+        <td>
+          576
+          -
+          586
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          gameLoop
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          gameLoop()
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          20
+        </td>
+        <td>
+          593
+          -
+          599
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          24
+        </td>
+        <td>
+          22
+        </td>
+        <td>
+          516
+          -
+          636
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          completedL
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          view.events
+      .doOnNext {
+      case Event.StartGame =&gt; gameLoop()
+      case _ =&gt; Task.unit
+    }
+      .completedL
         </td>
       </tr><tr>
         <td>
           27
         </td>
         <td>
-          25
+          55
         </td>
         <td>
-          668
+          665
           -
-          768
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          TimeFlow
-    .tickEach(50 milliseconds)
-    .map(_.toDouble / 1000)
-    .map(Event.TimePassed.apply)
-        </td>
-      </tr><tr>
-        <td>
-          35
-        </td>
-        <td>
-          52
-        </td>
-        <td>
-          921
-          -
-          930
+          685
         </td>
         <td>
           DefDef
         </td>
         <td>
-          start
+          gameLoop
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def start
+          private def gameLoop
         </td>
       </tr><tr>
         <td>
-          37
+          28
         </td>
         <td>
-          26
+          25
         </td>
         <td>
-          990
+          738
           -
-          1014
+          762
         </td>
         <td>
           Select
@@ -244,39 +355,141 @@
         </td>
       </tr><tr>
         <td>
-          39
+          31
         </td>
         <td>
-          27
+          26
         </td>
         <td>
-          1031
+          823
           -
-          1047
+          838
         </td>
         <td>
           Select
         </td>
         <td>
-          initialGame
+          milliseconds
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          Game.initialGame
+          50 milliseconds
         </td>
       </tr><tr>
         <td>
-          40
+          31
         </td>
+        <td>
+          27
+        </td>
+        <td>
+          798
+          -
+          839
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          tickEach
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          TimeFlow
+      .tickEach(50 milliseconds)
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          28
+        </td>
+        <td>
+          798
+          -
+          869
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          TimeFlow
+      .tickEach(50 milliseconds)
+      .map(_.toDouble / 1000)
+        </td>
+      </tr><tr>
         <td>
           33
         </td>
         <td>
-          1075
+          29
+        </td>
+        <td>
+          798
           -
-          1226
+          904
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          TimeFlow
+      .tickEach(50 milliseconds)
+      .map(_.toDouble / 1000)
+      .map(Event.TimePassed.apply)
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          30
+        </td>
+        <td>
+          921
+          -
+          943
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          initializeGame
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          model.initializeGame()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          36
+        </td>
+        <td>
+          971
+          -
+          1122
         </td>
         <td>
           Apply
@@ -298,15 +511,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          37
         </td>
         <td>
-          28
+          31
         </td>
         <td>
-          1097
+          993
           -
-          1109
+          1005
         </td>
         <td>
           Apply
@@ -322,15 +535,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          38
         </td>
         <td>
-          29
+          32
         </td>
         <td>
-          1117
+          1013
           -
-          1133
+          1029
         </td>
         <td>
           Apply
@@ -346,15 +559,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          39
         </td>
         <td>
-          30
+          33
         </td>
         <td>
-          1141
+          1037
           -
-          1165
+          1061
         </td>
         <td>
           Apply
@@ -370,15 +583,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          40
         </td>
         <td>
-          31
+          34
         </td>
         <td>
-          1173
+          1069
           -
-          1194
+          1090
         </td>
         <td>
           Apply
@@ -394,15 +607,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          41
         </td>
         <td>
-          32
+          35
         </td>
         <td>
-          1202
+          1098
           -
-          1220
+          1116
         </td>
         <td>
           Apply
@@ -418,15 +631,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          44
         </td>
         <td>
-          34
+          37
         </td>
         <td>
-          1243
+          1139
           -
-          1265
+          1161
         </td>
         <td>
           Apply
@@ -442,15 +655,15 @@
         </td>
       </tr><tr>
         <td>
-          50
+          46
         </td>
         <td>
-          35
+          38
         </td>
         <td>
-          1306
+          1202
           -
-          1315
+          1213
         </td>
         <td>
           Select
@@ -462,19 +675,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          ui.events
+          view.events
         </td>
       </tr><tr>
         <td>
-          50
+          46
         </td>
         <td>
-          37
+          40
         </td>
         <td>
-          1289
+          1185
           -
-          1322
+          1220
         </td>
         <td>
           Apply
@@ -486,19 +699,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Observable(time, ui.events).merge
+          Observable(time, view.events).merge
         </td>
       </tr><tr>
         <td>
-          50
+          46
         </td>
         <td>
-          36
+          39
         </td>
         <td>
-          1289
+          1185
           -
-          1316
+          1214
         </td>
         <td>
           Apply
@@ -510,19 +723,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Observable(time, ui.events)
+          Observable(time, view.events)
         </td>
       </tr><tr>
         <td>
-          52
+          48
         </td>
         <td>
-          38
+          41
         </td>
         <td>
-          1392
+          1290
           -
-          1413
+          1311
         </td>
         <td>
           Apply
@@ -538,15 +751,15 @@
         </td>
       </tr><tr>
         <td>
-          52
+          48
         </td>
         <td>
-          40
+          43
         </td>
         <td>
-          1327
+          1225
           -
-          1415
+          1313
         </td>
         <td>
           Apply
@@ -563,15 +776,15 @@
         </td>
       </tr><tr>
         <td>
-          52
+          48
         </td>
         <td>
-          39
+          42
         </td>
         <td>
-          1358
+          1256
           -
-          1388
+          1286
         </td>
         <td>
           Block
@@ -587,15 +800,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          49
         </td>
         <td>
-          41
+          44
         </td>
         <td>
-          1452
+          1350
           -
-          1467
+          1367
         </td>
         <td>
           Apply
@@ -607,19 +820,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          ui.render(game)
+          view.render(game)
         </td>
       </tr><tr>
         <td>
-          53
+          49
         </td>
         <td>
-          43
+          46
         </td>
         <td>
-          1327
+          1225
           -
-          1469
+          1369
         </td>
         <td>
           Apply
@@ -633,19 +846,19 @@
         <td style="background: #F0ADAD">
           events
       .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .doOnNext { case (game, _) =&gt; view.render(game) }
         </td>
       </tr><tr>
         <td>
-          53
+          49
         </td>
         <td>
-          42
+          45
         </td>
         <td>
-          1434
+          1332
           -
-          1448
+          1346
         </td>
         <td>
           Block
@@ -661,15 +874,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          50
         </td>
         <td>
-          44
+          47
         </td>
         <td>
-          1507
+          1407
           -
-          1535
+          1435
         </td>
         <td>
           Select
@@ -685,15 +898,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          50
         </td>
         <td>
-          46
+          49
         </td>
         <td>
-          1327
+          1225
           -
-          1537
+          1437
         </td>
         <td>
           Apply
@@ -707,20 +920,20 @@
         <td style="background: #F0ADAD">
           events
       .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .doOnNext { case (game, _) =&gt; view.render(game) }
       .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
         </td>
       </tr><tr>
         <td>
-          54
+          50
         </td>
         <td>
-          45
+          48
         </td>
         <td>
-          1489
+          1389
           -
-          1503
+          1403
         </td>
         <td>
           Block
@@ -736,15 +949,15 @@
         </td>
       </tr><tr>
         <td>
-          55
+          51
         </td>
         <td>
-          47
+          50
         </td>
         <td>
-          1327
+          1225
           -
-          1549
+          1449
         </td>
         <td>
           Select
@@ -758,21 +971,21 @@
         <td style="background: #F0ADAD">
           events
       .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .doOnNext { case (game, _) =&gt; view.render(game) }
       .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
       .last
         </td>
       </tr><tr>
         <td>
-          56
+          52
         </td>
         <td>
-          50
+          53
         </td>
         <td>
-          1327
+          1225
           -
-          1605
+          1507
         </td>
         <td>
           Apply
@@ -786,22 +999,22 @@
         <td style="background: #F0ADAD">
           events
       .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .doOnNext { case (game, _) =&gt; view.render(game) }
       .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
       .last
-      .doOnNext { case (game, _) =&gt; ui.gameOver(game) }
+      .doOnNext { case (game, _) =&gt; view.gameOver(game) }
         </td>
       </tr><tr>
         <td>
-          56
+          52
         </td>
         <td>
-          49
+          52
         </td>
         <td>
-          1568
+          1468
           -
-          1582
+          1482
         </td>
         <td>
           Block
@@ -817,15 +1030,15 @@
         </td>
       </tr><tr>
         <td>
-          56
+          52
         </td>
         <td>
-          48
+          51
         </td>
         <td>
-          1586
+          1486
           -
-          1603
+          1505
         </td>
         <td>
           Apply
@@ -837,19 +1050,19 @@
           
         </td>
         <td style="background: #F0ADAD">
-          ui.gameOver(game)
+          view.gameOver(game)
         </td>
       </tr><tr>
         <td>
-          57
+          53
         </td>
         <td>
-          51
+          54
         </td>
         <td>
-          1327
+          1225
           -
-          1623
+          1525
         </td>
         <td>
           Select
@@ -863,11 +1076,83 @@
         <td style="background: #F0ADAD">
           events
       .scanEval(init) { case ((game, controls), event) =&gt; controls(event, game) }
-      .doOnNext { case (game, _) =&gt; ui.render(game) }
+      .doOnNext { case (game, _) =&gt; view.render(game) }
       .takeWhile { case (game, _) =&gt; game.world.ground.stillAlive }
       .last
-      .doOnNext { case (game, _) =&gt; ui.gameOver(game) }
+      .doOnNext { case (game, _) =&gt; view.gameOver(game) }
       .completedL
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          58
+        </td>
+        <td>
+          1659
+          -
+          1668
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          start
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def start
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          56
+        </td>
+        <td>
+          1689
+          -
+          1717
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          attachListenerToViewEvents
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          attachListenerToViewEvents()
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          57
+        </td>
+        <td>
+          1722
+          -
+          1740
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          initialGame
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          view.initialGame()
         </td>
       </tr>
     </table>

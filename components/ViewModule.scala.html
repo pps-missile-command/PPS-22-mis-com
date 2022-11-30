@@ -29,30 +29,61 @@
 </span>5 <span style=''>import monix.eval.Task
 </span>6 <span style=''>import monix.reactive.Observable
 </span>7 <span style=''>import view.ViewConstants
-</span>8 <span style=''>import view.gui.{GUI, MainPane, UI}
+</span>8 <span style=''>import view.gui.GUI
 </span>9 <span style=''>
 </span>10 <span style=''>object ViewModule:
 </span>11 <span style=''>  trait View:
-</span>12 <span style=''>    def initialGame(): Unit
-</span>13 <span style=''>  trait Provider:
-</span>14 <span style=''>    val view: UI &amp; View
-</span>15 <span style=''>  type Requirements = ControllerModule.Provider
-</span>16 <span style=''>  trait Component:
-</span>17 <span style=''>    context: Requirements =&gt;
+</span>12 <span style=''>    /**
+</span>13 <span style=''>     * Create the initial view
+</span>14 <span style=''>     *
+</span>15 <span style=''>     * @return a task that will create the view
+</span>16 <span style=''>     */
+</span>17 <span style=''>    def initialGame(): Task[Unit]
 </span>18 <span style=''>
-</span>19 <span style=''>    class ViewImpl extends UI with View:
-</span>20 <span style=''>
-</span>21 <span style=''>      private lazy val gui: GUI = </span><span style='background: #F0ADAD'>new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)</span><span style=''>
-</span>22 <span style=''>
-</span>23 <span style=''>      </span><span style='background: #F0ADAD'>override def initialGame</span><span style=''>(): Unit = </span><span style='background: #F0ADAD'>new MainPane(() =&gt; controller.startGame(), ViewConstants.GUI_width, ViewConstants.GUI_height)</span><span style=''>
-</span>24 <span style=''>
-</span>25 <span style=''>      </span><span style='background: #F0ADAD'>override def render</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>gui.render(game)</span><span style=''>
-</span>26 <span style=''>
-</span>27 <span style=''>      </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>gui.gameOver(game)</span><span style=''>
-</span>28 <span style=''>
-</span>29 <span style=''>      </span><span style='background: #F0ADAD'>override def events</span><span style=''>: Observable[Event] = </span><span style='background: #F0ADAD'>gui.events</span><span style=''>
-</span>30 <span style=''>  trait Interface extends Provider with Component:
-</span>31 <span style=''>    self: Requirements =&gt;
+</span>19 <span style=''>    /**
+</span>20 <span style=''>     * The event source produced by this UI.
+</span>21 <span style=''>     *
+</span>22 <span style=''>     * @return an observable of events
+</span>23 <span style=''>     */
+</span>24 <span style=''>    def events: Observable[Event]
+</span>25 <span style=''>
+</span>26 <span style=''>    /**
+</span>27 <span style=''>     * Render the world representation.
+</span>28 <span style=''>     *
+</span>29 <span style=''>     * @param game the game to render
+</span>30 <span style=''>     * @return a task that will render the world
+</span>31 <span style=''>     */
+</span>32 <span style=''>    def render(game: Game): Task[Unit]
+</span>33 <span style=''>
+</span>34 <span style=''>    /**
+</span>35 <span style=''>     * Render the end of the game.
+</span>36 <span style=''>     *
+</span>37 <span style=''>     * @param game the game to render at the end
+</span>38 <span style=''>     * @return a task that will render the end of the game
+</span>39 <span style=''>     */
+</span>40 <span style=''>    def gameOver(game: Game): Task[Unit]
+</span>41 <span style=''>
+</span>42 <span style=''>  trait Provider:
+</span>43 <span style=''>    val view: View
+</span>44 <span style=''>
+</span>45 <span style=''>  type Requirements = ControllerModule.Provider
+</span>46 <span style=''>
+</span>47 <span style=''>  trait Component:
+</span>48 <span style=''>    context: Requirements =&gt;
+</span>49 <span style=''>
+</span>50 <span style=''>    class ViewImpl extends View :
+</span>51 <span style=''>      private lazy val gui: View = </span><span style='background: #F0ADAD'>new GUI(ViewConstants.GUI_width, ViewConstants.GUI_height + 39)</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>      </span><span style='background: #F0ADAD'>override def initialGame</span><span style=''>(): Task[Unit] = </span><span style='background: #F0ADAD'>gui.initialGame()</span><span style=''>
+</span>54 <span style=''>
+</span>55 <span style=''>      </span><span style='background: #F0ADAD'>override def render</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>gui.render(game)</span><span style=''>
+</span>56 <span style=''>
+</span>57 <span style=''>      </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>gui.gameOver(game)</span><span style=''>
+</span>58 <span style=''>
+</span>59 <span style=''>      </span><span style='background: #F0ADAD'>override def events</span><span style=''>: Observable[Event] = </span><span style='background: #F0ADAD'>gui.events</span><span style=''>
+</span>60 <span style=''>
+</span>61 <span style=''>  trait Interface extends Provider with Component :
+</span>62 <span style=''>    self: Requirements =&gt;
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -67,15 +98,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          50
         </td>
         <td>
-          12
+          8
         </td>
         <td>
-          457
+          1080
           -
-          520
+          1143
         </td>
         <td>
           Apply
@@ -91,63 +122,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          52
         </td>
         <td>
-          14
+          10
         </td>
         <td>
-          563
+          1151
           -
-          656
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          &lt;init&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          new MainPane(() =&gt; controller.startGame(), ViewConstants.GUI_width, ViewConstants.GUI_height)
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          13
-        </td>
-        <td>
-          582
-          -
-          604
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          startGame
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          controller.startGame()
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          15
-        </td>
-        <td>
-          528
-          -
-          552
+          1175
         </td>
         <td>
           DefDef
@@ -163,39 +146,39 @@
         </td>
       </tr><tr>
         <td>
-          24
+          52
         </td>
         <td>
-          17
+          9
         </td>
         <td>
-          664
+          1192
           -
-          683
+          1209
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          render
+          initialGame
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          override def render
+          gui.initialGame()
         </td>
       </tr><tr>
         <td>
-          24
+          54
         </td>
         <td>
-          16
+          11
         </td>
         <td>
-          710
+          1263
           -
-          726
+          1279
         </td>
         <td>
           Apply
@@ -211,15 +194,39 @@
         </td>
       </tr><tr>
         <td>
-          26
+          54
         </td>
         <td>
-          19
+          12
         </td>
         <td>
-          734
+          1217
           -
-          755
+          1236
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          render
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def render
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          1287
+          -
+          1308
         </td>
         <td>
           DefDef
@@ -235,15 +242,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          56
         </td>
         <td>
-          18
+          13
         </td>
         <td>
-          782
+          1335
           -
-          800
+          1353
         </td>
         <td>
           Apply
@@ -259,39 +266,15 @@
         </td>
       </tr><tr>
         <td>
-          28
+          58
         </td>
         <td>
-          20
+          16
         </td>
         <td>
-          849
+          1361
           -
-          859
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          events
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          gui.events
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          21
-        </td>
-        <td>
-          808
-          -
-          827
+          1380
         </td>
         <td>
           DefDef
@@ -304,6 +287,30 @@
         </td>
         <td style="background: #F0ADAD">
           override def events
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          1402
+          -
+          1412
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          events
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          gui.events
         </td>
       </tr>
     </table>

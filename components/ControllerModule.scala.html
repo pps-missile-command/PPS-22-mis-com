@@ -25,25 +25,23 @@
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package components
 </span>2 <span style=''>import monix.execution.Scheduler.Implicits.global
 </span>3 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
-</span>4 <span style=''>import controller.Controller
+</span>4 <span style=''>import controller.GameController
 </span>5 <span style=''>
 </span>6 <span style=''>object ControllerModule:
-</span>7 <span style=''>  trait MainController:
+</span>7 <span style=''>  trait Controller:
 </span>8 <span style=''>    def startGame(): Unit
-</span>9 <span style=''>    def initializeGame(): Unit
-</span>10 <span style=''>  trait Provider:
-</span>11 <span style=''>    val controller: MainController
-</span>12 <span style=''>  type Requirements = ViewModule.Provider with ModelModule.Provider
-</span>13 <span style=''>  trait Component:
-</span>14 <span style=''>    context: Requirements =&gt;
-</span>15 <span style=''>    class ControllerImpl extends MainController:
-</span>16 <span style=''>
-</span>17 <span style=''>      </span><span style='background: #F0ADAD'>override def startGame</span><span style=''>(): Unit = </span><span style='background: #F0ADAD'>Controller.start(view).runAsyncAndForget</span><span style=''>
+</span>9 <span style=''>  trait Provider:
+</span>10 <span style=''>    val controller: Controller
+</span>11 <span style=''>  type Requirements = ViewModule.Provider with ModelModule.Provider
+</span>12 <span style=''>  trait Component:
+</span>13 <span style=''>    context: Requirements =&gt;
+</span>14 <span style=''>    class ControllerImpl extends Controller:
+</span>15 <span style=''>      </span><span style='background: #F0ADAD'>override def startGame</span><span style=''>(): Unit =
+</span>16 <span style=''>        </span><span style='background: #F0ADAD'>GameController(view, model).start().runAsyncAndForget</span><span style=''>
+</span>17 <span style=''>
 </span>18 <span style=''>
-</span>19 <span style=''>      </span><span style='background: #F0ADAD'>override def initializeGame</span><span style=''>(): Unit = </span><span style='background: #F0ADAD'>view.initialGame()</span><span style=''>
-</span>20 <span style=''>
-</span>21 <span style=''>  trait Interface extends Provider with Component:
-</span>22 <span style=''>    self: Requirements =&gt;
+</span>19 <span style=''>  trait Interface extends Provider with Component:
+</span>20 <span style=''>    self: Requirements =&gt;
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -58,39 +56,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          16
+          14
         </td>
         <td>
           5
         </td>
         <td>
-          516
+          443
           -
-          538
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          start
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          Controller.start(view)
-        </td>
-      </tr><tr>
-        <td>
-          16
-        </td>
-        <td>
-          7
-        </td>
-        <td>
-          483
-          -
-          505
+          465
         </td>
         <td>
           DefDef
@@ -106,15 +80,15 @@
         </td>
       </tr><tr>
         <td>
-          16
+          15
         </td>
         <td>
-          6
+          4
         </td>
         <td>
-          516
+          484
           -
-          556
+          537
         </td>
         <td>
           Apply
@@ -126,55 +100,31 @@
           
         </td>
         <td style="background: #F0ADAD">
-          Controller.start(view).runAsyncAndForget
+          GameController(view, model).start().runAsyncAndForget
         </td>
       </tr><tr>
         <td>
-          18
+          15
         </td>
         <td>
-          8
+          3
         </td>
         <td>
-          602
+          484
           -
-          620
+          519
         </td>
         <td>
           Apply
         </td>
         <td>
-          initialGame
+          start
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          view.initialGame()
-        </td>
-      </tr><tr>
-        <td>
-          18
-        </td>
-        <td>
-          9
-        </td>
-        <td>
-          564
-          -
-          591
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          initializeGame
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          override def initializeGame
+          GameController(view, model).start()
         </td>
       </tr>
     </table>
