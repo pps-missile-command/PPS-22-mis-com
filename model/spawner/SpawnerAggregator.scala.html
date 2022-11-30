@@ -30,25 +30,39 @@
 </span>6 <span style=''>
 </span>7 <span style=''>import scala.util.Random
 </span>8 <span style=''>
-</span>9 <span style=''>object SpawnerAggregator:
-</span>10 <span style=''>  trait SpawnerAggregator[A &lt;: Collisionable] extends GenericSpawner[A]:
-</span>11 <span style=''>  
-</span>12 <span style=''>    override def spawn(): (Set[A], SpawnerAggregator[A])
-</span>13 <span style=''>  
-</span>14 <span style=''>    override def timeElapsed(dt: DeltaTime): SpawnerAggregator[A]
-</span>15 <span style=''>  
-</span>16 <span style=''>  case class SpawnerAggregatorImpl[R &lt;: Collisionable](genericSpawners: GenericSpawner[R]*)(using Random) extends SpawnerAggregator[R]:
-</span>17 <span style=''>    
-</span>18 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): (Set[R], SpawnerAggregator[R]) =
-</span>19 <span style=''>      val list = </span><span style='background: #AEF1AE'>(genericSpawners map { i =&gt; i.spawn() }).toSet</span><span style=''>
-</span>20 <span style=''>      val v = </span><span style='background: #AEF1AE'>(list map { i =&gt; i._1 } flatMap { i =&gt; i }).toSet</span><span style=''>
-</span>21 <span style=''>      val spawners = </span><span style='background: #AEF1AE'>(list map { i =&gt; i._2 }).toList</span><span style=''>
-</span>22 <span style=''>      (v, SpawnerAggregatorImpl(spawners:_*))
-</span>23 <span style=''>  
-</span>24 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): SpawnerAggregator[R] =
-</span>25 <span style=''>      SpawnerAggregatorImpl(
-</span>26 <span style=''>        </span><span style='background: #AEF1AE'>(genericSpawners map { i =&gt; i.timeElapsed(dt) }).toList</span><span style=''>:_*
-</span>27 <span style=''>      )
+</span>9 <span style=''>/**
+</span>10 <span style=''> * Module that groups the SpawnerAggregator elements
+</span>11 <span style=''> */
+</span>12 <span style=''>object SpawnerAggregator:
+</span>13 <span style=''>  /**
+</span>14 <span style=''>   * Trait that models a SpawnerAggregator, that is a simple GenericSpawner that encapsulate a set of other
+</span>15 <span style=''>   * GenericSpawners, giving a way to manipulate multiple spawners at once using only one object.
+</span>16 <span style=''>   * @tparam A The type of elements to generate, at least Collisionables for each GenericSpawner
+</span>17 <span style=''>   */
+</span>18 <span style=''>  trait SpawnerAggregator[A &lt;: Collisionable] extends GenericSpawner[A]:
+</span>19 <span style=''>  
+</span>20 <span style=''>    override def spawn(): (Set[A], SpawnerAggregator[A])
+</span>21 <span style=''>  
+</span>22 <span style=''>    override def timeElapsed(dt: DeltaTime): SpawnerAggregator[A]
+</span>23 <span style=''>
+</span>24 <span style=''>  /**
+</span>25 <span style=''>   * Implementation of a SpawnerAggregator
+</span>26 <span style=''>   * @param genericSpawners The list of GenericSpawners to wrap into the aggregator
+</span>27 <span style=''>   * @param Random The Random object used for each spawner
+</span>28 <span style=''>   * @tparam R The type of the aggregator, that must be at least Collisionable
+</span>29 <span style=''>   */
+</span>30 <span style=''>  case class SpawnerAggregatorImpl[R &lt;: Collisionable](genericSpawners: GenericSpawner[R]*)(using Random) extends SpawnerAggregator[R]:
+</span>31 <span style=''>    
+</span>32 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): (Set[R], SpawnerAggregator[R]) =
+</span>33 <span style=''>      val list = </span><span style='background: #AEF1AE'>(genericSpawners map { i =&gt; i.spawn() }).toSet</span><span style=''>
+</span>34 <span style=''>      val v = </span><span style='background: #AEF1AE'>(list map { i =&gt; i._1 } flatMap { i =&gt; i }).toSet</span><span style=''>
+</span>35 <span style=''>      val spawners = </span><span style='background: #AEF1AE'>(list map { i =&gt; i._2 }).toList</span><span style=''>
+</span>36 <span style=''>      (v, SpawnerAggregatorImpl(spawners:_*))
+</span>37 <span style=''>  
+</span>38 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): SpawnerAggregator[R] =
+</span>39 <span style=''>      SpawnerAggregatorImpl(
+</span>40 <span style=''>        </span><span style='background: #AEF1AE'>(genericSpawners map { i =&gt; i.timeElapsed(dt) }).toList</span><span style=''>:_*
+</span>41 <span style=''>      )
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -63,15 +77,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          17
+          31
         </td>
         <td>
           1302
         </td>
         <td>
-          518
+          1169
           -
-          536
+          1187
         </td>
         <td>
           DefDef
@@ -87,15 +101,15 @@
         </td>
       </tr><tr>
         <td>
-          18
+          32
         </td>
         <td>
           1294
         </td>
         <td>
-          590
+          1241
           -
-          636
+          1287
         </td>
         <td>
           Select
@@ -111,15 +125,15 @@
         </td>
       </tr><tr>
         <td>
-          18
+          32
         </td>
         <td>
           1293
         </td>
         <td>
-          591
+          1242
           -
-          629
+          1280
         </td>
         <td>
           Apply
@@ -135,15 +149,15 @@
         </td>
       </tr><tr>
         <td>
-          18
+          32
         </td>
         <td>
           1292
         </td>
         <td>
-          618
+          1269
           -
-          627
+          1278
         </td>
         <td>
           Apply
@@ -159,15 +173,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          33
         </td>
         <td>
           1297
         </td>
         <td>
-          652
+          1303
           -
-          693
+          1344
         </td>
         <td>
           Apply
@@ -183,15 +197,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          33
         </td>
         <td>
           1296
         </td>
         <td>
-          652
+          1303
           -
-          674
+          1325
         </td>
         <td>
           Apply
@@ -207,15 +221,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          33
         </td>
         <td>
           1295
         </td>
         <td>
-          668
+          1319
           -
-          672
+          1323
         </td>
         <td>
           Select
@@ -231,15 +245,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          33
         </td>
         <td>
           1298
         </td>
         <td>
-          651
+          1302
           -
-          700
+          1351
         </td>
         <td>
           Select
@@ -255,15 +269,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          34
         </td>
         <td>
           1300
         </td>
         <td>
-          723
+          1374
           -
-          745
+          1396
         </td>
         <td>
           Apply
@@ -279,15 +293,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          34
         </td>
         <td>
           1299
         </td>
         <td>
-          739
+          1390
           -
-          743
+          1394
         </td>
         <td>
           Select
@@ -303,15 +317,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          34
         </td>
         <td>
           1301
         </td>
         <td>
-          722
+          1373
           -
-          753
+          1404
         </td>
         <td>
           Select
@@ -327,15 +341,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          37
         </td>
         <td>
           1306
         </td>
         <td>
-          807
+          1458
           -
-          831
+          1482
         </td>
         <td>
           DefDef
@@ -351,15 +365,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          39
         </td>
         <td>
           1303
         </td>
         <td>
-          936
+          1587
           -
-          953
+          1604
         </td>
         <td>
           Apply
@@ -375,15 +389,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          39
         </td>
         <td>
           1305
         </td>
         <td>
-          908
+          1559
           -
-          963
+          1614
         </td>
         <td>
           Select
@@ -399,15 +413,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          39
         </td>
         <td>
           1304
         </td>
         <td>
-          909
+          1560
           -
-          955
+          1606
         </td>
         <td>
           Apply

@@ -35,81 +35,117 @@
 </span>11 <span style=''>import java.awt.{BorderLayout, Color, Dimension, FlowLayout, Graphics, event}
 </span>12 <span style=''>import javax.swing.*
 </span>13 <span style=''>
-</span>14 <span style=''>class GUI(width: Int, height: Int) extends View :
-</span>15 <span style=''>  given OverflowStrategy[Event] = </span><span style='background: #F0ADAD'>OverflowStrategy.Default</span><span style=''>
-</span>16 <span style=''>
-</span>17 <span style=''>  private val frame = </span><span style='background: #F0ADAD'>JFrame(&quot;Game&quot;)</span><span style=''>
-</span>18 <span style=''>  private val button = </span><span style='background: #F0ADAD'>JButton()</span><span style=''>
-</span>19 <span style=''>  private val gameEvent: Observable[Event] =
-</span>20 <span style=''>    </span><span style='background: #F0ADAD'>frame
-</span>21 <span style=''></span><span style='background: #F0ADAD'>      .getContentPane
-</span>22 <span style=''></span><span style='background: #F0ADAD'>      .mouseObservable()
-</span>23 <span style=''></span><span style='background: #F0ADAD'>      .map(p =&gt;
-</span>24 <span style=''></span><span style='background: #F0ADAD'>        Event
-</span>25 <span style=''></span><span style='background: #F0ADAD'>          .LaunchMissileTo(
-</span>26 <span style=''></span><span style='background: #F0ADAD'>            Point2D(
-</span>27 <span style=''></span><span style='background: #F0ADAD'>              (p.x * World.width.toDouble) / ViewConstants.GUI_width.toDouble,
-</span>28 <span style=''></span><span style='background: #F0ADAD'>              (p.y * World.height.toDouble) / ViewConstants.GUI_height.toDouble
-</span>29 <span style=''></span><span style='background: #F0ADAD'>            )
-</span>30 <span style=''></span><span style='background: #F0ADAD'>          )
-</span>31 <span style=''></span><span style='background: #F0ADAD'>      )</span><span style=''>
-</span>32 <span style=''>  private val startEvent: Observable[Event] =
-</span>33 <span style=''>    </span><span style='background: #F0ADAD'>button
-</span>34 <span style=''></span><span style='background: #F0ADAD'>      .clickObservable()
-</span>35 <span style=''></span><span style='background: #F0ADAD'>      .map(_ =&gt; Event.StartGame)</span><span style=''>
-</span>36 <span style=''>
-</span>37 <span style=''>  </span><span style='background: #F0ADAD'>frame.setSize(width, height)</span><span style=''>
-</span>38 <span style=''>  </span><span style='background: #F0ADAD'>frame.setVisible(true)</span><span style=''>
-</span>39 <span style=''>  </span><span style='background: #F0ADAD'>frame.setLocationRelativeTo(null)</span><span style=''>
-</span>40 <span style=''>  </span><span style='background: #F0ADAD'>frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)</span><span style=''>
-</span>41 <span style=''>
-</span>42 <span style=''>
-</span>43 <span style=''>  </span><span style='background: #F0ADAD'>override def events</span><span style=''>: Observable[Event] =
-</span>44 <span style=''>    </span><span style='background: #F0ADAD'>Observable(gameEvent, startEvent).merge</span><span style=''>
-</span>45 <span style=''>
-</span>46 <span style=''>  </span><span style='background: #F0ADAD'>override def initialGame</span><span style=''>(): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
-</span>47 <span style=''></span><span style='background: #F0ADAD'>    SwingUtilities.invokeLater { () =&gt;
-</span>48 <span style=''></span><span style='background: #F0ADAD'>      clearPanel()
-</span>49 <span style=''></span><span style='background: #F0ADAD'>      val panel = new JPanel()
-</span>50 <span style=''></span><span style='background: #F0ADAD'>      panel.setSize(width, height)
-</span>51 <span style=''></span><span style='background: #F0ADAD'>      panel.setLayout(new FlowLayout())
-</span>52 <span style=''></span><span style='background: #F0ADAD'>      button.setText(&quot;AVVIA PARTITA&quot;)
-</span>53 <span style=''></span><span style='background: #F0ADAD'>      panel.add(button)
-</span>54 <span style=''></span><span style='background: #F0ADAD'>
-</span>55 <span style=''></span><span style='background: #F0ADAD'>      frame.getContentPane.add(panel)
-</span>56 <span style=''></span><span style='background: #F0ADAD'>      frame.revalidate()
-</span>57 <span style=''></span><span style='background: #F0ADAD'>      frame.repaint()
-</span>58 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>59 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
-</span>60 <span style=''>
-</span>61 <span style=''>  </span><span style='background: #F0ADAD'>override def render</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
-</span>62 <span style=''></span><span style='background: #F0ADAD'>    SwingUtilities.invokeLater { () =&gt;
-</span>63 <span style=''></span><span style='background: #F0ADAD'>      clearPanel()
-</span>64 <span style=''></span><span style='background: #F0ADAD'>      frame.getContentPane.add(WorldPane(game, width, height))
-</span>65 <span style=''></span><span style='background: #F0ADAD'>      frame.getContentPane.repaint()
-</span>66 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>67 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
-</span>68 <span style=''>
-</span>69 <span style=''>  </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>14 <span style=''>/**
+</span>15 <span style=''> * Class that represent the main interface that encapsulate the GUI events and the
+</span>16 <span style=''> * panels change, based on the event observed. This also manage the render function to visualize all the
+</span>17 <span style=''> * game's elements.
+</span>18 <span style=''> * @param width The width of the frame
+</span>19 <span style=''> * @param height The height of the frame
+</span>20 <span style=''> */
+</span>21 <span style=''>class GUI(width: Int, height: Int) extends View :
+</span>22 <span style=''>  given OverflowStrategy[Event] = </span><span style='background: #F0ADAD'>OverflowStrategy.Default</span><span style=''>
+</span>23 <span style=''>
+</span>24 <span style=''>  private val frame = </span><span style='background: #F0ADAD'>JFrame(&quot;Game&quot;)</span><span style=''>
+</span>25 <span style=''>  private val button = </span><span style='background: #F0ADAD'>JButton()</span><span style=''>
+</span>26 <span style=''>
+</span>27 <span style=''>  /**
+</span>28 <span style=''>   * Method that takes the grame obserable and map all the Point2D elements emitted due to the
+</span>29 <span style=''>   * mouse click event into a [[Event.LaunchMissileTo]] events.
+</span>30 <span style=''>   */
+</span>31 <span style=''>  private val gameEvent: Observable[Event] =
+</span>32 <span style=''>    </span><span style='background: #F0ADAD'>frame
+</span>33 <span style=''></span><span style='background: #F0ADAD'>      .getContentPane
+</span>34 <span style=''></span><span style='background: #F0ADAD'>      .mouseObservable()
+</span>35 <span style=''></span><span style='background: #F0ADAD'>      .map(p =&gt;
+</span>36 <span style=''></span><span style='background: #F0ADAD'>        Event
+</span>37 <span style=''></span><span style='background: #F0ADAD'>          .LaunchMissileTo(
+</span>38 <span style=''></span><span style='background: #F0ADAD'>            Point2D(
+</span>39 <span style=''></span><span style='background: #F0ADAD'>              (p.x * World.width.toDouble) / ViewConstants.GUI_width.toDouble,
+</span>40 <span style=''></span><span style='background: #F0ADAD'>              (p.y * World.height.toDouble) / ViewConstants.GUI_height.toDouble
+</span>41 <span style=''></span><span style='background: #F0ADAD'>            )
+</span>42 <span style=''></span><span style='background: #F0ADAD'>          )
+</span>43 <span style=''></span><span style='background: #F0ADAD'>      )</span><span style=''>
+</span>44 <span style=''>  /**
+</span>45 <span style=''>   * Method that takes the button obserable and map all the empty events emitted
+</span>46 <span style=''>   * into StartGame events.
+</span>47 <span style=''>   */
+</span>48 <span style=''>  private val startEvent: Observable[Event] =
+</span>49 <span style=''>    </span><span style='background: #F0ADAD'>button
+</span>50 <span style=''></span><span style='background: #F0ADAD'>      .clickObservable()
+</span>51 <span style=''></span><span style='background: #F0ADAD'>      .map(_ =&gt; Event.StartGame)</span><span style=''>
+</span>52 <span style=''>
+</span>53 <span style=''>  </span><span style='background: #F0ADAD'>frame.setSize(width, height)</span><span style=''>
+</span>54 <span style=''>  </span><span style='background: #F0ADAD'>frame.setVisible(true)</span><span style=''>
+</span>55 <span style=''>  </span><span style='background: #F0ADAD'>frame.setLocationRelativeTo(null)</span><span style=''>
+</span>56 <span style=''>  </span><span style='background: #F0ADAD'>frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)</span><span style=''>
+</span>57 <span style=''>
+</span>58 <span style=''>  /**
+</span>59 <span style=''>   *
+</span>60 <span style=''>   *  @return an observable of events
+</span>61 <span style=''>   */
+</span>62 <span style=''>  </span><span style='background: #F0ADAD'>override def events</span><span style=''>: Observable[Event] =
+</span>63 <span style=''>    </span><span style='background: #F0ADAD'>Observable(gameEvent, startEvent).merge</span><span style=''>
+</span>64 <span style=''>
+</span>65 <span style=''>  /**
+</span>66 <span style=''>   *
+</span>67 <span style=''>   *  @return a task that will create the view
+</span>68 <span style=''>   */
+</span>69 <span style=''>  </span><span style='background: #F0ADAD'>override def initialGame</span><span style=''>(): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
 </span>70 <span style=''></span><span style='background: #F0ADAD'>    SwingUtilities.invokeLater { () =&gt;
 </span>71 <span style=''></span><span style='background: #F0ADAD'>      clearPanel()
-</span>72 <span style=''></span><span style='background: #F0ADAD'>      val panel = new EndGamePane(width, height)
-</span>73 <span style=''></span><span style='background: #F0ADAD'>      panel.setLayout(new FlowLayout())
-</span>74 <span style=''></span><span style='background: #F0ADAD'>      button.setText(&quot;RIGIOCA&quot;)
-</span>75 <span style=''></span><span style='background: #F0ADAD'>      val score = new JLabel(s&quot;SCORE FINALE: ${game.player.score}&quot;)
-</span>76 <span style=''></span><span style='background: #F0ADAD'>      val time = new JLabel(s&quot;TEMPO DI GIOCO: ${game.player.timer.time}&quot;)
-</span>77 <span style=''></span><span style='background: #F0ADAD'>      panel.add(button)
-</span>78 <span style=''></span><span style='background: #F0ADAD'>      panel.add(score)
-</span>79 <span style=''></span><span style='background: #F0ADAD'>      panel.add(time)
-</span>80 <span style=''></span><span style='background: #F0ADAD'>      frame.getContentPane.add(panel)
-</span>81 <span style=''></span><span style='background: #F0ADAD'>      frame.revalidate()
-</span>82 <span style=''></span><span style='background: #F0ADAD'>      frame.repaint()
-</span>83 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>84 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
-</span>85 <span style=''>
-</span>86 <span style=''>  </span><span style='background: #F0ADAD'>private def clearPanel</span><span style=''>(): Unit =
-</span>87 <span style=''>    if (</span><span style='background: #F0ADAD'>frame.getContentPane.getComponentCount</span><span style=''> != 0)
-</span>88 <span style=''>      </span><span style='background: #F0ADAD'>frame.getContentPane.remove(0)</span><span style=''>
+</span>72 <span style=''></span><span style='background: #F0ADAD'>      val panel = new JPanel()
+</span>73 <span style=''></span><span style='background: #F0ADAD'>      panel.setSize(width, height)
+</span>74 <span style=''></span><span style='background: #F0ADAD'>      panel.setLayout(new FlowLayout())
+</span>75 <span style=''></span><span style='background: #F0ADAD'>      button.setText(&quot;AVVIA PARTITA&quot;)
+</span>76 <span style=''></span><span style='background: #F0ADAD'>      panel.add(button)
+</span>77 <span style=''></span><span style='background: #F0ADAD'>
+</span>78 <span style=''></span><span style='background: #F0ADAD'>      frame.getContentPane.add(panel)
+</span>79 <span style=''></span><span style='background: #F0ADAD'>      frame.revalidate()
+</span>80 <span style=''></span><span style='background: #F0ADAD'>      frame.repaint()
+</span>81 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>82 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>83 <span style=''>
+</span>84 <span style=''>  /**
+</span>85 <span style=''>   *
+</span>86 <span style=''>   * @param game the game to render
+</span>87 <span style=''>   *  @return a task that will render the world
+</span>88 <span style=''>   */
+</span>89 <span style=''>  </span><span style='background: #F0ADAD'>override def render</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>90 <span style=''></span><span style='background: #F0ADAD'>    SwingUtilities.invokeLater { () =&gt;
+</span>91 <span style=''></span><span style='background: #F0ADAD'>      clearPanel()
+</span>92 <span style=''></span><span style='background: #F0ADAD'>      frame.getContentPane.add(WorldPane(game, width, height))
+</span>93 <span style=''></span><span style='background: #F0ADAD'>      frame.getContentPane.repaint()
+</span>94 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>95 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>96 <span style=''>
+</span>97 <span style=''>  /**
+</span>98 <span style=''>   *
+</span>99 <span style=''>   * @param game the game to render at the end
+</span>100 <span style=''>   *  @return a task that will render the end of the game
+</span>101 <span style=''>   */
+</span>102 <span style=''>  </span><span style='background: #F0ADAD'>override def gameOver</span><span style=''>(game: Game): Task[Unit] = </span><span style='background: #F0ADAD'>Task {
+</span>103 <span style=''></span><span style='background: #F0ADAD'>    SwingUtilities.invokeLater { () =&gt;
+</span>104 <span style=''></span><span style='background: #F0ADAD'>      clearPanel()
+</span>105 <span style=''></span><span style='background: #F0ADAD'>      val panel = new EndGamePane(width, height)
+</span>106 <span style=''></span><span style='background: #F0ADAD'>      panel.setLayout(new FlowLayout())
+</span>107 <span style=''></span><span style='background: #F0ADAD'>      button.setText(&quot;RIGIOCA&quot;)
+</span>108 <span style=''></span><span style='background: #F0ADAD'>      val score = new JLabel(s&quot;SCORE FINALE: ${game.player.score}&quot;)
+</span>109 <span style=''></span><span style='background: #F0ADAD'>      val time = new JLabel(s&quot;TEMPO DI GIOCO: ${game.player.timer.time}&quot;)
+</span>110 <span style=''></span><span style='background: #F0ADAD'>      panel.add(button)
+</span>111 <span style=''></span><span style='background: #F0ADAD'>      panel.add(score)
+</span>112 <span style=''></span><span style='background: #F0ADAD'>      panel.add(time)
+</span>113 <span style=''></span><span style='background: #F0ADAD'>      frame.getContentPane.add(panel)
+</span>114 <span style=''></span><span style='background: #F0ADAD'>      frame.revalidate()
+</span>115 <span style=''></span><span style='background: #F0ADAD'>      frame.repaint()
+</span>116 <span style=''></span><span style='background: #F0ADAD'>    }
+</span>117 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>118 <span style=''>
+</span>119 <span style=''>  /**
+</span>120 <span style=''>   * Method that clear the frame panel from everything previously added.
+</span>121 <span style=''>   */
+</span>122 <span style=''>  </span><span style='background: #F0ADAD'>private def clearPanel</span><span style=''>(): Unit =
+</span>123 <span style=''>    if (</span><span style='background: #F0ADAD'>frame.getContentPane.getComponentCount</span><span style=''> != 0)
+</span>124 <span style=''>      </span><span style='background: #F0ADAD'>frame.getContentPane.remove(0)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -124,15 +160,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          14
+          21
         </td>
         <td>
           1613
         </td>
         <td>
-          455
+          751
           -
-          479
+          775
         </td>
         <td>
           Select
@@ -148,15 +184,15 @@
         </td>
       </tr><tr>
         <td>
-          16
+          23
         </td>
         <td>
           1614
         </td>
         <td>
-          503
+          799
           -
-          517
+          813
         </td>
         <td>
           Apply
@@ -172,15 +208,15 @@
         </td>
       </tr><tr>
         <td>
-          17
+          24
         </td>
         <td>
           1615
         </td>
         <td>
-          541
+          837
           -
-          550
+          846
         </td>
         <td>
           Apply
@@ -196,15 +232,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          31
         </td>
         <td>
           1616
         </td>
         <td>
-          600
+          1068
           -
-          627
+          1095
         </td>
         <td>
           Apply
@@ -221,15 +257,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          33
         </td>
         <td>
           1617
         </td>
         <td>
-          600
+          1068
           -
-          652
+          1120
         </td>
         <td>
           Apply
@@ -247,15 +283,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          34
         </td>
         <td>
           1621
         </td>
         <td>
-          600
+          1068
           -
-          924
+          1392
         </td>
         <td>
           Apply
@@ -282,15 +318,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          37
         </td>
         <td>
           1620
         </td>
         <td>
-          723
+          1191
           -
-          904
+          1372
         </td>
         <td>
           Apply
@@ -309,15 +345,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          38
         </td>
         <td>
           1618
         </td>
         <td>
-          747
+          1215
           -
-          750
+          1218
         </td>
         <td>
           Select
@@ -333,15 +369,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          39
         </td>
         <td>
           1619
         </td>
         <td>
-          826
+          1294
           -
-          829
+          1297
         </td>
         <td>
           Select
@@ -357,15 +393,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          49
         </td>
         <td>
           1622
         </td>
         <td>
-          975
+          1564
           -
-          1006
+          1595
         </td>
         <td>
           Apply
@@ -382,15 +418,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          50
         </td>
         <td>
           1623
         </td>
         <td>
-          975
+          1564
           -
-          1039
+          1628
         </td>
         <td>
           Apply
@@ -408,15 +444,15 @@
         </td>
       </tr><tr>
         <td>
-          36
+          52
         </td>
         <td>
           1624
         </td>
         <td>
-          1043
+          1632
           -
-          1071
+          1660
         </td>
         <td>
           Apply
@@ -432,15 +468,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          53
         </td>
         <td>
           1625
         </td>
         <td>
-          1074
+          1663
           -
-          1096
+          1685
         </td>
         <td>
           Apply
@@ -456,15 +492,15 @@
         </td>
       </tr><tr>
         <td>
-          38
+          54
         </td>
         <td>
           1626
         </td>
         <td>
-          1099
+          1688
           -
-          1132
+          1721
         </td>
         <td>
           Apply
@@ -480,15 +516,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          55
         </td>
         <td>
           1627
         </td>
         <td>
-          1135
+          1724
           -
-          1196
+          1785
         </td>
         <td>
           Apply
@@ -504,15 +540,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          61
         </td>
         <td>
           1630
         </td>
         <td>
-          1201
+          1844
           -
-          1220
+          1863
         </td>
         <td>
           DefDef
@@ -528,15 +564,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          62
         </td>
         <td>
           1629
         </td>
         <td>
-          1246
+          1889
           -
-          1285
+          1928
         </td>
         <td>
           Apply
@@ -552,15 +588,15 @@
         </td>
       </tr><tr>
         <td>
-          43
+          62
         </td>
         <td>
           1628
         </td>
         <td>
-          1246
+          1889
           -
-          1279
+          1922
         </td>
         <td>
           Apply
@@ -576,15 +612,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          68
         </td>
         <td>
           1632
         </td>
         <td>
-          1289
+          1996
           -
-          1313
+          2020
         </td>
         <td>
           DefDef
@@ -600,15 +636,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          68
         </td>
         <td>
           1631
         </td>
         <td>
-          1330
+          2037
           -
-          1658
+          2365
         </td>
         <td>
           Apply
@@ -637,15 +673,15 @@
         </td>
       </tr><tr>
         <td>
-          60
+          88
         </td>
         <td>
           1634
         </td>
         <td>
-          1662
+          2470
           -
-          1681
+          2489
         </td>
         <td>
           DefDef
@@ -661,15 +697,15 @@
         </td>
       </tr><tr>
         <td>
-          60
+          88
         </td>
         <td>
           1633
         </td>
         <td>
-          1708
+          2516
           -
-          1882
+          2690
         </td>
         <td>
           Apply
@@ -691,15 +727,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          101
         </td>
         <td>
           1635
         </td>
         <td>
-          1934
+          2864
           -
-          2425
+          3355
         </td>
         <td>
           Apply
@@ -730,15 +766,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          101
         </td>
         <td>
           1636
         </td>
         <td>
-          1886
+          2816
           -
-          1907
+          2837
         </td>
         <td>
           DefDef
@@ -754,15 +790,15 @@
         </td>
       </tr><tr>
         <td>
-          85
+          121
         </td>
         <td>
           1642
         </td>
         <td>
-          2429
+          3444
           -
-          2451
+          3466
         </td>
         <td>
           DefDef
@@ -778,15 +814,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          122
         </td>
         <td>
           1638
         </td>
         <td>
-          2470
+          3485
           -
-          2508
+          3523
         </td>
         <td>
           Apply
@@ -802,15 +838,15 @@
         </td>
       </tr><tr>
         <td>
-          86
+          122
         </td>
         <td>
           1637
         </td>
         <td>
-          2470
+          3485
           -
-          2490
+          3505
         </td>
         <td>
           Apply
@@ -826,15 +862,15 @@
         </td>
       </tr><tr>
         <td>
-          87
+          123
         </td>
         <td>
           1641
         </td>
         <td>
-          2521
+          3536
           -
-          2551
+          3566
         </td>
         <td>
           Block
@@ -850,15 +886,15 @@
         </td>
       </tr><tr>
         <td>
-          87
+          123
         </td>
         <td>
           1640
         </td>
         <td>
-          2521
+          3536
           -
-          2551
+          3566
         </td>
         <td>
           Apply
@@ -874,15 +910,15 @@
         </td>
       </tr><tr>
         <td>
-          87
+          123
         </td>
         <td>
           1639
         </td>
         <td>
-          2521
+          3536
           -
-          2541
+          3556
         </td>
         <td>
           Apply
