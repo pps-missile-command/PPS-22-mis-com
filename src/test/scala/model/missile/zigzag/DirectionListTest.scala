@@ -2,6 +2,7 @@ package model.missile.zigzag
 
 import model.elements2d.{Angle, Point2D, Vector2D}
 import org.scalatest.funspec.AnyFunSpec
+import model.missile.zigzag.PimpingByVector2D.-|-
 
 import scala.util.Random
 

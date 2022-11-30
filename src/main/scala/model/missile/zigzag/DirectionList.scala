@@ -2,6 +2,8 @@ package model.missile.zigzag
 
 import model.World
 import model.elements2d.{Angle, Point2D, Vector2D}
+import model.missile.zigzag.PimpingByVector2D.-|-
+import model.missile.zigzag.PimpingByPoint2D.*
 
 import scala.util.Random
 

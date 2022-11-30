@@ -19,3 +19,8 @@ enum Event:
    * @param position the ending position of the missile
    */
   case LaunchMissileTo(position: Point2D)
+
+  /**
+   * Class that represents the event of starting the game.
+   */
+  case StartGame

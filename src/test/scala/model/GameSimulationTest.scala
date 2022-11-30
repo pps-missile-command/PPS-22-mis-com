@@ -1,6 +1,7 @@
 package model
 
 import model.collisions.{Affiliation, DamageableTest, DamagerTest}
+import model.vehicle.Plane
 import model.elements2d.Point2D
 import model.explosion.Explosion
 import model.missile.*
@@ -9,6 +10,7 @@ import model.ground.MissileBattery
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import utilities.{missileHealth, reloadingTime}
+import scala.util.Random
 
 class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
 
@@ -38,13 +40,12 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       val dt = 10
       Given("An initial game")
       val initialGame = Game.initialGame
-      When("The game executes a game loop")
+      When("The game executes a game loop, without special ability")
       val (_, collisions) =
         initialGame
           .timeElapsed(dt)
-          .moveElements
-          .activateSpecialAbility
-          .checkCollisions
+          .moveElements()
+          .checkCollisions()
 
       Then("The collisions should be empty")
       assert(collisions == Set.empty)
@@ -58,16 +59,16 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       val updatedGame =
         initialGame
           .timeElapsed(dt)
-          .moveElements
-          .activateSpecialAbility
-          .checkCollisions
+          .moveElements()
+          .activateSpecialAbility()
+          .checkCollisions()
           .updateScore()
 
       Then("The score should be 0")
       assert(updatedGame.player.score == 0)
     }
 
-    Scenario("The game should be able to create a friendly missile") {
+    Scenario("The game should be able to create a friendly missile when battery is reloaded") {
       val dt = reloadingTime
       val destination = Point2D(0, 0)
       Given("An initial game")
@@ -86,7 +87,22 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       Then("One missile battery should be reloading")
       assert(newGame.world.ground.turrets.count(!_.isReadyForShoot) == 1)
     }
+
+  Scenario("The game shouldn't be able to create a friendly missile at the beginning") {
+    val destination = Point2D(0, 0)
+    Given("An initial game")
+    val initialGame = Game.initialGame
+    When("The game, st the beginning, try to shoots a friendly missile, but fails")
+    val newGame =
+      initialGame
+        .shootMissile(destination)
+
+    Then("The collisionable should be empty")
+    assert(newGame.world.collisionables.isEmpty)
+    Then("No missile battery should be able to shoot")
+    assert(newGame.world.ground.turrets.count(!_.isReadyForShoot) == newGame.world.ground.turrets.size)
   }
+}
 
   Feature("Game going") {
     Scenario("In the game there are some enemy missile that are moving") {
@@ -100,7 +116,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       val updatedGame =
         initialGame
           .timeElapsed(dt)
-          .moveElements
+          .moveElements()
 
       Then("The enemy missiles should be moving")
       val expectedMissile = missiles.map(m => m.timeElapsed(dt).move())
@@ -108,11 +124,11 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       assert(updatedGame.world.collisionables == expectedMissile)
     }
 
-    Scenario("In the game there are two friendly missile and one enemy missile that collides") {
+    Scenario("In the game there are one friendly missile, one friendly explosion and one enemy missile that collides") {
       val destination = Point2D(70, 0)
-      val enemyMissileObject = enemyMissile(position = Point2D(50, 50), finalPosition = destination)
+      val enemyMissile: Missile = Missile.enemyMissile(position = Point2D(50, 50), finalPosition = destination)
       val friendlyMissile = Missile(1, 1, velocity, Point2D(40, 50), destination)
-      val explosion = Explosion(damageToInflict = 1, expPosition = Point2D(60, 50), dt = 10)(using Affiliation.Friendly)
+      val friendlyExplosion = Explosion(damageToInflict = 1, expPosition = Point2D(60, 50), dt = 10)(using Affiliation.Friendly)
       Given("An initial game with some missile")
       val game =
         Game
@@ -120,9 +136,9 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
           .updateWorld(
             _.addCollisionables(
               Set(
-                enemyMissileObject,
+                enemyMissile,
                 friendlyMissile,
-                explosion
+                friendlyExplosion
               )
             )
           )
@@ -130,7 +146,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       When("The game executes collisions")
       val (updatedGame, collisions) =
         game
-          .checkCollisions
+          .checkCollisions()
       val gameScore = (updatedGame, collisions).updateScore()
 
       Then("The collisionables should be 3 explosion")
@@ -139,7 +155,139 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       assert(updatedGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 3)
       Then("The score should be 1")
       assert(gameScore.player.score == 1)
+    }
 
+    Scenario("In the game the elements that has reached the destinations are removed") {
+      val plane = Plane(vehicle.vehicleTypes.Right_To_Left, 20)(using Random())
+      Given("An initial game with a plane")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                plane
+              )
+            )
+          )
 
+      When("The game executes loop with special ability")
+      val newGame = game
+        .timeElapsed((World.width / vehicle.planeVelocity) + 1)
+        .moveElements()
+        .removeElementsThatReachedDestinations()
+        .checkCollisions()
+        .updateScore()
+
+      Then("The collisionables should be empty")
+      assert(newGame.world.collisionables.isEmpty)
+    }
+
+    Scenario("In the game the elements that have special ability used it plane") {
+      val plane = Plane(vehicle.vehicleTypes.Right_To_Left, 20)(using Random())
+      Given("An initial game with a plane")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                plane
+              )
+            )
+          )
+
+      When("The game executes loop without special ability")
+      val newGame = game
+        .timeElapsed(20)
+        .moveElements()
+        .activateSpecialAbility()
+
+      Then("The collisionables should be greater than 1")
+      assert(newGame.world.collisionables.size > 1)
+    }
+
+    Scenario("In the game the elements that have special ability used it missile") {
+      val destination = Point2D(70, 70)
+      val enemyMissile: Missile = Missile.enemyMissile(position = Point2D(50, 50), finalPosition = destination)
+      Given("An initial game with an enemy missile")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                enemyMissile
+              )
+            )
+          )
+
+      When("The game executes loop with special ability")
+      val newGame = game
+        .timeElapsed(20)
+        .moveElements()
+        .activateSpecialAbility()
+
+      Then("The collisionables should have an explosion")
+      assert(newGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 1)
+    }
+
+    Scenario("In the game there are one friendly explosion and one zigzag enemy missile that collides") {
+      val destination = Point2D(70, 0)
+      val enemyMissile: Missile = zigzag.ZigZagMissile(from = Point2D(50, 50), to = destination, step = 10, maxWidth = 10)
+      val friendlyExplosion = Explosion(damageToInflict = 1, expPosition = Point2D(60, 50), dt = 10)(using Affiliation.Friendly)
+      Given("An initial game with some missile")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                enemyMissile,
+                friendlyExplosion
+              )
+            )
+          )
+
+      When("The game executes collisions")
+      val (updatedGame, collisions) =
+        game
+          .checkCollisions()
+      val gameScore = (updatedGame, collisions).updateScore()
+
+      Then("The collisionables should be 2 explosion")
+      assert(collisions.size == 2)
+      assert(updatedGame.world.collisionables.size == 2)
+      println(updatedGame.world.collisionables)
+      assert(updatedGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 2)
+      Then("The score should be 1")
+      assert(gameScore.player.score == 1)
+    }
+
+    Scenario("In the game there is an explosion that should terminate") {
+      val friendlyExplosion = Explosion(damageToInflict = 1, expPosition = Point2D(60, 50), dt = 10)(using Affiliation.Friendly)
+      Given("An initial game with some missile")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                friendlyExplosion
+              )
+            )
+          )
+
+      When("The game executes time elapsed, only for the world")
+      val updatedGame =
+        game
+          .updateWorld(
+            _.timeElapsed(10)
+          )
+          .moveElements()
+          .activateSpecialAbility()
+
+      Then("The collisionables should be empty, explosion terminated")
+      assert(updatedGame.world.collisionables.isEmpty)
     }
   }
