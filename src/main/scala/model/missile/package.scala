@@ -12,7 +12,7 @@ import scala.util.Random
 package object missile:
 
   val initialLife: LifePoint = 1
-  val velocity: Double = 100
+  val velocity: Double = 60
   val damage: Int = 1
   val hitboxBase: Double = 5.0
   val hitboxHeight: Double = 10.0

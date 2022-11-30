@@ -1,7 +1,7 @@
 package model.vehicle
 
 import model.World.{height, width}
-import model.{DeltaTime, World}
+import model.{DeltaTime, Scorable, World}
 import model.behavior.Moveable
 import model.collisions.hitbox.HitBoxRectangular
 import model.collisions.{Affiliation, Damageable, HitBox, LifePoint, lifePointDeath}
@@ -28,7 +28,7 @@ case class PlaneImpl(actualPosition: Point2D,
                      lifePoint: LifePoint = planeInitialLife,
                      deltaTime: DeltaTime = 0,
                      missileSpawnerOpt: Option[GenericSpawnerImpl[Missile]] = Option.empty)(using Random)
-                    extends Plane:
+                    extends Plane with Scorable(3):
 
     val spawnable = SpecificSpawners.FixedMissileStrategy(width, height, position)
 
@@ -103,7 +103,7 @@ case class PlaneImpl(actualPosition: Point2D,
      *
      * @return the affiliation of the object.
      */
-    override def affiliation: Affiliation = Affiliation.Friendly
+    override def affiliation: Affiliation = Affiliation.Enemy
     override def timeElapsed(dt: DeltaTime): Plane = this.copy(deltaTime = deltaTime + dt, Option(missileSpawner.timeElapsed(dt)))
     override def destinationReached: Boolean = position == destination
     override def destination: Point2D = finalPosition

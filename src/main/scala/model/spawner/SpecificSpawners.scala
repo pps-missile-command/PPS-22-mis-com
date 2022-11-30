@@ -7,7 +7,7 @@ import model.missile.zigzag
 import model.missile.zigzag.ZigZagMissile.*
 import model.spawner.PimpingByRandom.*
 import model.spawner.Spawnable.Spawnable
-import model.vehicle.Plane
+import model.vehicle.{Plane, Satellite}
 
 import scala.util.Random
 
@@ -54,3 +54,6 @@ object SpecificSpawners:
    */
   def PlaneStrategy(maxHeight: Double)(using r: Random): Spawnable[Plane] =
     () => Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)
+
+  def SatelliteStrategy(maxWidth: Double)(using r: Random): Spawnable[Satellite] =
+    () => Satellite(r.nextDouble() * maxWidth)

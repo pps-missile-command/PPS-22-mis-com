@@ -1,7 +1,7 @@
 package model.vehicle
 
 import model.World.{height, width}
-import model.{DeltaTime, World}
+import model.{DeltaTime, Scorable, World}
 import model.collisions.hitbox.HitBoxRectangular
 import model.collisions.{Affiliation, Damageable, HitBox, LifePoint, lifePointDeath}
 import model.elements2d.{Angle, Point2D}
@@ -20,7 +20,7 @@ case class SatelliteImpl(actualPosition: Point2D,
                          missileSpawner: GenericSpawnerImpl[Missile],
                          lifePoint: LifePoint = satelliteInitialLife,
                          deltaTime: DeltaTime = 0)
-                        (using Random) extends Satellite:
+                        (using Random) extends Satellite with Scorable(2):
 
     override def position: Point2D = actualPosition
 
@@ -59,10 +59,14 @@ case class SatelliteImpl(actualPosition: Point2D,
         case d if(lifePoint - d > 0) => this.copy(lifePoint = lifePoint - d)
         case _ => this.copy(lifePoint = lifePointDeath)
 
-    override protected def hitBox: HitBox = HitBoxRectangular(position, satelliteBaseSize, satelliteHeightSize, Angle.Degree(0))
-    override def affiliation: Affiliation = Affiliation.Friendly
+    override protected def hitBox: HitBox =
+        val point2D = Point2D(position.x-satelliteBaseSize/2, position.y + satelliteHeightSize/2)
+        HitBoxRectangular(position, satelliteBaseSize, satelliteHeightSize, Angle.Degree(0))
+    override def affiliation: Affiliation = Affiliation.Enemy
     override def timeElapsed(dt: DeltaTime): Satellite = this.copy(missileSpawner = missileSpawner.timeElapsed(dt), deltaTime = deltaTime + dt)
 
 object Satellite:
-    def apply(xCoordinate: Double)(using Random) : Satellite = SatelliteImpl(Point2D(xCoordinate, height),
-        GenericSpawner[Missile](1, spawnable = SpecificSpawners.MissileStrategy(width, height)(using Random)))
+    def apply(xCoordinate: Double)(using Random) : Satellite =
+        val position = Point2D(xCoordinate, 10)
+        SatelliteImpl(position,
+        GenericSpawner[Missile](10, spawnable = SpecificSpawners.FixedMissileStrategy(width, height, position)(using Random)))
