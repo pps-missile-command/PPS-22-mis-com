@@ -167,4 +167,36 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       Then("The collisionables should be empty")
       assert(newGame.world.collisionables.isEmpty)
     }
+
+    Scenario("In the game there are one friendly explosion and one zigzag enemy missile that collides") {
+      val destination = Point2D(70, 0)
+      val enemyMissile: Missile = zigzag.ZigZagMissile(from = Point2D(50, 50), to = destination, step = 10, maxWidth = 10)
+      val friendlyExplosion = Explosion(damageToInflict = 1, expPosition = Point2D(60, 50), dt = 10)(using Affiliation.Friendly)
+      Given("An initial game with some missile")
+      val game =
+        Game
+          .initialGame
+          .updateWorld(
+            _.addCollisionables(
+              Set(
+                enemyMissile,
+                friendlyExplosion
+              )
+            )
+          )
+
+      When("The game executes collisions")
+      val (updatedGame, collisions) =
+        game
+          .checkCollisions()
+      val gameScore = (updatedGame, collisions).updateScore()
+
+      Then("The collisionables should be 2 explosion")
+      assert(collisions.size == 2)
+      assert(updatedGame.world.collisionables.size == 2)
+      println(updatedGame.world.collisionables)
+      assert(updatedGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 2)
+      Then("The score should be 1")
+      assert(gameScore.player.score == 1)
+    }
   }
