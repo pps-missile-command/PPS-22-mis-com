@@ -14,6 +14,12 @@ import view.given_Conversion_Double_Int
 import java.io.File
 import javax.imageio.ImageIO
 
+/**
+ * This class represent the World panel where the entire game is drawn
+ * @param game The game to draw
+ * @param width The width of the panel
+ * @param height The height of the panel
+ */
 private class WorldPane(val game: Game, width: Int, height: Int) extends JPanel:
     this.setSize(width, height)
     val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
