@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/spawner/Spawnable.scala.html
+          model/spawner/PimpingByDeltaTime.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -24,32 +24,28 @@
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.spawner
 </span>2 <span style=''>
-</span>3 <span style=''>import model.elements2d.Point2D
+</span>3 <span style=''>import model.DeltaTime
 </span>4 <span style=''>
-</span>5 <span style=''>import scala.util.Random
-</span>6 <span style=''>
-</span>7 <span style=''>/**
-</span>8 <span style=''> * Module for a spawnable object: it is a simple object capable to define a way to generate a
-</span>9 <span style=''> * specified type of elements, used by [[GenericSpawner]] to spawn elements over time
-</span>10 <span style=''> */
-</span>11 <span style=''>object Spawnable:
-</span>12 <span style=''>  /**
-</span>13 <span style=''>   * A generic spawnable, that is a generator of a specified type of entities
-</span>14 <span style=''>   * @tparam A The type of element to generate
-</span>15 <span style=''>   */
-</span>16 <span style=''>  type Spawnable[+A] = () =&gt; A
-</span>17 <span style=''>
-</span>18 <span style=''>  /**
-</span>19 <span style=''>   * Factory method to generate a set of n elements from the given spawnable
-</span>20 <span style=''>   * @param spawnable The spawnable that dictates how to generate the elements
-</span>21 <span style=''>   * @param n The number of elements to generate
-</span>22 <span style=''>   * @tparam A The type of elements to generate
-</span>23 <span style=''>   * @return the set of generated elements
-</span>24 <span style=''>   */
-</span>25 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>[A](spawnable: Spawnable[A])(n: Int): Set[A] =
-</span>26 <span style=''>    </span><span style='background: #AEF1AE'>(for
-</span>27 <span style=''></span><span style='background: #AEF1AE'>      i &lt;- 0 until n
-</span>28 <span style=''></span><span style='background: #AEF1AE'>    yield spawnable()).toSet</span><span style=''>
+</span>5 <span style=''>object PimpingByDeltaTime:
+</span>6 <span style=''>  /**
+</span>7 <span style=''>   * Extension methods for DeltaTime
+</span>8 <span style=''>   */
+</span>9 <span style=''>  extension(interval: DeltaTime)
+</span>10 <span style=''>
+</span>11 <span style=''>  /**
+</span>12 <span style=''>   * The hyperbole function that given a timePassed return the updated missile
+</span>13 <span style=''>   */
+</span>14 <span style=''>    </span><span style='background: #AEF1AE'>def ~</span><span style=''>(timePassed: DeltaTime) : DeltaTime =
+</span>15 <span style=''>      interval - ((interval * (1 / ( 1 + </span><span style='background: #AEF1AE'>Math.exp(((-1 * timePassed) / 10))</span><span style=''>))) - (interval / 2))
+</span>16 <span style=''>    /**
+</span>17 <span style=''>     * Function that given a condition and a world può inficiare positivamente sulle lezaione.
+</span>18 <span style=''>     * @param condition The condition to which we can subscreibe
+</span>19 <span style=''>     * @param mapper
+</span>20 <span style=''>     * @return
+</span>21 <span style=''>     */
+</span>22 <span style=''>    </span><span style='background: #AEF1AE'>def mapIf</span><span style=''>(condition: () =&gt; Boolean)(mapper: (DeltaTime) =&gt; DeltaTime): DeltaTime = condition match
+</span>23 <span style=''>      </span><span style='background: #AEF1AE'>case _ if condition()</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>mapper(interval)</span><span style=''>
+</span>24 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; interval
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -64,113 +60,87 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          24
+          13
         </td>
         <td>
-          1291
+          1266
         </td>
         <td>
-          767
+          252
           -
-          776
+          257
         </td>
         <td>
           DefDef
         </td>
         <td>
-          apply
+          ~
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          def apply
+          def ~
         </td>
       </tr><tr>
         <td>
-          25
+          14
         </td>
         <td>
-          1289
+          1265
         </td>
         <td>
-          828
+          336
           -
-          874
+          370
         </td>
         <td>
           Apply
         </td>
         <td>
-          map
+          exp
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          for
-      i &lt;- 0 until n
-    yield spawnable()
+          Math.exp(((-1 * timePassed) / 10))
         </td>
       </tr><tr>
         <td>
-          26
+          21
         </td>
         <td>
-          1287
+          1271
         </td>
         <td>
-          843
+          608
           -
-          852
+          617
         </td>
         <td>
-          Apply
+          DefDef
         </td>
         <td>
-          until
+          mapIf
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          0 until n
+          def mapIf
         </td>
       </tr><tr>
         <td>
-          26
+          22
         </td>
         <td>
-          1286
+          1267
         </td>
         <td>
-          843
+          738
           -
-          844
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          intWrapper
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          0
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          1288
-        </td>
-        <td>
-          863
-          -
-          874
+          754
         </td>
         <td>
           Apply
@@ -182,33 +152,79 @@
           
         </td>
         <td style="background: #AEF1AE">
-          spawnable()
+          mapper(interval)
         </td>
       </tr><tr>
         <td>
-          27
+          22
         </td>
         <td>
-          1290
+          1269
         </td>
         <td>
-          827
+          723
           -
-          881
+          734
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          toSet
+          apply
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          (for
-      i &lt;- 0 until n
-    yield spawnable()).toSet
+          condition()
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1268
+        </td>
+        <td>
+          713
+          -
+          734
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _ if condition()
+        </td>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          1270
+        </td>
+        <td>
+          761
+          -
+          767
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
         </td>
       </tr>
     </table>

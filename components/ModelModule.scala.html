@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          controller/update/LaunchNewMissile.scala.html
+          components/ModelModule.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,29 +22,19 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller.update
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package components
 </span>2 <span style=''>
-</span>3 <span style=''>import controller.Event
-</span>4 <span style=''>import controller.Event.LaunchMissileTo
-</span>5 <span style=''>import controller.update.Update.on
-</span>6 <span style=''>import model.Game
-</span>7 <span style=''>import monix.eval.Task
-</span>8 <span style=''>
-</span>9 <span style=''>/**
-</span>10 <span style=''> * Object that return an update function for the world to be updated when the user launch a missile.
-</span>11 <span style=''> */
-</span>12 <span style=''>object LaunchNewMissile:
-</span>13 <span style=''>
-</span>14 <span style=''>  /**
-</span>15 <span style=''>   * Apply function used to update the world to be updated when the user launch a missile.
-</span>16 <span style=''>   *
-</span>17 <span style=''>   * @return an update function for the world to be updated when the user launch a missile.
-</span>18 <span style=''>   */
-</span>19 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[LaunchMissileTo] { (event: LaunchMissileTo, game: Game) =&gt;
-</span>20 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>21 <span style=''></span><span style='background: #F0ADAD'>      game.shootMissile(event.position)
-</span>22 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>23 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>3 <span style=''>import model.Game
+</span>4 <span style=''>
+</span>5 <span style=''>object ModelModule:
+</span>6 <span style=''>  trait Model:
+</span>7 <span style=''>    def initializeGame(): Game
+</span>8 <span style=''>  trait Provider:
+</span>9 <span style=''>    val model: Model
+</span>10 <span style=''>  trait Component:
+</span>11 <span style=''>    class ModelImpl extends Model:
+</span>12 <span style=''>      </span><span style='background: #F0ADAD'>override def initializeGame</span><span style=''>(): Game = </span><span style='background: #F0ADAD'>Game.initialGame</span><span style=''>
+</span>13 <span style=''>  trait Interface extends Provider with Component
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -59,55 +49,51 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          18
+          11
         </td>
         <td>
-          71
+          7
         </td>
         <td>
-          505
+          204
           -
-          514
+          231
         </td>
         <td>
           DefDef
         </td>
         <td>
-          apply
+          initializeGame
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          def apply
+          override def initializeGame
         </td>
       </tr><tr>
         <td>
-          18
+          11
         </td>
         <td>
-          70
+          6
         </td>
         <td>
-          527
+          242
           -
-          649
+          258
         </td>
         <td>
-          Apply
+          Select
         </td>
         <td>
-          on
+          initialGame
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          on[LaunchMissileTo] { (event: LaunchMissileTo, game: Game) =&gt;
-    Task {
-      game.shootMissile(event.position)
-    }
-  }
+          Game.initialGame
         </td>
       </tr>
     </table>

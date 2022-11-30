@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          model/collisions/hitbox/HitBoxUnion.scala.html
+          model/missile/zigzag/PimpingByPoint2D.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,45 +22,23 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.collisions.hitbox
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile.zigzag
 </span>2 <span style=''>
-</span>3 <span style=''>import model.collisions.HitBox
-</span>4 <span style=''>import model.elements2d.Point2D
-</span>5 <span style=''>import model.collisions.hitbox.*
-</span>6 <span style=''>import model.collisions.*
-</span>7 <span style=''>import org.scalactic.Equality
-</span>8 <span style=''>
-</span>9 <span style=''>/**
-</span>10 <span style=''> * Factory for hit box that is the union of other hit boxes.
-</span>11 <span style=''> */
-</span>12 <span style=''>object HitBoxUnion:
+</span>3 <span style=''>import model.elements2d.Point2D
+</span>4 <span style=''>
+</span>5 <span style=''>object PimpingByPoint2D:
+</span>6 <span style=''>  /**
+</span>7 <span style=''>   * Extension method that check if the point is within the world (between 0 and max width), and
+</span>8 <span style=''>   * adjust the x component if the point is out of bound
+</span>9 <span style=''>   */
+</span>10 <span style=''>  extension(p: Point2D)
+</span>11 <span style=''>    </span><span style='background: #AEF1AE'>def ~=</span><span style=''>(p1: Point2D): Boolean =
+</span>12 <span style=''>      (</span><span style='background: #AEF1AE'>Math.round(p.x * 100)</span><span style=''> / 100) == (</span><span style='background: #AEF1AE'>Math.round(p1.x * 100)</span><span style=''> / 100) &amp;&amp; (</span><span style='background: #AEF1AE'>Math.round(p.y * 100)</span><span style=''> / 100) == (</span><span style='background: #AEF1AE'>Math.round(p1.y * 100)</span><span style=''> / 100)
 </span>13 <span style=''>
-</span>14 <span style=''>  /**
-</span>15 <span style=''>   * Creates a hit box that is the union of the given hit boxes.
-</span>16 <span style=''>   *
-</span>17 <span style=''>   * @param hitBoxes the hit boxes to be united.
-</span>18 <span style=''>   * @return the hit box that is the union of the given hit boxes.
-</span>19 <span style=''>   */
-</span>20 <span style=''>  </span><span style='background: #AEF1AE'>def apply</span><span style=''>(hitBoxes: HitBox*): HitBox = hitBoxes match
-</span>21 <span style=''>    </span><span style='background: #AEF1AE'>case Seq()</span><span style=''> =&gt; HitBoxEmpty
-</span>22 <span style=''>    </span><span style='background: #AEF1AE'>case Seq(hitBox)</span><span style=''> =&gt; hitBox
-</span>23 <span style=''>    </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; HitBoxUnion(hitBoxes)
-</span>24 <span style=''>
-</span>25 <span style=''>  private case class HitBoxUnion(hitBoxes: Seq[HitBox]) extends HitBoxAggregation :
-</span>26 <span style=''>    </span><span style='background: #AEF1AE'>protected def optionalConfront</span><span style=''>(l: Option[Double], r: Option[Double])(confrontFunction: (Double, Double) =&gt; Double): Option[Double] =
-</span>27 <span style=''>      (l, r) match
-</span>28 <span style=''>        </span><span style='background: #AEF1AE'>case (Some(l), Some(r))</span><span style=''> =&gt; Some(</span><span style='background: #AEF1AE'>confrontFunction(l, r)</span><span style=''>)
-</span>29 <span style=''>        </span><span style='background: #F0ADAD'>case (Some(l), None)</span><span style=''> =&gt; Some(l)
-</span>30 <span style=''>        </span><span style='background: #AEF1AE'>case (None, Some(r))</span><span style=''> =&gt; Some(r)
-</span>31 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; None
-</span>32 <span style=''>
-</span>33 <span style=''>    protected val functionForMax: (Double, Double) =&gt; Double = </span><span style='background: #AEF1AE'>math.max</span><span style=''>
-</span>34 <span style=''>
-</span>35 <span style=''>    protected val functionForMin: (Double, Double) =&gt; Double = </span><span style='background: #AEF1AE'>math.min</span><span style=''>
-</span>36 <span style=''>
-</span>37 <span style=''>    </span><span style='background: #AEF1AE'>override def contains</span><span style=''>(point: Point2D)(using equality: Equality[Double]): Boolean = </span><span style='background: #AEF1AE'>hitBoxes.exists(_.contains(point))</span><span style=''>
-</span>38 <span style=''>
-</span>39 <span style=''>    </span><span style='background: #AEF1AE'>override def area</span><span style=''>(using step: Distance): Iterator[Point2D] = </span><span style='background: #AEF1AE'>hitBoxes.flatMap(_.area).distinct.iterator</span><span style=''>
+</span>14 <span style=''>    </span><span style='background: #AEF1AE'>def filterMap</span><span style=''>(maxWidth: Double): Point2D = </span><span style='background: #AEF1AE'>p.x</span><span style=''> match
+</span>15 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &gt; maxWidth</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Point2D(maxWidth, p.y)</span><span style=''>
+</span>16 <span style=''>      </span><span style='background: #AEF1AE'>case n if n &lt; 0</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Point2D(0, p.y)</span><span style=''>
+</span>17 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; p
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -75,18 +53,306 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          19
+          10
         </td>
         <td>
-          622
+          1156
         </td>
         <td>
-          476
+          282
           -
-          485
+          288
         </td>
         <td>
           DefDef
+        </td>
+        <td>
+          ~=
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def ~=
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1151
+        </td>
+        <td>
+          353
+          -
+          375
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          round
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.round(p1.x * 100)
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1154
+        </td>
+        <td>
+          431
+          -
+          435
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p1.y
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1153
+        </td>
+        <td>
+          387
+          -
+          408
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          round
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.round(p.y * 100)
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1150
+        </td>
+        <td>
+          364
+          -
+          368
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p1.x
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1149
+        </td>
+        <td>
+          320
+          -
+          341
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          round
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.round(p.x * 100)
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1152
+        </td>
+        <td>
+          398
+          -
+          401
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p.y
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1155
+        </td>
+        <td>
+          420
+          -
+          442
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          round
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.round(p1.y * 100)
+        </td>
+      </tr><tr>
+        <td>
+          11
+        </td>
+        <td>
+          1148
+        </td>
+        <td>
+          331
+          -
+          334
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p.x
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1165
+        </td>
+        <td>
+          455
+          -
+          468
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          filterMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def filterMap
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          1157
+        </td>
+        <td>
+          498
+          -
+          501
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          x
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p.x
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1160
+        </td>
+        <td>
+          514
+          -
+          536
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case n if n &gt; maxWidth
+        </td>
+      </tr><tr>
+        <td>
+          14
+        </td>
+        <td>
+          1159
+        </td>
+        <td>
+          540
+          -
+          562
+        </td>
+        <td>
+          Apply
         </td>
         <td>
           apply
@@ -95,19 +361,91 @@
           
         </td>
         <td style="background: #AEF1AE">
-          def apply
+          Point2D(maxWidth, p.y)
         </td>
       </tr><tr>
         <td>
-          20
+          14
         </td>
         <td>
-          619
+          1158
         </td>
         <td>
-          534
+          558
           -
-          544
+          561
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p.y
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1162
+        </td>
+        <td>
+          588
+          -
+          603
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Point2D(0, p.y)
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1161
+        </td>
+        <td>
+          599
+          -
+          602
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          y
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          p.y
+        </td>
+      </tr><tr>
+        <td>
+          15
+        </td>
+        <td>
+          1163
+        </td>
+        <td>
+          569
+          -
+          584
         </td>
         <td>
           Block
@@ -119,43 +457,19 @@
           
         </td>
         <td style="background: #AEF1AE">
-          case Seq()
+          case n if n &lt; 0
         </td>
       </tr><tr>
         <td>
-          21
+          16
         </td>
         <td>
-          620
+          1164
         </td>
         <td>
-          564
+          610
           -
-          580
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case Seq(hitBox)
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          621
-        </td>
-        <td>
-          595
-          -
-          601
+          616
         </td>
         <td>
           Block
@@ -168,390 +482,6 @@
         </td>
         <td style="background: #AEF1AE">
           case _
-        </td>
-      </tr><tr>
-        <td>
-          25
-        </td>
-        <td>
-          628
-        </td>
-        <td>
-          716
-          -
-          746
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          optionalConfront
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          protected def optionalConfront
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          624
-        </td>
-        <td>
-          876
-          -
-          899
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case (Some(l), Some(r))
-        </td>
-      </tr><tr>
-        <td>
-          27
-        </td>
-        <td>
-          623
-        </td>
-        <td>
-          908
-          -
-          930
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          apply
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          confrontFunction(l, r)
-        </td>
-      </tr><tr>
-        <td>
-          28
-        </td>
-        <td>
-          625
-        </td>
-        <td>
-          940
-          -
-          960
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          case (Some(l), None)
-        </td>
-      </tr><tr>
-        <td>
-          29
-        </td>
-        <td>
-          626
-        </td>
-        <td>
-          980
-          -
-          1000
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case (None, Some(r))
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          627
-        </td>
-        <td>
-          1020
-          -
-          1026
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case _
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          629
-        </td>
-        <td>
-          1099
-          -
-          1107
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          max
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          math.max
-        </td>
-      </tr><tr>
-        <td>
-          34
-        </td>
-        <td>
-          630
-        </td>
-        <td>
-          1172
-          -
-          1180
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          min
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          math.min
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          633
-        </td>
-        <td>
-          1186
-          -
-          1207
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def contains
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          632
-        </td>
-        <td>
-          1269
-          -
-          1303
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          exists
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.exists(_.contains(point))
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          631
-        </td>
-        <td>
-          1285
-          -
-          1302
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          contains
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.contains(point)
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          636
-        </td>
-        <td>
-          1370
-          -
-          1403
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          distinct
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.flatMap(_.area).distinct
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          635
-        </td>
-        <td>
-          1370
-          -
-          1394
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          flatMap
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.flatMap(_.area)
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          638
-        </td>
-        <td>
-          1309
-          -
-          1326
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          area
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          override def area
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          634
-        </td>
-        <td>
-          1387
-          -
-          1393
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          area
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          _.area
-        </td>
-      </tr><tr>
-        <td>
-          38
-        </td>
-        <td>
-          637
-        </td>
-        <td>
-          1370
-          -
-          1412
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          iterator
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          hitBoxes.flatMap(_.area).distinct.iterator
         </td>
       </tr>
     </table>

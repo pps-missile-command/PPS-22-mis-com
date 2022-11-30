@@ -130,54 +130,64 @@
 </span>106 <span style=''>      </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; collisionable
 </span>107 <span style=''>
 </span>108 <span style=''>    /**
-</span>109 <span style=''>     * Update the position fo the [[Collisionable]] if it is [[Moveable]].
+</span>109 <span style=''>     * Update the position for the [[Collisionable]] if it is [[Moveable]].
 </span>110 <span style=''>     *
 </span>111 <span style=''>     * @return a new [[Collisionable]] with the position updated or the same [[Collisionable]] if it is not [[Moveable]]
 </span>112 <span style=''>     */
 </span>113 <span style=''>    </span><span style='background: #AEF1AE'>def updateMovablePosition</span><span style=''>(): Collisionable =
 </span>114 <span style=''>      collisionable match
 </span>115 <span style=''>        </span><span style='background: #AEF1AE'>case moveable: Moveable</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>moveable.move()</span><span style=''>.asInstanceOf[Collisionable]
-</span>116 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; collisionable
+</span>116 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; collisionable
 </span>117 <span style=''>
 </span>118 <span style=''>    /**
-</span>119 <span style=''>     * Check if the [[Collisionable]] is an [[Explosion]] and if it is terminated.
+</span>119 <span style=''>     * Check if the [[Collisionable]] is a [[Moveable]] and has reached the destination.
 </span>120 <span style=''>     *
-</span>121 <span style=''>     * @return true if the [[Collisionable]] is an [[Explosion]] and if it is terminated, false otherwise
+</span>121 <span style=''>     * @return true if the [[Collisionable]] has reached the destination, false otherwise
 </span>122 <span style=''>     */
-</span>123 <span style=''>    </span><span style='background: #F0ADAD'>def isExplosionTerminated</span><span style=''>: Boolean =
+</span>123 <span style=''>    </span><span style='background: #AEF1AE'>def hasReachedTheDestination</span><span style=''>: Boolean =
 </span>124 <span style=''>      collisionable match
-</span>125 <span style=''>        </span><span style='background: #F0ADAD'>case explosion: Explosion</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>explosion.terminated</span><span style=''>
+</span>125 <span style=''>        </span><span style='background: #AEF1AE'>case moveable: Moveable</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>moveable.destinationReached</span><span style=''>
 </span>126 <span style=''>        </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; false
 </span>127 <span style=''>
 </span>128 <span style=''>    /**
-</span>129 <span style=''>     * Return an [[Option]] with an [[Explosion]] if the [[Collisionable]] is an [[Missile]] and it is destroyed, otherwise return an empty [[Option]].
+</span>129 <span style=''>     * Check if the [[Collisionable]] is an [[Explosion]] and if it is terminated.
 </span>130 <span style=''>     *
-</span>131 <span style=''>     * @return
+</span>131 <span style=''>     * @return true if the [[Collisionable]] is an [[Explosion]] and if it is terminated, false otherwise
 </span>132 <span style=''>     */
-</span>133 <span style=''>    </span><span style='background: #AEF1AE'>def explodeMissile</span><span style=''>: Option[Explosion] =
+</span>133 <span style=''>    </span><span style='background: #AEF1AE'>def isExplosionTerminated</span><span style=''>: Boolean =
 </span>134 <span style=''>      collisionable match
-</span>135 <span style=''>        </span><span style='background: #AEF1AE'>case missile: Missile if missile.isDestroyed</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Option(missile.explode)</span><span style=''>
-</span>136 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
+</span>135 <span style=''>        </span><span style='background: #AEF1AE'>case explosion: Explosion</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>explosion.terminated</span><span style=''>
+</span>136 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
 </span>137 <span style=''>
 </span>138 <span style=''>    /**
-</span>139 <span style=''>     * Check if the [[Collisionable]] is an [[City]].
+</span>139 <span style=''>     * Return an [[Option]] with an [[Explosion]] if the [[Collisionable]] is an [[Missile]] and it is destroyed, otherwise return an empty [[Option]].
 </span>140 <span style=''>     *
-</span>141 <span style=''>     * @return true if the [[Collisionable]] is an [[City]], false otherwise
+</span>141 <span style=''>     * @return
 </span>142 <span style=''>     */
-</span>143 <span style=''>    </span><span style='background: #AEF1AE'>def isCity</span><span style=''>: Boolean =
+</span>143 <span style=''>    </span><span style='background: #AEF1AE'>def explodeMissile</span><span style=''>: Option[Explosion] =
 </span>144 <span style=''>      collisionable match
-</span>145 <span style=''>        </span><span style='background: #AEF1AE'>case _: City</span><span style=''> =&gt; true
-</span>146 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
+</span>145 <span style=''>        </span><span style='background: #AEF1AE'>case missile: Missile if missile.isDestroyed</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Option(missile.explode)</span><span style=''>
+</span>146 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
 </span>147 <span style=''>
 </span>148 <span style=''>    /**
-</span>149 <span style=''>     * Check if the [[Collisionable]] is an [[MissileBattery]].
+</span>149 <span style=''>     * Check if the [[Collisionable]] is an [[City]].
 </span>150 <span style=''>     *
-</span>151 <span style=''>     * @return true if the [[Collisionable]] is an [[MissileBattery]], false otherwise
+</span>151 <span style=''>     * @return true if the [[Collisionable]] is an [[City]], false otherwise
 </span>152 <span style=''>     */
-</span>153 <span style=''>    </span><span style='background: #AEF1AE'>def isMissileBattery</span><span style=''>: Boolean =
+</span>153 <span style=''>    </span><span style='background: #AEF1AE'>def isCity</span><span style=''>: Boolean =
 </span>154 <span style=''>      collisionable match
-</span>155 <span style=''>        </span><span style='background: #AEF1AE'>case _: MissileBattery</span><span style=''> =&gt; true
+</span>155 <span style=''>        </span><span style='background: #AEF1AE'>case _: City</span><span style=''> =&gt; true
 </span>156 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
+</span>157 <span style=''>
+</span>158 <span style=''>    /**
+</span>159 <span style=''>     * Check if the [[Collisionable]] is an [[MissileBattery]].
+</span>160 <span style=''>     *
+</span>161 <span style=''>     * @return true if the [[Collisionable]] is an [[MissileBattery]], false otherwise
+</span>162 <span style=''>     */
+</span>163 <span style=''>    </span><span style='background: #AEF1AE'>def isMissileBattery</span><span style=''>: Boolean =
+</span>164 <span style=''>      collisionable match
+</span>165 <span style=''>        </span><span style='background: #AEF1AE'>case _: MissileBattery</span><span style=''> =&gt; true
+</span>166 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; false
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -195,7 +205,7 @@
           18
         </td>
         <td>
-          286
+          321
         </td>
         <td>
           541
@@ -219,31 +229,7 @@
           20
         </td>
         <td>
-          283
-        </td>
-        <td>
-          672
-          -
-          701
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          takeDamage
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          damageable.takeDamage(damage)
-        </td>
-      </tr><tr>
-        <td>
-          20
-        </td>
-        <td>
-          284
+          319
         </td>
         <td>
           627
@@ -264,10 +250,34 @@
         </td>
       </tr><tr>
         <td>
+          20
+        </td>
+        <td>
+          318
+        </td>
+        <td>
+          672
+          -
+          701
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          takeDamage
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          damageable.takeDamage(damage)
+        </td>
+      </tr><tr>
+        <td>
           21
         </td>
         <td>
-          285
+          320
         </td>
         <td>
           710
@@ -291,7 +301,7 @@
           28
         </td>
         <td>
-          290
+          325
         </td>
         <td>
           924
@@ -315,31 +325,7 @@
           30
         </td>
         <td>
-          288
-        </td>
-        <td>
-          982
-          -
-          1003
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case damager: Damager
-        </td>
-      </tr><tr>
-        <td>
-          30
-        </td>
-        <td>
-          287
+          322
         </td>
         <td>
           1007
@@ -360,10 +346,34 @@
         </td>
       </tr><tr>
         <td>
+          30
+        </td>
+        <td>
+          323
+        </td>
+        <td>
+          982
+          -
+          1003
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case damager: Damager
+        </td>
+      </tr><tr>
+        <td>
           31
         </td>
         <td>
-          289
+          324
         </td>
         <td>
           1039
@@ -387,7 +397,7 @@
           39
         </td>
         <td>
-          294
+          329
         </td>
         <td>
           1199
@@ -411,7 +421,7 @@
           41
         </td>
         <td>
-          292
+          327
         </td>
         <td>
           1260
@@ -435,7 +445,7 @@
           41
         </td>
         <td>
-          291
+          326
         </td>
         <td>
           1291
@@ -459,7 +469,7 @@
           42
         </td>
         <td>
-          293
+          328
         </td>
         <td>
           1322
@@ -483,31 +493,7 @@
           49
         </td>
         <td>
-          295
-        </td>
-        <td>
-          1520
-          -
-          1531
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          isDestroyed
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          isDestroyed
-        </td>
-      </tr><tr>
-        <td>
-          49
-        </td>
-        <td>
-          296
+          331
         </td>
         <td>
           1489
@@ -528,10 +514,34 @@
         </td>
       </tr><tr>
         <td>
+          49
+        </td>
+        <td>
+          330
+        </td>
+        <td>
+          1520
+          -
+          1531
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isDestroyed
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          isDestroyed
+        </td>
+      </tr><tr>
+        <td>
           57
         </td>
         <td>
-          299
+          334
         </td>
         <td>
           1680
@@ -555,7 +565,7 @@
           59
         </td>
         <td>
-          297
+          332
         </td>
         <td>
           1739
@@ -579,7 +589,7 @@
           60
         </td>
         <td>
-          298
+          333
         </td>
         <td>
           1771
@@ -603,7 +613,7 @@
           67
         </td>
         <td>
-          302
+          337
         </td>
         <td>
           1936
@@ -627,7 +637,7 @@
           69
         </td>
         <td>
-          300
+          335
         </td>
         <td>
           1996
@@ -651,7 +661,7 @@
           70
         </td>
         <td>
-          301
+          336
         </td>
         <td>
           2029
@@ -675,7 +685,7 @@
           77
         </td>
         <td>
-          304
+          339
         </td>
         <td>
           2215
@@ -699,7 +709,7 @@
           78
         </td>
         <td>
-          303
+          338
         </td>
         <td>
           2247
@@ -723,31 +733,7 @@
           85
         </td>
         <td>
-          306
-        </td>
-        <td>
-          2473
-          -
-          2490
-        </td>
-        <td>
-          DefDef
-        </td>
-        <td>
-          isNotFriendly
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          def isNotFriendly
-        </td>
-      </tr><tr>
-        <td>
-          85
-        </td>
-        <td>
-          305
+          340
         </td>
         <td>
           2503
@@ -768,10 +754,34 @@
         </td>
       </tr><tr>
         <td>
+          85
+        </td>
+        <td>
+          341
+        </td>
+        <td>
+          2473
+          -
+          2490
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isNotFriendly
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isNotFriendly
+        </td>
+      </tr><tr>
+        <td>
           92
         </td>
         <td>
-          310
+          345
         </td>
         <td>
           2727
@@ -795,31 +805,7 @@
           94
         </td>
         <td>
-          307
-        </td>
-        <td>
-          2793
-          -
-          2840
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case scorable: Scorable if scorable.isDestroyed
-        </td>
-      </tr><tr>
-        <td>
-          94
-        </td>
-        <td>
-          308
+          343
         </td>
         <td>
           2820
@@ -840,10 +826,34 @@
         </td>
       </tr><tr>
         <td>
+          94
+        </td>
+        <td>
+          342
+        </td>
+        <td>
+          2793
+          -
+          2840
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case scorable: Scorable if scorable.isDestroyed
+        </td>
+      </tr><tr>
+        <td>
           95
         </td>
         <td>
-          309
+          344
         </td>
         <td>
           2868
@@ -867,7 +877,7 @@
           103
         </td>
         <td>
-          314
+          349
         </td>
         <td>
           3160
@@ -891,31 +901,7 @@
           104
         </td>
         <td>
-          312
-        </td>
-        <td>
-          3249
-          -
-          3272
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;none&gt;
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          case timeable: Timeable
-        </td>
-      </tr><tr>
-        <td>
-          104
-        </td>
-        <td>
-          311
+          346
         </td>
         <td>
           3276
@@ -936,10 +922,34 @@
         </td>
       </tr><tr>
         <td>
+          104
+        </td>
+        <td>
+          347
+        </td>
+        <td>
+          3249
+          -
+          3272
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case timeable: Timeable
+        </td>
+      </tr><tr>
+        <td>
           105
         </td>
         <td>
-          313
+          348
         </td>
         <td>
           3344
@@ -963,12 +973,12 @@
           112
         </td>
         <td>
-          318
+          353
         </td>
         <td>
-          3592
+          3593
           -
-          3617
+          3618
         </td>
         <td>
           DefDef
@@ -987,12 +997,12 @@
           114
         </td>
         <td>
-          316
+          351
         </td>
         <td>
-          3671
+          3672
           -
-          3694
+          3695
         </td>
         <td>
           Block
@@ -1011,12 +1021,12 @@
           114
         </td>
         <td>
-          315
+          350
         </td>
         <td>
-          3698
+          3699
           -
-          3713
+          3714
         </td>
         <td>
           Apply
@@ -1035,12 +1045,12 @@
           115
         </td>
         <td>
-          317
+          352
         </td>
         <td>
-          3750
+          3751
           -
-          3756
+          3757
         </td>
         <td>
           Block
@@ -1051,7 +1061,7 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
+        <td style="background: #AEF1AE">
           case _
         </td>
       </tr><tr>
@@ -1059,60 +1069,36 @@
           122
         </td>
         <td>
-          322
+          357
         </td>
         <td>
-          3991
+          3982
           -
-          4016
+          4010
         </td>
         <td>
           DefDef
         </td>
         <td>
-          isExplosionTerminated
+          hasReachedTheDestination
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          def isExplosionTerminated
+        <td style="background: #AEF1AE">
+          def hasReachedTheDestination
         </td>
       </tr><tr>
         <td>
           124
         </td>
         <td>
-          319
+          355
         </td>
         <td>
-          4091
+          4056
           -
-          4111
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          terminated
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          explosion.terminated
-        </td>
-      </tr><tr>
-        <td>
-          124
-        </td>
-        <td>
-          320
-        </td>
-        <td>
-          4062
-          -
-          4087
+          4079
         </td>
         <td>
           Block
@@ -1123,20 +1109,44 @@
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          case explosion: Explosion
+        <td style="background: #AEF1AE">
+          case moveable: Moveable
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          354
+        </td>
+        <td>
+          4083
+          -
+          4110
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          destinationReached
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          moveable.destinationReached
         </td>
       </tr><tr>
         <td>
           125
         </td>
         <td>
-          321
+          356
         </td>
         <td>
-          4120
+          4119
           -
-          4126
+          4125
         </td>
         <td>
           Block
@@ -1155,12 +1165,108 @@
           132
         </td>
         <td>
-          329
+          361
         </td>
         <td>
-          4331
+          4352
           -
-          4349
+          4377
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isExplosionTerminated
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def isExplosionTerminated
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          358
+        </td>
+        <td>
+          4452
+          -
+          4472
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          terminated
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          explosion.terminated
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          359
+        </td>
+        <td>
+          4423
+          -
+          4448
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case explosion: Explosion
+        </td>
+      </tr><tr>
+        <td>
+          135
+        </td>
+        <td>
+          360
+        </td>
+        <td>
+          4481
+          -
+          4487
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
+        </td>
+      </tr><tr>
+        <td>
+          142
+        </td>
+        <td>
+          368
+        </td>
+        <td>
+          4692
+          -
+          4710
         </td>
         <td>
           DefDef
@@ -1176,15 +1282,15 @@
         </td>
       </tr><tr>
         <td>
-          134
+          144
         </td>
         <td>
-          325
+          364
         </td>
         <td>
-          4405
+          4766
           -
-          4449
+          4810
         </td>
         <td>
           Block
@@ -1200,15 +1306,15 @@
         </td>
       </tr><tr>
         <td>
-          134
+          144
         </td>
         <td>
-          324
+          363
         </td>
         <td>
-          4453
+          4814
           -
-          4476
+          4837
         </td>
         <td>
           Apply
@@ -1224,15 +1330,15 @@
         </td>
       </tr><tr>
         <td>
-          134
+          144
         </td>
         <td>
-          323
+          362
         </td>
         <td>
-          4460
+          4821
           -
-          4475
+          4836
         </td>
         <td>
           Select
@@ -1248,15 +1354,15 @@
         </td>
       </tr><tr>
         <td>
-          134
+          144
         </td>
         <td>
-          326
+          365
         </td>
         <td>
-          4430
+          4791
           -
-          4449
+          4810
         </td>
         <td>
           Select
@@ -1272,15 +1378,15 @@
         </td>
       </tr><tr>
         <td>
-          135
+          145
         </td>
         <td>
-          328
+          367
         </td>
         <td>
-          4485
+          4846
           -
-          4491
+          4852
         </td>
         <td>
           Block
@@ -1296,15 +1402,15 @@
         </td>
       </tr><tr>
         <td>
-          135
+          145
         </td>
         <td>
-          327
+          366
         </td>
         <td>
-          4495
+          4856
           -
-          4507
+          4868
         </td>
         <td>
           Select
@@ -1320,15 +1426,15 @@
         </td>
       </tr><tr>
         <td>
-          142
+          152
         </td>
         <td>
-          332
+          371
         </td>
         <td>
-          4667
+          5028
           -
-          4677
+          5038
         </td>
         <td>
           DefDef
@@ -1344,15 +1450,15 @@
         </td>
       </tr><tr>
         <td>
-          144
+          154
         </td>
         <td>
-          330
+          369
         </td>
         <td>
-          4723
+          5084
           -
-          4735
+          5096
         </td>
         <td>
           Block
@@ -1368,15 +1474,15 @@
         </td>
       </tr><tr>
         <td>
-          145
+          155
         </td>
         <td>
-          331
+          370
         </td>
         <td>
-          4752
+          5113
           -
-          4758
+          5119
         </td>
         <td>
           Block
@@ -1392,15 +1498,15 @@
         </td>
       </tr><tr>
         <td>
-          152
+          162
         </td>
         <td>
-          335
+          374
         </td>
         <td>
-          4947
+          5308
           -
-          4967
+          5328
         </td>
         <td>
           DefDef
@@ -1416,15 +1522,15 @@
         </td>
       </tr><tr>
         <td>
-          154
+          164
         </td>
         <td>
-          333
+          372
         </td>
         <td>
-          5013
+          5374
           -
-          5035
+          5396
         </td>
         <td>
           Block
@@ -1440,15 +1546,15 @@
         </td>
       </tr><tr>
         <td>
-          155
+          165
         </td>
         <td>
-          334
+          373
         </td>
         <td>
-          5052
+          5413
           -
-          5058
+          5419
         </td>
         <td>
           Block

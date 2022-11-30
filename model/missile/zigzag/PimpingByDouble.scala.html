@@ -2,7 +2,7 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id="title">
-          controller/update/LaunchNewMissile.scala.html
+          model/missile/zigzag/PimpingByDouble.scala.html
         </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
@@ -22,29 +22,17 @@
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package controller.update
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package model.missile.zigzag
 </span>2 <span style=''>
-</span>3 <span style=''>import controller.Event
-</span>4 <span style=''>import controller.Event.LaunchMissileTo
-</span>5 <span style=''>import controller.update.Update.on
-</span>6 <span style=''>import model.Game
-</span>7 <span style=''>import monix.eval.Task
-</span>8 <span style=''>
-</span>9 <span style=''>/**
-</span>10 <span style=''> * Object that return an update function for the world to be updated when the user launch a missile.
-</span>11 <span style=''> */
-</span>12 <span style=''>object LaunchNewMissile:
-</span>13 <span style=''>
-</span>14 <span style=''>  /**
-</span>15 <span style=''>   * Apply function used to update the world to be updated when the user launch a missile.
-</span>16 <span style=''>   *
-</span>17 <span style=''>   * @return an update function for the world to be updated when the user launch a missile.
-</span>18 <span style=''>   */
-</span>19 <span style=''>  </span><span style='background: #F0ADAD'>def apply</span><span style=''>(): Update = </span><span style='background: #F0ADAD'>on[LaunchMissileTo] { (event: LaunchMissileTo, game: Game) =&gt;
-</span>20 <span style=''></span><span style='background: #F0ADAD'>    Task {
-</span>21 <span style=''></span><span style='background: #F0ADAD'>      game.shootMissile(event.position)
-</span>22 <span style=''></span><span style='background: #F0ADAD'>    }
-</span>23 <span style=''></span><span style='background: #F0ADAD'>  }</span><span style=''>
+</span>3 <span style=''>object PimpingByDouble:
+</span>4 <span style=''>  /**
+</span>5 <span style=''>   * Extension method to model a map function that given a double number returns 1 or -1 whether the number is
+</span>6 <span style=''>   * greater than a threshold or not
+</span>7 <span style=''>   */
+</span>8 <span style=''>  extension(n: Double)
+</span>9 <span style=''>    </span><span style='background: #AEF1AE'>def mapToSign</span><span style=''> = n match
+</span>10 <span style=''>      </span><span style='background: #AEF1AE'>case v if v &gt; signThreshold</span><span style=''> =&gt; 1
+</span>11 <span style=''>      </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; -1
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -59,55 +47,75 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          18
+          8
         </td>
         <td>
-          71
+          1143
         </td>
         <td>
-          505
+          241
           -
-          514
+          254
         </td>
         <td>
           DefDef
         </td>
         <td>
-          apply
+          mapToSign
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          def apply
+        <td style="background: #AEF1AE">
+          def mapToSign
         </td>
       </tr><tr>
         <td>
-          18
+          9
         </td>
         <td>
-          70
+          1141
         </td>
         <td>
-          527
+          271
           -
-          649
+          298
         </td>
         <td>
-          Apply
+          Block
         </td>
         <td>
-          on
+          &lt;none&gt;
         </td>
         <td>
           
         </td>
-        <td style="background: #F0ADAD">
-          on[LaunchMissileTo] { (event: LaunchMissileTo, game: Game) =&gt;
-    Task {
-      game.shootMissile(event.position)
-    }
-  }
+        <td style="background: #AEF1AE">
+          case v if v &gt; signThreshold
+        </td>
+      </tr><tr>
+        <td>
+          10
+        </td>
+        <td>
+          1142
+        </td>
+        <td>
+          310
+          -
+          316
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          case _
         </td>
       </tr>
     </table>
