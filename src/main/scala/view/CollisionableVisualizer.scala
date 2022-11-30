@@ -57,7 +57,9 @@ object CollisionableVisualizer:
         val diameter = e.radius * 2 use convertWidth
         val bi = new BufferedImage(diameter,diameter, BufferedImage.TYPE_INT_ARGB)
         val g2d = bi.createGraphics()
-        g2d.setColor(Color.RED)
+        e.affiliation match
+          case Affiliation.Enemy => g2d.setColor(Color.RED)
+          case _ => g2d.setColor(Color.BLUE)
         g2d.drawOval(0, 0, diameter, diameter)
         g2d.dispose()
         CollisionableElement(bi, diameter, diameter, e.position map convertPosition)
