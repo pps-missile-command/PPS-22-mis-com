@@ -77,7 +77,6 @@ class GUI(width: Int, height: Int) extends View :
       panel.add(button)
       panel.add(score)
       panel.add(time)
-
       frame.getContentPane.add(panel)
       frame.revalidate()
       frame.repaint()

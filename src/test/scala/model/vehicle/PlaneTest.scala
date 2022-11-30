@@ -7,7 +7,7 @@ import scala.util.Random
 
 class PlaneTest extends AnyFunSpec:
     given Random()
-    describe("A vehicle") {
+    describe("A plane") {
         it("should create a new vehicle in the gived starting position and certain HP") {
             val vehicle = Plane(vehicleTypes.Left_To_Right, 0)
             assert(vehicle.position === Point2D(0, 0))

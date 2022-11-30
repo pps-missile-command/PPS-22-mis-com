@@ -7,8 +7,7 @@ import model.collisions.{Affiliation, Collisionable}
 import model.elements2d.{Angle, Point2D}
 import model.explosion.Explosion
 import model.missile.{Missile, MissileDamageable, MissileImpl, hitboxBase, hitboxHeight}
-import model.vehicle.Plane
-import model.vehicle.vehicleTypes
+import model.vehicle.{Plane, Satellite, vehicleTypes}
 
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
@@ -65,9 +64,16 @@ object CollisionableVisualizer:
         CollisionableElement(bi, diameter, diameter, e.position map convertPosition)
       case p: Plane => CollisionableElement(
         ImageIO.read(getClass.getResource("/Plane_" + p.planeDirection.toString + ".png")),
-        model.vehicle.hitboxBase use convertWidth,
-        model.vehicle.hitboxHeight use convertHeight,
+        model.vehicle.planeBaseSize use convertWidth,
+        model.vehicle.planeHeightSize use convertHeight,
         p.position map convertPosition,
+        Angle.Degree(90)
+      )
+      case s: Satellite => CollisionableElement(
+        ImageIO.read(getClass.getResource("/Satellite.png")),
+        model.vehicle.satelliteBaseSize use convertWidth,
+        model.vehicle.satelliteHeightSize use convertHeight,
+        s.position map convertPosition,
         Angle.Degree(90)
       )
 
