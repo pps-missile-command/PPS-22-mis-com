@@ -7,6 +7,8 @@ package object vehicle:
     val planeVelocity: Int = 5
     val planeInitialLife: LifePoint = 3
     val satelliteInitialLife: LifePoint = 3
+    val satelliteHeight = 10
+    val spawnInterval = 10
 
     val planeBaseSize = 50
     val planeHeightSize = 15

@@ -60,13 +60,13 @@ case class SatelliteImpl(actualPosition: Point2D,
         case _ => this.copy(lifePoint = lifePointDeath)
 
     override protected def hitBox: HitBox =
-        val point2D = Point2D(position.x-satelliteBaseSize/2, position.y + satelliteHeightSize/2)
+        val point2D = Point2D(position.x, position.y)
         HitBoxRectangular(position, satelliteBaseSize, satelliteHeightSize, Angle.Degree(0))
     override def affiliation: Affiliation = Affiliation.Enemy
     override def timeElapsed(dt: DeltaTime): Satellite = this.copy(missileSpawner = missileSpawner.timeElapsed(dt), deltaTime = deltaTime + dt)
 
 object Satellite:
     def apply(xCoordinate: Double)(using Random) : Satellite =
-        val position = Point2D(xCoordinate, 10)
+        val position = Point2D(xCoordinate, satelliteHeight)
         SatelliteImpl(position,
-        GenericSpawner[Missile](10, spawnable = SpecificSpawners.FixedMissileStrategy(width, height, position)(using Random)))
+        GenericSpawner[Missile](spawnInterval, spawnable = SpecificSpawners.FixedMissileStrategy(width, height, position)(using Random)))

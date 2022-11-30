@@ -11,7 +11,7 @@ class SatelliteTest extends AnyFunSpec {
     describe("A satellite") {
         it("should create a new vehicle in the gived starting position and certain HP") {
             val vehicle = Satellite(50)
-            assert(vehicle.position === Point2D(50, World.height))
+            assert(vehicle.position === Point2D(50, satelliteHeight))
             assert(vehicle.currentLife === satelliteInitialLife)
         }
         it("should take damage and get destroied correctly if hitted") {
