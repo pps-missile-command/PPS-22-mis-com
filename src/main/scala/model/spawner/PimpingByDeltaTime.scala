@@ -9,10 +9,12 @@ object PimpingByDeltaTime:
   extension(interval: DeltaTime)
 
   /**
-   * The hyperbole function that given a timePassed return the updated missile
+   * The hyperbole function that given a timePassed delta time return the updated interval decreased
+   * by the actual f(timePassed) value
    */
     def ~(timePassed: DeltaTime) : DeltaTime =
       interval - ((interval * (1 / ( 1 + Math.exp(((-1 * timePassed) / 10))))) - (interval / 2))
+      
     /**
      * Function that given a condition and a world può inficiare positivamente sulle lezaione.
      * @param condition The condition to which we can subscreibe

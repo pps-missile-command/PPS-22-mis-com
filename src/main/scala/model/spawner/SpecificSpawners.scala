@@ -55,5 +55,11 @@ object SpecificSpawners:
   def PlaneStrategy(maxHeight: Double)(using r: Random): Spawnable[Plane] =
     () => Plane(r.nextRandomDirection(), r.nextDouble() * model.missile.maxHeight)
 
+  /**
+   * Factory method for satellites generator
+   * @param maxWidth The max width within to generate the satellites
+   * @param r The random object to generate random coordinates
+   * @return the new satellite
+   */
   def SatelliteStrategy(maxWidth: Double)(using r: Random): Spawnable[Satellite] =
     () => Satellite(r.nextDouble() * maxWidth)

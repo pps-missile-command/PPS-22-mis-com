@@ -39,7 +39,7 @@ trait ZigZagMissile(step: Int = 5, positions: LazyList[Point2D], to: Point2D):
    */
     override def newMissile(life: LifePoint = missile.lifePoint, pos: Point2D = missile.position, _dt: DeltaTime = missile.dt): MissileImpl & ZigZagMissile & Scorable =
       subDestinationReached match
-        case true => ZigZagMissile.apply(missile, pos, step, positions.pop()._2, _dt, to)
+        case true => ZigZagMissile.apply(missile.copy(lifePoint = life), pos, step, positions.pop()._2, _dt, to)
         case false => ZigZagMissile.apply(missile.copy(lifePoint = life), pos, step, positions, _dt, to)
 
 /**
