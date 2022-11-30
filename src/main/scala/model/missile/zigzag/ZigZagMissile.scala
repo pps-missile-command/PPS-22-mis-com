@@ -40,7 +40,7 @@ trait ZigZagMissile(step: Int = 5, positions: LazyList[Point2D], to: Point2D):
     override def newMissile(life: LifePoint = missile.lifePoint, pos: Point2D = missile.position, _dt: DeltaTime = missile.dt): MissileImpl & ZigZagMissile & Scorable =
       subDestinationReached match
         case true => ZigZagMissile.apply(missile, pos, step, positions.pop()._2, _dt, to)
-        case false => ZigZagMissile.apply(missile, pos, step, positions, _dt, to)
+        case false => ZigZagMissile.apply(missile.copy(lifePoint = life), pos, step, positions, _dt, to)
 
 /**
  * Companion object of [[ZigZagMissile]]
@@ -71,5 +71,5 @@ object ZigZagMissile:
    * @return the newZigZag midssile created
    */
   private def apply(missile: Missile, newPosition: Point2D, step: Int, positions: LazyList[Point2D], deltaTime: DeltaTime, to: Point2D): ZigZagMissile & Scorable & MissileImpl = positions.size match
-    case 0 => new MissileImpl(missile.initialLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity) with Scorable(1) with ZigZagMissile(step, positions, to)
-    case _ => new MissileImpl(missile.initialLife, newPosition, positions.head, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity) with Scorable(1) with ZigZagMissile(step, positions, to)
+    case 0 => new MissileImpl(missile.currentLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity) with Scorable(1) with ZigZagMissile(step, positions, to)
+    case _ => new MissileImpl(missile.currentLife, newPosition, positions.head, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity) with Scorable(1) with ZigZagMissile(step, positions, to)
