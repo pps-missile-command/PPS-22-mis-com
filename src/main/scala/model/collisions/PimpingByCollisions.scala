@@ -3,6 +3,9 @@ package model.collisions
 import model.collisions.Collision
 import model.collisions.PimpingByCollisionable._
 
+/**
+ * Object that contains pimping methods for a [[Set]] of [[Collision]]
+ */
 object PimpingByCollisions:
 
   extension (collisions: Set[Collision])

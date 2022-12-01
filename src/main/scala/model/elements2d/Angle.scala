@@ -1,6 +1,8 @@
 package model.elements2d
 
-
+/**
+ * Companion object for the class [[Angle]] that contains the constants.
+ */
 object Angle:
   private val straightAngleRadiant = math.Pi
   private val straightAngleDegree = 180
@@ -59,7 +61,8 @@ enum Angle:
       val valuePeriodicCircular = periodicCircular(value, completeAngleOfConverted)
       value match
         case _ if valuePeriodicCircular == -straightAngleOfConverted => straightAngleOfConversion
-        case _ if valuePeriodicCircular > straightAngleOfConverted || valuePeriodicCircular < -straightAngleOfConverted => periodicWithNegative(conversionFunction(value), straightAngleOfConversion)
+        case _ if valuePeriodicCircular > straightAngleOfConverted || valuePeriodicCircular < -straightAngleOfConverted =>
+          periodicWithNegative(conversionFunction(value), straightAngleOfConversion)
         case _ => conversionFunction(valuePeriodicCircular)
 
     this match

@@ -115,7 +115,7 @@ enum Vector2D:
    * @return a new vector that is the opposite vector of the current vector
    */
   @targetName("opposite")
-  def unary_- = this * -1
+  def unary_- : Vector2D = this * -1
 
 /**
  * Companion object for the Vector2D class.

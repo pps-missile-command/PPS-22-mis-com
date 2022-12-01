@@ -6,6 +6,9 @@ import model.{DeltaTime, Scorable, ScorePoint}
 import model.missile.Missile
 import model.ground.{City, MissileBattery}
 
+/**
+ * Object that contains pimping methods for [[Collisionable]]
+ */
 object PimpingByCollisionable:
 
   extension (collisionable: Collisionable)
