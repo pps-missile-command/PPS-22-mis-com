@@ -18,8 +18,8 @@ object PimpingByDeltaTime:
     /**
      * Function that given a condition and a world può inficiare positivamente sulle lezaione.
      * @param condition The condition to which we can subscreibe
-     * @param mapper
-     * @return
+     * @param mapper A function that map a DeltaTime value into another DeltaTime
+     * @return the new interval mapped (if necessary)
      */
     def mapIf(condition: () => Boolean)(mapper: (DeltaTime) => DeltaTime): DeltaTime = condition match
       case _ if condition() => mapper(interval)

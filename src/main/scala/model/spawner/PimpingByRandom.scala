@@ -36,7 +36,7 @@ object PimpingByRandom:
      * value is fixed and given by input
      * @param maxHeight The max height within to generate the y coordinate
      * @param x The x coordinate
-     * @return
+     * @return the new random [[Point2D]] generated
      */
     def nextRandomY(maxHeight: Double, x: Double): Point2D = Point2D(x, r.nextDouble() * maxHeight)
 

@@ -95,7 +95,7 @@ case class MissileImpl(
   /**
    * If the damage to inflict is greater or equals than the current life points it returns
    * a dead missile, otherwise it returns a new missile with its life points decremented by the damage inflicted
-   * @param damageToInflict
+   *  @param damageToInflict Damage to inflict to this missile
    *  @return the object with the new health.
    */
   override def takeDamage(damageToInflict: LifePoint): Missile = damageToInflict match
