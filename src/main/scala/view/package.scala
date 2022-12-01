@@ -16,5 +16,5 @@ package object view:
    */
   private val convertPosition: (Point2D) => Point2D = (p) => Point2D(p.x * ratioWidth, p.y * ratioHeight)
 
-  private val convertWidth: (Int) => Int = (i) => (i * ViewConstants.GUI_width) / World.width
-  private val convertHeight: (Int) => Int = (i) => (i * ViewConstants.GUI_height) / World.height
+  private val convertWidth: (Int) => Int = (i) => i * ratioWidth
+  private val convertHeight: (Int) => Int = (i) => i * ratioHeight
