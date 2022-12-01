@@ -2,7 +2,7 @@ package model.spawner
 
 import model.missile.Missile
 import model.missile.zigzag.ZigZagMissile
-import model.vehicle.Plane
+import model.vehicle.{Plane, Satellite}
 import org.scalatest.funspec.AnyFunSpec
 
 object SpecificSpawnersTest:
@@ -15,21 +15,35 @@ class SpecificSpawnersTest extends AnyFunSpec:
 
   describe("A specific spawner") {
     describe("of missiles") {
-      val spawner = genericSpawner(SpecificSpawners.MissileStrategy(width, height)).timeElapsed(5)
-      val elements = spawner.spawn()
-      assert(elements._1.size > 0)
-      assert(elements._1.head.isInstanceOf[Missile])
+      it("should spawn missiles") {
+        val spawner = genericSpawner(SpecificSpawners.MissileStrategy(width, height)).timeElapsed(5)
+        val elements = spawner.spawn()
+        assert(elements._1.size > 0)
+        assert(elements._1.head.isInstanceOf[Missile])
+      }
     }
     describe("of ZigZag missiles") {
-      val spawner = genericSpawner(SpecificSpawners.ZigZagStrategy(width, height)).timeElapsed(5)
-      val elements = spawner.spawn()
-      assert(elements._1.size > 0)
-      assert(elements._1.head.isInstanceOf[ZigZagMissile])
+      it("should spawn zig zag missiles") {
+        val spawner = genericSpawner(SpecificSpawners.ZigZagStrategy(width, height)).timeElapsed(5)
+        val elements = spawner.spawn()
+        assert(elements._1.size > 0)
+        assert(elements._1.head.isInstanceOf[ZigZagMissile])
+      }
     }
     describe("of planes") {
-      val spawner = genericSpawner(SpecificSpawners.PlaneStrategy(width)).timeElapsed(5)
-      val elements = spawner.spawn()
-      assert(elements._1.size > 0)
-      assert(elements._1.head.isInstanceOf[Plane])
+      it("should spawn planes") {
+        val spawner = genericSpawner(SpecificSpawners.PlaneStrategy(width)).timeElapsed(5)
+        val elements = spawner.spawn()
+        assert(elements._1.size > 0)
+        assert(elements._1.head.isInstanceOf[Plane])
+      }
+    }
+    describe("of satellites") {
+      it("should spawn satellites") {
+        val spawner = genericSpawner(SpecificSpawners.SatelliteStrategy(0, width)).timeElapsed(5)
+        val elements = spawner.spawn()
+        assert(elements._1.size > 0)
+        assert(elements._1.head.isInstanceOf[Satellite])
+      }
     }
   }
