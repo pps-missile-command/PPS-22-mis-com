@@ -19,6 +19,7 @@ package object zigzag:
 
   val signThreshold = 0.5
   val defaultMagnitude = 30
+  val score = 1
 
 
 

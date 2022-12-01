@@ -58,7 +58,9 @@ object ZigZagMissile:
    */
   def apply(from: Point2D, to: Point2D, step: Int, maxWidth: Double): ZigZagMissile & Scorable & MissileImpl =
     val list = DirectionList(from, to, step, maxWidth = maxWidth)
-    new MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy) with Scorable(1) with ZigZagMissile(step, list, to)
+    new MissileImpl(position = from, destination = list.head, affiliation = Affiliation.Enemy)
+      with Scorable(score)
+      with ZigZagMissile(step, list, to)
 
   /**
    * This private method changes its signature
@@ -71,5 +73,8 @@ object ZigZagMissile:
    * @return the newZigZag midssile created
    */
   private def apply(missile: Missile, newPosition: Point2D, step: Int, positions: LazyList[Point2D], deltaTime: DeltaTime, to: Point2D): ZigZagMissile & Scorable & MissileImpl = positions.size match
-    case 0 => new MissileImpl(missile.currentLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity) with Scorable(1) with ZigZagMissile(step, positions, to)
-    case _ => new MissileImpl(missile.currentLife, newPosition, positions.head, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity) with Scorable(1) with ZigZagMissile(step, positions, to)
+    case 0 => new MissileImpl(missile.currentLife, newPosition, to, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)
+      with Scorable(1) with ZigZagMissile(step, positions, to)
+    case _ => new MissileImpl(missile.currentLife, newPosition, positions.head, deltaTime, Affiliation.Enemy, missile.damage, missile.velocity)
+      with Scorable(score)
+      with ZigZagMissile(step, positions, to)
