@@ -8,12 +8,13 @@ import monix.reactive.{Observable, OverflowStrategy}
 
 import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
 
-/**
- * Extension method that adds a new mouseObservable method to [[Component]].
- * This method returns an Observable[Point2D] that adds a mouse clicked listener to the given
- * component and generating new events as the click are listened
- */
 extension (component: Component)
+  /**
+  * Extension method that adds a new mouseObservable method to [[Component]].
+  * This method returns an Observable[Point2D] that adds a mouse clicked listener to the given
+  * component and generating new events as the click are listened
+  * @return the observable of click events
+  */
   def mouseObservable(): Observable[Point2D] =
     Observable.create(OverflowStrategy.Unbounded) { subject =>
       component.addMouseListener(new MouseAdapter :
