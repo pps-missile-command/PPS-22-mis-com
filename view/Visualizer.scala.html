@@ -36,44 +36,42 @@
 </span>12 <span style=''>import javax.imageio.ImageIO
 </span>13 <span style=''>
 </span>14 <span style=''>object Visualizer:
-</span>15 <span style=''>
-</span>16 <span style=''>    val resourceFolderPath: String = (</span><span style='background: #F0ADAD'>System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;</span><span style=''>)
-</span>17 <span style=''>
-</span>18 <span style=''>    /***
-</span>19 <span style=''>     * Method used for preparing the ImageView of a city.
-</span>20 <span style=''>     * @param structure City to be used.
-</span>21 <span style=''>     * @return ImageView of the city passed.
-</span>22 <span style=''>     */
-</span>23 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
-</span>24 <span style=''>        (
-</span>25 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>26 <span style=''>            </span><span style='background: #F0ADAD'>structure.position map convertPosition</span><span style=''>,
-</span>27 <span style=''>            </span><span style='background: #F0ADAD'>cityBaseSize use convertWidth</span><span style=''>,
-</span>28 <span style=''>            </span><span style='background: #F0ADAD'>cityHeightSize use convertHeight</span><span style=''>
-</span>29 <span style=''>        )
-</span>30 <span style=''>
-</span>31 <span style=''>    /***
-</span>32 <span style=''>     * Method used for preparing the ImageView of a missile turret.
-</span>33 <span style=''>     * @param structure Missile turret to be used.
-</span>34 <span style=''>     * @return ImageView of the missile turret passed
-</span>35 <span style=''>     */
-</span>36 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
-</span>37 <span style=''>        (
-</span>38 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
-</span>39 <span style=''>            </span><span style='background: #F0ADAD'>structure.bottomLeft_Position map convertPosition</span><span style=''>,
-</span>40 <span style=''>            </span><span style='background: #F0ADAD'>missileBattery_BaseSize use convertWidth</span><span style=''>,
-</span>41 <span style=''>            </span><span style='background: #F0ADAD'>missileBatteryHeightSize use convertHeight</span><span style=''>
-</span>42 <span style=''>        )
-</span>43 <span style=''>
-</span>44 <span style=''>    /***
-</span>45 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
-</span>46 <span style=''>     * @param ground Ground to be used.
-</span>47 <span style=''>     * @return List of ImageView of all the structures in the ground.
-</span>48 <span style=''>     */
-</span>49 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
-</span>50 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
-</span>51 <span style=''></span><span style='background: #F0ADAD'>            ++
-</span>52 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
+</span>15 <span style=''>    
+</span>16 <span style=''>    /***
+</span>17 <span style=''>     * Method used for preparing the ImageView of a city.
+</span>18 <span style=''>     * @param structure City to be used.
+</span>19 <span style=''>     * @return ImageView of the city passed.
+</span>20 <span style=''>     */
+</span>21 <span style=''>    </span><span style='background: #F0ADAD'>def prepareCityImage</span><span style=''>(structure: City): Tuple4[Image, Point2D, Int, Int] =
+</span>22 <span style=''>        (
+</span>23 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/city_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
+</span>24 <span style=''>            </span><span style='background: #F0ADAD'>structure.position map convertPosition</span><span style=''>,
+</span>25 <span style=''>            </span><span style='background: #F0ADAD'>cityBaseSize use convertWidth</span><span style=''>,
+</span>26 <span style=''>            </span><span style='background: #F0ADAD'>cityHeightSize use convertHeight</span><span style=''>
+</span>27 <span style=''>        )
+</span>28 <span style=''>
+</span>29 <span style=''>    /***
+</span>30 <span style=''>     * Method used for preparing the ImageView of a missile turret.
+</span>31 <span style=''>     * @param structure Missile turret to be used.
+</span>32 <span style=''>     * @return ImageView of the missile turret passed
+</span>33 <span style=''>     */
+</span>34 <span style=''>    </span><span style='background: #F0ADAD'>def prepareBatteryMissileImage</span><span style=''>(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
+</span>35 <span style=''>        (
+</span>36 <span style=''>            </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;))</span><span style=''>,
+</span>37 <span style=''>            </span><span style='background: #F0ADAD'>structure.bottomLeft_Position map convertPosition</span><span style=''>,
+</span>38 <span style=''>            </span><span style='background: #F0ADAD'>missileBattery_BaseSize use convertWidth</span><span style=''>,
+</span>39 <span style=''>            </span><span style='background: #F0ADAD'>missileBatteryHeightSize use convertHeight</span><span style=''>
+</span>40 <span style=''>        )
+</span>41 <span style=''>
+</span>42 <span style=''>    /***
+</span>43 <span style=''>     * Method used for preparing a list of ImageView of a given ground.
+</span>44 <span style=''>     * @param ground Ground to be used.
+</span>45 <span style=''>     * @return List of ImageView of all the structures in the ground.
+</span>46 <span style=''>     */
+</span>47 <span style=''>    </span><span style='background: #F0ADAD'>def printGround</span><span style=''>(ground: Ground): List[Tuple4[Image, Point2D, Int, Int]] =
+</span>48 <span style=''>        </span><span style='background: #F0ADAD'>(for structure &lt;- ground.cities yield prepareCityImage(structure))
+</span>49 <span style=''></span><span style='background: #F0ADAD'>            ++
+</span>50 <span style=''></span><span style='background: #F0ADAD'>            (for structure &lt;- ground.turrets yield prepareBatteryMissileImage(structure)</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -88,87 +86,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          15
+          20
         </td>
         <td>
-          1575
+          1582
         </td>
         <td>
-          367
+          498
           -
-          406
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          toString
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString
-        </td>
-      </tr><tr>
-        <td>
-          15
-        </td>
-        <td>
-          1574
-        </td>
-        <td>
-          367
-          -
-          397
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          getProperty
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          15
-        </td>
-        <td>
-          1576
-        </td>
-        <td>
-          367
-          -
-          435
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          System.getProperty(&quot;user.dir&quot;).toString + &quot;\\src\\main\\resources\\&quot;
-        </td>
-      </tr><tr>
-        <td>
-          22
-        </td>
-        <td>
-          1585
-        </td>
-        <td>
-          603
-          -
-          623
+          518
         </td>
         <td>
           DefDef
@@ -184,39 +110,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          22
         </td>
         <td>
           1578
         </td>
         <td>
-          733
+          594
           -
-          765
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/city_&quot; + structure.currentLife
-        </td>
-      </tr><tr>
-        <td>
-          24
-        </td>
-        <td>
-          1581
-        </td>
-        <td>
-          699
-          -
-          776
+          671
         </td>
         <td>
           Apply
@@ -232,15 +134,39 @@
         </td>
       </tr><tr>
         <td>
-          24
+          22
         </td>
         <td>
-          1577
+          1575
         </td>
         <td>
-          744
+          628
           -
-          765
+          660
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;/city_&quot; + structure.currentLife
+        </td>
+      </tr><tr>
+        <td>
+          22
+        </td>
+        <td>
+          1574
+        </td>
+        <td>
+          639
+          -
+          660
         </td>
         <td>
           Select
@@ -256,15 +182,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          22
         </td>
         <td>
-          1580
+          1577
         </td>
         <td>
-          712
+          607
           -
-          775
+          670
         </td>
         <td>
           Apply
@@ -280,15 +206,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          22
         </td>
         <td>
-          1579
+          1576
         </td>
         <td>
-          733
+          628
           -
-          774
+          669
         </td>
         <td>
           Apply
@@ -304,15 +230,15 @@
         </td>
       </tr><tr>
         <td>
-          25
+          23
         </td>
         <td>
-          1582
+          1579
         </td>
         <td>
-          790
+          685
           -
-          828
+          723
         </td>
         <td>
           Apply
@@ -328,15 +254,15 @@
         </td>
       </tr><tr>
         <td>
-          26
+          24
         </td>
         <td>
-          1583
+          1580
         </td>
         <td>
-          842
+          737
           -
-          871
+          766
         </td>
         <td>
           Apply
@@ -352,15 +278,15 @@
         </td>
       </tr><tr>
         <td>
-          27
+          25
         </td>
         <td>
-          1584
+          1581
         </td>
         <td>
-          885
+          780
           -
-          917
+          812
         </td>
         <td>
           Apply
@@ -376,15 +302,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          33
         </td>
         <td>
-          1597
+          1594
         </td>
         <td>
-          1123
+          1018
           -
-          1153
+          1048
         </td>
         <td>
           DefDef
@@ -400,39 +326,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
           1587
         </td>
         <td>
-          1273
+          1168
           -
-          1309
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          +
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot
-        </td>
-      </tr><tr>
-        <td>
-          37
-        </td>
-        <td>
-          1590
-        </td>
-        <td>
-          1273
-          -
-          1339
+          1234
         </td>
         <td>
           Apply
@@ -448,15 +350,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
-          1593
+          1590
         </td>
         <td>
-          1239
+          1134
           -
-          1350
+          1245
         </td>
         <td>
           Apply
@@ -472,39 +374,39 @@
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
-          1592
+          1584
         </td>
         <td>
-          1252
+          1168
           -
-          1349
+          1204
         </td>
         <td>
           Apply
         </td>
         <td>
-          getResource
+          +
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)
+          &quot;/Base_&quot; + structure.isReadyForShoot
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
-          1586
+          1583
         </td>
         <td>
-          1284
+          1179
           -
-          1309
+          1204
         </td>
         <td>
           Select
@@ -520,15 +422,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
-          1589
+          1586
         </td>
         <td>
-          1318
+          1213
           -
-          1339
+          1234
         </td>
         <td>
           Select
@@ -544,39 +446,39 @@
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
-          1591
+          1589
         </td>
         <td>
-          1273
+          1147
           -
-          1348
+          1244
         </td>
         <td>
           Apply
         </td>
         <td>
-          +
+          getResource
         </td>
         <td>
           
         </td>
         <td style="background: #F0ADAD">
-          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;
+          getClass.getResource(&quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;)
         </td>
       </tr><tr>
         <td>
-          37
+          35
         </td>
         <td>
-          1588
+          1585
         </td>
         <td>
-          1273
+          1168
           -
-          1315
+          1210
         </td>
         <td>
           Apply
@@ -592,15 +494,39 @@
         </td>
       </tr><tr>
         <td>
-          38
+          35
         </td>
         <td>
-          1594
+          1588
         </td>
         <td>
-          1364
+          1168
           -
-          1413
+          1243
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          +
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          &quot;/Base_&quot; + structure.isReadyForShoot + &quot;_&quot; + structure.currentLife + &quot;.png&quot;
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          1591
+        </td>
+        <td>
+          1259
+          -
+          1308
         </td>
         <td>
           Apply
@@ -616,15 +542,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          37
         </td>
         <td>
-          1595
+          1592
         </td>
         <td>
-          1427
+          1322
           -
-          1467
+          1362
         </td>
         <td>
           Apply
@@ -640,15 +566,15 @@
         </td>
       </tr><tr>
         <td>
-          40
+          38
         </td>
         <td>
-          1596
+          1593
         </td>
         <td>
-          1481
+          1376
           -
-          1523
+          1418
         </td>
         <td>
           Apply
@@ -664,15 +590,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          46
         </td>
         <td>
-          1603
+          1600
         </td>
         <td>
-          1738
+          1633
           -
-          1753
+          1648
         </td>
         <td>
           DefDef
@@ -688,15 +614,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          47
         </td>
         <td>
-          1599
+          1596
         </td>
         <td>
-          1821
+          1716
           -
-          1885
+          1780
         </td>
         <td>
           Apply
@@ -712,15 +638,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          47
         </td>
         <td>
-          1602
+          1599
         </td>
         <td>
-          1820
+          1715
           -
-          1990
+          1885
         </td>
         <td>
           Apply
@@ -738,15 +664,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          47
         </td>
         <td>
-          1598
+          1595
         </td>
         <td>
-          1858
+          1753
           -
-          1885
+          1780
         </td>
         <td>
           Apply
@@ -762,15 +688,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          49
         </td>
         <td>
-          1601
+          1598
         </td>
         <td>
-          1915
+          1810
           -
-          1990
+          1885
         </td>
         <td>
           Apply
@@ -786,15 +712,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          49
         </td>
         <td>
-          1600
+          1597
         </td>
         <td>
-          1953
+          1848
           -
-          1990
+          1885
         </td>
         <td>
           Apply
