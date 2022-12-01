@@ -40,7 +40,7 @@ object Update:
   def on[E <: Event](control: (E, Game) => Task[Game])(using ev: ClassTag[E]): Update =
     lazy val result: Update = (event: Event, game: Game) =>
       event match
-        case event: E => (control(event, game).map(game => (game, result)))
+        case event: E => control(event, game).map(game => (game, result))
         case _ => Task((game, result))
     result
 
@@ -51,7 +51,7 @@ object Update:
    * @param engineB the second [[Update]] to be executed.
    * @return The [[Update]] that will execute the two [[Update]] in sequence.
    */
-  def combineTwo(engineA: Update, engineB: Update): Update = (event: Event, game: Game) =>
+  private def combineTwo(engineA: Update, engineB: Update): Update = (event: Event, game: Game) =>
     for
       updateA <- engineA.apply(event, game)
       ( newGame, newEngineA) = updateA
