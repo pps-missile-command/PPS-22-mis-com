@@ -37,71 +37,73 @@
 </span>13 <span style=''>import javax.imageio.ImageIO
 </span>14 <span style=''>import java.io.{File, FileNotFoundException}
 </span>15 <span style=''>
-</span>16 <span style=''>/**
-</span>17 <span style=''> * Extension method for a Point2D, that perform a mapping returning a new Point2D based
-</span>18 <span style=''> * on the function taken by input
-</span>19 <span style=''> */
-</span>20 <span style=''>extension(p: Point2D)
-</span>21 <span style=''>  </span><span style='background: #AEF1AE'>def map</span><span style=''>(f: (Point2D) =&gt; Point2D) = </span><span style='background: #AEF1AE'>f(p)</span><span style=''>
-</span>22 <span style=''>
-</span>23 <span style=''>/**
-</span>24 <span style=''> * Case class that represent a graphic collisionable element
-</span>25 <span style=''> * @param image The image for the given collisionable
-</span>26 <span style=''> * @param baseWidth The width of the image
-</span>27 <span style=''> * @param baseHeight The height of the image
-</span>28 <span style=''> * @param position The position of the image mapped into the GUI space
-</span>29 <span style=''> * @param angle The angle of the image
-</span>30 <span style=''> */
-</span>31 <span style=''>case class CollisionableElement(image: BufferedImage, baseWidth: Int, baseHeight: Int,
-</span>32 <span style=''>                                position: Point2D, angle: Angle = Angle.Degree(0))
-</span>33 <span style=''>
-</span>34 <span style=''>object CollisionableVisualizer:
+</span>16 <span style=''>extension(p: Point2D)
+</span>17 <span style=''>  /**
+</span>18 <span style=''>   * Extension method for a Point2D, that perform a mapping returning a new Point2D based
+</span>19 <span style=''>   * on the function taken by input
+</span>20 <span style=''>   * @param f The function that maps a [[Point2D]] into another [[Point2D]]
+</span>21 <span style=''>   * @return the new mapped [[Point2D]]
+</span>22 <span style=''>   */
+</span>23 <span style=''>  </span><span style='background: #AEF1AE'>def map</span><span style=''>(f: (Point2D) =&gt; Point2D) = </span><span style='background: #AEF1AE'>f(p)</span><span style=''>
+</span>24 <span style=''>
+</span>25 <span style=''>/**
+</span>26 <span style=''> * Case class that represent a graphic collisionable element
+</span>27 <span style=''> * @param image The image for the given collisionable
+</span>28 <span style=''> * @param baseWidth The width of the image
+</span>29 <span style=''> * @param baseHeight The height of the image
+</span>30 <span style=''> * @param position The position of the image mapped into the GUI space
+</span>31 <span style=''> * @param angle The angle of the image
+</span>32 <span style=''> */
+</span>33 <span style=''>case class CollisionableElement(image: BufferedImage, baseWidth: Int, baseHeight: Int,
+</span>34 <span style=''>                                position: Point2D, angle: Angle = Angle.Degree(0))
 </span>35 <span style=''>
-</span>36 <span style=''>  /**
-</span>37 <span style=''>   * Method that creates a graphic set of [[CollisionableElement]] from a set of [[Collisionable]]
-</span>38 <span style=''>   * @param collisionables The set of [[Collisionable]] to convert
-</span>39 <span style=''>   * @param conversion The conversion method to convert double values into integers
-</span>40 <span style=''>   * @return the set of CollisionableElements created
-</span>41 <span style=''>   */
-</span>42 <span style=''>  </span><span style='background: #AEF1AE'>def printElements</span><span style=''>(collisionables: Set[Collisionable])(using conversion: Conversion[Double, Int]): Set[CollisionableElement] =
-</span>43 <span style=''>
-</span>44 <span style=''>    val conversion: Collisionable =&gt; CollisionableElement = (c: Collisionable) =&gt; c match
-</span>45 <span style=''>      </span><span style='background: #AEF1AE'>case m: Missile with MissileDamageable</span><span style=''> =&gt;
-</span>46 <span style=''>        var optImage:  Option[BufferedImage] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
-</span>47 <span style=''>        try </span><span style='background: #AEF1AE'>{
-</span>48 <span style=''></span><span style='background: #AEF1AE'>          m.affiliation match
-</span>49 <span style=''></span><span style='background: #AEF1AE'>            case Affiliation.Enemy =&gt; optImage = Option(ImageIO.read(getClass.getResource(&quot;/enemy_missile.png&quot;)))
-</span>50 <span style=''></span><span style='background: #AEF1AE'>            </span><span style='background: #F0ADAD'>case _</span><span style='background: #AEF1AE'> =&gt; optImage = </span><span style='background: #F0ADAD'>Option(ImageIO.read(getClass.getResource(&quot;/friendly_missile.png&quot;)))</span><span style='background: #AEF1AE'>
-</span>51 <span style=''></span><span style='background: #AEF1AE'>        }</span><span style=''> catch {
-</span>52 <span style=''>          </span><span style='background: #F0ADAD'>case e: Exception</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>throw new FileNotFoundException()</span><span style=''>
-</span>53 <span style=''>        }
-</span>54 <span style=''>        CollisionableElement(</span><span style='background: #AEF1AE'>optImage.get</span><span style=''>, </span><span style='background: #AEF1AE'>hitboxBase use convertWidth</span><span style=''>, </span><span style='background: #AEF1AE'>hitboxHeight use convertHeight</span><span style=''>, </span><span style='background: #AEF1AE'>m.position map convertPosition</span><span style=''>, </span><span style='background: #AEF1AE'>m.angle.getOrElse(Angle.Degree(0))</span><span style=''>)
-</span>55 <span style=''>      </span><span style='background: #F0ADAD'>case e: Explosion</span><span style=''> =&gt;
-</span>56 <span style=''>        val diameter = </span><span style='background: #F0ADAD'>e.radius * 2 use convertWidth</span><span style=''>
-</span>57 <span style=''>        val bi = </span><span style='background: #F0ADAD'>new BufferedImage(diameter,diameter, BufferedImage.TYPE_INT_ARGB)</span><span style=''>
-</span>58 <span style=''>        val g2d = </span><span style='background: #F0ADAD'>bi.createGraphics()</span><span style=''>
-</span>59 <span style=''>        </span><span style='background: #F0ADAD'>e.affiliation</span><span style=''> match
-</span>60 <span style=''>          </span><span style='background: #F0ADAD'>case Affiliation.Enemy</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>g2d.setColor(Color.RED)</span><span style=''>
-</span>61 <span style=''>          </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>g2d.setColor(Color.BLUE)</span><span style=''>
-</span>62 <span style=''>        </span><span style='background: #F0ADAD'>g2d.drawOval(0, 0, diameter, diameter)</span><span style=''>
-</span>63 <span style=''>        </span><span style='background: #F0ADAD'>g2d.dispose()</span><span style=''>
-</span>64 <span style=''>        </span><span style='background: #F0ADAD'>CollisionableElement</span><span style=''>(bi, diameter, diameter, </span><span style='background: #F0ADAD'>e.position map convertPosition</span><span style=''>)
-</span>65 <span style=''>      </span><span style='background: #F0ADAD'>case p: Plane</span><span style=''> =&gt; CollisionableElement(
-</span>66 <span style=''>        </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Plane_&quot; + p.planeDirection.toString + &quot;.png&quot;))</span><span style=''>,
-</span>67 <span style=''>        </span><span style='background: #F0ADAD'>model.vehicle.planeBaseSize use convertWidth</span><span style=''>,
-</span>68 <span style=''>        </span><span style='background: #F0ADAD'>model.vehicle.planeHeightSize use convertHeight</span><span style=''>,
-</span>69 <span style=''>        </span><span style='background: #F0ADAD'>p.position map convertPosition</span><span style=''>,
-</span>70 <span style=''>        Angle.Degree(90)
-</span>71 <span style=''>      )
-</span>72 <span style=''>      </span><span style='background: #F0ADAD'>case s: Satellite</span><span style=''> =&gt; CollisionableElement(
-</span>73 <span style=''>        </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Satellite.png&quot;))</span><span style=''>,
-</span>74 <span style=''>        </span><span style='background: #F0ADAD'>model.vehicle.satelliteBaseSize use convertWidth</span><span style=''>,
-</span>75 <span style=''>        </span><span style='background: #F0ADAD'>model.vehicle.satelliteHeightSize use convertHeight</span><span style=''>,
-</span>76 <span style=''>        </span><span style='background: #F0ADAD'>s.position map convertPosition</span><span style=''>,
-</span>77 <span style=''>        Angle.Degree(90)
-</span>78 <span style=''>      )
-</span>79 <span style=''>
-</span>80 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.map(conversion)</span><span style=''>
+</span>36 <span style=''>object CollisionableVisualizer:
+</span>37 <span style=''>
+</span>38 <span style=''>  /**
+</span>39 <span style=''>   * Method that creates a graphic set of [[CollisionableElement]] from a set of [[Collisionable]]
+</span>40 <span style=''>   * @param collisionables The set of [[Collisionable]] to convert
+</span>41 <span style=''>   * @param conversion The conversion method to convert double values into integers
+</span>42 <span style=''>   * @return the set of CollisionableElements created
+</span>43 <span style=''>   */
+</span>44 <span style=''>  </span><span style='background: #AEF1AE'>def printElements</span><span style=''>(collisionables: Set[Collisionable])(using conversion: Conversion[Double, Int]): Set[CollisionableElement] =
+</span>45 <span style=''>
+</span>46 <span style=''>    val conversion: Collisionable =&gt; CollisionableElement = (c: Collisionable) =&gt; c match
+</span>47 <span style=''>      </span><span style='background: #AEF1AE'>case m: Missile with MissileDamageable</span><span style=''> =&gt;
+</span>48 <span style=''>        var optImage:  Option[BufferedImage] = </span><span style='background: #AEF1AE'>Option.empty</span><span style=''>
+</span>49 <span style=''>        try </span><span style='background: #AEF1AE'>{
+</span>50 <span style=''></span><span style='background: #AEF1AE'>          m.affiliation match
+</span>51 <span style=''></span><span style='background: #AEF1AE'>            case Affiliation.Enemy =&gt; optImage = Option(ImageIO.read(getClass.getResource(&quot;/enemy_missile.png&quot;)))
+</span>52 <span style=''></span><span style='background: #AEF1AE'>            </span><span style='background: #F0ADAD'>case _</span><span style='background: #AEF1AE'> =&gt; optImage = </span><span style='background: #F0ADAD'>Option(ImageIO.read(getClass.getResource(&quot;/friendly_missile.png&quot;)))</span><span style='background: #AEF1AE'>
+</span>53 <span style=''></span><span style='background: #AEF1AE'>        }</span><span style=''> catch {
+</span>54 <span style=''>          </span><span style='background: #F0ADAD'>case e: Exception</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>throw new FileNotFoundException()</span><span style=''>
+</span>55 <span style=''>        }
+</span>56 <span style=''>        CollisionableElement(</span><span style='background: #AEF1AE'>optImage.get</span><span style=''>, </span><span style='background: #AEF1AE'>hitboxBase use convertWidth</span><span style=''>, </span><span style='background: #AEF1AE'>hitboxHeight use convertHeight</span><span style=''>, </span><span style='background: #AEF1AE'>m.position map convertPosition</span><span style=''>, </span><span style='background: #AEF1AE'>m.angle.getOrElse(Angle.Degree(0))</span><span style=''>)
+</span>57 <span style=''>      </span><span style='background: #F0ADAD'>case e: Explosion</span><span style=''> =&gt;
+</span>58 <span style=''>        val diameter = </span><span style='background: #F0ADAD'>e.radius * 2 use convertWidth</span><span style=''>
+</span>59 <span style=''>        val bi = </span><span style='background: #F0ADAD'>new BufferedImage(diameter,diameter, BufferedImage.TYPE_INT_ARGB)</span><span style=''>
+</span>60 <span style=''>        val g2d = </span><span style='background: #F0ADAD'>bi.createGraphics()</span><span style=''>
+</span>61 <span style=''>        </span><span style='background: #F0ADAD'>e.affiliation</span><span style=''> match
+</span>62 <span style=''>          </span><span style='background: #F0ADAD'>case Affiliation.Enemy</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>g2d.setColor(Color.RED)</span><span style=''>
+</span>63 <span style=''>          </span><span style='background: #F0ADAD'>case _</span><span style=''> =&gt; </span><span style='background: #F0ADAD'>g2d.setColor(Color.BLUE)</span><span style=''>
+</span>64 <span style=''>        </span><span style='background: #F0ADAD'>g2d.drawOval(0, 0, diameter, diameter)</span><span style=''>
+</span>65 <span style=''>        </span><span style='background: #F0ADAD'>g2d.dispose()</span><span style=''>
+</span>66 <span style=''>        </span><span style='background: #F0ADAD'>CollisionableElement</span><span style=''>(bi, diameter, diameter, </span><span style='background: #F0ADAD'>e.position map convertPosition</span><span style=''>)
+</span>67 <span style=''>      </span><span style='background: #F0ADAD'>case p: Plane</span><span style=''> =&gt; CollisionableElement(
+</span>68 <span style=''>        </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Plane_&quot; + p.planeDirection.toString + &quot;.png&quot;))</span><span style=''>,
+</span>69 <span style=''>        </span><span style='background: #F0ADAD'>model.vehicle.planeBaseSize use convertWidth</span><span style=''>,
+</span>70 <span style=''>        </span><span style='background: #F0ADAD'>model.vehicle.planeHeightSize use convertHeight</span><span style=''>,
+</span>71 <span style=''>        </span><span style='background: #F0ADAD'>p.position map convertPosition</span><span style=''>,
+</span>72 <span style=''>        Angle.Degree(90)
+</span>73 <span style=''>      )
+</span>74 <span style=''>      </span><span style='background: #F0ADAD'>case s: Satellite</span><span style=''> =&gt; CollisionableElement(
+</span>75 <span style=''>        </span><span style='background: #F0ADAD'>ImageIO.read(getClass.getResource(&quot;/Satellite.png&quot;))</span><span style=''>,
+</span>76 <span style=''>        </span><span style='background: #F0ADAD'>model.vehicle.satelliteBaseSize use convertWidth</span><span style=''>,
+</span>77 <span style=''>        </span><span style='background: #F0ADAD'>model.vehicle.satelliteHeightSize use convertHeight</span><span style=''>,
+</span>78 <span style=''>        </span><span style='background: #F0ADAD'>s.position map convertPosition</span><span style=''>,
+</span>79 <span style=''>        Angle.Degree(90)
+</span>80 <span style=''>      )
+</span>81 <span style=''>
+</span>82 <span style=''>    </span><span style='background: #AEF1AE'>collisionables.map(conversion)</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -116,15 +118,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          22
         </td>
         <td>
           1572
         </td>
         <td>
-          610
+          734
           -
-          617
+          741
         </td>
         <td>
           DefDef
@@ -140,15 +142,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          22
         </td>
         <td>
           1571
         </td>
         <td>
-          645
+          769
           -
-          649
+          773
         </td>
         <td>
           Apply
@@ -164,15 +166,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          33
         </td>
         <td>
           1511
         </td>
         <td>
-          1125
+          1249
           -
-          1125
+          1249
         </td>
         <td>
           DefDef
@@ -188,15 +190,15 @@
         </td>
       </tr><tr>
         <td>
-          41
+          43
         </td>
         <td>
           1570
         </td>
         <td>
-          1494
+          1618
           -
-          1511
+          1635
         </td>
         <td>
           DefDef
@@ -212,15 +214,15 @@
         </td>
       </tr><tr>
         <td>
-          44
+          46
         </td>
         <td>
           1535
         </td>
         <td>
-          1717
+          1841
           -
-          1755
+          1879
         </td>
         <td>
           Block
@@ -236,15 +238,15 @@
         </td>
       </tr><tr>
         <td>
-          45
+          47
         </td>
         <td>
           1512
         </td>
         <td>
-          1806
+          1930
           -
-          1818
+          1942
         </td>
         <td>
           Select
@@ -260,15 +262,15 @@
         </td>
       </tr><tr>
         <td>
-          46
+          48
         </td>
         <td>
           1522
         </td>
         <td>
-          1831
+          1955
           -
-          2087
+          2211
         </td>
         <td>
           Block
@@ -288,15 +290,15 @@
         </td>
       </tr><tr>
         <td>
-          47
+          49
         </td>
         <td>
           1513
         </td>
         <td>
-          1843
+          1967
           -
-          1856
+          1980
         </td>
         <td>
           Select
@@ -312,15 +314,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          50
         </td>
         <td>
           1515
         </td>
         <td>
-          1919
+          2043
           -
-          1975
+          2099
         </td>
         <td>
           Apply
@@ -336,15 +338,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          50
         </td>
         <td>
           1514
         </td>
         <td>
-          1932
+          2056
           -
-          1974
+          2098
         </td>
         <td>
           Apply
@@ -360,15 +362,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          50
         </td>
         <td>
           1517
         </td>
         <td>
-          1875
+          1999
           -
-          1897
+          2021
         </td>
         <td>
           Block
@@ -384,15 +386,15 @@
         </td>
       </tr><tr>
         <td>
-          48
+          50
         </td>
         <td>
           1516
         </td>
         <td>
-          1912
+          2036
           -
-          1976
+          2100
         </td>
         <td>
           Apply
@@ -408,15 +410,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          51
         </td>
         <td>
           1519
         </td>
         <td>
-          2017
+          2141
           -
-          2076
+          2200
         </td>
         <td>
           Apply
@@ -432,15 +434,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          51
         </td>
         <td>
           1518
         </td>
         <td>
-          2030
+          2154
           -
-          2075
+          2199
         </td>
         <td>
           Apply
@@ -456,15 +458,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          51
         </td>
         <td>
           1521
         </td>
         <td>
-          1989
+          2113
           -
-          1995
+          2119
         </td>
         <td>
           Block
@@ -480,15 +482,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          51
         </td>
         <td>
           1520
         </td>
         <td>
-          2010
+          2134
           -
-          2077
+          2201
         </td>
         <td>
           Apply
@@ -504,15 +506,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          53
         </td>
         <td>
           1524
         </td>
         <td>
-          2127
+          2251
           -
-          2160
+          2284
         </td>
         <td>
           Apply
@@ -528,15 +530,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          53
         </td>
         <td>
           1523
         </td>
         <td>
-          2133
+          2257
           -
-          2160
+          2284
         </td>
         <td>
           Apply
@@ -552,15 +554,15 @@
         </td>
       </tr><tr>
         <td>
-          51
+          53
         </td>
         <td>
           1525
         </td>
         <td>
-          2106
+          2230
           -
-          2123
+          2247
         </td>
         <td>
           Block
@@ -576,15 +578,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
           1528
         </td>
         <td>
-          2214
+          2338
           -
-          2241
+          2365
         </td>
         <td>
           Apply
@@ -600,15 +602,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
           1527
         </td>
         <td>
-          2214
+          2338
           -
-          2224
+          2348
         </td>
         <td>
           Apply
@@ -624,15 +626,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
           1530
         </td>
         <td>
-          2243
+          2367
           -
-          2273
+          2397
         </td>
         <td>
           Apply
@@ -648,15 +650,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
           1533
         </td>
         <td>
-          2307
+          2431
           -
-          2314
+          2438
         </td>
         <td>
           Select
@@ -672,15 +674,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
           1532
         </td>
         <td>
-          2275
+          2399
           -
-          2305
+          2429
         </td>
         <td>
           Apply
@@ -696,15 +698,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
           1526
         </td>
         <td>
-          2200
+          2324
           -
-          2212
+          2336
         </td>
         <td>
           Select
@@ -720,15 +722,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
           1529
         </td>
         <td>
-          2243
+          2367
           -
-          2255
+          2379
         </td>
         <td>
           Apply
@@ -744,15 +746,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
           1531
         </td>
         <td>
-          2275
+          2399
           -
-          2285
+          2409
         </td>
         <td>
           Select
@@ -768,15 +770,15 @@
         </td>
       </tr><tr>
         <td>
-          53
+          55
         </td>
         <td>
           1534
         </td>
         <td>
-          2307
+          2431
           -
-          2341
+          2465
         </td>
         <td>
           Apply
@@ -792,15 +794,15 @@
         </td>
       </tr><tr>
         <td>
-          54
+          56
         </td>
         <td>
           1551
         </td>
         <td>
-          2349
+          2473
           -
-          2366
+          2490
         </td>
         <td>
           Block
@@ -816,15 +818,15 @@
         </td>
       </tr><tr>
         <td>
-          55
+          57
         </td>
         <td>
           1536
         </td>
         <td>
-          2393
+          2517
           -
-          2401
+          2525
         </td>
         <td>
           Select
@@ -840,15 +842,15 @@
         </td>
       </tr><tr>
         <td>
-          55
+          57
         </td>
         <td>
           1538
         </td>
         <td>
-          2393
+          2517
           -
-          2422
+          2546
         </td>
         <td>
           Apply
@@ -864,15 +866,15 @@
         </td>
       </tr><tr>
         <td>
-          55
+          57
         </td>
         <td>
           1537
         </td>
         <td>
-          2393
+          2517
           -
-          2405
+          2529
         </td>
         <td>
           Apply
@@ -888,15 +890,15 @@
         </td>
       </tr><tr>
         <td>
-          56
+          58
         </td>
         <td>
           1539
         </td>
         <td>
-          2440
+          2564
           -
-          2505
+          2629
         </td>
         <td>
           Apply
@@ -912,15 +914,15 @@
         </td>
       </tr><tr>
         <td>
-          57
+          59
         </td>
         <td>
           1540
         </td>
         <td>
-          2524
+          2648
           -
-          2543
+          2667
         </td>
         <td>
           Apply
@@ -936,15 +938,15 @@
         </td>
       </tr><tr>
         <td>
-          58
+          60
         </td>
         <td>
           1541
         </td>
         <td>
-          2552
+          2676
           -
-          2565
+          2689
         </td>
         <td>
           Select
@@ -960,15 +962,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          61
         </td>
         <td>
           1542
         </td>
         <td>
-          2608
+          2732
           -
-          2631
+          2755
         </td>
         <td>
           Apply
@@ -984,15 +986,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          61
         </td>
         <td>
           1543
         </td>
         <td>
-          2582
+          2706
           -
-          2604
+          2728
         </td>
         <td>
           Block
@@ -1008,15 +1010,15 @@
         </td>
       </tr><tr>
         <td>
-          60
+          62
         </td>
         <td>
           1545
         </td>
         <td>
-          2642
+          2766
           -
-          2648
+          2772
         </td>
         <td>
           Block
@@ -1032,15 +1034,15 @@
         </td>
       </tr><tr>
         <td>
-          60
+          62
         </td>
         <td>
           1544
         </td>
         <td>
-          2652
+          2776
           -
-          2676
+          2800
         </td>
         <td>
           Apply
@@ -1056,15 +1058,15 @@
         </td>
       </tr><tr>
         <td>
-          61
+          63
         </td>
         <td>
           1546
         </td>
         <td>
-          2685
+          2809
           -
-          2723
+          2847
         </td>
         <td>
           Apply
@@ -1080,15 +1082,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          64
         </td>
         <td>
           1547
         </td>
         <td>
-          2732
+          2856
           -
-          2745
+          2869
         </td>
         <td>
           Apply
@@ -1104,15 +1106,15 @@
         </td>
       </tr><tr>
         <td>
-          63
+          65
         </td>
         <td>
           1548
         </td>
         <td>
-          2799
+          2923
           -
-          2809
+          2933
         </td>
         <td>
           Select
@@ -1128,15 +1130,15 @@
         </td>
       </tr><tr>
         <td>
-          63
+          65
         </td>
         <td>
           1550
         </td>
         <td>
-          2754
+          2878
           -
-          2774
+          2898
         </td>
         <td>
           Select
@@ -1152,15 +1154,15 @@
         </td>
       </tr><tr>
         <td>
-          63
+          65
         </td>
         <td>
           1549
         </td>
         <td>
-          2799
+          2923
           -
-          2829
+          2953
         </td>
         <td>
           Apply
@@ -1176,15 +1178,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          66
         </td>
         <td>
           1561
         </td>
         <td>
-          2837
+          2961
           -
-          2850
+          2974
         </td>
         <td>
           Block
@@ -1200,15 +1202,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          67
         </td>
         <td>
           1554
         </td>
         <td>
-          2918
+          3042
           -
-          2964
+          3088
         </td>
         <td>
           Apply
@@ -1224,15 +1226,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          67
         </td>
         <td>
           1553
         </td>
         <td>
-          2918
+          3042
           -
-          2955
+          3079
         </td>
         <td>
           Apply
@@ -1248,15 +1250,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          67
         </td>
         <td>
           1556
         </td>
         <td>
-          2884
+          3008
           -
-          2966
+          3090
         </td>
         <td>
           Apply
@@ -1272,15 +1274,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          67
         </td>
         <td>
           1555
         </td>
         <td>
-          2897
+          3021
           -
-          2965
+          3089
         </td>
         <td>
           Apply
@@ -1296,15 +1298,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          67
         </td>
         <td>
           1552
         </td>
         <td>
-          2930
+          3054
           -
-          2946
+          3070
         </td>
         <td>
           Select
@@ -1320,15 +1322,15 @@
         </td>
       </tr><tr>
         <td>
-          66
+          68
         </td>
         <td>
           1557
         </td>
         <td>
-          2976
+          3100
           -
-          3020
+          3144
         </td>
         <td>
           Apply
@@ -1344,15 +1346,15 @@
         </td>
       </tr><tr>
         <td>
-          67
+          69
         </td>
         <td>
           1558
         </td>
         <td>
-          3030
+          3154
           -
-          3077
+          3201
         </td>
         <td>
           Apply
@@ -1368,15 +1370,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          70
         </td>
         <td>
           1560
         </td>
         <td>
-          3087
+          3211
           -
-          3117
+          3241
         </td>
         <td>
           Apply
@@ -1392,15 +1394,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          70
         </td>
         <td>
           1559
         </td>
         <td>
-          3087
+          3211
           -
-          3097
+          3221
         </td>
         <td>
           Select
@@ -1416,15 +1418,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          73
         </td>
         <td>
           1568
         </td>
         <td>
-          3158
+          3282
           -
-          3175
+          3299
         </td>
         <td>
           Block
@@ -1440,15 +1442,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          74
         </td>
         <td>
           1563
         </td>
         <td>
-          3209
+          3333
           -
-          3261
+          3385
         </td>
         <td>
           Apply
@@ -1464,15 +1466,15 @@
         </td>
       </tr><tr>
         <td>
-          72
+          74
         </td>
         <td>
           1562
         </td>
         <td>
-          3222
+          3346
           -
-          3260
+          3384
         </td>
         <td>
           Apply
@@ -1488,15 +1490,15 @@
         </td>
       </tr><tr>
         <td>
-          73
+          75
         </td>
         <td>
           1564
         </td>
         <td>
-          3271
+          3395
           -
-          3319
+          3443
         </td>
         <td>
           Apply
@@ -1512,15 +1514,15 @@
         </td>
       </tr><tr>
         <td>
-          74
+          76
         </td>
         <td>
           1565
         </td>
         <td>
-          3329
+          3453
           -
-          3380
+          3504
         </td>
         <td>
           Apply
@@ -1536,15 +1538,15 @@
         </td>
       </tr><tr>
         <td>
-          75
+          77
         </td>
         <td>
           1566
         </td>
         <td>
-          3390
+          3514
           -
-          3400
+          3524
         </td>
         <td>
           Select
@@ -1560,15 +1562,15 @@
         </td>
       </tr><tr>
         <td>
-          75
+          77
         </td>
         <td>
           1567
         </td>
         <td>
-          3390
+          3514
           -
-          3420
+          3544
         </td>
         <td>
           Apply
@@ -1584,15 +1586,15 @@
         </td>
       </tr><tr>
         <td>
-          79
+          81
         </td>
         <td>
           1569
         </td>
         <td>
-          3460
+          3584
           -
-          3490
+          3614
         </td>
         <td>
           Apply
