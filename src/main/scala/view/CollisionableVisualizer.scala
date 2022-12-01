@@ -13,11 +13,13 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.{File, FileNotFoundException}
 
-/**
- * Extension method for a Point2D, that perform a mapping returning a new Point2D based
- * on the function taken by input
- */
 extension(p: Point2D)
+  /**
+   * Extension method for a Point2D, that perform a mapping returning a new Point2D based
+   * on the function taken by input
+   * @param f The function that maps a [[Point2D]] into another [[Point2D]]
+   * @return the new mapped [[Point2D]]
+   */
   def map(f: (Point2D) => Point2D) = f(p)
 
 /**
