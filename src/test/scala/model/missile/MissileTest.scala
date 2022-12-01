@@ -1,4 +1,5 @@
 package model.missile
+import model.Scorable
 import model.collisions.Affiliation
 import model.elements2d.Point2D
 import org.scalatest.funspec.AnyFunSpec
@@ -38,8 +39,8 @@ class MissileTest extends AnyFunSpec :
     describe("with friendly role") {
       it("should have friendly affiliation") {
         given Random()
-        val missile = GenerateRandomMissile(BasicMissile(Affiliation.Friendly), finalPosition)
-        assert(missile.get.affiliation == Affiliation.Friendly)
+        val missile = TestMissile()
+        assert(missile.affiliation == Affiliation.Friendly)
       }
     }
     it("should calculate its own direction based on start position and final position") {

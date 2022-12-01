@@ -44,9 +44,10 @@ class HitBoxCircularTest extends AnyFunSpec :
         assert(hitBox.yMin.get === (center.y - radius))
       }
 
-      it("should be empty if the radius is 0") {
+      it("should be a point if the radius is 0") {
         val hitBox = HitBoxCircular(center, 0)
-        assert(hitBox.area.isEmpty)
+        val expectedHitBox = HitBoxPoint(center)
+        assert(hitBox == expectedHitBox)
       }
 
       it("should be empty if the radius is negative") {

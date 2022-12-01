@@ -3,6 +3,9 @@ package model.collisions
 import model.collisions.Collision
 import model.collisions.PimpingByCollisionable._
 
+/**
+ * Object that contains pimping methods for a [[Set]] of [[Collision]]
+ */
 object PimpingByCollisions:
 
   extension (collisions: Set[Collision])
@@ -14,7 +17,7 @@ object PimpingByCollisions:
      */
     def allScorableDestroyedThatCollide: Set[Collisionable] =
       collisions
-        .flatMap(_.involvedCollisionables)
+        .flatten
         .filter(_.isScorable)
         .filter(_.isDestroyed)
 
@@ -75,7 +78,7 @@ object PimpingByCollisions:
      * @return a set of collisionables that doesn't collide with the given set of collisionables form all
      */
     def allCollisionablesThatDoesntCollideWith(all: Set[Collisionable], doesntCollide: Set[Collisionable]): Set[Collisionable] =
-      all.filter(_ != null) -- collisions.allCollisionablesThatCollideWith(doesntCollide)
+      all.filter(_ != null) -- collisions.allCollisionablesThatCollideWith(doesntCollide) -- doesntCollide
 
     /**
      * Return the collisions with the new values of the collisionables
@@ -86,12 +89,9 @@ object PimpingByCollisions:
     def updateCollisionablesContained(mapping: Map[Collisionable, Collisionable]): Set[Collision] =
       collisions
         .map(collision =>
-          Collision(
             collision
-              .involvedCollisionables
-              .map(collisonable =>
+              .map(collisionable =>
                 mapping
-                  .getOrElse(collisonable, collisonable)
+                  .getOrElse(collisionable, collisionable)
               )
-          )
         )

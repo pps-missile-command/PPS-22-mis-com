@@ -11,14 +11,19 @@ import utilities._
 import java.time
 import java.time.LocalDateTime
 
-
+/***
+ * Class that rapresent a turret
+ * @param bottomLeft_Position Point that rapresent bottom-left corner of the turret
+ * @param life Life of the turret
+ * @param dt Deltatime of the turret
+ */
 case class MissileBattery(val bottomLeft_Position: Point2D,
                           val life: LifePoint = missileBatteryInitialLife,
                           dt: DeltaTime = 0) extends Damageable, Timeable:
 
 
-    private val collider: HitBox = HitBoxRectangular(Point2D(bottomLeft_Position.x + missileBatteryBaseSize/2, bottomLeft_Position.y + missileBatteryHeightSize/2),
-                                                    missileBatteryBaseSize,
+    private val collider: HitBox = HitBoxRectangular(Point2D(bottomLeft_Position.x + missileBattery_BaseSize/2, bottomLeft_Position.y + missileBatteryHeightSize/2),
+                                                    missileBattery_BaseSize,
                                                     missileBatteryHeightSize,
                                                     Angle.Degree(0)) //collider of the object
 
@@ -36,7 +41,7 @@ case class MissileBattery(val bottomLeft_Position: Point2D,
                 Missile(missileHealth,
                     missileFriendlyDamage,
                     velocity,
-                    Point2D(bottomLeft_Position.x + missileBatteryBaseSize,
+                    Point2D(bottomLeft_Position.x + missileBattery_BaseSize,
                             bottomLeft_Position.y + 0.8 * missileBatteryHeightSize),
                     endingPoint))) //If not reloading, allow shoot
         else

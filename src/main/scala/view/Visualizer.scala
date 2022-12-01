@@ -1,19 +1,18 @@
 package view
 
+import model.World
+
 import java.awt.{Image, Toolkit}
 import model.collisions.{Collisionable, Damageable}
 import model.elements2d.Point2D
 import model.ground.{City, Ground, MissileBattery}
 import model.missile.{Missile, hitboxBase, hitboxHeight}
-import utilities._
-
-
+import utilities.*
 
 import javax.imageio.ImageIO
 
 object Visualizer:
-    val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
-
+    
     /***
      * Method used for preparing the ImageView of a city.
      * @param structure City to be used.
@@ -22,9 +21,9 @@ object Visualizer:
     def prepareCityImage(structure: City): Tuple4[Image, Point2D, Int, Int] =
         (
             ImageIO.read(getClass.getResource("/city_" + structure.currentLife + ".png")),
-            structure.position,
-            cityBaseSize,
-            cityHeightSize
+            structure.position map convertPosition,
+            cityBaseSize use convertWidth,
+            cityHeightSize use convertHeight
         )
 
     /***
@@ -35,9 +34,9 @@ object Visualizer:
     def prepareBatteryMissileImage(structure: MissileBattery): Tuple4[Image, Point2D, Int, Int] =
         (
             ImageIO.read(getClass.getResource("/Base_" + structure.isReadyForShoot + "_" + structure.currentLife + ".png")),
-            structure.bottomLeft_Position,
-            missileBatteryBaseSize,
-            missileBatteryHeightSize
+            structure.bottomLeft_Position map convertPosition,
+            missileBattery_BaseSize use convertWidth,
+            missileBatteryHeightSize use convertHeight
         )
 
     /***

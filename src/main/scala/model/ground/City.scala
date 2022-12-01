@@ -5,6 +5,11 @@ import model.collisions.{Affiliation, Collisionable, Damageable, HitBox, LifePoi
 import model.elements2d.*
 import utilities._
 
+/***
+ * Class that describe a city
+ * @param position Point refered to the bottom-left corner of the city
+ * @param life Life of the city
+ */
 case class City(val position: Point2D, val life: LifePoint = cityInitialLife) extends Damageable:
     private val collider: HitBox = HitBoxRectangular(Point2D(position.x + cityBaseSize/2, position.y + cityHeightSize/2),
                                                     cityBaseSize,

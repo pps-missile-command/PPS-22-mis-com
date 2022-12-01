@@ -16,8 +16,6 @@ object ExplosionTest:
 class ExplosionTest extends AnyFunSpec :
   import ExplosionTest.*
   import model.missile.MissileTest.TestMissile
-  import model.explosion.MaxTime
-  given maxTime: MaxTime = 10
 
   describe("An explosion") {
     describe("circular") {
