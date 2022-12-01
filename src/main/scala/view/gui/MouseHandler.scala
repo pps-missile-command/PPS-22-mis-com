@@ -7,6 +7,7 @@ import monix.execution.cancelables.SingleAssignCancelable
 import monix.reactive.{Observable, OverflowStrategy}
 
 import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
+import javax.swing.JButton
 
 extension (component: Component)
   /**
@@ -24,10 +25,10 @@ extension (component: Component)
       SingleAssignCancelable()
     }
 
-extension (button: javax.swing.JButton)
+extension (button: JButton)
 
   /**
-   * Extension method that emits a new event every time the [[javax.swing.JButton]] is clicked.
+   * Extension method that emits a new event every time the [[JButton]] is clicked.
    *
    * @return an Observable[Unit] that emits a new event every time the button is clicked
    */
