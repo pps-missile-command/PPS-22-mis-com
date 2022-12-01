@@ -17,9 +17,8 @@ package object spawner:
    * @return the new  [[SpawnerAggregator]]
    */
   def standardSpawner(using Random): GenericSpawner[Collisionable] = SpawnerAggregatorImpl(
-
     GenericSpawner(3, SpecificSpawners.MissileStrategy(width, height)),
     GenericSpawner(16, SpecificSpawners.ZigZagStrategy(width, height)),
-    GenericSpawner(10, SpecificSpawners.SatelliteStrategy(width)),
+    GenericSpawner(10, SpecificSpawners.SatelliteStrategy(model.vehicle.satelliteBaseSize, width - model.vehicle.satelliteBaseSize)),
     GenericSpawner(20, SpecificSpawners.PlaneStrategy(height))
   )

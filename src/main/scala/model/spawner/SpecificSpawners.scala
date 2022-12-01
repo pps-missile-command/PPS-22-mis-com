@@ -61,5 +61,5 @@ object SpecificSpawners:
    * @param r The random object to generate random coordinates
    * @return the new satellite
    */
-  def SatelliteStrategy(maxWidth: Double)(using r: Random): Spawnable[Satellite] =
-    () => Satellite(r.nextDouble() * maxWidth)
+  def SatelliteStrategy(startWidth: Double, maxWidth: Double)(using r: Random): Spawnable[Satellite] =
+    () => Satellite(r.between(startWidth, maxWidth))
