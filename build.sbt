@@ -7,6 +7,7 @@ val scalatest = "org.scalatest" %% "scalatest" % "3.2.14" % Test
 
 val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.17.0" % "test"
 val scalactic = "org.scalactic" %% "scalactic" % "3.2.14"
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")
 
 
 lazy val root = (project in file("."))
