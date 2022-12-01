@@ -8,9 +8,12 @@ import model.elements2d.Point2D
 import model.{Game, World}
 import view.{Main, ViewConstants}
 import view.gui.WorldPane
-import java.awt.{BorderLayout, Color, Dimension, FlowLayout, Graphics, event}
+
+import java.awt.{BorderLayout, Color, Dimension, FlowLayout, Font, Graphics, GridBagConstraints, GridBagLayout, event}
 import javax.swing.*
 import PimpingByDouble.roundTwoDecimals
+
+import javax.imageio.ImageIO
 
 /**
  * Class that represent the main interface that encapsulate the GUI events and the
@@ -72,12 +75,23 @@ class GUI(width: Int, height: Int) extends View :
       clearPanel()
       val panel = new JPanel()
       panel.setSize(width, height)
-      panel.setLayout(new FlowLayout())
+      panel.setLayout(new BorderLayout())
       button.setText("AVVIA PARTITA")
-      panel.add(button)
+      button.setPreferredSize(new Dimension(150, 50))
 
+      val boxLayout = new JPanel()
+      boxLayout.setLayout(new GridBagLayout())
+      val gbc = new GridBagConstraints()
+      gbc.fill = GridBagConstraints.HORIZONTAL
+      gbc.gridx = 1
+      gbc.gridy = 1
+      gbc.gridwidth = 4
+      boxLayout.add(button, gbc)
+
+      panel.add(new JLabel(new ImageIcon(ImageIO.read(getClass.getResource("/game_logo.png")))), BorderLayout.NORTH)
+      panel.add(boxLayout, BorderLayout.CENTER)
       frame.getContentPane.add(panel)
-      frame.revalidate()
+      frame.validate()
       frame.repaint()
     }
   }
@@ -103,14 +117,41 @@ class GUI(width: Int, height: Int) extends View :
   override def gameOver(game: Game): Task[Unit] = Task {
     SwingUtilities.invokeLater { () =>
       clearPanel()
-      val panel = new EndGamePane(width, height)
-      panel.setLayout(new FlowLayout())
+      val panel = new JPanel()
+      panel.setSize(width, height)
+      panel.setLayout(new BorderLayout())
       button.setText("RIGIOCA")
       val score = new JLabel(s"SCORE FINALE: ${game.player.score}")
       val time = new JLabel(s"TEMPO DI GIOCO: ${game.player.timer.time.roundTwoDecimals}")
-      panel.add(button)
-      panel.add(score)
-      panel.add(time)
+
+      val boxPanel = new JPanel()
+      boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.Y_AXIS))
+      val firstFlow = new JPanel()
+      val secondFlow = new JPanel()
+      firstFlow.setLayout(new FlowLayout())
+      secondFlow.setLayout(new FlowLayout())
+      secondFlow.add(button)
+      firstFlow.add(score)
+      firstFlow.add(time)
+      boxPanel.add(firstFlow)
+      boxPanel.add(secondFlow)
+      panel.add(boxPanel, BorderLayout.NORTH)
+
+      val boxLayout = new JPanel()
+      boxLayout.setLayout(new GridBagLayout())
+      val gbc = new GridBagConstraints()
+      gbc.fill = GridBagConstraints.HORIZONTAL
+      gbc.gridx = 1
+      gbc.gridy = 1
+      gbc.gridwidth = 4
+      val label: JLabel = new JLabel("Game Over")
+      label.setForeground(Color.RED)
+      label.setFont(new Font("Calibri",Font.BOLD,50))
+      label.setBorder(BorderFactory.createEtchedBorder(Color.red, Color.yellow))
+      boxLayout.add(label, gbc)
+
+      panel.add(boxLayout, BorderLayout.CENTER)
+
       frame.getContentPane.add(panel)
       frame.revalidate()
       frame.repaint()

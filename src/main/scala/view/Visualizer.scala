@@ -12,9 +12,7 @@ import utilities.*
 import javax.imageio.ImageIO
 
 object Visualizer:
-
-    val resourceFolderPath: String = (System.getProperty("user.dir").toString + "\\src\\main\\resources\\")
-
+    
     /***
      * Method used for preparing the ImageView of a city.
      * @param structure City to be used.
