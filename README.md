@@ -12,6 +12,6 @@ The game can be run cloning the repository from branch `main` and using the comm
 in the root directory of the project.<br>
 <br>
 It is also possible to run the game using the executable jar file in the release section of the repository.<br>
-In order to run the game with the jar, the user must have Java 17 installed on his machine, using the command
-`java -jar missile-command.jar`
+In order to run the game with the jar, the user must have Java 17 installed on his machine, and use the command
+`java -jar missile_command.jar`
 in the directory where the jar is located.
