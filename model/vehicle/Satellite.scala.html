@@ -34,66 +34,106 @@
 </span>10 <span style=''>
 </span>11 <span style=''>import scala.util.Random
 </span>12 <span style=''>
-</span>13 <span style=''>
-</span>14 <span style=''>trait Satellite extends Damageable, GenericSpawner[Missile]:
-</span>15 <span style=''>    def position: Point2D
-</span>16 <span style=''>    override def timeElapsed(dt: DeltaTime): Satellite
-</span>17 <span style=''>
-</span>18 <span style=''>
-</span>19 <span style=''>case class SatelliteImpl(actualPosition: Point2D,
-</span>20 <span style=''>                         missileSpawner: GenericSpawnerImpl[Missile],
-</span>21 <span style=''>                         lifePoint: LifePoint = satelliteInitialLife,
-</span>22 <span style=''>                         deltaTime: DeltaTime = 0)
-</span>23 <span style=''>                        (using Random) extends Satellite with </span><span style='background: #AEF1AE'>Scorable(2)</span><span style=''>:
-</span>24 <span style=''>
-</span>25 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = actualPosition
-</span>26 <span style=''>
-</span>27 <span style=''>    /***
-</span>28 <span style=''>     * Method used for launch a missile from the plane
-</span>29 <span style=''>     * @return Tuple containing a set with missiles and the new plane
-</span>30 <span style=''>     */
-</span>31 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): Tuple2[Set[Missile], Satellite] =
-</span>32 <span style=''>        val spawnerInfos = </span><span style='background: #AEF1AE'>missileSpawner.spawn()</span><span style=''>
-</span>33 <span style=''>        Tuple2(
-</span>34 <span style=''>            </span><span style='background: #AEF1AE'>spawnerInfos._1</span><span style=''>,
-</span>35 <span style=''>            this.copy(missileSpawner = </span><span style='background: #AEF1AE'>spawnerInfos._2</span><span style=''>)
-</span>36 <span style=''>        )
-</span>37 <span style=''>
-</span>38 <span style=''>    /**
-</span>39 <span style=''>     * The current health of the object.
-</span>40 <span style=''>     *
-</span>41 <span style=''>     * @return the current health of the object.
-</span>42 <span style=''>     */
-</span>43 <span style=''>    </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = lifePoint
-</span>44 <span style=''>
-</span>45 <span style=''>    /**
-</span>46 <span style=''>     * The initial health of the object.
-</span>47 <span style=''>     *
-</span>48 <span style=''>     * @return the initial health of the object.
-</span>49 <span style=''>     */
-</span>50 <span style=''>    </span><span style='background: #F0ADAD'>override def initialLife</span><span style=''>: LifePoint = satelliteInitialLife
-</span>51 <span style=''>
-</span>52 <span style=''>    /**
-</span>53 <span style=''>     * The object takes damage.
-</span>54 <span style=''>     *
-</span>55 <span style=''>     * @param damage the damage that the object received.
-</span>56 <span style=''>     * @return the object with the new health.
-</span>57 <span style=''>     */
-</span>58 <span style=''>    </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: LifePoint): Satellite = damage match
-</span>59 <span style=''>        </span><span style='background: #AEF1AE'>case d if(lifePoint - d &gt; 0</span><span style=''>) =&gt; this.copy(lifePoint = lifePoint - d)
-</span>60 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; this.copy(lifePoint = lifePointDeath)
-</span>61 <span style=''>
-</span>62 <span style=''>    </span><span style='background: #AEF1AE'>override protected def hitBox</span><span style=''>: HitBox =
-</span>63 <span style=''>        val point2D = </span><span style='background: #AEF1AE'>Point2D(position.x, position.y)</span><span style=''>
-</span>64 <span style=''>        </span><span style='background: #AEF1AE'>HitBoxRectangular(position, satelliteBaseSize, satelliteHeightSize, Angle.Degree(0))</span><span style=''>
-</span>65 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = Affiliation.Enemy
-</span>66 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Satellite = this.copy(missileSpawner = </span><span style='background: #AEF1AE'>missileSpawner.timeElapsed(dt)</span><span style=''>, deltaTime = deltaTime + dt)
-</span>67 <span style=''>
-</span>68 <span style=''>object Satellite:
-</span>69 <span style=''>    </span><span style='background: #AEF1AE'>def apply</span><span style=''>(xCoordinate: Double)(using Random) : Satellite =
-</span>70 <span style=''>        val position = </span><span style='background: #AEF1AE'>Point2D(xCoordinate, satelliteHeight)</span><span style=''>
-</span>71 <span style=''>        </span><span style='background: #AEF1AE'>SatelliteImpl</span><span style=''>(position,
-</span>72 <span style=''>        </span><span style='background: #AEF1AE'>GenericSpawner[Missile](spawnInterval, spawnable = SpecificSpawners.FixedMissileStrategy(width, height, position)(using Random))</span><span style=''>)
+</span>13 <span style=''>/**
+</span>14 <span style=''> * Trait that model the satellite entity
+</span>15 <span style=''> */
+</span>16 <span style=''>trait Satellite extends Damageable, GenericSpawner[Missile]:
+</span>17 <span style=''>    /**
+</span>18 <span style=''>     * @return the position of the satellite
+</span>19 <span style=''>     */
+</span>20 <span style=''>    def position: Point2D
+</span>21 <span style=''>
+</span>22 <span style=''>    /**
+</span>23 <span style=''>     * @param dt This is the virtual delta time thas has been passed since the last update
+</span>24 <span style=''>     *  @return the new Timeable object with the current virtual time updated
+</span>25 <span style=''>     */
+</span>26 <span style=''>    override def timeElapsed(dt: DeltaTime): Satellite
+</span>27 <span style=''>
+</span>28 <span style=''>/**
+</span>29 <span style=''> * Implementation of the satellite
+</span>30 <span style=''> * @param actualPosition Actual position of the satellite
+</span>31 <span style=''> * @param missileSpawner Spawner of the satellite
+</span>32 <span style=''> * @param lifePoint Life of the satellite
+</span>33 <span style=''> * @param deltaTime Deltatime of the satellite
+</span>34 <span style=''> * @param Random Random value used for generation
+</span>35 <span style=''> */
+</span>36 <span style=''>case class SatelliteImpl(actualPosition: Point2D,
+</span>37 <span style=''>                         missileSpawner: GenericSpawnerImpl[Missile],
+</span>38 <span style=''>                         lifePoint: LifePoint = satelliteInitialLife,
+</span>39 <span style=''>                         deltaTime: DeltaTime = 0)
+</span>40 <span style=''>                        (using Random) extends Satellite with </span><span style='background: #AEF1AE'>Scorable(2)</span><span style=''>:
+</span>41 <span style=''>
+</span>42 <span style=''>    /**
+</span>43 <span style=''>     *
+</span>44 <span style=''>     *  @return the position of the satellite
+</span>45 <span style=''>     */
+</span>46 <span style=''>    </span><span style='background: #AEF1AE'>override def position</span><span style=''>: Point2D = actualPosition
+</span>47 <span style=''>
+</span>48 <span style=''>    /***
+</span>49 <span style=''>     * Method used for launch a missile from the plane
+</span>50 <span style=''>     * @return Tuple containing a set with missiles and the new plane
+</span>51 <span style=''>     */
+</span>52 <span style=''>    </span><span style='background: #AEF1AE'>override def spawn</span><span style=''>(): Tuple2[Set[Missile], Satellite] =
+</span>53 <span style=''>        val spawnerInfos = </span><span style='background: #AEF1AE'>missileSpawner.spawn()</span><span style=''>
+</span>54 <span style=''>        Tuple2(
+</span>55 <span style=''>            </span><span style='background: #AEF1AE'>spawnerInfos._1</span><span style=''>,
+</span>56 <span style=''>            this.copy(missileSpawner = </span><span style='background: #AEF1AE'>spawnerInfos._2</span><span style=''>)
+</span>57 <span style=''>        )
+</span>58 <span style=''>
+</span>59 <span style=''>    /**
+</span>60 <span style=''>     * The current health of the object.
+</span>61 <span style=''>     *
+</span>62 <span style=''>     * @return the current health of the object.
+</span>63 <span style=''>     */
+</span>64 <span style=''>    </span><span style='background: #AEF1AE'>override def currentLife</span><span style=''>: LifePoint = lifePoint
+</span>65 <span style=''>
+</span>66 <span style=''>    /**
+</span>67 <span style=''>     * The initial health of the object.
+</span>68 <span style=''>     *
+</span>69 <span style=''>     * @return the initial health of the object.
+</span>70 <span style=''>     */
+</span>71 <span style=''>    </span><span style='background: #F0ADAD'>override def initialLife</span><span style=''>: LifePoint = satelliteInitialLife
+</span>72 <span style=''>
+</span>73 <span style=''>    /**
+</span>74 <span style=''>     * The object takes damage.
+</span>75 <span style=''>     *
+</span>76 <span style=''>     * @param damage the damage that the object received.
+</span>77 <span style=''>     * @return the object with the new health.
+</span>78 <span style=''>     */
+</span>79 <span style=''>    </span><span style='background: #AEF1AE'>override def takeDamage</span><span style=''>(damage: LifePoint): Satellite = damage match
+</span>80 <span style=''>        </span><span style='background: #AEF1AE'>case d if(lifePoint - d &gt; 0</span><span style=''>) =&gt; this.copy(lifePoint = lifePoint - d)
+</span>81 <span style=''>        </span><span style='background: #AEF1AE'>case _</span><span style=''> =&gt; this.copy(lifePoint = lifePointDeath)
+</span>82 <span style=''>
+</span>83 <span style=''>    /**
+</span>84 <span style=''>     *  @return the hit box of the object.
+</span>85 <span style=''>     */
+</span>86 <span style=''>    </span><span style='background: #AEF1AE'>override protected def hitBox</span><span style=''>: HitBox =
+</span>87 <span style=''>        val point2D = </span><span style='background: #AEF1AE'>Point2D(position.x, position.y)</span><span style=''>
+</span>88 <span style=''>        </span><span style='background: #AEF1AE'>HitBoxRectangular(position, satelliteBaseSize, satelliteHeightSize, Angle.Degree(0))</span><span style=''>
+</span>89 <span style=''>
+</span>90 <span style=''>    /**
+</span>91 <span style=''>     *  @return the affiliation of the object.
+</span>92 <span style=''>     */
+</span>93 <span style=''>    </span><span style='background: #AEF1AE'>override def affiliation</span><span style=''>: Affiliation = Affiliation.Enemy
+</span>94 <span style=''>
+</span>95 <span style=''>    /**
+</span>96 <span style=''>     *
+</span>97 <span style=''>     * @param dt This is the virtual delta time thas has been passed since the last update
+</span>98 <span style=''>     *  @return the new Timeable object with the current virtual time updated
+</span>99 <span style=''>     */
+</span>100 <span style=''>    </span><span style='background: #AEF1AE'>override def timeElapsed</span><span style=''>(dt: DeltaTime): Satellite = this.copy(missileSpawner = </span><span style='background: #AEF1AE'>missileSpawner.timeElapsed(dt)</span><span style=''>, deltaTime = deltaTime + dt)
+</span>101 <span style=''>
+</span>102 <span style=''>object Satellite:
+</span>103 <span style=''>    /**
+</span>104 <span style=''>     * Generation of a new plane
+</span>105 <span style=''>     * @param xCoordinate x coordinate of the satellite
+</span>106 <span style=''>     * @param Random Random used with the spawner
+</span>107 <span style=''>     * @return a new satellite
+</span>108 <span style=''>     */
+</span>109 <span style=''>    </span><span style='background: #AEF1AE'>def apply</span><span style=''>(xCoordinate: Double)(using Random) : Satellite =
+</span>110 <span style=''>        val position = </span><span style='background: #AEF1AE'>Point2D(xCoordinate, satelliteHeight)</span><span style=''>
+</span>111 <span style=''>        </span><span style='background: #AEF1AE'>SatelliteImpl</span><span style=''>(position,
+</span>112 <span style=''>        </span><span style='background: #AEF1AE'>GenericSpawner[Missile](spawnInterval, spawnable = SpecificSpawners.FixedMissileStrategy(width, height, position)(using Random))</span><span style=''>)
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -108,15 +148,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          20
+          37
         </td>
         <td>
           1478
         </td>
         <td>
-          720
+          1304
           -
-          720
+          1304
         </td>
         <td>
           DefDef
@@ -132,15 +172,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          38
         </td>
         <td>
           1479
         </td>
         <td>
-          790
+          1374
           -
-          790
+          1374
         </td>
         <td>
           DefDef
@@ -156,15 +196,15 @@
         </td>
       </tr><tr>
         <td>
-          22
+          39
         </td>
         <td>
           1454
         </td>
         <td>
-          855
+          1439
           -
-          866
+          1450
         </td>
         <td>
           Apply
@@ -180,15 +220,15 @@
         </td>
       </tr><tr>
         <td>
-          24
+          45
         </td>
         <td>
           1455
         </td>
         <td>
-          873
+          1526
           -
-          894
+          1547
         </td>
         <td>
           DefDef
@@ -204,15 +244,15 @@
         </td>
       </tr><tr>
         <td>
-          30
+          51
         </td>
         <td>
           1459
         </td>
         <td>
-          1068
+          1721
           -
-          1086
+          1739
         </td>
         <td>
           DefDef
@@ -228,15 +268,15 @@
         </td>
       </tr><tr>
         <td>
-          31
+          52
         </td>
         <td>
           1456
         </td>
         <td>
-          1151
+          1804
           -
-          1173
+          1826
         </td>
         <td>
           Apply
@@ -252,15 +292,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          54
         </td>
         <td>
           1457
         </td>
         <td>
-          1202
+          1855
           -
-          1217
+          1870
         </td>
         <td>
           Select
@@ -276,15 +316,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          55
         </td>
         <td>
           1458
         </td>
         <td>
-          1258
+          1911
           -
-          1273
+          1926
         </td>
         <td>
           Select
@@ -300,15 +340,15 @@
         </td>
       </tr><tr>
         <td>
-          42
+          63
         </td>
         <td>
           1460
         </td>
         <td>
-          1403
+          2056
           -
-          1427
+          2080
         </td>
         <td>
           DefDef
@@ -324,15 +364,15 @@
         </td>
       </tr><tr>
         <td>
-          49
+          70
         </td>
         <td>
           1461
         </td>
         <td>
-          1569
+          2222
           -
-          1593
+          2246
         </td>
         <td>
           DefDef
@@ -348,15 +388,15 @@
         </td>
       </tr><tr>
         <td>
-          57
+          78
         </td>
         <td>
           1464
         </td>
         <td>
-          1793
+          2446
           -
-          1816
+          2469
         </td>
         <td>
           DefDef
@@ -372,15 +412,15 @@
         </td>
       </tr><tr>
         <td>
-          58
+          79
         </td>
         <td>
           1462
         </td>
         <td>
-          1870
+          2523
           -
-          1897
+          2550
         </td>
         <td>
           Block
@@ -396,15 +436,15 @@
         </td>
       </tr><tr>
         <td>
-          59
+          80
         </td>
         <td>
           1463
         </td>
         <td>
-          1947
+          2600
           -
-          1953
+          2606
         </td>
         <td>
           Block
@@ -420,15 +460,15 @@
         </td>
       </tr><tr>
         <td>
-          61
+          85
         </td>
         <td>
           1474
         </td>
         <td>
-          2000
+          2712
           -
-          2029
+          2741
         </td>
         <td>
           DefDef
@@ -444,15 +484,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          86
         </td>
         <td>
           1465
         </td>
         <td>
-          2070
+          2782
           -
-          2078
+          2790
         </td>
         <td>
           Select
@@ -468,15 +508,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          86
         </td>
         <td>
           1468
         </td>
         <td>
-          2082
+          2794
           -
-          2092
+          2804
         </td>
         <td>
           Select
@@ -492,15 +532,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          86
         </td>
         <td>
           1467
         </td>
         <td>
-          2082
+          2794
           -
-          2090
+          2802
         </td>
         <td>
           Select
@@ -516,15 +556,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          86
         </td>
         <td>
           1466
         </td>
         <td>
-          2070
+          2782
           -
-          2080
+          2792
         </td>
         <td>
           Select
@@ -540,15 +580,15 @@
         </td>
       </tr><tr>
         <td>
-          62
+          86
         </td>
         <td>
           1469
         </td>
         <td>
-          2062
+          2774
           -
-          2093
+          2805
         </td>
         <td>
           Apply
@@ -564,15 +604,15 @@
         </td>
       </tr><tr>
         <td>
-          63
+          87
         </td>
         <td>
           1470
         </td>
         <td>
-          2120
+          2832
           -
-          2128
+          2840
         </td>
         <td>
           Select
@@ -588,15 +628,15 @@
         </td>
       </tr><tr>
         <td>
-          63
+          87
         </td>
         <td>
           1473
         </td>
         <td>
-          2102
+          2814
           -
-          2186
+          2898
         </td>
         <td>
           Apply
@@ -612,15 +652,15 @@
         </td>
       </tr><tr>
         <td>
-          63
+          87
         </td>
         <td>
           1472
         </td>
         <td>
-          2149
+          2861
           -
-          2168
+          2880
         </td>
         <td>
           Apply
@@ -636,15 +676,15 @@
         </td>
       </tr><tr>
         <td>
-          63
+          87
         </td>
         <td>
           1471
         </td>
         <td>
-          2130
+          2842
           -
-          2147
+          2859
         </td>
         <td>
           Apply
@@ -660,15 +700,15 @@
         </td>
       </tr><tr>
         <td>
-          64
+          92
         </td>
         <td>
           1475
         </td>
         <td>
-          2191
+          2967
           -
-          2215
+          2991
         </td>
         <td>
           DefDef
@@ -684,15 +724,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          99
         </td>
         <td>
           1476
         </td>
         <td>
-          2333
+          3302
           -
-          2363
+          3332
         </td>
         <td>
           Apply
@@ -708,15 +748,15 @@
         </td>
       </tr><tr>
         <td>
-          65
+          99
         </td>
         <td>
           1477
         </td>
         <td>
-          2253
+          3222
           -
-          2277
+          3246
         </td>
         <td>
           DefDef
@@ -732,15 +772,15 @@
         </td>
       </tr><tr>
         <td>
-          68
+          108
         </td>
         <td>
           1489
         </td>
         <td>
-          2416
+          3571
           -
-          2425
+          3580
         </td>
         <td>
           DefDef
@@ -756,15 +796,15 @@
         </td>
       </tr><tr>
         <td>
-          69
+          109
         </td>
         <td>
           1481
         </td>
         <td>
-          2498
+          3653
           -
-          2535
+          3690
         </td>
         <td>
           Apply
@@ -780,15 +820,15 @@
         </td>
       </tr><tr>
         <td>
-          69
+          109
         </td>
         <td>
           1480
         </td>
         <td>
-          2519
+          3674
           -
-          2534
+          3689
         </td>
         <td>
           Apply
@@ -804,15 +844,15 @@
         </td>
       </tr><tr>
         <td>
-          70
+          110
         </td>
         <td>
           1488
         </td>
         <td>
-          2544
+          3699
           -
-          2557
+          3712
         </td>
         <td>
           Select
@@ -828,15 +868,15 @@
         </td>
       </tr><tr>
         <td>
-          70
+          110
         </td>
         <td>
           1487
         </td>
         <td>
-          2544
+          3699
           -
-          2557
+          3712
         </td>
         <td>
           Select
@@ -852,15 +892,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          111
         </td>
         <td>
           1483
         </td>
         <td>
-          2665
+          3820
           -
-          2670
+          3825
         </td>
         <td>
           Apply
@@ -876,15 +916,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          111
         </td>
         <td>
           1485
         </td>
         <td>
-          2627
+          3782
           -
-          2703
+          3858
         </td>
         <td>
           Apply
@@ -900,15 +940,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          111
         </td>
         <td>
           1482
         </td>
         <td>
-          2600
+          3755
           -
-          2613
+          3768
         </td>
         <td>
           Apply
@@ -924,15 +964,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          111
         </td>
         <td>
           1484
         </td>
         <td>
-          2672
+          3827
           -
-          2678
+          3833
         </td>
         <td>
           Apply
@@ -948,15 +988,15 @@
         </td>
       </tr><tr>
         <td>
-          71
+          111
         </td>
         <td>
           1486
         </td>
         <td>
-          2576
+          3731
           -
-          2704
+          3859
         </td>
         <td>
           Apply
