@@ -3,12 +3,11 @@ ThisBuild / version := "1.0.1"
 
 ThisBuild / scalaVersion := "3.2.0"
 
-val scalatest = "org.scalatest" %% "scalatest" % "3.2.14" % Test
-
-val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.17.0" % "test"
-val scalactic = "org.scalactic" %% "scalactic" % "3.2.14"
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")
 
+val scalatest = "org.scalatest" %% "scalatest" % "3.2.14" % Test
+val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.17.0" % "test"
+val scalactic = "org.scalactic" %% "scalactic" % "3.2.14"
 
 lazy val root = (project in file("."))
   .settings(
