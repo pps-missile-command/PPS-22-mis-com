@@ -19,9 +19,10 @@ lazy val root = (project in file("."))
         "dev.optics" %% "monocle-core" % "3.1.0",
         "dev.optics" %% "monocle-macro" % "3.1.0"
       ),
-
     assembly / mainClass := Some("view.Main"),
     assembly / assemblyJarName := "missile_command.jar",
+    Compile / run / mainClass := Some("view.Main"),
+    Compile / run / fork := true,
   )
 
 
