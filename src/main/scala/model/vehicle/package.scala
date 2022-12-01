@@ -15,5 +15,8 @@ package object vehicle:
     val satelliteBaseSize = 30
     val satelliteHeightSize = 30
 
-    enum vehicleTypes:
+    /**
+     * define what direction the plane is
+     */
+    enum planeTypes:
         case Left_To_Right, Right_To_Left

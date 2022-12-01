@@ -11,7 +11,12 @@ import utilities._
 import java.time
 import java.time.LocalDateTime
 
-
+/***
+ * Class that rapresent a turret
+ * @param bottomLeft_Position Point that rapresent bottom-left corner of the turret
+ * @param life Life of the turret
+ * @param dt Deltatime of the turret
+ */
 case class MissileBattery(val bottomLeft_Position: Point2D,
                           val life: LifePoint = missileBatteryInitialLife,
                           dt: DeltaTime = 0) extends Damageable, Timeable:

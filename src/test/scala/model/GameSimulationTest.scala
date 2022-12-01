@@ -158,7 +158,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
     }
 
     Scenario("In the game the elements that has reached the destinations are removed") {
-      val plane = Plane(vehicle.vehicleTypes.Right_To_Left, 20)(using Random())
+      val plane = Plane(vehicle.planeTypes.Right_To_Left, 20)(using Random())
       Given("An initial game with a plane")
       val game =
         Game
@@ -184,7 +184,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
     }
 
     Scenario("In the game the elements that have special ability used it plane") {
-      val plane = Plane(vehicle.vehicleTypes.Right_To_Left, 20)(using Random())
+      val plane = Plane(vehicle.planeTypes.Right_To_Left, 20)(using Random())
       Given("An initial game with a plane")
       val game =
         Game

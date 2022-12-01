@@ -7,7 +7,7 @@ import model.collisions.{Affiliation, Collisionable}
 import model.elements2d.{Angle, Point2D}
 import model.explosion.Explosion
 import model.missile.{Missile, MissileDamageable, MissileImpl, hitboxBase, hitboxHeight}
-import model.vehicle.{Plane, Satellite, vehicleTypes}
+import model.vehicle.{Plane, Satellite, planeTypes}
 
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO

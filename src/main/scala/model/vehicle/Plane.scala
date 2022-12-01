@@ -13,37 +13,88 @@ import model.spawner.{GenericSpawner, GenericSpawnerImpl, SpecificSpawners}
 
 import scala.util.Random
 
-
+/**
+ * Trait that model the plane entity
+ */
 trait Plane extends Moveable, Damageable, GenericSpawner[Missile]:
+    /**
+     *  @return the current position into the world
+     */
     def position: Point2D
+
+    /**
+     * @return the velocity of the plane
+     */
     def velocity: Double
+
+    /**
+     * @return the direction of the plane
+     */
     def direction: Vector2D = (position, destination)
-    def planeDirection: vehicleTypes
+
+    /**
+     * @return the type of the plane
+     */
+    def planeDirection: planeTypes
+
+    /**
+     *  @return the new object moved, with its position updated
+     */
     override def move(): Plane
+
+    /**
+     * @param dt This is the virtual delta time thas has been passed since the last update
+     *  @return the new Timeable object with the current virtual time updated
+     */
     override def timeElapsed(dt: DeltaTime): Plane
 
+/**
+ * Implementation of the plane, based on the plane trait
+ * @param actualPosition actual position of the plane
+ * @param finalPosition final position of the plane
+ * @param choosedDirection direction of the plane
+ * @param lifePoint life of the plane
+ * @param deltaTime Deltatime of the plane
+ * @param missileSpawnerOpt Spawner of the plane
+ * @param Random Random used for the spawner
+ */
 case class PlaneImpl(actualPosition: Point2D,
                      finalPosition: Point2D,
-                     choosedDirection: vehicleTypes,
+                     choosedDirection: planeTypes,
                      lifePoint: LifePoint = planeInitialLife,
                      deltaTime: DeltaTime = 0,
                      missileSpawnerOpt: Option[GenericSpawnerImpl[Missile]] = Option.empty)(using Random)
                     extends Plane with Scorable(3):
 
     val spawnable = SpecificSpawners.FixedMissileStrategy(width, height, position)
-
     val missileSpawner = missileSpawnerOpt match
         case Some(value) => value.changeSpawnable(spawnable)
         case _ => GenericSpawner(3, spawnable)
 
-    override def planeDirection: vehicleTypes = choosedDirection
+    /**
+     *  @return the type of the plane
+     */
+    override def planeDirection: planeTypes = choosedDirection
+
+    /*
+     *  @return the current position into the world
+     */
     override def position: Point2D = actualPosition
+
+    /**
+     *  @return the velocity of the plane
+     */
     override def velocity: Double = planeVelocity
+
+    /**
+     *
+     *  @return the new object moved, with its position updated
+     */
     override def move(): Plane = this match
         case v if(v.isDestroyed) => this.copy(lifePoint = lifePointDeath)
         case _ => this.copy(actualPosition = moveVehicle(this), deltaTime = 0)
 
-    /***
+    /**
      * Calculate the new position of the vehicle
      * @param vehicle Vehicle that have to be moved
      * @return New position after moved time
@@ -56,7 +107,7 @@ case class PlaneImpl(actualPosition: Point2D,
         else
             vehicle.position --> (vehicle.direction * distanceToMove * (-1))
 
-    /***
+    /**
      * Method used for launch a missile from the plane
      * @return Tuple containing a set with missiles and the new plane
      */
@@ -104,8 +155,23 @@ case class PlaneImpl(actualPosition: Point2D,
      * @return the affiliation of the object.
      */
     override def affiliation: Affiliation = Affiliation.Enemy
+
+    /**
+     *
+     * @param dt This is the virtual delta time thas has been passed since the last update
+     *  @return the new Timeable object with the current virtual time updated
+     */
     override def timeElapsed(dt: DeltaTime): Plane = this.copy(deltaTime = deltaTime + dt, Option(missileSpawner.timeElapsed(dt)))
+
+    /**
+     *  @return true if the destination has been reached, false otherwise
+     */
     override def destinationReached: Boolean = position == destination
+
+    /**
+     *
+     *  @return the final destination to which to move
+     */
     override def destination: Point2D = finalPosition
 
     override def toString: String = "Vehicle: actualPosition: (" + position.x + "," + position.y + "); " +
@@ -114,6 +180,13 @@ case class PlaneImpl(actualPosition: Point2D,
                                     "actual life: " + currentLife
 
 object Plane:
-    def apply(direction: vehicleTypes, height: Double)(using Random) : Plane = direction match
-        case vehicleTypes.Left_To_Right => PlaneImpl(Point2D(0, height), Point2D(World.width, height), direction)
-        case vehicleTypes.Right_To_Left => PlaneImpl(Point2D(World.width, height), Point2D(0, height), direction)
+    /**
+     * Creation of a new plane
+     * @param direction direction of the plane
+     * @param height height of spawn
+     * @param Random Random used for the spawner
+     * @return a new plane matching given values
+     */
+    def apply(direction: planeTypes, height: Double)(using Random) : Plane = direction match
+        case planeTypes.Left_To_Right => PlaneImpl(Point2D(0, height), Point2D(World.width, height), direction)
+        case planeTypes.Right_To_Left => PlaneImpl(Point2D(World.width, height), Point2D(0, height), direction)

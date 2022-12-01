@@ -1,7 +1,7 @@
 package model.spawner
 
 import model.elements2d.Point2D
-import model.vehicle.vehicleTypes
+import model.vehicle.planeTypes
 
 import scala.util.Random
 
@@ -44,6 +44,6 @@ object PimpingByRandom:
      * Method that generate a random direction for planes, based on a random double number
      * @return the direction randomly generated
      */
-    def nextRandomDirection(): vehicleTypes = r.nextDouble() match
-        case n if n < 0.5 => vehicleTypes.Right_To_Left
-        case _ => vehicleTypes.Left_To_Right
+    def nextRandomDirection(): planeTypes = r.nextDouble() match
+        case n if n < 0.5 => planeTypes.Right_To_Left
+        case _ => planeTypes.Left_To_Right

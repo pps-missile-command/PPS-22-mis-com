@@ -11,7 +11,18 @@ import utilities.*
 
 
 object Ground:
+    /**
+     * Generate a ground based on given cities and turrets .
+     * @param cities Passed cities;
+     * @param turrets Passed turrets;
+     * @return A ground with the passed cities/turrets.
+     */
     def apply(cities: List[City], turrets: List[MissileBattery]): Ground = new Ground(cities, turrets)
+
+    /**
+     * Generate a ground with default settings
+     * @return A ground with default cities/turrets
+     */
     def apply(): Ground =
         val cities =
             for y <- List.range(0, 2) //generate all cities in 2 waves.
@@ -26,21 +37,26 @@ object Ground:
                     World.height - missileBatteryHeightSize))
         Ground(cities, turrets)
 
+/**
+ * Class that describe the ground
+ * @param cities cities of the ground
+ * @param turrets turrets of the ground
+ */
 case class Ground(cities: List[City], turrets: List[MissileBattery]):
 
-    /***
+    /**
      * @return Return all the cities that are still alive
      */
     def citiesAlive =
         for city <- cities if city.currentLife > 0
             yield city
 
-    /***
+    /**
      * @return Return the number of cities that are still alive
      */
     def numberOfCitiesAlive: Int = citiesAlive.length
 
-    /***
+    /**
      * @return Return all the missile batteries that are still alive
      */
     def missileBatteryAlive =
