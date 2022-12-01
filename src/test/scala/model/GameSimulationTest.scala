@@ -88,7 +88,7 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       assert(newGame.world.ground.turrets.count(!_.isReadyForShoot) == 1)
     }
 
-  Scenario("The game shouldn't be able to create a friendly missile at the beginning") {
+    Scenario("The game shouldn't be able to create a friendly missile at the beginning") {
     val destination = Point2D(0, 0)
     Given("An initial game")
     val initialGame = Game.initialGame
@@ -258,7 +258,6 @@ class GameSimulationTest extends AnyFeatureSpec with GivenWhenThen :
       Then("The collisionables should be 2 explosion")
       assert(collisions.size == 2)
       assert(updatedGame.world.collisionables.size == 2)
-      println(updatedGame.world.collisionables)
       assert(updatedGame.world.collisionables.count(_.isInstanceOf[Explosion]) == 2)
       Then("The score should be 1")
       assert(gameScore.player.score == 1)
