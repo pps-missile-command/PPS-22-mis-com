@@ -31,38 +31,39 @@
 </span>7 <span style=''>import monix.reactive.{Observable, OverflowStrategy}
 </span>8 <span style=''>
 </span>9 <span style=''>import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionListener}
-</span>10 <span style=''>
-</span>11 <span style=''>extension (component: Component)
-</span>12 <span style=''>  /**
-</span>13 <span style=''>  * Extension method that adds a new mouseObservable method to [[Component]].
-</span>14 <span style=''>  * This method returns an Observable[Point2D] that adds a mouse clicked listener to the given
-</span>15 <span style=''>  * component and generating new events as the click are listened
-</span>16 <span style=''>  * @return the observable of click events
-</span>17 <span style=''>  */
-</span>18 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[Point2D] =
-</span>19 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-</span>20 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter :
-</span>21 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
-</span>22 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(Point2D(e.getX, e.getY))
-</span>23 <span style=''></span><span style='background: #F0ADAD'>      )
-</span>24 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
-</span>25 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
-</span>26 <span style=''>
-</span>27 <span style=''>extension (button: javax.swing.JButton)
-</span>28 <span style=''>
-</span>29 <span style=''>  /**
-</span>30 <span style=''>   * Extension method that emits a new event every time the [[javax.swing.JButton]] is clicked.
-</span>31 <span style=''>   *
-</span>32 <span style=''>   * @return an Observable[Unit] that emits a new event every time the button is clicked
-</span>33 <span style=''>   */
-</span>34 <span style=''>  </span><span style='background: #F0ADAD'>def clickObservable</span><span style=''>(): Observable[Unit] =
-</span>35 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
-</span>36 <span style=''></span><span style='background: #F0ADAD'>      button.addActionListener(
-</span>37 <span style=''></span><span style='background: #F0ADAD'>        _ =&gt;
-</span>38 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(())
-</span>39 <span style=''></span><span style='background: #F0ADAD'>      )
-</span>40 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
-</span>41 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>10 <span style=''>import javax.swing.JButton
+</span>11 <span style=''>
+</span>12 <span style=''>extension (component: Component)
+</span>13 <span style=''>  /**
+</span>14 <span style=''>  * Extension method that adds a new mouseObservable method to [[Component]].
+</span>15 <span style=''>  * This method returns an Observable[Point2D] that adds a mouse clicked listener to the given
+</span>16 <span style=''>  * component and generating new events as the click are listened
+</span>17 <span style=''>  * @return the observable of click events
+</span>18 <span style=''>  */
+</span>19 <span style=''>  </span><span style='background: #F0ADAD'>def mouseObservable</span><span style=''>(): Observable[Point2D] =
+</span>20 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
+</span>21 <span style=''></span><span style='background: #F0ADAD'>      component.addMouseListener(new MouseAdapter :
+</span>22 <span style=''></span><span style='background: #F0ADAD'>        override def mouseClicked(e: MouseEvent): Unit =
+</span>23 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(Point2D(e.getX, e.getY))
+</span>24 <span style=''></span><span style='background: #F0ADAD'>      )
+</span>25 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
+</span>26 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
+</span>27 <span style=''>
+</span>28 <span style=''>extension (button: JButton)
+</span>29 <span style=''>
+</span>30 <span style=''>  /**
+</span>31 <span style=''>   * Extension method that emits a new event every time the [[JButton]] is clicked.
+</span>32 <span style=''>   *
+</span>33 <span style=''>   * @return an Observable[Unit] that emits a new event every time the button is clicked
+</span>34 <span style=''>   */
+</span>35 <span style=''>  </span><span style='background: #F0ADAD'>def clickObservable</span><span style=''>(): Observable[Unit] =
+</span>36 <span style=''>    </span><span style='background: #F0ADAD'>Observable.create(OverflowStrategy.Unbounded) { subject =&gt;
+</span>37 <span style=''></span><span style='background: #F0ADAD'>      button.addActionListener(
+</span>38 <span style=''></span><span style='background: #F0ADAD'>        _ =&gt;
+</span>39 <span style=''></span><span style='background: #F0ADAD'>          subject.onNext(())
+</span>40 <span style=''></span><span style='background: #F0ADAD'>      )
+</span>41 <span style=''></span><span style='background: #F0ADAD'>      SingleAssignCancelable()
+</span>42 <span style=''></span><span style='background: #F0ADAD'>    }</span><span style=''>
 </span></pre>
           </div>
           <div class="tab-pane" id="statementlist">
@@ -77,15 +78,15 @@
         <th>Code</th>
       </tr><tr>
         <td>
-          17
+          18
         </td>
         <td>
           1644
         </td>
         <td>
-          588
+          615
           -
-          607
+          634
         </td>
         <td>
           DefDef
@@ -101,15 +102,15 @@
         </td>
       </tr><tr>
         <td>
-          18
+          19
         </td>
         <td>
           1632
         </td>
         <td>
-          637
+          664
           -
-          654
+          681
         </td>
         <td>
           Select
@@ -125,15 +126,15 @@
         </td>
       </tr><tr>
         <td>
-          18
+          19
         </td>
         <td>
           1643
         </td>
         <td>
-          637
+          664
           -
-          899
+          926
         </td>
         <td>
           Apply
@@ -155,15 +156,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          20
         </td>
         <td>
           1641
         </td>
         <td>
-          702
+          729
           -
-          862
+          889
         </td>
         <td>
           Apply
@@ -182,15 +183,15 @@
         </td>
       </tr><tr>
         <td>
-          19
+          20
         </td>
         <td>
           1633
         </td>
         <td>
-          733
+          760
           -
-          745
+          772
         </td>
         <td>
           Apply
@@ -206,15 +207,15 @@
         </td>
       </tr><tr>
         <td>
-          20
+          21
         </td>
         <td>
           1640
         </td>
         <td>
-          756
+          783
           -
-          781
+          808
         </td>
         <td>
           DefDef
@@ -230,15 +231,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          22
         </td>
         <td>
           1638
         </td>
         <td>
-          830
+          857
           -
-          853
+          880
         </td>
         <td>
           Apply
@@ -254,15 +255,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          22
         </td>
         <td>
           1635
         </td>
         <td>
-          838
+          865
           -
-          844
+          871
         </td>
         <td>
           Apply
@@ -278,15 +279,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          22
         </td>
         <td>
           1634
         </td>
         <td>
-          838
+          865
           -
-          844
+          871
         </td>
         <td>
           Apply
@@ -302,15 +303,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          22
         </td>
         <td>
           1637
         </td>
         <td>
-          846
+          873
           -
-          852
+          879
         </td>
         <td>
           Apply
@@ -326,15 +327,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          22
         </td>
         <td>
           1636
         </td>
         <td>
-          846
+          873
           -
-          852
+          879
         </td>
         <td>
           Apply
@@ -350,15 +351,15 @@
         </td>
       </tr><tr>
         <td>
-          21
+          22
         </td>
         <td>
           1639
         </td>
         <td>
-          815
+          842
           -
-          854
+          881
         </td>
         <td>
           Apply
@@ -374,15 +375,15 @@
         </td>
       </tr><tr>
         <td>
-          23
+          24
         </td>
         <td>
           1642
         </td>
         <td>
-          869
+          896
           -
-          893
+          920
         </td>
         <td>
           Apply
@@ -398,15 +399,15 @@
         </td>
       </tr><tr>
         <td>
-          33
+          34
         </td>
         <td>
           1650
         </td>
         <td>
-          1146
+          1149
           -
-          1165
+          1168
         </td>
         <td>
           DefDef
@@ -422,15 +423,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          35
         </td>
         <td>
           1649
         </td>
         <td>
-          1192
+          1195
           -
-          1369
+          1372
         </td>
         <td>
           Apply
@@ -452,15 +453,15 @@
         </td>
       </tr><tr>
         <td>
-          34
+          35
         </td>
         <td>
           1645
         </td>
         <td>
-          1192
+          1195
           -
-          1209
+          1212
         </td>
         <td>
           Select
@@ -476,15 +477,15 @@
         </td>
       </tr><tr>
         <td>
-          35
+          36
         </td>
         <td>
           1647
         </td>
         <td>
-          1257
+          1260
           -
-          1332
+          1335
         </td>
         <td>
           Apply
@@ -503,15 +504,15 @@
         </td>
       </tr><tr>
         <td>
-          37
+          38
         </td>
         <td>
           1646
         </td>
         <td>
-          1306
+          1309
           -
-          1324
+          1327
         </td>
         <td>
           Apply
@@ -527,15 +528,15 @@
         </td>
       </tr><tr>
         <td>
-          39
+          40
         </td>
         <td>
           1648
         </td>
         <td>
-          1339
+          1342
           -
-          1363
+          1366
         </td>
         <td>
           Apply
