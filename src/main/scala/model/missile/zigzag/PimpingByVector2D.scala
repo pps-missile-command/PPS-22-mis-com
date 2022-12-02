@@ -19,5 +19,5 @@ object PimpingByVector2D:
         case Left => Vector2D(magnitude, Angle.Degree(v.direction.get.degree - 90))
         case Rand(rand) =>
           val value = rand.nextDouble()
-          Vector2D(1, Angle.Degree(v.direction.get.degree + 90 * value.mapToSign))
+          Vector2D(magnitude, Angle.Degree(v.direction.get.degree + (90 * value.mapToSign)))
         case _ => v
