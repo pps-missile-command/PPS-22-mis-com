@@ -38,10 +38,10 @@ object DirectionList:
     val d = (to <-> from) / step
     val v = ((to <--> from).normalize) * d
     DirectionList(from) {
-      i => i --> (-v)
+      _ --> (-v)
     } (_ != from) {
-      i => i --> (-v -|- Rand(Random))
-    }
+      _ --> (-v -|- Rand(Random))
+    }.take(step)
 
   /**
    * This factory generates a LazyList with directions alternated (Right, Left, Right...), creating a zigzag path
@@ -62,10 +62,10 @@ object DirectionList:
     for
       index <- stream.take(step)
       if(index != 0)
-      point = pointsStream.take(index + 1).toList.last
+      point = pointsStream.take(index + 1).last
       direction = stream.take(index + 1).map {
         i => (i % 2) match
           case v if v == 0 => Right
           case _ => Left
-      }.toList.last
+      }.last
     yield (point --> (-v -|- (direction, magnitude))).filterMap(maxWidth)
