@@ -62,10 +62,10 @@
 </span>38 <span style=''>    val d = (</span><span style='background: #AEF1AE'>to &lt;-&gt; from</span><span style=''>) / step
 </span>39 <span style=''>    val v = </span><span style='background: #AEF1AE'>((to &lt;--&gt; from).normalize) * d</span><span style=''>
 </span>40 <span style=''>    </span><span style='background: #AEF1AE'>DirectionList(from) {
-</span>41 <span style=''></span><span style='background: #AEF1AE'>      i =&gt; i --&gt; (-v)
+</span>41 <span style=''></span><span style='background: #AEF1AE'>      _ --&gt; (-v)
 </span>42 <span style=''></span><span style='background: #AEF1AE'>    } (_ != from) {
-</span>43 <span style=''></span><span style='background: #AEF1AE'>      i =&gt; i --&gt; (-v -|- Rand(Random))
-</span>44 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
+</span>43 <span style=''></span><span style='background: #AEF1AE'>      _ --&gt; (-v -|- Rand(Random))
+</span>44 <span style=''></span><span style='background: #AEF1AE'>    }.take(step)</span><span style=''>
 </span>45 <span style=''>
 </span>46 <span style=''>  /**
 </span>47 <span style=''>   * This factory generates a LazyList with directions alternated (Right, Left, Right...), creating a zigzag path
@@ -86,12 +86,12 @@
 </span>62 <span style=''>    </span><span style='background: #AEF1AE'>for
 </span>63 <span style=''></span><span style='background: #AEF1AE'>      index &lt;- stream.take(step)
 </span>64 <span style=''></span><span style='background: #AEF1AE'>      if(index != 0)
-</span>65 <span style=''></span><span style='background: #AEF1AE'>      point = pointsStream.take(index + 1).toList.last
+</span>65 <span style=''></span><span style='background: #AEF1AE'>      point = pointsStream.take(index + 1).last
 </span>66 <span style=''></span><span style='background: #AEF1AE'>      direction = stream.take(index + 1).map {
 </span>67 <span style=''></span><span style='background: #AEF1AE'>        i =&gt; (i % 2) match
 </span>68 <span style=''></span><span style='background: #AEF1AE'>          case v if v == 0 =&gt; Right
 </span>69 <span style=''></span><span style='background: #AEF1AE'>          case _ =&gt; Left
-</span>70 <span style=''></span><span style='background: #AEF1AE'>      }.toList.last
+</span>70 <span style=''></span><span style='background: #AEF1AE'>      }.last
 </span>71 <span style=''></span><span style='background: #AEF1AE'>    yield (point --&gt; (-v -|- (direction, magnitude))).filterMap(maxWidth)</span><span style=''>
 </span></pre>
           </div>
@@ -230,7 +230,7 @@
           36
         </td>
         <td>
-          1110
+          1111
         </td>
         <td>
           1468
@@ -353,9 +353,9 @@
           1104
         </td>
         <td>
-          1670
+          1665
           -
-          1679
+          1674
         </td>
         <td>
           Apply
@@ -367,7 +367,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          i --&gt; (-v
+          _ --&gt; (-v
         </td>
       </tr><tr>
         <td>
@@ -377,9 +377,9 @@
           1103
         </td>
         <td>
-          1677
+          1672
           -
-          1679
+          1674
         </td>
         <td>
           Select
@@ -403,7 +403,7 @@
         <td>
           1637
           -
-          1745
+          1735
         </td>
         <td>
           Apply
@@ -416,9 +416,9 @@
         </td>
         <td style="background: #AEF1AE">
           DirectionList(from) {
-      i =&gt; i --&gt; (-v)
+      _ --&gt; (-v)
     } (_ != from) {
-      i =&gt; i --&gt; (-v -|- Rand(Random))
+      _ --&gt; (-v -|- Rand(Random))
     }
         </td>
       </tr><tr>
@@ -429,9 +429,9 @@
           1106
         </td>
         <td>
-          1719
+          1709
           -
-          1725
+          1715
         </td>
         <td>
           Apply
@@ -453,9 +453,9 @@
           1105
         </td>
         <td>
-          1719
+          1709
           -
-          1721
+          1711
         </td>
         <td>
           Select
@@ -477,9 +477,9 @@
           1108
         </td>
         <td>
-          1712
+          1702
           -
-          1738
+          1728
         </td>
         <td>
           Apply
@@ -491,7 +491,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          i --&gt; (-v -|- Rand(Random)
+          _ --&gt; (-v -|- Rand(Random)
         </td>
       </tr><tr>
         <td>
@@ -501,9 +501,9 @@
           1107
         </td>
         <td>
-          1719
+          1709
           -
-          1738
+          1728
         </td>
         <td>
           Apply
@@ -519,39 +519,43 @@
         </td>
       </tr><tr>
         <td>
-          56
+          43
         </td>
         <td>
-          1140
+          1110
         </td>
         <td>
-          2399
+          1637
           -
-          2399
+          1746
         </td>
         <td>
-          DefDef
+          Apply
         </td>
         <td>
-          apply$default$4
+          take
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          
+          DirectionList(from) {
+      _ --&gt; (-v)
+    } (_ != from) {
+      _ --&gt; (-v -|- Rand(Random))
+    }.take(step)
         </td>
       </tr><tr>
         <td>
           56
         </td>
         <td>
-          1139
+          1138
         </td>
         <td>
-          2333
+          2334
           -
-          2342
+          2343
         </td>
         <td>
           DefDef
@@ -567,15 +571,39 @@
         </td>
       </tr><tr>
         <td>
+          56
+        </td>
+        <td>
+          1139
+        </td>
+        <td>
+          2400
+          -
+          2400
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          apply$default$4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
           57
         </td>
         <td>
-          1111
+          1112
         </td>
         <td>
-          2469
+          2470
           -
-          2480
+          2481
         </td>
         <td>
           Apply
@@ -594,12 +622,12 @@
           58
         </td>
         <td>
-          1114
+          1115
         </td>
         <td>
-          2501
+          2502
           -
-          2531
+          2532
         </td>
         <td>
           Apply
@@ -618,12 +646,12 @@
           58
         </td>
         <td>
-          1113
+          1114
         </td>
         <td>
-          2502
+          2503
           -
-          2526
+          2527
         </td>
         <td>
           Select
@@ -642,12 +670,12 @@
           58
         </td>
         <td>
-          1112
+          1113
         </td>
         <td>
-          2503
+          2504
           -
-          2515
+          2516
         </td>
         <td>
           Apply
@@ -666,36 +694,12 @@
           59
         </td>
         <td>
-          1115
+          1117
         </td>
         <td>
-          2549
+          2550
           -
-          2557
-        </td>
-        <td>
-          Ident
-        </td>
-        <td>
-          LazyList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          LazyList
-        </td>
-      </tr><tr>
-        <td>
-          59
-        </td>
-        <td>
-          1116
-        </td>
-        <td>
-          2549
-          -
-          2575
+          2576
         </td>
         <td>
           Apply
@@ -711,39 +715,39 @@
         </td>
       </tr><tr>
         <td>
-          60
+          59
         </td>
         <td>
-          1118
+          1116
         </td>
         <td>
-          2630
+          2550
           -
-          2632
+          2558
         </td>
         <td>
-          Select
+          Ident
         </td>
         <td>
-          unary_-
+          LazyList
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          -v
+          LazyList
         </td>
       </tr><tr>
         <td>
           60
         </td>
         <td>
-          1117
+          1118
         </td>
         <td>
-          2599
+          2600
           -
-          2607
+          2608
         </td>
         <td>
           Ident
@@ -765,33 +769,9 @@
           1120
         </td>
         <td>
-          2599
+          2624
           -
-          2635
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          iterate
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          LazyList.iterate(from)( _ --&gt; (-v) )
-        </td>
-      </tr><tr>
-        <td>
-          60
-        </td>
-        <td>
-          1119
-        </td>
-        <td>
-          2623
-          -
-          2632
+          2633
         </td>
         <td>
           Apply
@@ -807,15 +787,63 @@
         </td>
       </tr><tr>
         <td>
+          60
+        </td>
+        <td>
+          1119
+        </td>
+        <td>
+          2631
+          -
+          2633
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          unary_-
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          -v
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          1121
+        </td>
+        <td>
+          2600
+          -
+          2636
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          iterate
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          LazyList.iterate(from)( _ --&gt; (-v) )
+        </td>
+      </tr><tr>
+        <td>
           61
         </td>
         <td>
-          1138
+          1137
         </td>
         <td>
-          2640
+          2641
           -
-          2981
+          2968
         </td>
         <td>
           Apply
@@ -830,12 +858,12 @@
           for
       index &lt;- stream.take(step)
       if(index != 0)
-      point = pointsStream.take(index + 1).toList.last
+      point = pointsStream.take(index + 1).last
       direction = stream.take(index + 1).map {
         i =&gt; (i % 2) match
           case v if v == 0 =&gt; Right
           case _ =&gt; Left
-      }.toList.last
+      }.last
     yield (point --&gt; (-v -|- (direction, magnitude))).filterMap(maxWidth)
         </td>
       </tr><tr>
@@ -843,43 +871,12 @@
           62
         </td>
         <td>
-          1132
+          1136
         </td>
         <td>
-          2650
+          2651
           -
-          2907
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          map
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          index &lt;- stream.take(step)
-      if(index != 0)
-      point = pointsStream.take(index + 1).toList.last
-      direction = stream.take(index + 1).map {
-        i =&gt; (i % 2) match
-          case v if v == 0 =&gt; Right
-          case _ =&gt; Left
-      }.toList.last
-        </td>
-      </tr><tr>
-        <td>
-          62
-        </td>
-        <td>
-          1137
-        </td>
-        <td>
-          2650
-          -
-          2768
+          2762
         </td>
         <td>
           Block
@@ -893,7 +890,7 @@
         <td style="background: #AEF1AE">
           index &lt;- stream.take(step)
       if(index != 0)
-      point = pointsStream.take(index + 1).toList.last
+      point = pointsStream.take(index + 1).last
       direction
         </td>
       </tr><tr>
@@ -901,12 +898,12 @@
           62
         </td>
         <td>
-          1122
+          1123
         </td>
         <td>
-          2650
+          2651
           -
-          2697
+          2698
         </td>
         <td>
           Apply
@@ -926,12 +923,43 @@
           62
         </td>
         <td>
-          1121
+          1131
         </td>
         <td>
-          2659
+          2651
           -
-          2676
+          2894
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          index &lt;- stream.take(step)
+      if(index != 0)
+      point = pointsStream.take(index + 1).last
+      direction = stream.take(index + 1).map {
+        i =&gt; (i % 2) match
+          case v if v == 0 =&gt; Right
+          case _ =&gt; Left
+      }.last
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          1122
+        </td>
+        <td>
+          2660
+          -
+          2677
         </td>
         <td>
           Apply
@@ -953,33 +981,9 @@
           1124
         </td>
         <td>
-          2712
+          2713
           -
-          2747
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          toList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          pointsStream.take(index + 1).toList
-        </td>
-      </tr><tr>
-        <td>
-          64
-        </td>
-        <td>
-          1123
-        </td>
-        <td>
-          2712
-          -
-          2740
+          2741
         </td>
         <td>
           Apply
@@ -1001,9 +1005,9 @@
           1125
         </td>
         <td>
-          2712
+          2713
           -
-          2752
+          2746
         </td>
         <td>
           Select
@@ -1015,7 +1019,7 @@
           
         </td>
         <td style="background: #AEF1AE">
-          pointsStream.take(index + 1).toList.last
+          pointsStream.take(index + 1).last
         </td>
       </tr><tr>
         <td>
@@ -1025,9 +1029,9 @@
           1126
         </td>
         <td>
-          2771
+          2765
           -
-          2793
+          2787
         </td>
         <td>
           Apply
@@ -1049,9 +1053,9 @@
           1129
         </td>
         <td>
-          2771
+          2765
           -
-          2895
+          2889
         </td>
         <td>
           Apply
@@ -1077,9 +1081,9 @@
           1127
         </td>
         <td>
-          2837
+          2831
           -
-          2853
+          2847
         </td>
         <td>
           Block
@@ -1101,9 +1105,9 @@
           1128
         </td>
         <td>
-          2873
+          2867
           -
-          2879
+          2873
         </td>
         <td>
           Block
@@ -1122,12 +1126,12 @@
           69
         </td>
         <td>
-          1131
+          1130
         </td>
         <td>
-          2771
+          2765
           -
-          2907
+          2894
         </td>
         <td>
           Select
@@ -1143,35 +1147,7 @@
         i =&gt; (i % 2) match
           case v if v == 0 =&gt; Right
           case _ =&gt; Left
-      }.toList.last
-        </td>
-      </tr><tr>
-        <td>
-          69
-        </td>
-        <td>
-          1130
-        </td>
-        <td>
-          2771
-          -
-          2902
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          toList
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          stream.take(index + 1).map {
-        i =&gt; (i % 2) match
-          case v if v == 0 =&gt; Right
-          case _ =&gt; Left
-      }.toList
+      }.last
         </td>
       </tr><tr>
         <td>
@@ -1181,33 +1157,33 @@
           1133
         </td>
         <td>
-          2930
+          2917
           -
-          2932
+          2946
         </td>
         <td>
-          Select
+          Apply
         </td>
         <td>
-          unary_-
+          -|-
         </td>
         <td>
           
         </td>
         <td style="background: #AEF1AE">
-          -v
+          -v -|- (direction, magnitude)
         </td>
       </tr><tr>
         <td>
           70
         </td>
         <td>
-          1136
+          1135
         </td>
         <td>
-          2918
+          2905
           -
-          2981
+          2968
         </td>
         <td>
           Apply
@@ -1226,12 +1202,36 @@
           70
         </td>
         <td>
-          1135
+          1132
         </td>
         <td>
-          2919
+          2917
           -
-          2959
+          2919
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          unary_-
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          -v
+        </td>
+      </tr><tr>
+        <td>
+          70
+        </td>
+        <td>
+          1134
+        </td>
+        <td>
+          2906
+          -
+          2946
         </td>
         <td>
           Apply
@@ -1244,30 +1244,6 @@
         </td>
         <td style="background: #AEF1AE">
           point --&gt; (-v -|- (direction, magnitude)
-        </td>
-      </tr><tr>
-        <td>
-          70
-        </td>
-        <td>
-          1134
-        </td>
-        <td>
-          2930
-          -
-          2959
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          -|-
-        </td>
-        <td>
-          
-        </td>
-        <td style="background: #AEF1AE">
-          -v -|- (direction, magnitude)
         </td>
       </tr>
     </table>
